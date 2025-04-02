@@ -1,4 +1,3 @@
-import Image from "next/image";
 import NavBar from "./sections/NavBar";
 
 export default function Home() {
