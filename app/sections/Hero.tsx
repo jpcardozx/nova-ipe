@@ -79,7 +79,7 @@ export default function Hero() {
                 {/* CTA secundária refinada */}
                 <div className="mt-6">
                     <a
-                        href="https://wa.me/551198102-4749"
+                        href="https://wa.me/5511981024749"
                         className="inline-flex items-center gap-2 text-[#F7D7A3] hover:text-[#FFAD43] text-sm transition-colors"
                     >
                         Atendimento direto via WhatsApp
