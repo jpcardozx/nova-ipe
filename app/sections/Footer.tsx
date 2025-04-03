@@ -31,7 +31,7 @@ export default function Footer() {
             {/* Fundo com textura e gradiente */}
             <div className="absolute inset-0">
                 <Image
-                    src="/images/footer_bg.jpg" // certifique-se de que o nome e caminho estejam corretos
+                    src="/images/black-felt.png" // certifique-se de que o nome e caminho estejam corretos
                     alt="Textura de fundo do rodapé"
                     fill
                     className="object-cover object-center opacity-60"
