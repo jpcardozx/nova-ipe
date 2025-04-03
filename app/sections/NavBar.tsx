@@ -4,13 +4,13 @@ import { useState } from "react";
 import Image from "next/image";
 import { FaWhatsapp, FaBars, FaTimes } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { Libre_Caslon_Display } from 'next/font/google';
+import { Montserrat } from 'next/font/google';
 
-const libreCaslon = Libre_Caslon_Display({
+const montSerrat = Montserrat({
     subsets: ['latin'],
     weight: ['400'],
     display: 'swap',
-    variable: '--font-libre',
+    variable: '--font-montserrat',
 });
 
 const links = ["Início", "Comprar", "Alugar", "Contato"];
@@ -49,7 +49,7 @@ const Navbar = () => {
                 />
 
                 {/* Links - Desktop */}
-                <ul className="hidden md:flex gap-10 text-[#0D1F2D] text-[15px] font-medium tracking-tight">
+                <ul className={`hidden md:flex gap-10 text-[#0D1F2D] text-[20px] font-extrabold tracking-wide ${montSerrat.className}`}>
                     {links.map((link, index) => (
                         <motion.li
                             key={link}

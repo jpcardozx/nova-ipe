@@ -11,7 +11,7 @@ interface ImovelCardProps {
     imagemPrincipal: string;
     slug: string;
     preco?: string;
-    destaque?: boolean; // para variações visuais futuras
+    //    destaque?: boolean; // para variações visuais futuras
 }
 
 export default function ImovelCard({
@@ -21,7 +21,7 @@ export default function ImovelCard({
     imagemPrincipal,
     slug,
     preco,
-    destaque = false,
+    //   destaque = false,
 }: ImovelCardProps) {
     return (
         <Link
