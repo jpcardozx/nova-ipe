@@ -4,6 +4,14 @@ import { MapPin, Phone, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { Montserrat } from 'next/font/google';
+
+const montSerrat = Montserrat({
+    subsets: ['latin'],
+    weight: ['400'],
+    display: 'swap',
+    variable: '--font-montserrat',
+});
 
 export default function Footer() {
     const [mapLoaded, setMapLoaded] = useState(false);
@@ -27,7 +35,7 @@ export default function Footer() {
     }, []);
 
     return (
-        <footer className="relative w-full bg-[#0D1F2D] text-[#F7D7A3] overflow-hidden">
+        <footer className={`relative w-full bg-[#0D1F2D] text-[#F7D7A3] overflow-hidden ${montSerrat.className}`}>
             {/* Fundo com textura e gradiente */}
             <div className="absolute inset-0">
                 <Image

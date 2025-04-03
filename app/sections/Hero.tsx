@@ -5,7 +5,14 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { MapPin, Home, ArrowRight } from "lucide-react";
 import AdvancedDropdown from "../components/AdvancedDropdown";
+import { Montserrat } from 'next/font/google';
 
+const montSerrat = Montserrat({
+    subsets: ['latin'],
+    weight: ['400'],
+    display: 'swap',
+    variable: '--font-montserrat',
+});
 const LOCATIONS = ['Guararema', 'São José dos Campos', 'Mogi das Cruzes', 'Santa Isabel', 'Todos'];
 const PROPERTY_TYPES = ["Compra", "Aluguel", "Temporada"];
 
@@ -19,7 +26,7 @@ export default function Hero() {
     };
 
     return (
-        <section className="relative w-full h-[100vh] flex items-center justify-center bg-[#0D1F2D] overflow-hidden mt-0">
+        <section className={`relative w-full h-[100vh] flex items-center justify-center bg-[#0D1F2D] overflow-hidden mt-0 ${montSerrat.className}`}>
             {/* Background com overlay sutil */}
             <div className="absolute inset-0 z-0">
                 <Image
