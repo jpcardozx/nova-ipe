@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import { MapPin, Home, ArrowRight } from "lucide-react";
 import AdvancedDropdown from "../components/AdvancedDropdown";
 
-const LOCATIONS = ["Guararema", "Mogi das Cruzes", "Santa Isabel", "Jacareí"];
-const PROPERTY_TYPES = ["Todos", "Casa", "Apartamento", "Terreno", "Chácara", "Comercial"];
+const LOCATIONS = ['Guararema', 'São José dos Campos', 'Mogi das Cruzes', 'Santa Isabel', 'Todos'];
+const PROPERTY_TYPES = ["Compra", "Aluguel", "Temporada"];
 
 export default function Hero() {
     const router = useRouter();
@@ -19,7 +19,7 @@ export default function Hero() {
     };
 
     return (
-        <section className="relative w-full h-[100vh] flex items-center justify-center bg-[#0D1F2D] overflow-hidden">
+        <section className="relative w-full h-[100vh] flex items-center justify-center bg-[#0D1F2D] overflow-hidden mt-0">
             {/* Background com overlay sutil */}
             <div className="absolute inset-0 z-0">
                 <Image
@@ -72,7 +72,7 @@ export default function Hero() {
                 {/* CTA secundária refinada */}
                 <div className="mt-6">
                     <a
-                        href="https://wa.me/5511999999999"
+                        href="https://wa.me/551198102-4749"
                         className="inline-flex items-center gap-2 text-[#F7D7A3] hover:text-[#FFAD43] text-sm transition-colors"
                     >
                         Atendimento direto via WhatsApp
