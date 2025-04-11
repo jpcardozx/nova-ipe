@@ -26,7 +26,7 @@ export default function Hero() {
     };
 
     return (
-        <section className={`relative w-full h-[100vh] flex items-center justify-center bg-[#0D1F2D] overflow-hidden mt-0 ${montSerrat.className}`}>
+        <section className={`relative w-full h-[100vh] flex items-center justify-center bg-[#0D1F2D] overflow-hidden mt-21.5 ${montSerrat.className}`}>
             {/* Background com overlay sutil */}
             <div className="absolute inset-0 z-0">
                 <Image

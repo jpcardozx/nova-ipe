@@ -5,6 +5,7 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import ImovelCard from "../components/ImovelCard";
 
 const imoveisAluguelMock = [
@@ -36,44 +37,51 @@ const imoveisAluguelMock = [
 
 export default function SecaoImoveisParaAlugar() {
     return (
-        <section className="w-full bg-[#111827] py-24 px-6 text-white">
+        <section className="w-full bg-[#111827] py-28 px-6 text-white relative overflow-hidden">
             <div className="max-w-7xl mx-auto">
-                {/* Título refinado */}
-                <div className="text-center mb-14">
-                    <h2 className="text-4xl md:text-5xl font-light tracking-tight text-white leading-tight">
-                        Imóveis <span className="text-[#FFAD43] font-semibold">para Alugar</span>
+                {/* Cabeçalho institucional refinado */}
+                <div className="text-center mb-16">
+                    <h2 className="text-4xl md:text-5xl font-semibold leading-tight tracking-tight text-white">
+                        Imóveis <span className="text-[#FFAD43] font-bold">para Alugar</span>
                     </h2>
-                    <p className="mt-4 text-base md:text-lg text-white/60 font-light max-w-2xl mx-auto">
-                        Conforto, praticidade e localização. Conheça nossos imóveis prontos para locação imediata.
+                    <p className="mt-4 text-base md:text-lg text-white/70 max-w-2xl mx-auto font-light">
+                        Locação prática, segura e com curadoria local. Moradias, apartamentos e salas comerciais prontos para uso imediato.
                     </p>
                 </div>
 
-                {/* Carrossel com destaque visual */}
-                <div className="relative">
+                {/* Carrossel elegante */}
+                <div className="relative group">
                     <Swiper
                         modules={[Navigation]}
-                        navigation
+                        navigation={{
+                            nextEl: ".swiper-next-custom",
+                            prevEl: ".swiper-prev-custom",
+                        }}
                         spaceBetween={32}
                         slidesPerView={1.1}
                         breakpoints={{
                             768: { slidesPerView: 2 },
                             1024: { slidesPerView: 3 },
                         }}
-                        className="px-2"
+                        className="!px-2"
                     >
                         {imoveisAluguelMock.map((imovel, index) => (
                             <SwiperSlide key={index}>
-                                <div className="hover:-translate-y-2 transition-transform duration-300 ease-out">
+                                <div className="transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg">
                                     <ImovelCard {...imovel} />
                                 </div>
                             </SwiperSlide>
                         ))}
                     </Swiper>
 
-                    {/* Botões de navegação (opcional, discretos) */}
-                    <div className="absolute -top-16 right-0 hidden md:flex gap-3">
-                        <button className="swiper-button-prev text-white/70 hover:text-[#FFAD43] transition">←</button>
-                        <button className="swiper-button-next text-white/70 hover:text-[#FFAD43] transition">→</button>
+                    {/* Botões customizados */}
+                    <div className="absolute -top-20 right-0 hidden md:flex gap-4 z-10">
+                        <button className="swiper-prev-custom flex items-center justify-center w-10 h-10 rounded-full border border-white/30 text-white hover:text-[#FFAD43] hover:border-[#FFAD43] transition">
+                            <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        <button className="swiper-next-custom flex items-center justify-center w-10 h-10 rounded-full border border-white/30 text-white hover:text-[#FFAD43] hover:border-[#FFAD43] transition">
+                            <ChevronRight className="w-5 h-5" />
+                        </button>
                     </div>
                 </div>
             </div>
