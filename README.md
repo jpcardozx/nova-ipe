@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<h1 align="center">
+  🌳 Nova Ipê Imóveis
+</h1>
 
-## Getting Started
+<p align="center">
+  <strong>Transformando a experiência imobiliária de Guararema-SP com tecnologia, design e performance.</strong>
+</p>
 
-First, run the development server:
+<p align="center">
+  <a href="https://nova-ipe.vercel.app" target="_blank"><img src="https://img.shields.io/badge/🟢 Online-nova--ipe.vercel.app-success?style=flat-square" /></a>
+  <img src="https://img.shields.io/github/license/jpcardozx/nova-ipe?style=flat-square" />
+  <img src="https://img.shields.io/github/languages/top/jpcardozx/nova-ipe?style=flat-square" />
+  <img src="https://img.shields.io/badge/made%20with-Next.js-black?logo=next.js&style=flat-square" />
+  <img src="https://img.shields.io/badge/styled%20with-TailwindCSS-06b6d4?logo=tailwindcss&style=flat-square" />
+</p>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ Visão Geral
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+O **Nova Ipê** é um projeto real de transformação digital de uma imobiliária tradicional. Foi criado para:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Posicionar a **Ipê Imóveis** como autoridade online.
+- Otimizar geração de leads qualificados.
+- Oferecer uma experiência de navegação **moderna, responsiva e elegante**.
+- Servir como **prova de conceito técnico e visual**.
 
-## Learn More
+> ⚡️ Totalmente desenvolvido em Next.js 14, Tailwind, TypeScript e Plasmic.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🎯 Principais Diferenciais
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- ✅ Arquitetura moderna com **App Router do Next.js**
+- ✅ UI refinada e customizada via **Plasmic Studio**
+- ✅ Alta performance com **Vercel Hosting**
+- ✅ Design modular e escalável
+- ✅ Preparado para **SEO**, SSR e futuras automações
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔍 Preview
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+<div align="center">
+  <a href="https://nova-ipe.vercel.app" target="_blank">
+    <img src="./public/screenshot-nova-ipe.png" alt="Preview do site Nova Ipê" width="90%" />
+  </a>
+</div>
+
+---
+
+## 🧠 Tecnologias Utilizadas
+
+| Tecnologia     | Função                                     |
+|----------------|---------------------------------------------|
+| **Next.js 14** | Framework base com App Router              |
+| **TypeScript** | Tipagem estática para robustez             |
+| **Tailwind CSS** | Estilização rápida e responsiva         |
+| **[Em transição]**    | CMS visual para colaboração e design       |
+| **Vercel**     | Deploy automatizado e CDN global           |
