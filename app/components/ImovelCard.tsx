@@ -6,59 +6,69 @@ import { MapPin } from "lucide-react"
 
 interface ImovelCardProps {
   titulo: string
-  cidade: string
-  categoria: string
-  imagemPrincipal?: string
   slug: string
-  preco?: string
+  cidade?: string
+  categoria?: string // título da referência
+  preco?: number
+  imagem?: string // imagem.asset.url
 }
 
 export default function ImovelCard({
   titulo,
+  slug,
   cidade,
   categoria,
-  imagemPrincipal,
-  slug,
-  preco
+  preco,
+  imagem
 }: ImovelCardProps) {
   return (
     <Link
       href={`/imovel/${slug}`}
-      className="group relative flex flex-col rounded-3xl overflow-hidden bg-[#fafafa] shadow-lg border border-[#FFAD43]/10 hover:shadow-2xl transition-all duration-300"
-      aria-label={`Acessar página do imóvel: ${titulo}`}
+      className="group relative flex flex-col rounded-3xl overflow-hidden bg-[#fafafa] shadow-md hover:shadow-2xl border border-[#FFAD43]/10 transition-all duration-300"
+      aria-label={`Acessar o imóvel ${titulo}`}
     >
       <div className="relative h-64 w-full overflow-hidden">
-        {imagemPrincipal ? (
+        {imagem ? (
           <Image
-            src={imagemPrincipal}
+            src={imagem}
             alt={`Imagem principal do imóvel: ${titulo}`}
             fill
-            className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+            className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className="w-full h-full bg-gray-200 flex items-center justify-center text-xs text-gray-500">Sem imagem</div>
+          <div className="w-full h-full bg-gray-100 flex items-center justify-center text-xs text-gray-500">
+            Sem imagem
+          </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
-        <span className="absolute top-4 left-4 bg-[#FFAD43] text-[#0D1F2D] text-[10px] px-3 py-[6px] rounded-full font-semibold tracking-wide uppercase shadow-sm">
-          {categoria}
-        </span>
-        <div className="absolute bottom-3 right-3 text-[10px] uppercase tracking-wide bg-[#0D1F2D]/90 text-white px-3 py-[6px] rounded-full shadow-md">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
+
+        {categoria && (
+          <span className="absolute top-3 left-3 text-[10px] bg-[#FFAD43] text-[#0D1F2D] px-3 py-1 rounded-full font-semibold uppercase shadow-sm">
+            {categoria}
+          </span>
+        )}
+
+        <span className="absolute bottom-3 right-3 text-[10px] bg-[#0D1F2D]/90 text-white px-3 py-1 rounded-full uppercase tracking-wide shadow-md">
           Exclusivo Ipê
-        </div>
+        </span>
       </div>
 
-      <div className="p-5 space-y-3 text-[#0D1F2D]">
-        <h3 className="text-[clamp(1.05rem,1.8vw,1.25rem)] font-medium leading-tight max-w-[90%] group-hover:text-[#FFAD43] transition-colors">
+      <div className="p-5 space-y-2 text-[#0D1F2D]">
+        <h3 className="text-[clamp(1.05rem,1.8vw,1.25rem)] font-medium leading-snug group-hover:text-[#FFAD43] transition-colors">
           {titulo}
         </h3>
-        <div className="flex items-center gap-2 text-sm text-[#0D1F2D]/60">
-          <MapPin className="w-4 h-4 text-[#FFAD43]" />
-          <span>{cidade}</span>
-        </div>
-        {preco && (
+
+        {cidade && (
+          <div className="flex items-center gap-2 text-sm text-[#0D1F2D]/60">
+            <MapPin className="w-4 h-4 text-[#FFAD43]" />
+            <span>{cidade}</span>
+          </div>
+        )}
+
+        {preco !== undefined && (
           <div className="pt-2">
-            <p className="inline-block px-4 py-1 rounded-full bg-[#FFAD43]/10 text-[#0D1F2D] font-semibold text-sm">
-              {preco}
+            <p className="inline-block bg-[#FFAD43]/10 text-[#0D1F2D] font-semibold text-sm px-4 py-1 rounded-full">
+              R$ {preco.toLocaleString("pt-BR")}
             </p>
           </div>
         )}
