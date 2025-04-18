@@ -1,11 +1,12 @@
-// Página refinada com base simbólica e integração ao modelo anterior
+import { Metadata, ResolvingMetadata } from "next"
 import { sanityClient } from "lib/sanity"
 import { queryImovelPorSlug } from "lib/queries"
+import { generateStaticParams as gerarSlugs } from "lib/staticParams"
+
 import HeroImovelSimbolico from "@/components/HeroImovelSimbolico"
 import CardCTAImovel from "@/components/CardCTAImovel"
 import BlocoLocalizacaoImovel from "@/components/BlocoLocalizacaoImovel"
 import Referencias from "@/sections/Referencias"
-import { generateStaticParams as gerarSlugs } from "lib/staticParams"
 
 interface ImovelData {
     slug: { current: string }
@@ -24,11 +25,14 @@ interface ImovelData {
     imagemOpenGraph?: { asset: { url: string } }
 }
 
-export async function generateStaticParams() {
+export async function generateStaticParams(): Promise<{ slug: string }[]> {
     return gerarSlugs()
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata(
+    { params }: { params: { slug: string } },
+    _parent: ResolvingMetadata
+): Promise<Metadata> {
     const imovel: ImovelData = await sanityClient.fetch(queryImovelPorSlug, { slug: params.slug })
 
     return {
@@ -37,21 +41,26 @@ export async function generateMetadata({ params }: { params: { slug: string } })
         openGraph: {
             title: imovel.metaTitle || imovel.titulo,
             description: imovel.metaDescription,
-            images: imovel.imagemOpenGraph?.asset?.url ? [{ url: imovel.imagemOpenGraph.asset.url }] : []
-        }
+            images: imovel.imagemOpenGraph?.asset?.url ? [{ url: imovel.imagemOpenGraph.asset.url }] : [],
+        },
     }
 }
 
-export default async function ImovelPage({ params }: { params: { slug: string } }) {
+export default async function ImovelPage({
+    params,
+}: {
+    params: { slug: string }
+}) {
     const imovel: ImovelData = await sanityClient.fetch(queryImovelPorSlug, { slug: params.slug })
 
     return (
         <main className="w-full bg-[#fafafa] text-[#0D1F2D]">
             <HeroImovelSimbolico
                 titulo={imovel.titulo}
-                localizacao={imovel.cidade}
-                imagemFundo={imovel.imagem?.asset.url || "/imoveis/bg3.jpg"}
-                destaque
+                cidade={imovel.cidade}
+                tipo={imovel.tipo}
+                metros={imovel.metros}
+                imagemFundo="/imoveis/bg3.jpg"
             />
 
             <section className="max-w-6xl mx-auto px-6 md:px-8 mt-20 grid md:grid-cols-2 gap-14">
