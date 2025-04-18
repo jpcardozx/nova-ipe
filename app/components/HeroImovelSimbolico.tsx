@@ -11,7 +11,8 @@ interface HeroImovelSimbolicoProps {
     destaque?: boolean
     cidade?: string
     tipo?: string
-    metros?: { asset: { url: string } }
+    metros?: string
+    endereco?: string
 }
 
 export default function HeroImovelSimbolico({ titulo, localizacao, imagemFundo, destaque }: HeroImovelSimbolicoProps) {
