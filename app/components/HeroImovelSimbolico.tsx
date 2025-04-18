@@ -6,19 +6,23 @@ import { BadgeCheck } from "lucide-react"
 
 interface HeroImovelSimbolicoProps {
     titulo: string
-    localizacao?: string
     imagemFundo: string
     destaque?: boolean
     cidade?: string
     tipo?: string
     metros?: string
-    endereco?: string
 }
 
-export default function HeroImovelSimbolico({ titulo, localizacao, imagemFundo, destaque }: HeroImovelSimbolicoProps) {
+export default function HeroImovelSimbolico({
+    titulo,
+    imagemFundo,
+    destaque,
+    cidade,
+    tipo,
+    metros,
+}: HeroImovelSimbolicoProps) {
     return (
         <section className="relative w-full h-[70vh] md:h-[85vh] overflow-hidden text-white">
-            {/* Fundo simbólico com imagem editorial */}
             <Image
                 src={imagemFundo}
                 alt={titulo}
@@ -26,11 +30,8 @@ export default function HeroImovelSimbolico({ titulo, localizacao, imagemFundo, 
                 priority
                 className="object-cover object-center brightness-[0.4]"
             />
-
-            {/* Gradiente simbólico superior */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-0" />
 
-            {/* Conteúdo simbólico no centro inferior */}
             <motion.div
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -45,9 +46,9 @@ export default function HeroImovelSimbolico({ titulo, localizacao, imagemFundo, 
                 <h1 className="text-3xl md:text-5xl font-playfair font-bold leading-snug md:leading-tight max-w-3xl">
                     {titulo}
                 </h1>
-                {localizacao && (
+                {(cidade || tipo || metros) && (
                     <p className="mt-4 text-base md:text-lg text-white/80 italic">
-                        {localizacao}
+                        {[tipo, metros, cidade].filter(Boolean).join(" · ")}
                     </p>
                 )}
             </motion.div>
