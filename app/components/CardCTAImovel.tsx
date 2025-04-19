@@ -1,7 +1,7 @@
 "use client"
 
 import { Phone, Calendar, UserCheck } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn } from "src/lib/utils"
 
 interface CardCTAImovelProps {
   preco?: string
@@ -32,14 +32,16 @@ export default function CardCTAImovel({
 
       <div className="space-y-1">
         <p className="text-sm text-[#0D1F2D]/60">Valor estimado</p>
-        <p className={cn("text-4xl font-bold tracking-tight leading-snug", !preco && "italic text-base text-[#0D1F2D]/50")}>{preco ?? "Sob consulta"}</p>
+        <p className={cn("text-4xl font-bold tracking-tight leading-snug", !preco && "italic text-base text-[#0D1F2D]/50")}>
+          {preco ?? "Sob consulta"}
+        </p>
       </div>
 
       <a
         href={ctaUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="group inline-flex items-center justify-center gap-2 w-full bg-[#0D1F2D] hover:bg-[#0D1F2D]/90 transition-all duration-200 text-white px-6 py-3 rounded-full text-sm font-medium shadow-md hover:shadow-xl focus:ring-2 focus:ring-offset-2 focus:ring-[#FFAD43]"
+        className="group inline-flex items-center justify-center gap-2 w-full bg-gradient-to-br from-[#0D1F2D] to-[#1A2C3C] hover:scale-[1.03] transition-transform duration-200 text-white px-6 py-3 rounded-full text-sm font-medium shadow-md hover:shadow-xl focus:ring-2 focus:ring-offset-2 focus:ring-[#FFAD43]"
         aria-label={labelCTA}
       >
         {iconCTA}
@@ -51,8 +53,8 @@ export default function CardCTAImovel({
         <span>Imóvel validado pela Ipê</span>
       </div>
 
-      <p className="text-[11px] leading-relaxed text-[#0D1F2D]/50 italic mt-4 border-t pt-3 border-dashed border-[#0D1F2D]/10">
-        Atendimento rápido. Se preferir, apresentamos imóveis com perfil semelhante.
+      <p className="text-xs leading-snug text-[#0D1F2D]/50 italic mt-4 border-t pt-3 border-dashed border-[#0D1F2D]/10">
+        Atendimento rápido. <br />Se preferir, apresentamos imóveis com perfil semelhante.
       </p>
     </aside>
   )
