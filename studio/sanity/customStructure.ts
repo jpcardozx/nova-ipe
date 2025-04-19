@@ -1,7 +1,7 @@
-import { StructureResolver } from 'sanity/desk';
+import S from 'sanity/desk'
 
-export const structure: StructureResolver = (S) =>
-  S.list()
+export const structure = () =>
+    S.list()
     .title('📂 Conteúdo')
     .items([
       // Painel de Imóveis
