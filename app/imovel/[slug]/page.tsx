@@ -8,6 +8,7 @@ import CardCTAImovel from "@/components/CardCTAImovel"
 import BlocoLocalizacaoImovel from "@/components/BlocoLocalizacaoImovel"
 import Referencias from "@/sections/Referencias"
 
+// --- shape dos dados que esperamos do Sanity
 interface ImovelData {
     slug: { current: string }
     titulo: string
@@ -25,21 +26,23 @@ interface ImovelData {
     imagemOpenGraph?: { asset: { url: string } }
 }
 
-// ✅ Geração estática dos slugs
+// ✅ Gera estático todos os slugs
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
-    const slugs = await gerarSlugs()
-    return slugs.map((slug: { current: string }) => ({ slug: slug.current }))
+    // força tipagem de retorno para evitar 'any'
+    const slugs: { current: string }[] = await gerarSlugs()
+    return slugs.map(({ current }) => ({ slug: current }))
 }
 
-// ✅ SEO dinâmico por imóvel
+// ✅ Metadados dinâmicos por imóvel (SEO / OpenGraph)
 export async function generateMetadata({
     params,
 }: {
     params: { slug: string }
 }): Promise<Metadata> {
-    const imovel: ImovelData = await sanityClient.fetch(queryImovelPorSlug, {
-        slug: params.slug,
-    })
+    const imovel: ImovelData = await sanityClient.fetch(
+        queryImovelPorSlug,
+        { slug: params.slug }
+    )
 
     return {
         title: imovel.metaTitle || imovel.titulo,
@@ -58,16 +61,17 @@ export async function generateMetadata({
     }
 }
 
-// ✅ Página de exibição do imóvel
-export default async function ImovelPage({
-    params,
-}: {
-    params: { slug: string }
-}) {
-    const imovel: ImovelData = await sanityClient.fetch(queryImovelPorSlug, {
-        slug: params.slug,
-    })
+// ✅ Componente de página (App Router)
+// - Sem tipagem explícita em 'props', para alinhar-se ao PageProps interno do Next.js
+// - 'params' vem como Promise<{ slug: string }>, então fazemos 'await params'
+export default async function ImovelPage({ params }: any) {
+    const { slug } = await params as { slug: string }
+    const imovel: ImovelData = await sanityClient.fetch(
+        queryImovelPorSlug,
+        { slug }
+    )
 
+    // fallback de imagem
     const imagemUrl = imovel.imagem?.asset?.url || "/imoveis/bg3.jpg"
 
     return (
