@@ -4,79 +4,73 @@ import Image from "next/image"
 import Link from "next/link"
 import { MapPin } from "lucide-react"
 
-interface ImovelCardProps {
-  titulo: string
+export interface ImovelCardProps {
   slug: string
-  cidade?: string
-  categoria?: string
-  preco?: number
-  imagem?: string
+  titulo: string
+  cidade: string
+  tipo: string
+  preco?: number | string
+  imagem: string
+  destaque?: boolean
 }
 
 export default function ImovelCard({
-  titulo,
   slug,
+  titulo,
   cidade,
-  categoria,
+  tipo,
   preco,
-  imagem
+  imagem,
+  destaque = false,
 }: ImovelCardProps) {
+  // Se preco for number, formata; se for string, exibe direto
+  const precoFormatado =
+    typeof preco === "number"
+      ? preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+      : preco
+
   return (
     <Link
       href={`/imovel/${slug}`}
-      className="group relative flex flex-col rounded-3xl overflow-hidden bg-[#fafafa] shadow-md hover:shadow-2xl border border-[#FFAD43]/10 transition-all duration-300"
-      aria-label={`Acessar o imóvel ${titulo}`}
+      className="group relative flex flex-col rounded-2xl overflow-hidden bg-white shadow hover:shadow-lg transition"
+      aria-label={`Ver detalhes do imóvel ${titulo}`}
     >
-      <div className="relative h-64 w-full overflow-hidden">
-        {imagem ? (
-          <Image
-            src={imagem}
-            alt={`Imagem principal do imóvel: ${titulo}`}
-            fill
-            className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
-          />
-        ) : (
-          <div className="w-full h-full bg-gray-100 flex items-center justify-center text-xs text-gray-500">
-            Sem imagem
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
+      <div className="relative h-56 w-full">
+        <Image
+          src={imagem}
+          alt={`Foto do imóvel ${titulo}`}
+          fill
+          className="object-cover object-center group-hover:scale-105 transition-transform"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
 
-        {categoria && (
-          <span className="absolute top-3 left-3 text-[10px] bg-[#FFAD43] text-[#0D1F2D] px-3 py-1 rounded-full font-semibold uppercase shadow-sm">
-            {categoria}
+        {destaque && (
+          <span className="absolute top-3 left-3 bg-yellow-400 text-yellow-900 text-xs font-semibold uppercase px-2 py-1 rounded">
+            Em destaque
           </span>
         )}
-
-        <span className="absolute bottom-3 right-3 text-[10px] bg-[#0D1F2D]/90 text-white px-3 py-1 rounded-full uppercase tracking-wide shadow-md">
-          Curadoria Ipê
-        </span>
       </div>
 
-      <div className="p-5 space-y-2 text-[#0D1F2D]">
-        <h3 className="text-[clamp(1.05rem,1.8vw,1.25rem)] font-medium leading-snug group-hover:text-[#FFAD43] transition-colors">
-          {titulo}
-        </h3>
-
-        {cidade && (
-          <div className="flex items-center gap-2 text-sm text-[#0D1F2D]/60">
-            <MapPin className="w-4 h-4 text-[#FFAD43]" />
+      <div className="p-4 flex-1 flex flex-col justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-yellow-500 transition">
+            {titulo}
+          </h3>
+          <div className="flex items-center text-sm text-gray-600 mt-1">
+            <MapPin className="w-4 h-4 mr-1 text-yellow-500" />
             <span>{cidade}</span>
           </div>
-        )}
-
-        <div className="pt-2">
-          {typeof preco == 'number' ? (
-            <p
-              className="inline-block bg-[#FFAD43]/10 text-[#0D1F2D] font-semibold text-sm px-4 py-1 rounded-full"
-              aria-label={`Preço do imóvel: R$ ${preco.toLocaleString("pt-BR")}`}
-            >
-              {preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-            </p>
+          <p className="text-sm text-gray-600 mt-1 italic">{tipo}</p>
+        </div>
+        <div className="mt-4">
+          {precoFormatado ? (
+            <span className="inline-block bg-yellow-100 text-yellow-800 font-semibold px-3 py-1 rounded">
+              {precoFormatado}
+            </span>
           ) : (
-            <p className="inline-block bg-[#FFAD43]/10 text-[#0D1F2D]/70 italic text-sm px-4 py-1 rounded-full">
+            <span className="inline-block bg-gray-100 text-gray-500 italic px-3 py-1 rounded">
               Sob consulta
-            </p>
+            </span>
           )}
         </div>
       </div>

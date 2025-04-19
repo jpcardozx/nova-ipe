@@ -27,7 +27,7 @@ export default async function ListaImoveisPage() {
             <HeroInstitucional
                 tagline="Apresentação selecionada"
                 titulo="Imóveis disponíveis em Guararema"
-                subtitulo="Cada imóvel listado aqui passou por verificação documental e foi visitado pela equipe. Temos compromisso com clareza e boa experiência."
+                subtitulo="Cada imóvel listado passou por verificação documental e visita. Transparência e experiência garantidas."
             />
 
             <BlocoExploracaoSimbolica />
@@ -35,23 +35,22 @@ export default async function ListaImoveisPage() {
             {imoveisDestaque.length > 0 && (
                 <section className="max-w-6xl mx-auto px-6 md:px-8 py-24 space-y-8">
                     <div className="space-y-2">
-                        <h2 className="text-3xl font-playfair tracking-tight text-[#0D1F2D]">
-                            Destaques do momento
-                        </h2>
-                        <p className="text-sm text-[#0D1F2D]/60 leading-relaxed">
-                            Imóveis com localização privilegiada, alta procura ou condições especiais de negociação.
+                        <h2 className="text-3xl font-playfair">Destaques do momento</h2>
+                        <p className="text-sm text-[#0D1F2D]/60">
+                            Localizações privilegiadas, alta procura e condições especiais.
                         </p>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {imoveisDestaque.map((imovel) => (
+                        {imoveisDestaque.map((i) => (
                             <ImovelCard
-                                key={imovel._id}
-                                titulo={imovel.titulo}
-                                slug={imovel.slug.current}
-                                preco={imovel.preco}
-                                cidade={imovel.cidade}
-                                categoria={imovel.categoria?.titulo}
-                                imagem={imovel.imagem?.asset.url}
+                                key={i._id}
+                                slug={i.slug.current}
+                                titulo={i.titulo}
+                                cidade={i.cidade ?? ""}
+                                tipo={i.categoria?.titulo ?? "Imóvel"}
+                                preco={i.preco}
+                                imagem={i.imagem?.asset.url ?? "/placeholder.jpg"}
+                                destaque
                             />
                         ))}
                     </div>
@@ -60,33 +59,31 @@ export default async function ListaImoveisPage() {
 
             <section className="max-w-6xl mx-auto px-6 md:px-8 py-24 space-y-8 border-t border-dashed border-[#0D1F2D]/10">
                 <div className="space-y-2">
-                    <h2 className="text-3xl font-playfair tracking-tight text-[#0D1F2D]">
-                        Todos os imóveis disponíveis
-                    </h2>
-                    <p className="text-sm text-[#0D1F2D]/60 max-w-2xl leading-relaxed">
-                        Catálogo completo da Nova Ipê. Converse com a gente para visitas, dúvidas ou indicações personalizadas.
+                    <h2 className="text-3xl font-playfair">Todos os imóveis disponíveis</h2>
+                    <p className="text-sm text-[#0D1F2D]/60 max-w-2xl">
+                        Catálogo completo. Fale conosco para visitas, dúvidas ou indicação.
                     </p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {imoveisRestantes.map((imovel) => (
+                    {imoveisRestantes.map((i) => (
                         <ImovelCard
-                            key={imovel._id}
-                            titulo={imovel.titulo}
-                            slug={imovel.slug.current}
-                            preco={imovel.preco}
-                            cidade={imovel.cidade}
-                            categoria={imovel.categoria?.titulo}
-                            imagem={imovel.imagem?.asset.url}
+                            key={i._id}
+                            slug={i.slug.current}
+                            titulo={i.titulo}
+                            cidade={i.cidade ?? ""}
+                            tipo={i.categoria?.titulo ?? "Imóvel"}
+                            preco={i.preco}
+                            imagem={i.imagem?.asset.url ?? "/placeholder.jpg"}
                         />
                     ))}
                 </div>
             </section>
 
             <BlocoCTAConversao
-                titulo="Quer ajuda para encontrar o imóvel certo?"
-                subtitulo="Nossa equipe conhece pessoalmente todos os imóveis do catálogo. Podemos indicar boas opções com base nas suas preferências."
-                ctaText="Falar com um especialista"
-                ctaLink="https://wa.me/5511981845016?text=Olá! Vi os imóveis no site da Nova Ipê e gostaria de conversar com um especialista."
+                titulo="Não encontrou o imóvel ideal?"
+                subtitulo="Nossa equipe conhece pessoalmente cada opção e pode sugerir algo feito sob medida."
+                ctaText="Falar com especialista"
+                ctaLink="https://wa.me/5511981845016?text=Olá! Vi os imóveis no site da Nova Ipê e gostaria de conversar."
             />
         </main>
     )
