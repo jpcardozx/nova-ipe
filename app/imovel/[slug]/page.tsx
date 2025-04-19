@@ -66,9 +66,10 @@ export async function generateMetadata({
 export default async function ImovelPage({
     params,
 }: {
-    params: { slug: string }
+    params: Promise<{ slug: string }>
 }) {
-    const { slug } = params
+    // agora params é uma Promise<{ slug }>
+    const { slug } = await params
     const imovel: ImovelData = await sanityClient.fetch(
         queryImovelPorSlug,
         { slug }
