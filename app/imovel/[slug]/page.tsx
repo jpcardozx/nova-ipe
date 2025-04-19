@@ -68,7 +68,7 @@ export default async function ImovelPage({
 }: {
     params: { slug: string }
 }) {
-    const { slug } = await params
+    const { slug } = params
     const imovel: ImovelData = await sanityClient.fetch(
         queryImovelPorSlug,
         { slug }
