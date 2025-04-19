@@ -26,6 +26,12 @@ interface ImovelData {
     imagemOpenGraph?: { asset: { url: string } }
 }
 
+// — interface para props da página
+interface ImovelPageProps {
+    params: { slug: string };
+    searchParams?: Record<string, string | string[] | undefined>;
+}
+
 // — gera todos os slugs estaticamente
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
     const slugs: Array<{ current: string }> = await gerarSlugs()
@@ -35,9 +41,7 @@ export async function generateStaticParams(): Promise<{ slug: string }[]> {
 // — metadados dinâmicos para SEO / OpenGraph
 export async function generateMetadata({
     params,
-}: {
-    params: { slug: string }
-}): Promise<Metadata> {
+}: ImovelPageProps): Promise<Metadata> {
     const imovel: ImovelData = await sanityClient.fetch(
         queryImovelPorSlug,
         { slug: params.slug }
@@ -63,10 +67,8 @@ export async function generateMetadata({
 // — componente de página (App Router)
 export default async function ImovelPage({
     params,
-}: {
-    params: Promise<{ slug: string }>
-}) {
-    const { slug } = await params
+}: ImovelPageProps) {
+    const { slug } = params
 
     const imovel: ImovelData = await sanityClient.fetch(
         queryImovelPorSlug,
