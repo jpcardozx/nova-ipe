@@ -28,9 +28,8 @@ interface ImovelData {
 
 // — gera todos os slugs estaticamente
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
-    // explicita tipo do array e do destructuring
     const slugs: Array<{ current: string }> = await gerarSlugs()
-    return slugs.map(({ current }: { current: string }) => ({ slug: current }))
+    return slugs.map(({ current }) => ({ slug: current }))
 }
 
 // — metadados dinâmicos para SEO / OpenGraph
@@ -62,25 +61,22 @@ export async function generateMetadata({
 }
 
 // — componente de página (App Router)
-// • Recebe params possivelmente como Promise, então fazemos await
 export default async function ImovelPage({
     params,
 }: {
     params: Promise<{ slug: string }>
 }) {
-    // agora params é uma Promise<{ slug }>
     const { slug } = await params
+
     const imovel: ImovelData = await sanityClient.fetch(
         queryImovelPorSlug,
         { slug }
     )
 
-    // fallback de imagem
     const imagemUrl = imovel.imagem?.asset.url || "/imoveis/bg3.jpg"
 
     return (
         <main className="w-full bg-gradient-to-br from-[#f7f6f3] to-[#fff] text-[#0D1F2D]">
-            {/* Hero com overlay sutil */}
             <HeroImovelSimbolico
                 titulo={imovel.titulo}
                 cidade={imovel.cidade}
@@ -89,7 +85,6 @@ export default async function ImovelPage({
                 imagemFundo={imagemUrl}
             />
 
-            {/* Detalhes + CTA fixo */}
             <section className="max-w-6xl mx-auto px-6 md:px-8 mt-20 grid md:grid-cols-2 gap-16 items-start">
                 <article className="space-y-8">
                     <h2 className="text-3xl md:text-4xl font-semibold border-l-4 border-[#FFAD43] pl-4">
@@ -123,7 +118,6 @@ export default async function ImovelPage({
                 </aside>
             </section>
 
-            {/* Localização */}
             <div className="max-w-6xl mx-auto px-6 md:px-8 mt-24">
                 <BlocoLocalizacaoImovel
                     endereco={imovel.endereco || ""}
@@ -132,7 +126,6 @@ export default async function ImovelPage({
                 />
             </div>
 
-            {/* Referências */}
             <div className="mt-24">
                 <Referencias />
             </div>
