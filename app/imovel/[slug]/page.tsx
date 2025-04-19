@@ -1,4 +1,4 @@
-import { Metadata, ResolvingMetadata } from "next"
+import { Metadata } from "next"
 import { sanityClient } from "lib/sanity"
 import { queryImovelPorSlug } from "lib/queries"
 import { generateStaticParams as gerarSlugs } from "lib/staticParams"
@@ -34,7 +34,6 @@ export async function generateMetadata(
         {
             params: { slug: string }
         },
-    _parent: ResolvingMetadata
 ): Promise<Metadata> {
     const { params } = props
     const imovel: ImovelData = await sanityClient.fetch(queryImovelPorSlug, { slug: params.slug })
