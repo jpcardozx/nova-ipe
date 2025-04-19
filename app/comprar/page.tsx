@@ -36,7 +36,7 @@ export default async function ComprarPage() {
                         cidade={imovel.cidade}
                         categoria={imovel.categoria?.titulo}
                         imagem={imovel.imagem?.asset.url}
-                        preco={imovel.preco}
+                        preco={imovel.preco !== undefined ? `R$ ${imovel.preco.toLocaleString("pt-BR")}` : undefined}
                     />
                 ))}
             </section>
