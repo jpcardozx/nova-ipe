@@ -2,7 +2,7 @@ import { defineConfig } from "sanity";
 import { deskTool } from "sanity/desk"; // correto
 import { visionTool } from "@sanity/vision";
 import { schemaTypes } from "./schemas";
-import { structure } from "./sanity/structure"; // importa sua estrutura customizada
+import { structure } from "./sanity/customStructure"; // importa sua estrutura customizada
 import { projectId, dataset, apiVersion } from "./sanity/env";
 
 export default defineConfig({
