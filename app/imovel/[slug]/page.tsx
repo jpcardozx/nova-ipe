@@ -49,9 +49,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     }
 }
 
-type Params = { params: { slug: string } }
-
-export default async function ImovelPage({ params }: Params) {
+export default async function ImovelPage({ params }: { params: { slug: string } }) {
     const imovel: ImovelData = await sanityClient.fetch(queryImovelPorSlug, { slug: params.slug })
 
     const imagemUrl = imovel.imagem?.asset?.url || "/imoveis/bg3.jpg"
