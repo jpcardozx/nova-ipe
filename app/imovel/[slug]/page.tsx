@@ -31,7 +31,7 @@ interface ImovelData {
     imagemOpenGraph?: { asset: { url: string } }
 }
 
-export async function generateStaticParams(): Promise<PageProps["params"][]> {
+export async function generateStaticParams(): Promise<{ slug: string }[]> {
     return gerarSlugs()
 }
 
