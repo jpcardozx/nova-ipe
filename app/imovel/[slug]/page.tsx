@@ -17,7 +17,7 @@ interface ImovelData {
     titulo: string
     descricao: string
     imagem?: { asset: { url: string } }
-    preco?: string
+    preco?: number
     cidade?: string
     tipo?: string
     metros?: string
@@ -82,7 +82,7 @@ export default async function ImovelPage({ params }: any) {
                 </article>
 
                 <CardCTAImovel
-                    preco={imovel.preco}
+                    preco={imovel.preco?.toLocaleString("pt-BR")}
                     titulo={imovel.titulo}
                     linkPersonalizado={imovel.linkPersonalizado}
                 />

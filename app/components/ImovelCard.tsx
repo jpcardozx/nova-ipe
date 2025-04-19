@@ -8,9 +8,9 @@ interface ImovelCardProps {
   titulo: string
   slug: string
   cidade?: string
-  categoria?: string // título da referência
-  preco?: string
-  imagem?: string // imagem.asset.url
+  categoria?: string
+  preco?: number
+  imagem?: string
 }
 
 export default function ImovelCard({
@@ -65,13 +65,20 @@ export default function ImovelCard({
           </div>
         )}
 
-        {preco !== undefined && (
-          <div className="pt-2">
-            <p className="inline-block bg-[#FFAD43]/10 text-[#0D1F2D] font-semibold text-sm px-4 py-1 rounded-full">
-              R$ {preco}
+        <div className="pt-2">
+          {preco !== undefined ? (
+            <p
+              className="inline-block bg-[#FFAD43]/10 text-[#0D1F2D] font-semibold text-sm px-4 py-1 rounded-full"
+              aria-label={`Preço do imóvel: R$ ${preco.toLocaleString("pt-BR")}`}
+            >
+              R$ {preco.toLocaleString("pt-BR")}
             </p>
-          </div>
-        )}
+          ) : (
+            <p className="inline-block bg-[#FFAD43]/10 text-[#0D1F2D]/70 italic text-sm px-4 py-1 rounded-full">
+              Sob consulta
+            </p>
+          )}
+        </div>
       </div>
     </Link>
   )
