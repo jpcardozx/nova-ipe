@@ -34,7 +34,7 @@ export async function generateMetadata(
         {
             params: { slug: string }
         },
-    parent: ResolvingMetadata
+    _parent: ResolvingMetadata
 ): Promise<Metadata> {
     const { params } = props
     const imovel: ImovelData = await sanityClient.fetch(queryImovelPorSlug, { slug: params.slug })
