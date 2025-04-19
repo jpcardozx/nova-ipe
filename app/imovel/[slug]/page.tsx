@@ -48,8 +48,12 @@ export async function generateMetadata({ params }: { params: { slug: string } })
         },
     }
 }
+interface Props {
+    params: { slug: string }
+}
 
-export default async function ImovelPage({ params }: { params: { slug: string } }) {
+export default async function ImovelPage(props: Props) {
+    const { params } = props
     const imovel: ImovelData = await sanityClient.fetch(queryImovelPorSlug, { slug: params.slug })
 
     const imagemUrl = imovel.imagem?.asset?.url || "/imoveis/bg3.jpg"
