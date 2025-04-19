@@ -8,10 +8,6 @@ import CardCTAImovel from "@/components/CardCTAImovel"
 import BlocoLocalizacaoImovel from "@/components/BlocoLocalizacaoImovel"
 import Referencias from "@/sections/Referencias"
 
-interface PageProps {
-    params: { slug: string }
-}
-
 interface ImovelData {
     slug: { current: string }
     titulo: string
@@ -29,12 +25,13 @@ interface ImovelData {
     imagemOpenGraph?: { asset: { url: string } }
 }
 
+// ⚠️ ATENÇÃO: NÃO TIPAR COMO PageProps!
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
     const slugs = await gerarSlugs()
     return slugs.map((slug) => ({ slug: slug.current }))
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
     const imovel: ImovelData = await sanityClient.fetch(queryImovelPorSlug, { slug: params.slug })
 
     return {
@@ -52,7 +49,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
 }
 
-export default async function ImovelPage({ params }: PageProps) {
+export default async function ImovelPage({ params }: { params: { slug: string } }) {
     const imovel: ImovelData = await sanityClient.fetch(queryImovelPorSlug, { slug: params.slug })
 
     const imagemUrl = imovel.imagem?.asset?.url || "/imoveis/bg3.jpg"
@@ -78,11 +75,9 @@ export default async function ImovelPage({ params }: PageProps) {
                     </p>
 
                     <ul className="flex flex-col gap-4 text-sm text-[#0D1F2D]/70 mt-6">
-                        <li title="Documentação verificada" className="flex items-center gap-2">📌 Documentação 100% regularizada</li>
-                        <li title="Boa vizinhança" className="flex items-center gap-2">🏞️ Localização residencial com boa vizinhança</li>
-                        {imovel.metros && (
-                            <li className="flex items-center gap-2">📐 {imovel.metros}</li>
-                        )}
+                        <li className="flex items-center gap-2" title="Documentação verificada">📌 Documentação 100% regularizada</li>
+                        <li className="flex items-center gap-2" title="Boa vizinhança">🏞️ Localização residencial com boa vizinhança</li>
+                        {imovel.metros && <li className="flex items-center gap-2">📐 {imovel.metros}</li>}
                     </ul>
 
                     <div className="flex items-center gap-2 mt-8 text-sm text-green-700 bg-green-50 px-3 py-2 rounded-full w-fit">
