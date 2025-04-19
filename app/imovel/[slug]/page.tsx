@@ -9,9 +9,7 @@ import BlocoLocalizacaoImovel from "@/components/BlocoLocalizacaoImovel"
 import Referencias from "@/sections/Referencias"
 
 interface PageProps {
-    params: {
-        slug: string
-    }
+    params: { slug: string };
 }
 
 interface ImovelData {
@@ -44,7 +42,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         openGraph: {
             title: imovel.metaTitle || imovel.titulo,
             description: imovel.metaDescription,
-            images: imovel.imagemOpenGraph?.asset?.url ? [{ url: imovel.imagemOpenGraph.asset.url }] : [],
+            images: imovel.imagemOpenGraph?.asset?.url
+                ? [{ url: imovel.imagemOpenGraph.asset.url }]
+                : [],
         },
     }
 }
