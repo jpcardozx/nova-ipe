@@ -8,6 +8,12 @@ import CardCTAImovel from "@/components/CardCTAImovel"
 import BlocoLocalizacaoImovel from "@/components/BlocoLocalizacaoImovel"
 import Referencias from "@/sections/Referencias"
 
+interface PageProps {
+    params: {
+        slug: string
+    }
+}
+
 interface ImovelData {
     slug: { current: string }
     titulo: string
@@ -25,17 +31,11 @@ interface ImovelData {
     imagemOpenGraph?: { asset: { url: string } }
 }
 
-export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
+export async function generateStaticParams(): Promise<PageProps["params"][]> {
     return gerarSlugs()
 }
 
-export async function generateMetadata(
-    props:
-        {
-            params: { slug: string }
-        },
-): Promise<Metadata> {
-    const { params } = props
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const imovel: ImovelData = await sanityClient.fetch(queryImovelPorSlug, { slug: params.slug })
 
     return {
@@ -49,12 +49,7 @@ export async function generateMetadata(
     }
 }
 
-
-export default async function ImovelPage({
-    params,
-}: {
-    params: { slug: string }
-}) {
+export default async function ImovelPage({ params }: PageProps) {
     const imovel: ImovelData = await sanityClient.fetch(queryImovelPorSlug, { slug: params.slug })
 
     return (
