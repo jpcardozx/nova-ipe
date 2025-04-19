@@ -8,7 +8,7 @@ import CardCTAImovel from "@/components/CardCTAImovel"
 import BlocoLocalizacaoImovel from "@/components/BlocoLocalizacaoImovel"
 import Referencias from "@/sections/Referencias"
 
-// --- shape dos dados que esperamos do Sanity
+// — shape dos dados retornados pelo Sanity
 interface ImovelData {
     slug: { current: string }
     titulo: string
@@ -26,14 +26,14 @@ interface ImovelData {
     imagemOpenGraph?: { asset: { url: string } }
 }
 
-// ✅ Gera estático todos os slugs
+// — gera todos os slugs estaticamente
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
-    // força tipagem de retorno para evitar 'any'
-    const slugs: { current: string }[] = await gerarSlugs()
-    return slugs.map(({ current }) => ({ slug: current }))
+    // explicita tipo do array e do destructuring
+    const slugs: Array<{ current: string }> = await gerarSlugs()
+    return slugs.map(({ current }: { current: string }) => ({ slug: current }))
 }
 
-// ✅ Metadados dinâmicos por imóvel (SEO / OpenGraph)
+// — metadados dinâmicos para SEO / OpenGraph
 export async function generateMetadata({
     params,
 }: {
@@ -52,30 +52,34 @@ export async function generateMetadata({
         openGraph: {
             title: imovel.metaTitle || imovel.titulo,
             description: imovel.metaDescription || imovel.descricao,
-            images: imovel.imagemOpenGraph?.asset?.url
+            images: imovel.imagemOpenGraph
                 ? [{ url: imovel.imagemOpenGraph.asset.url }]
-                : imovel.imagem?.asset?.url
+                : imovel.imagem
                     ? [{ url: imovel.imagem.asset.url }]
                     : [],
         },
     }
 }
 
-// ✅ Componente de página (App Router)
-// - Sem tipagem explícita em 'props', para alinhar-se ao PageProps interno do Next.js
-// - 'params' vem como Promise<{ slug: string }>, então fazemos 'await params'
-export default async function ImovelPage({ params }: any) {
-    const { slug } = await params as { slug: string }
+// — componente de página (App Router)
+// • Recebe params possivelmente como Promise, então fazemos await
+export default async function ImovelPage({
+    params,
+}: {
+    params: { slug: string } | Promise<{ slug: string }>
+}) {
+    const { slug } = await params
     const imovel: ImovelData = await sanityClient.fetch(
         queryImovelPorSlug,
         { slug }
     )
 
     // fallback de imagem
-    const imagemUrl = imovel.imagem?.asset?.url || "/imoveis/bg3.jpg"
+    const imagemUrl = imovel.imagem?.asset.url || "/imoveis/bg3.jpg"
 
     return (
         <main className="w-full bg-gradient-to-br from-[#f7f6f3] to-[#fff] text-[#0D1F2D]">
+            {/* Hero com overlay sutil */}
             <HeroImovelSimbolico
                 titulo={imovel.titulo}
                 cidade={imovel.cidade}
@@ -84,35 +88,29 @@ export default async function ImovelPage({ params }: any) {
                 imagemFundo={imagemUrl}
             />
 
+            {/* Detalhes + CTA fixo */}
             <section className="max-w-6xl mx-auto px-6 md:px-8 mt-20 grid md:grid-cols-2 gap-16 items-start">
                 <article className="space-y-8">
-                    <h2 className="text-3xl md:text-4xl font-semibold tracking-tight border-l-4 border-[#FFAD43] pl-4">
+                    <h2 className="text-3xl md:text-4xl font-semibold border-l-4 border-[#FFAD43] pl-4">
                         Detalhes do imóvel
                     </h2>
-
-                    <p className="text-base md:text-lg leading-relaxed text-[#0D1F2D]/80 whitespace-pre-line">
+                    <p className="text-base md:text-lg text-[#0D1F2D]/80 whitespace-pre-line">
                         {imovel.descricao ||
                             "Em breve teremos mais informações sobre este imóvel."}
                     </p>
-
-                    <ul className="flex flex-col gap-4 text-sm text-[#0D1F2D]/70 mt-6">
-                        <li className="flex items-center gap-2" title="Documentação verificada">
-                            📌 Documentação 100% regularizada
-                        </li>
-                        <li className="flex items-center gap-2" title="Boa vizinhança">
-                            🏞️ Localização residencial com boa vizinhança
-                        </li>
+                    <ul className="space-y-4 text-sm text-[#0D1F2D]/70">
+                        <li className="flex items-center gap-2">📌 Documentação 100% regularizada</li>
+                        <li className="flex items-center gap-2">🏞️ Boa vizinhança</li>
                         {imovel.metros && (
                             <li className="flex items-center gap-2">📐 {imovel.metros}</li>
                         )}
                     </ul>
-
-                    <div className="flex items-center gap-2 mt-8 text-sm text-green-700 bg-green-50 px-3 py-2 rounded-full w-fit">
-                        ✅ Imóvel verificado pela equipe Ipê
+                    <div className="inline-flex items-center gap-2 px-3 py-2 bg-green-50 text-green-700 rounded-full text-sm">
+                        ✅ Verificado pela equipe Ipê
                     </div>
                 </article>
 
-                <div className="sticky top-28 self-start">
+                <aside className="sticky top-28">
                     <CardCTAImovel
                         preco={imovel.preco?.toLocaleString("pt-BR", {
                             style: "currency",
@@ -121,9 +119,10 @@ export default async function ImovelPage({ params }: any) {
                         titulo={imovel.titulo}
                         linkPersonalizado={imovel.linkPersonalizado}
                     />
-                </div>
+                </aside>
             </section>
 
+            {/* Localização */}
             <div className="max-w-6xl mx-auto px-6 md:px-8 mt-24">
                 <BlocoLocalizacaoImovel
                     endereco={imovel.endereco || ""}
@@ -132,6 +131,7 @@ export default async function ImovelPage({ params }: any) {
                 />
             </div>
 
+            {/* Referências */}
             <div className="mt-24">
                 <Referencias />
             </div>
