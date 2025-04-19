@@ -26,9 +26,9 @@ interface ImovelData {
 }
 
 // ⚠️ ATENÇÃO: NÃO TIPAR COMO PageProps!
-export async function generateStaticParams(): Promise<{ slug: string }[]> {
+export async function generateStaticParams() {
     const slugs = await gerarSlugs()
-    return slugs.map((slug) => ({ slug: slug.current }))
+    return slugs.map((slug: { current: string }) => ({ slug: slug.current }))
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
