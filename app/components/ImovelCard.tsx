@@ -71,7 +71,7 @@ export default function ImovelCard({
               className="inline-block bg-[#FFAD43]/10 text-[#0D1F2D] font-semibold text-sm px-4 py-1 rounded-full"
               aria-label={`Preço do imóvel: R$ ${preco.toLocaleString("pt-BR")}`}
             >
-              R$ {preco.toLocaleString("pt-BR")}
+              {preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
             </p>
           ) : (
             <p className="inline-block bg-[#FFAD43]/10 text-[#0D1F2D]/70 italic text-sm px-4 py-1 rounded-full">
