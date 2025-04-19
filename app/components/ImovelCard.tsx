@@ -9,7 +9,7 @@ interface ImovelCardProps {
   slug: string
   cidade?: string
   categoria?: string // título da referência
-  preco?: number
+  preco?: string
   imagem?: string // imagem.asset.url
 }
 
@@ -49,7 +49,7 @@ export default function ImovelCard({
         )}
 
         <span className="absolute bottom-3 right-3 text-[10px] bg-[#0D1F2D]/90 text-white px-3 py-1 rounded-full uppercase tracking-wide shadow-md">
-          Exclusivo Ipê
+          Curadoria Ipê
         </span>
       </div>
 
@@ -68,7 +68,7 @@ export default function ImovelCard({
         {preco !== undefined && (
           <div className="pt-2">
             <p className="inline-block bg-[#FFAD43]/10 text-[#0D1F2D] font-semibold text-sm px-4 py-1 rounded-full">
-              R$ {preco.toLocaleString("pt-BR")}
+              R$ {preco}
             </p>
           </div>
         )}
