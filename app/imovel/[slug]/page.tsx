@@ -25,12 +25,13 @@ interface ImovelData {
     imagemOpenGraph?: { asset: { url: string } }
 }
 
-// ⚠️ Tipagem direta e inline — evita conflitos com Next.js App Router
+// ✅ Geração estática dos slugs
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
     const slugs = await gerarSlugs()
     return slugs.map((slug: { current: string }) => ({ slug: slug.current }))
 }
 
+// ✅ SEO dinâmico por imóvel
 export async function generateMetadata({
     params,
 }: {
@@ -57,6 +58,7 @@ export async function generateMetadata({
     }
 }
 
+// ✅ Página de exibição do imóvel
 export default async function ImovelPage({
     params,
 }: {
