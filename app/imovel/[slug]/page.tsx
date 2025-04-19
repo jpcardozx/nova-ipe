@@ -33,7 +33,7 @@ export async function generateStaticParams(): Promise<{ slug: string }[]> {
     return gerarSlugs()
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: any): Promise<Metadata> {
     const imovel: ImovelData = await sanityClient.fetch(queryImovelPorSlug, { slug: params.slug })
 
     return {
@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     }
 }
 
-export default async function ImovelPage({ params }: { params: { slug: string } }) {
+export default async function ImovelPage({ params }: any) {
     const imovel: ImovelData = await sanityClient.fetch(queryImovelPorSlug, { slug: params.slug })
 
     return (
