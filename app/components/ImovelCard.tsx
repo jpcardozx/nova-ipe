@@ -12,6 +12,8 @@ export interface ImovelCardProps {
   preco?: number | string
   imagem: string
   destaque?: boolean
+  categoria?: string
+  metros?: string
 }
 
 export default function ImovelCard({
