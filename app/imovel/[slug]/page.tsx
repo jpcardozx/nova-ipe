@@ -29,8 +29,9 @@ interface ImovelData {
     imagemOpenGraph?: { asset: { url: string } }
 }
 
-export async function generateStaticParams(): Promise<{ slug: string }[]> {
-    return gerarSlugs()
+export async function generateStaticParams(): Promise<PageProps['params'][]> {
+    const slugs = await gerarSlugs()
+    return slugs.map((slug) => ({ slug: slug.current }))
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -69,20 +70,24 @@ export default async function ImovelPage({ params }: PageProps) {
             <section className="max-w-6xl mx-auto px-6 md:px-8 mt-20 grid md:grid-cols-2 gap-16 items-start">
                 <article className="space-y-8">
                     <h2 className="text-3xl md:text-4xl font-semibold tracking-tight border-l-4 border-[#FFAD43] pl-4">
-                        Sobre o imóvel
+                        Detalhes do imóvel
                     </h2>
 
-                    <p className="text-base md:text-lg leading-relaxed text-[#0D1F2D]/80">
+                    <p className="text-base md:text-lg leading-relaxed text-[#0D1F2D]/80 whitespace-pre-line">
                         {imovel.descricao || "Em breve teremos mais informações sobre este imóvel."}
                     </p>
 
                     <ul className="flex flex-col gap-4 text-sm text-[#0D1F2D]/70 mt-6">
-                        <li className="flex items-center gap-2">📌 Documentação 100% regularizada</li>
-                        <li className="flex items-center gap-2">🏞️ Localização residencial com boa vizinhança</li>
+                        <li title="Documentação verificada" className="flex items-center gap-2">📌 Documentação 100% regularizada</li>
+                        <li title="Boa vizinhança" className="flex items-center gap-2">🏞️ Localização residencial com boa vizinhança</li>
                         {imovel.metros && (
                             <li className="flex items-center gap-2">📐 {imovel.metros}</li>
                         )}
                     </ul>
+
+                    <div className="flex items-center gap-2 mt-8 text-sm text-green-700 bg-green-50 px-3 py-2 rounded-full w-fit">
+                        ✅ Imóvel verificado pela equipe Ipê
+                    </div>
                 </article>
 
                 <div className="sticky top-28 self-start">
