@@ -46,6 +46,12 @@ export default defineType({
       fieldset: 'info'
     }),
     defineField({
+      name: 'metros',
+      title: '📐 Área (m²)',
+      type: 'string',
+      fieldset: 'info',
+    }),
+    defineField({
       name: 'preco',
       title: '💰 Preço (R$)',
       type: 'number',
@@ -99,6 +105,7 @@ export default defineType({
       type: 'image',
       fieldset: 'midia'
     }),
+
     defineField({
       name: 'videoTour',
       title: '🎥 Vídeo do Imóvel (opcional)',
