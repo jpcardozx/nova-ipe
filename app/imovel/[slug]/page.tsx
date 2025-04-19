@@ -59,7 +59,7 @@ export default async function ImovelPage({ params }: any) {
                 cidade={imovel.cidade}
                 tipo={imovel.tipo}
                 metros={imovel.metros}
-                imagemFundo="/imoveis/bg3.jpg"
+                imagemFundo={imovel.imagem?.asset.url}
             />
 
             <section className="max-w-6xl mx-auto px-6 md:px-8 mt-20 grid md:grid-cols-2 gap-14">

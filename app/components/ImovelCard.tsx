@@ -66,7 +66,7 @@ export default function ImovelCard({
         )}
 
         <div className="pt-2">
-          {preco !== undefined ? (
+          {typeof preco == 'number' ? (
             <p
               className="inline-block bg-[#FFAD43]/10 text-[#0D1F2D] font-semibold text-sm px-4 py-1 rounded-full"
               aria-label={`Preço do imóvel: R$ ${preco.toLocaleString("pt-BR")}`}
