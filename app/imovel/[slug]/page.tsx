@@ -3,10 +3,10 @@ import { sanityClient } from "lib/sanity"
 import { queryImovelPorSlug } from "lib/queries"
 import { generateStaticParams as gerarSlugs } from "lib/staticParams"
 
-import HeroImovelSimbolico from "@/components/HeroImovelSimbolico"
-import CardCTAImovel from "@/components/CardCTAImovel"
-import BlocoLocalizacaoImovel from "@/components/BlocoLocalizacaoImovel"
-import Referencias from "@/sections/Referencias"
+import HeroImovelSimbolico from "@/app/components/HeroImovelSimbolico"
+import CardCTAImovel from "@/app/components/CardCTAImovel"
+import BlocoLocalizacaoImovel from "@/app/components/BlocoLocalizacaoImovel"
+import Referencias from "@/app/sections/Referencias"
 
 // — shape dos dados retornados pelo Sanity
 interface ImovelData {
