@@ -1,14 +1,17 @@
 {
   "name": "nova-ipe",
   "version": "0.1.0",
+  "workspaces": [
+    "studio",
+    "."
+  ],
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build --no-lint",
     "start": "next start",
     "studio": "sanity start",
-    "lint": "next lint",
-    "preinstall": "npx npm-force-resolutions"
+    "lint": "next lint"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.2",
