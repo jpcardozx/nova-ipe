@@ -43,11 +43,11 @@ export default function LoginPage() {
     <div className="flex flex-col min-h-screen bg-neutral-50">
       <Navbar />
 
-      <main className="flex flex-1 items-center justify-center px-4 py-20">
+      <main className="flex flex-1 items-center justify-center px-4 py-20 mt-18">
         <div className="w-full max-w-md p-8 rounded-2xl bg-white shadow-xl border border-neutral-200 space-y-6">
           <header className="text-center">
             <h1 className="text-2xl font-bold text-neutral-900">Acesso Restrito</h1>
-            <p className="text-sm text-neutral-500 mt-1">Autenticação de administrador</p>
+            <p className="text-sm text-neutral-500 mt-1">Autenticação para sócios e administradores</p>
           </header>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -89,7 +89,7 @@ export default function LoginPage() {
           </form>
 
           <footer className="text-center text-xs text-neutral-400 pt-4 border-t border-neutral-200">
-            Ipê Imóveis · Painel administrativo
+            Ipê Imóveis · Painel Administrativo
           </footer>
         </div>
       </main>
