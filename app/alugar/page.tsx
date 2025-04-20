@@ -1,7 +1,7 @@
 import { sanityClient } from "lib/sanity"
 import { queryTodosImoveis } from "lib/queries"
-import HeroInstitucional from "@/components/HeroInstitucional"
-import ImovelCard from "@/components/ImovelCard"
+import HeroInstitucional from "@/app/components/HeroInstitucional"
+import ImovelCard from "@/app/components/ImovelCard"
 
 interface Imovel {
     _id: string

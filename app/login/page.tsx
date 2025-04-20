@@ -2,8 +2,8 @@
 
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import Navbar from '@/sections/NavBar'
-import Footer from '@/sections/Footer'
+import Navbar from '@/app/sections/NavBar'
+import Footer from '@/app/sections/Footer'
 
 export default function LoginPage() {
   const [senha, setSenha] = useState('')
