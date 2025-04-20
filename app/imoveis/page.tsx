@@ -1,3 +1,5 @@
+'use client'
+
 // app/imoveis/page.tsx
 import { sanityClient } from "lib/sanity"
 import { queryTodosImoveis } from "lib/queries"
