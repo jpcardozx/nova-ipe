@@ -1,9 +1,22 @@
+// app/imoveis/page.tsx
 import { sanityClient } from "lib/sanity"
 import { queryTodosImoveis } from "lib/queries"
+import dynamic from "next/dynamic"
 import ImovelCard from "@/components/ImovelCard"
-import HeroInstitucional from "@/components/HeroInstitucional"
-import BlocoExploracaoSimbolica from "@/components/BlocoExploracaoSimbolica"
-import BlocoCTAConversao from "@/components/BlocoCTAConversao"
+
+// Importa blocos pesados como client-only (evita erros no build)
+const HeroInstitucional = dynamic(
+    () => import("@/components/HeroInstitucional"),
+    { ssr: false }
+)
+const BlocoExploracaoSimbolica = dynamic(
+    () => import("@/components/BlocoExploracaoSimbolica"),
+    { ssr: false }
+)
+const BlocoCTAConversao = dynamic(
+    () => import("@/components/BlocoCTAConversao"),
+    { ssr: false }
+)
 
 type ImovelPreview = {
     _id: string
