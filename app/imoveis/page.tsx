@@ -5,6 +5,10 @@ import { sanityClient } from "lib/sanity"
 import { queryTodosImoveis } from "lib/queries"
 import dynamic from "next/dynamic"
 import ImovelCard from "@/components/ImovelCard"
+import Navbar from "@/sections/NavBar"
+import Hero from "@/sections/Hero"
+import Footer from "@/sections/Footer"
+import SecaoDestaquesRegiao from "@/sections/Destaques"
 
 // Importa blocos pesados como client-only (evita erros no build)
 const HeroInstitucional = dynamic(
@@ -39,6 +43,8 @@ export default async function ListaImoveisPage() {
 
     return (
         <main className="w-full bg-[#fafafa] text-[#0D1F2D]">
+            <Navbar />
+            <Hero />
             <HeroInstitucional
                 tagline="Apresentação selecionada"
                 titulo="Imóveis disponíveis em Guararema"
@@ -100,6 +106,8 @@ export default async function ListaImoveisPage() {
                 ctaText="Falar com especialista"
                 ctaLink="https://wa.me/5511981845016?text=Olá! Vi os imóveis no site da Nova Ipê e gostaria de conversar."
             />
+            <SecaoDestaquesRegiao />
+            <Footer />
         </main>
     )
 }
