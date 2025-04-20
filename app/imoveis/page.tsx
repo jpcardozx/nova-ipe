@@ -4,23 +4,23 @@
 import { sanityClient } from "lib/sanity"
 import { queryTodosImoveis } from "lib/queries"
 import dynamic from "next/dynamic"
-import ImovelCard from "@/components/ImovelCard"
-import Navbar from "@/sections/NavBar"
-import Hero from "@/sections/Hero"
-import Footer from "@/sections/Footer"
-import SecaoDestaquesRegiao from "@/sections/Destaques"
+import ImovelCard from "@/app/components/ImovelCard"
+import Navbar from "@/app/sections/NavBar"
+import Hero from "@/app/sections/Hero"
+import Footer from "@/app/sections/Footer"
+import SecaoDestaquesRegiao from "@/app/sections/Destaques"
 
 // Importa blocos pesados como client-only (evita erros no build)
 const HeroInstitucional = dynamic(
-    () => import("@/components/HeroInstitucional"),
+    () => import("@/app/components/HeroInstitucional"),
     { ssr: false }
 )
 const BlocoExploracaoSimbolica = dynamic(
-    () => import("@/components/BlocoExploracaoSimbolica"),
+    () => import("@/app/components/BlocoExploracaoSimbolica"),
     { ssr: false }
 )
 const BlocoCTAConversao = dynamic(
-    () => import("@/components/BlocoCTAConversao"),
+    () => import("@/app/components/BlocoCTAConversao"),
     { ssr: false }
 )
 
@@ -102,8 +102,8 @@ export default async function ListaImoveisPage() {
 
             <BlocoCTAConversao
                 titulo="Não encontrou o imóvel ideal?"
-                subtitulo="Nossa equipe conhece pessoalmente cada opção e pode sugerir algo feito sob medida."
-                ctaText="Falar com especialista"
+                subtitulo="Nossa equipe conhece cada opção e pode sugerir algo que se enquadre ao que você está buscando!"
+                ctaText="Consultar especialista"
                 ctaLink="https://wa.me/5511981845016?text=Olá! Vi os imóveis no site da Nova Ipê e gostaria de conversar."
             />
             <SecaoDestaquesRegiao />
