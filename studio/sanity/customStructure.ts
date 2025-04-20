@@ -1,6 +1,6 @@
-import S from 'sanity/desk'
+import type { StructureResolver } from 'sanity/desk';
 
-export const structure = () =>
+export const structure: StructureResolver = (S) =>
     S.list()
     .title('📂 Conteúdo')
     .items([
@@ -85,6 +85,6 @@ export const structure = () =>
 
       // Acesso direto por tipo (default fallback)
       ...S.documentTypeListItems().filter(
-        (listItem) => !['imovel', 'categoria'].includes(listItem.getId() ?? '')
+        (listItem: any) => !['imovel', 'categoria'].includes(listItem.getId() ?? '')
       )
     ]);
