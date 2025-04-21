@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import Image from "next/image"
 import { BadgeCheck } from "lucide-react"
+import { formatarArea } from "@/src/lib/utils"
 
 interface HeroImovelSimbolicoProps {
     titulo: string
@@ -21,6 +22,12 @@ export default function HeroImovelSimbolico({
     tipo,
     metros,
 }: HeroImovelSimbolicoProps) {
+    const detalhes = [
+        tipo,
+        metros ? formatarArea(Number(metros)) : null,
+        cidade,
+    ].filter(Boolean)
+
     return (
         <section className="relative w-full min-h-[60vh] md:min-h-[75vh] lg:min-h-[80vh] overflow-hidden text-white rounded-b-[3rem] shadow-xl">
             <div className="absolute inset-0">
@@ -47,7 +54,8 @@ export default function HeroImovelSimbolico({
                         transition={{ delay: 0.4, duration: 0.6 }}
                         className="mb-4 inline-flex items-center gap-2 px-4 py-1 rounded-full border border-yellow-400 text-yellow-100 text-xs font-medium uppercase tracking-widest bg-yellow-400/10 backdrop-blur-md"
                     >
-                        <BadgeCheck className="w-4 h-4 text-yellow-300" /> Imóvel em destaque
+                        <BadgeCheck className="w-4 h-4 text-yellow-300" />
+                        Imóvel em destaque
                     </motion.span>
                 )}
 
@@ -60,14 +68,14 @@ export default function HeroImovelSimbolico({
                     {titulo}
                 </motion.h1>
 
-                {(cidade || tipo || metros) && (
+                {detalhes.length > 0 && (
                     <motion.p
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.9, duration: 0.6 }}
                         className="mt-4 text-sm sm:text-base md:text-lg text-white/80 italic drop-shadow-sm"
                     >
-                        {[tipo, metros, cidade].filter(Boolean).join(" · ")}
+                        {detalhes.join(" · ")}
                     </motion.p>
                 )}
             </motion.div>

@@ -16,7 +16,7 @@ const montSerrat = Montserrat({
 
 const links = [
     { label: "Início", href: "/" },
-    { label: "Comprar", href: "/imoveis" },
+    { label: "Comprar", href: "/comprar" },
     { label: "Alugar", href: "/alugar" },
     { label: "Contato", href: "#contato" },
 ]

@@ -8,11 +8,12 @@ import CardCTAImovel from "@/app/components/CardCTAImovel"
 import BlocoLocalizacaoImovel from "@/app/components/BlocoLocalizacaoImovel"
 import Referencias from "@/app/sections/Referencias"
 
-// — shape dos dados retornados pelo Sanity
+import { formatarMoeda, formatarArea } from "@/src/lib/utils"
+
 interface ImovelData {
     slug: { current: string }
     titulo: string
-    descricao: string
+    descricao?: string
     imagem?: { asset: { url: string } }
     preco?: number
     cidade?: string
@@ -26,51 +27,49 @@ interface ImovelData {
     imagemOpenGraph?: { asset: { url: string } }
 }
 
-// — gera todos os slugs estaticamente
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
-    const slugs: Array<{ current: string }> = await gerarSlugs()
-    return slugs.map(({ current }) => ({ slug: current }))
+    const slugs: { current: string }[] = await gerarSlugs()
+    return slugs.map(({ current }: { current: string }) => ({ slug: current }))
 }
 
-// — metadados dinâmicos para SEO / OpenGraph
-export async function generateMetadata({
-    params,
-}: any): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
     const slug = params.slug
+    const imovel: ImovelData = await sanityClient.fetch(queryImovelPorSlug, { slug })
 
-    const imovel: ImovelData = await sanityClient.fetch(
-        queryImovelPorSlug,
-        { slug }
-    )
+    const title = imovel.metaTitle || `${imovel.tipo} em ${imovel.cidade} | Ipê Imóveis`
+    const description = imovel.metaDescription || `Veja os detalhes deste imóvel em ${imovel.cidade}. Curadoria exclusiva da Ipê Imóveis.`
 
     return {
-        title: imovel.metaTitle || imovel.titulo,
-        description:
-            imovel.metaDescription ||
-            "Veja mais detalhes sobre este imóvel exclusivo em Guararema.",
+        title,
+        description,
+        metadataBase: new URL("https://ipeimoveis.com"),
+        alternates: {
+            canonical: `https://ipeimoveis.com/imovel/${slug}`,
+        },
         openGraph: {
-            title: imovel.metaTitle || imovel.titulo,
-            description: imovel.metaDescription || imovel.descricao,
+            title,
+            description,
             images: imovel.imagemOpenGraph
                 ? [{ url: imovel.imagemOpenGraph.asset.url }]
                 : imovel.imagem
                     ? [{ url: imovel.imagem.asset.url }]
                     : [],
         },
+        twitter: {
+            card: "summary_large_image",
+            title,
+            description,
+        },
+        robots: {
+            index: true,
+            follow: true,
+        },
     }
 }
 
-// — componente de página (App Router)
-export default async function ImovelPage({
-    params,
-}: any) {
+export default async function ImovelPage({ params }: { params: { slug: string } }) {
     const slug = params.slug
-
-    const imovel: ImovelData = await sanityClient.fetch(
-        queryImovelPorSlug,
-        { slug }
-    )
-
+    const imovel: ImovelData = await sanityClient.fetch(queryImovelPorSlug, { slug })
     const imagemUrl = imovel.imagem?.asset.url || "/imoveis/bg3.jpg"
 
     return (
@@ -81,6 +80,7 @@ export default async function ImovelPage({
                 tipo={imovel.tipo}
                 metros={imovel.metros}
                 imagemFundo={imagemUrl}
+                destaque
             />
 
             <section className="max-w-6xl mx-auto px-6 md:px-8 mt-20 grid md:grid-cols-2 gap-16 items-start">
@@ -88,17 +88,29 @@ export default async function ImovelPage({
                     <h2 className="text-3xl md:text-4xl font-semibold border-l-4 border-[#FFAD43] pl-4">
                         Detalhes do imóvel
                     </h2>
-                    <p className="text-base md:text-lg text-[#0D1F2D]/80 whitespace-pre-line">
-                        {imovel.descricao ||
-                            "Em breve teremos mais informações sobre este imóvel."}
+
+                    <p className="text-base md:text-lg text-[#0D1F2D]/80 whitespace-pre-line leading-relaxed">
+                        {imovel.descricao ??
+                            "Este imóvel está em processo de curadoria. Em breve traremos todos os detalhes para você."}
                     </p>
-                    <ul className="space-y-4 text-sm text-[#0D1F2D]/70">
-                        <li className="flex items-center gap-2">📌 Documentação 100% regularizada</li>
-                        <li className="flex items-center gap-2">🏞️ Boa vizinhança</li>
+
+                    <div className="grid gap-3 text-sm text-[#0D1F2D]/80">
                         {imovel.metros && (
-                            <li className="flex items-center gap-2">📐 {imovel.metros}</li>
+                            <div className="flex items-center gap-2">
+                                <span className="text-[#FFAD43] font-semibold">📐 Área:</span>
+                                {formatarArea(Number(imovel.metros))}
+                            </div>
                         )}
-                    </ul>
+                        <div className="flex items-center gap-2">
+                            <span className="text-[#FFAD43] font-semibold">📄 Documentação:</span>
+                            100% regularizada
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <span className="text-[#FFAD43] font-semibold">🏘️ Vizinhança:</span>
+                            Local tranquilo e seguro
+                        </div>
+                    </div>
+
                     <div className="inline-flex items-center gap-2 px-3 py-2 bg-green-50 text-green-700 rounded-full text-sm">
                         ✅ Verificado pela equipe Ipê
                     </div>
@@ -106,10 +118,7 @@ export default async function ImovelPage({
 
                 <aside className="sticky top-28">
                     <CardCTAImovel
-                        preco={imovel.preco?.toLocaleString("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                        })}
+                        preco={imovel.preco}
                         titulo={imovel.titulo}
                         linkPersonalizado={imovel.linkPersonalizado}
                     />
@@ -118,9 +127,9 @@ export default async function ImovelPage({
 
             <div className="max-w-6xl mx-auto px-6 md:px-8 mt-24">
                 <BlocoLocalizacaoImovel
-                    endereco={imovel.endereco || ""}
-                    cidade={imovel.cidade || ""}
-                    mapaLink={imovel.mapaLink || ""}
+                    endereco={imovel.endereco ?? ""}
+                    cidade={imovel.cidade ?? ""}
+                    mapaLink={imovel.mapaLink ?? ""}
                 />
             </div>
 
