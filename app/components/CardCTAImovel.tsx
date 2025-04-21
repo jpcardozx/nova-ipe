@@ -2,9 +2,10 @@
 
 import { Phone, Calendar, UserCheck } from "lucide-react"
 import { cn } from "src/lib/utils"
+import { formatarMoeda } from "@/src/lib/utils"
 
 interface CardCTAImovelProps {
-  preco?: string
+  preco?: number
   titulo?: string
   tipoCTA?: "whatsapp" | "agendar"
   destaque?: boolean
@@ -20,6 +21,8 @@ export default function CardCTAImovel({
 }: CardCTAImovelProps) {
   const labelCTA = tipoCTA === "agendar" ? "Agendar visita guiada" : "Falar com especialista local"
   const iconCTA = tipoCTA === "agendar" ? <Calendar className="w-4 h-4" /> : <Phone className="w-4 h-4" />
+  const precoFormatado = preco !== undefined ? formatarMoeda(preco, true, true) : null
+
   const ctaUrl = linkPersonalizado || `https://wa.me/5511981845016?text=Olá! Tenho interesse no imóvel: ${encodeURIComponent(titulo ?? "")} (via site)`
 
   return (
@@ -32,8 +35,8 @@ export default function CardCTAImovel({
 
       <div className="space-y-1">
         <p className="text-sm text-[#0D1F2D]/60">Valor estimado</p>
-        <p className={cn("text-4xl font-bold tracking-tight leading-snug", !preco && "italic text-base text-[#0D1F2D]/50")}>
-          {preco ?? "Sob consulta"}
+        <p className={cn("text-4xl font-bold tracking-tight leading-snug", !precoFormatado && "italic text-base text-[#0D1F2D]/50")}>
+          {precoFormatado ?? "Sob consulta"}
         </p>
       </div>
 
