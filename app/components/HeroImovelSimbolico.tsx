@@ -29,7 +29,7 @@ export default function HeroImovelSimbolico({
     ].filter(Boolean)
 
     return (
-        <section className="relative w-full min-h-[60vh] md:min-h-[75vh] lg:min-h-[80vh] overflow-hidden text-white rounded-b-[3rem] shadow-xl">
+        <section className="relative w-full min-h-[60vh] md:min-h-[75vh] lg:min-h-[80vh] overflow-hidden text-white rounded-b-[3rem] lg:mt-21 sm:mt-12 shadow-2xl">
             <div className="absolute inset-0">
                 <Image
                     src={imagemFundo}
@@ -38,7 +38,7 @@ export default function HeroImovelSimbolico({
                     priority
                     className="object-cover object-center brightness-[0.4]"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent z-0 backdrop-blur-sm" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/180 via-black/50 to-transparent z-0 backdrop-blur-sm" />
             </div>
 
             <motion.div
@@ -52,7 +52,7 @@ export default function HeroImovelSimbolico({
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4, duration: 0.6 }}
-                        className="mb-4 inline-flex items-center gap-2 px-4 py-1 rounded-full border border-yellow-400 text-yellow-100 text-xs font-medium uppercase tracking-widest bg-yellow-400/10 backdrop-blur-md"
+                        className="mb-4 mt-18 inline-flex items-center gap-2 px-4 py-1 rounded-full border border-yellow-400 text-yellow-100 text-xs font-medium uppercase tracking-widest bg-yellow-400/10 backdrop-blur-md"
                     >
                         <BadgeCheck className="w-4 h-4 text-yellow-300" />
                         Imóvel em destaque

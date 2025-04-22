@@ -1,17 +1,26 @@
-// app/alugar/AlugarPage.tsx
 "use client"
 
+import { useEffect, useState } from "react"
 import Navbar from "@/app/sections/NavBar"
 import Footer from "@/app/sections/Footer"
 import Valor from "@/app/sections/Valor"
 import ImovelCard from "@/app/components/ImovelCard"
+import { sanityClient } from "@/lib/sanity"
 import type { ImovelExtended } from "@/src/types/imovel-extended"
 
-interface Props {
-    imoveis: ImovelExtended[]
-}
+export default function AlugarPage() {
+    const [imoveis, setImoveis] = useState<ImovelExtended[]>([])
 
-export default function AlugarPage({ imoveis }: Props) {
+    useEffect(() => {
+        const fetchImoveis = async () => {
+            const query = `*[_type == "imovel" && status == "disponivel"] | order(_createdAt desc)`
+            const data = await sanityClient.fetch<ImovelExtended[]>(query)
+            setImoveis(data)
+        }
+
+        fetchImoveis()
+    }, [])
+
     return (
         <>
             <Navbar />

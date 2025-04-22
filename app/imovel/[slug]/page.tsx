@@ -10,6 +10,8 @@ import BlocoLocalizacaoImovel from '@/app/components/BlocoLocalizacaoImovel';
 import Referencias from '@/app/sections/Referencias';
 import { notFound } from 'next/navigation';
 import { formatarArea } from '@/src/lib/utils';
+import Navbar from '@/app/sections/NavBar';
+import Footer from '@/app/sections/Footer';
 
 // Função para gerar os parâmetros estáticos
 export async function generateStaticParams() {
@@ -89,7 +91,8 @@ async function ImovelPage({ slug }: { slug: string }) {
     const imagemUrl = imovel.imagem?.asset?.url || '/imoveis/bg3.jpg';
 
     return (
-        <main className="w-full bg-gradient-to-br from-[#f7f6f3] to-[#fff] text-[#0D1F2D]">
+        <main className="w-full bg-gradient-to-br from-[#fef8e4] to-[#fff] text-[#0D1F2D]">
+            <Navbar />
             <HeroImovelSimbolico
                 titulo={imovel.titulo ?? ''}
                 cidade={imovel.cidade ?? ''}
@@ -99,7 +102,7 @@ async function ImovelPage({ slug }: { slug: string }) {
                 destaque={imovel.destaque ?? false}
             />
 
-            <section className="max-w-6xl mx-auto px-6 md:px-8 mt-20 grid md:grid-cols-2 gap-16 items-start">
+            <section className="max-w-6xl mx-auto px-6 md:px-8 mt-24 grid md:grid-cols-2 gap-16 items-start">
                 <article className="space-y-8">
                     <h2 className="text-3xl md:text-4xl font-semibold border-l-4 border-[#FFAD43] pl-4">
                         Detalhes do imóvel
@@ -153,6 +156,7 @@ async function ImovelPage({ slug }: { slug: string }) {
             <div className="mt-24">
                 <Referencias />
             </div>
+            <Footer />
         </main>
     );
 }

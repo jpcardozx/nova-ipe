@@ -39,7 +39,8 @@
     "next-env.d.ts",
     ".next/types/**/*.ts",
     "sanity.config.ts",
-    "sanity-codegen.config.ts"
+    "sanity-codegen.config.ts",
+    "studio/sanity.cli.js"
   ],
   "exclude": [
     "node_modules"

@@ -1,20 +1,16 @@
 const { withSentryConfig } = require("@sentry/nextjs");
-const { desc } = require("framer-motion/client");
 
-module.exports = withSentryConfig({
-  // Outras configurações
+const nextConfig = {
+  images: {
+    domains: ["github.com", "raw.githubusercontent.com", "cdn.sanity.io"], // ADICIONADO O DOMÍNIO NECESSÁRIO
+  },
   rewrites: async () => [
     {
       source: "/studio/:path*",
       destination: "/studio/index.html",
     },
   ],
-});
-
-const nextConfig = {
-  images: {
-    domains: ["github.com", "raw.githubusercontent.com"],
-  },
 };
 
-module.exports = nextConfig;
+// exporta tudo com Sentry
+module.exports = withSentryConfig(nextConfig);
