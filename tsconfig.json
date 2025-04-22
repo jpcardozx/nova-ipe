@@ -37,7 +37,9 @@
     "**/*.ts",
     "**/*.tsx",
     "next-env.d.ts",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "sanity.config.ts",
+    "sanity-codegen.config.ts"
   ],
   "exclude": [
     "node_modules"

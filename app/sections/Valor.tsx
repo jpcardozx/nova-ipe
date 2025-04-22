@@ -53,7 +53,7 @@ export default function SecaoApresentacaoValor() {
                     className="md:col-span-2 relative w-full h-72 md:h-[440px] rounded-2xl overflow-hidden shadow-md"
                 >
                     <Image
-                        src="/images/mirante.jpg"
+                        src="/images/mirante.png"
                         alt="Vista panorâmica de Guararema"
                         fill
                         className="object-cover object-center"

@@ -107,10 +107,24 @@ export default defineType({
     }),
 
     defineField({
-      name: 'videoTour',
-      title: '🎥 Vídeo do Imóvel (opcional)',
+      name: 'linkPersonalizado',
+      title: 'Link personalizado (ex: WhatsApp, formulário externo)',
       type: 'url',
-      fieldset: 'midia'
+      fieldset: 'controle',
+    }),
+
+    defineField({
+      name: 'mapaLink',
+      title: 'Link do Google Maps',
+      type: 'url',
+      fieldset: 'info',
+    }),
+
+    defineField({
+      name: 'imagemOpenGraph',
+      title: 'Imagem para Open Graph',
+      type: 'image',
+      fieldset: 'seo',
     }),
 
     // SEO
