@@ -13,7 +13,7 @@ interface Props {
   finalidade: "Venda" | "Aluguel" | "Temporada"
 }
 
-export default function ImovelCard({ imovel, finalidade }: Props) {
+export default function ImovelCard({ imovel, finalidade }: Props): JSX.Element {
   const [hover, setHover] = useState(false)
   const [loaded, setLoaded] = useState(false)
 

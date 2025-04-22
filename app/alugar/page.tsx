@@ -4,7 +4,7 @@ import { queryImoveisParaAlugar } from "@/lib/queries"
 import type { ImovelExtended } from "@/src/types/imovel-extended"
 import AlugarPage from "./AlugarPage"
 
-export const revalidate = 60
+export const revalidate = 0
 
 export const metadata = {
     title: "Alugar | Ipê Imóveis",

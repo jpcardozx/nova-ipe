@@ -4,7 +4,7 @@ import { queryImoveisParaVenda } from "@/lib/queries"
 import type { ImovelExtended } from "@/src/types/imovel-extended"
 import ComprarPage from "./ComprarPage"
 
-export const revalidate = 60
+export const revalidate = 0
 
 export const metadata = {
     title: "Comprar | Nova Ipê",

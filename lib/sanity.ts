@@ -1,8 +1,9 @@
-import { createClient } from 'next-sanity'
+import { createClient } from "next-sanity"
+import { projectId, dataset, apiVersion } from "@/studio/env"
 
 export const sanityClient = createClient({
-  projectId: '0nks58lj',
-  dataset: 'production',
-  apiVersion: '2024-04-25',
-  useCdn: false // true se for apenas leitura pública
+  projectId,
+  dataset,
+  apiVersion,
+  useCdn: false
 })

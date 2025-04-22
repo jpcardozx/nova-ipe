@@ -1,28 +1,20 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { ChevronRight } from "lucide-react"
-import ImovelCard from "@/app/components/ImovelCard"
-import { sanityClient } from "@/lib/sanity"
-import { ImovelExtended as Extended } from "@/src/types/imovel-extended"
-import type { Imovel } from "@/src/types/sanity-schema"
 import Link from "next/link"
+import { ChevronRight } from "lucide-react"
+
+import ImovelCard from "@/app/components/ImovelCard"
+import { getImoveisAluguelDestaque } from "@/lib/sanity/fetchImoveis"
+import type { ImovelExtended } from "@/src/types/imovel-extended"
 
 export default function SecaoImoveisParaAlugar() {
-    const [imoveis, setImoveis] = useState<Extended[]>([])
+    const [imoveis, setImoveis] = useState<ImovelExtended[]>([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        sanityClient
-            .fetch<Extended[]>(`
-        *[_type=="imovel" && status=="disponivel" && destaque==true && finalidade=="Aluguel"][0...6]{
-          _id, slug, titulo, preco, cidade, bairro,
-          categoria->{titulo, slug},
-          imagem{asset->{url}},
-          area, aceitaFinanciamento, destaque
-        }
-      `)
-            .then((res) => setImoveis(res))
+        getImoveisAluguelDestaque()
+            .then(setImoveis)
             .catch(console.error)
             .finally(() => setLoading(false))
     }, [])

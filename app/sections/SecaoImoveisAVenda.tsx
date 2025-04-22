@@ -1,41 +1,35 @@
-"use client"
+"use client";
 
-import { Swiper, SwiperSlide } from "swiper/react"
-import { Navigation, Pagination, A11y } from "swiper/modules"
-import "swiper/css"
-import "swiper/css/navigation"
-import "swiper/css/pagination"
+import { useEffect, useRef, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, A11y } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import ImovelCard from "@/app/components/ImovelCard"
-import { ImovelExtended as Extended } from "@/src/types/imovel-extended"
-import type { Imovel } from "@/src/types/sanity-schema"
-import { useRef, useEffect, useState } from "react"
-import { sanityClient } from "@/lib/sanity"
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import ImovelCard from "@/app/components/ImovelCard";
+import type { ImovelExtended } from "@/src/types/imovel-extended";
+import { getImoveisParaVenda } from "@/lib/sanity/fetchImoveis";
+import { motion } from "framer-motion";
 
-export default function SecaoImoveisAVenda() {
-    const [destaques, setDestaques] = useState<Extended[]>([])
-    const prevRef = useRef<HTMLButtonElement>(null)
-    const nextRef = useRef<HTMLButtonElement>(null)
-    const [ready, setReady] = useState(false)
+export default function SecaoImoveisAVenda(): JSX.Element {
+    const [destaques, setDestaques] = useState<ImovelExtended[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [erro, setErro] = useState(false);
+    const [ready, setReady] = useState(false);
 
-    // Carrega os imóveis em destaque
+    const prevRef = useRef<HTMLButtonElement>(null);
+    const nextRef = useRef<HTMLButtonElement>(null);
+
     useEffect(() => {
-        sanityClient
-            .fetch<Extended[]>(`
-        *[_type=="imovel" && status=="disponivel" && destaque==true && finalidade=="Venda"][0...6]{
-          _id, slug, titulo, cidade, bairro, preco,
-          categoria->{titulo, slug},
-          imagem{asset->{url}},
-          area, aceitaFinanciamento, destaque
-        }
-      `)
-            .then((res) => setDestaques(res))
-            .catch(console.error)
-    }, [])
+        getImoveisParaVenda()
+            .then((res) => setDestaques(res.filter((i) => i.destaque)))
+            .catch(() => setErro(true))
+            .finally(() => setLoading(false));
+    }, []);
 
-    // Ativa Swiper só no client
-    useEffect(() => setReady(true), [])
+    useEffect(() => setReady(true), []);
 
     return (
         <section className="relative py-24 bg-gradient-to-b from-white to-neutral-100">
@@ -47,26 +41,41 @@ export default function SecaoImoveisAVenda() {
                     </h2>
                     <p className="mt-3 text-neutral-600 max-w-2xl mx-auto">
                         Selecionados pela equipe Ipê por seu{" "}
-                        <strong className="text-neutral-800">potencial de valorização</strong>
-                        , localização e simbologia única.
+                        <strong className="text-neutral-800">potencial de valorização</strong>, localização e
+                        simbologia única.
                     </p>
                 </header>
 
-                {destaques.length === 0 ? (
-                    <p className="text-center text-neutral-500">Carregando ou nenhum imóvel.</p>
+                {loading ? (
+                    <p className="text-center text-neutral-400 italic">Carregando imóveis em destaque...</p>
+                ) : erro ? (
+                    <p className="text-center text-red-500">Erro ao carregar imóveis. Tente novamente.</p>
+                ) : destaques.length === 0 ? (
+                    <p className="text-center text-neutral-500">Nenhum imóvel em destaque no momento.</p>
+                ) : destaques.length === 1 ? (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, ease: "easeOut" }}
+                    >
+                        <ImovelCard imovel={destaques[0]} finalidade="Venda" />
+                    </motion.div>
                 ) : (
                     <>
-                        {ready && (
+                        {ready && prevRef.current && nextRef.current && (
                             <Swiper
                                 modules={[Navigation, Pagination, A11y]}
                                 navigation={{
-                                    prevEl: prevRef.current!,
-                                    nextEl: nextRef.current!,
+                                    prevEl: prevRef.current,
+                                    nextEl: nextRef.current,
                                 }}
                                 pagination={{ clickable: true }}
                                 spaceBetween={32}
                                 slidesPerView={1.05}
-                                breakpoints={{ 768: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } }}
+                                breakpoints={{
+                                    768: { slidesPerView: 2 },
+                                    1024: { slidesPerView: 3 },
+                                }}
                                 className="pb-12"
                             >
                                 {destaques.map((im) => (
@@ -80,13 +89,13 @@ export default function SecaoImoveisAVenda() {
                         {/* Navegação manual */}
                         <button
                             ref={prevRef}
-                            className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white p-2 shadow ring-1 ring-neutral-200 hover:bg-amber-100 transition"
+                            className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white p-2 shadow ring-1 ring-neutral-200 hover:bg-amber-100 transition z-10"
                         >
                             <ChevronLeft className="text-amber-600" />
                         </button>
                         <button
                             ref={nextRef}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white p-2 shadow ring-1 ring-neutral-200 hover:bg-amber-100 transition"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white p-2 shadow ring-1 ring-neutral-200 hover:bg-amber-100 transition z-10"
                         >
                             <ChevronRight className="text-amber-600" />
                         </button>
@@ -94,5 +103,5 @@ export default function SecaoImoveisAVenda() {
                 )}
             </div>
         </section>
-    )
+    );
 }
