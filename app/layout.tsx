@@ -1,45 +1,30 @@
 // app/layout.tsx
-import './globals.css';
-import { DM_Serif_Display, Italiana, Libre_Caslon_Display, Cormorant_Garamond } from 'next/font/google';
+import './globals.css'
+import { ReactNode } from 'react'
+import { Montserrat } from 'next/font/google'
 
-const dmSerif = DM_Serif_Display({
+const mserrat = Montserrat({
   subsets: ['latin'],
-  weight: ['400'],
+  variable: '--font-montserrat',
   display: 'swap',
-  variable: '--font-dmserif',
-});
+  weight: ['400', '500', '600', '700'],
+})
 
-const italiana = Italiana({
-  subsets: ['latin'],
-  weight: ['400'],
-  display: 'swap',
-  variable: '--font-italiana',
-});
+export const metadata = { title: 'Nova Ipê', description: 'Gestão Imobiliária e Consultoria' }
 
-const libreCaslon = Libre_Caslon_Display({
-  subsets: ['latin'],
-  weight: ['400'],
-  display: 'swap',
-  variable: '--font-libre',
-});
+interface RootLayoutProps {
+  children: ReactNode
+}
 
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  display: 'swap',
-  variable: '--font-cormorant',
-});
-
-export const metadata = {
-  title: 'Nova Ipê',
-  description: 'Gestão Imobiliária e Consultoria',
-};
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="pt-BR"
-      className={`${dmSerif.variable} ${italiana.variable} ${libreCaslon.variable} ${cormorant.variable}`}>
+    <html
+      lang="pt-BR"
+      className={`
+        ${mserrat.className}
+      `}
+    >
       <body className="bg-white text-gray-900">{children}</body>
     </html>
-  );
+  )
 }

@@ -1,62 +1,60 @@
-import { Metadata } from "next"
-import { sanityClient } from "lib/sanity"
-import { queryImovelPorSlug } from "lib/queries"
-import { generateStaticParams as gerarSlugs } from "lib/staticParams"
+import { use, Suspense } from 'react';
+import { sanityClient } from '@/lib/sanity';
+import { queryImovelPorSlug } from '@/lib/queries';
+import type { Metadata } from 'next';
+import type { ImovelExtended } from '@/src/types/imovel-extended';
 
-import HeroImovelSimbolico from "@/app/components/HeroImovelSimbolico"
-import CardCTAImovel from "@/app/components/CardCTAImovel"
-import BlocoLocalizacaoImovel from "@/app/components/BlocoLocalizacaoImovel"
-import Referencias from "@/app/sections/Referencias"
+import HeroImovelSimbolico from '@/app/components/HeroImovelSimbolico';
+import CardCTAImovel from '@/app/components/CardCTAImovel';
+import BlocoLocalizacaoImovel from '@/app/components/BlocoLocalizacaoImovel';
+import Referencias from '@/app/sections/Referencias';
+import { notFound } from 'next/navigation';
+import { formatarArea } from '@/src/lib/utils';
 
-import { formatarMoeda, formatarArea } from "@/src/lib/utils"
+// Função para gerar os parâmetros estáticos
+export async function generateStaticParams() {
+    const slugs: { slug: { current: string } }[] = await sanityClient.fetch(
+        `*[_type == "imovel" && defined(slug.current)]{ slug }`
+    );
 
-interface ImovelData {
-    slug: { current: string }
-    titulo: string
-    descricao?: string
-    imagem?: { asset: { url: string } }
-    preco?: number
-    cidade?: string
-    tipo?: string
-    metros?: string
-    endereco?: string
-    mapaLink?: string
-    linkPersonalizado?: string
-    metaTitle?: string
-    metaDescription?: string
-    imagemOpenGraph?: { asset: { url: string } }
+    return slugs.map(({ slug }) => ({
+        slug: slug.current,
+    }));
 }
 
-export async function generateStaticParams(): Promise<{ slug: string }[]> {
-    const slugs: { current: string }[] = await gerarSlugs()
-    return slugs.map(({ current }: { current: string }) => ({ slug: current }))
-}
+// Função para gerar os metadados da página
+export async function generateMetadata(
+    { params }: { params: Promise<{ slug: string }> }
+): Promise<Metadata> {
+    const { slug } = await params;
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-    const slug = params.slug
-    const imovel: ImovelData = await sanityClient.fetch(queryImovelPorSlug, { slug })
+    const imovel: ImovelExtended | null = await sanityClient.fetch(queryImovelPorSlug, { slug });
 
-    const title = imovel.metaTitle || `${imovel.tipo} em ${imovel.cidade} | Ipê Imóveis`
-    const description = imovel.metaDescription || `Veja os detalhes deste imóvel em ${imovel.cidade}. Curadoria exclusiva da Ipê Imóveis.`
+    if (!imovel) return {};
+
+    const title = imovel.metaTitle || `${imovel.titulo} | Ipê Imóveis`;
+    const description =
+        imovel.metaDescription ||
+        `Veja os detalhes deste imóvel em ${imovel.cidade}. Curadoria exclusiva da Ipê Imóveis.`;
 
     return {
         title,
         description,
-        metadataBase: new URL("https://ipeimoveis.com"),
+        metadataBase: new URL('https://ipeimoveis.com'),
         alternates: {
             canonical: `https://ipeimoveis.com/imovel/${slug}`,
         },
         openGraph: {
             title,
             description,
-            images: imovel.imagemOpenGraph
+            images: imovel.imagemOpenGraph?.asset?.url
                 ? [{ url: imovel.imagemOpenGraph.asset.url }]
-                : imovel.imagem
+                : imovel.imagem?.asset?.url
                     ? [{ url: imovel.imagem.asset.url }]
                     : [],
         },
         twitter: {
-            card: "summary_large_image",
+            card: 'summary_large_image',
             title,
             description,
         },
@@ -64,23 +62,41 @@ export async function generateMetadata({ params }: { params: { slug: string } })
             index: true,
             follow: true,
         },
-    }
+    };
 }
 
-export default async function ImovelPage({ params }: { params: { slug: string } }) {
-    const slug = params.slug
-    const imovel: ImovelData = await sanityClient.fetch(queryImovelPorSlug, { slug })
-    const imagemUrl = imovel.imagem?.asset.url || "/imoveis/bg3.jpg"
+// Componente principal da página
+export default function Page({
+    params,
+}: {
+    params: Promise<{ slug: string }>;
+}) {
+    const { slug } = use(params);
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            {/* @ts-expect-error Server Component */}
+            <ImovelPage slug={slug} />
+        </Suspense>
+    );
+}
+
+// Componente que renderiza os detalhes do imóvel
+async function ImovelPage({ slug }: { slug: string }) {
+    const imovel: ImovelExtended | null = await sanityClient.fetch(queryImovelPorSlug, { slug });
+
+    if (!imovel) return notFound();
+
+    const imagemUrl = imovel.imagem?.asset?.url || '/imoveis/bg3.jpg';
 
     return (
         <main className="w-full bg-gradient-to-br from-[#f7f6f3] to-[#fff] text-[#0D1F2D]">
             <HeroImovelSimbolico
-                titulo={imovel.titulo}
-                cidade={imovel.cidade}
-                tipo={imovel.tipo}
-                metros={imovel.metros}
+                titulo={imovel.titulo ?? ''}
+                cidade={imovel.cidade ?? ''}
+                tipo={imovel.finalidade ?? ''}
+                metros={imovel.metros ?? ''}
                 imagemFundo={imagemUrl}
-                destaque
+                destaque={imovel.destaque ?? false}
             />
 
             <section className="max-w-6xl mx-auto px-6 md:px-8 mt-20 grid md:grid-cols-2 gap-16 items-start">
@@ -91,7 +107,7 @@ export default async function ImovelPage({ params }: { params: { slug: string } 
 
                     <p className="text-base md:text-lg text-[#0D1F2D]/80 whitespace-pre-line leading-relaxed">
                         {imovel.descricao ??
-                            "Este imóvel está em processo de curadoria. Em breve traremos todos os detalhes para você."}
+                            'Este imóvel está em processo de curadoria. Em breve traremos todos os detalhes para você.'}
                     </p>
 
                     <div className="grid gap-3 text-sm text-[#0D1F2D]/80">
@@ -103,7 +119,7 @@ export default async function ImovelPage({ params }: { params: { slug: string } 
                         )}
                         <div className="flex items-center gap-2">
                             <span className="text-[#FFAD43] font-semibold">📄 Documentação:</span>
-                            100% regularizada
+                            {imovel.documentacaoOk ? '100% regularizada' : 'Em análise'}
                         </div>
                         <div className="flex items-center gap-2">
                             <span className="text-[#FFAD43] font-semibold">🏘️ Vizinhança:</span>
@@ -119,17 +135,18 @@ export default async function ImovelPage({ params }: { params: { slug: string } 
                 <aside className="sticky top-28">
                     <CardCTAImovel
                         preco={imovel.preco}
-                        titulo={imovel.titulo}
-                        linkPersonalizado={imovel.linkPersonalizado}
+                        titulo={imovel.titulo ?? ''}
+                        linkPersonalizado={imovel.linkPersonalizado ?? ''}
+                        destaque={imovel.destaque ?? false}
                     />
                 </aside>
             </section>
 
             <div className="max-w-6xl mx-auto px-6 md:px-8 mt-24">
                 <BlocoLocalizacaoImovel
-                    endereco={imovel.endereco ?? ""}
-                    cidade={imovel.cidade ?? ""}
-                    mapaLink={imovel.mapaLink ?? ""}
+                    endereco={imovel.endereco ?? ''}
+                    cidade={imovel.cidade ?? ''}
+                    mapaLink={imovel.mapaLink ?? ''}
                 />
             </div>
 
@@ -137,5 +154,5 @@ export default async function ImovelPage({ params }: { params: { slug: string } 
                 <Referencias />
             </div>
         </main>
-    )
+    );
 }
