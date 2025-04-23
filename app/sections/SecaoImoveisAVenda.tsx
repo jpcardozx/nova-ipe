@@ -13,7 +13,7 @@ import type { ImovelExtended } from "@/src/types/imovel-extended";
 import { getImoveisParaVenda } from "@/lib/sanity/fetchImoveis";
 import { motion } from "framer-motion";
 
-export default function SecaoImoveisAVenda(): JSX.Element {
+export default function SecaoImoveisAVenda(): React.ReactElement {
     const [destaques, setDestaques] = useState<ImovelExtended[]>([]);
     const [loading, setLoading] = useState(true);
     const [erro, setErro] = useState(false);
