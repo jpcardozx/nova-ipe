@@ -76,7 +76,6 @@ export default function Page({
     const { slug } = use(params);
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            {/* @ts-expect-error Server Component */}
             <ImovelPage slug={slug} />
         </Suspense>
     );
