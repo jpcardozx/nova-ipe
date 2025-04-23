@@ -13,5 +13,5 @@ export const metadata = {
 
 export default async function Page() {
     const imoveis: ImovelExtended[] = await sanityClient.fetch(queryImoveisParaAlugar)
-    return <AlugarPage imoveis={imoveis} />
+    return <AlugarPage />
 }
