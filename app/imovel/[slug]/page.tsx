@@ -12,6 +12,7 @@ import { notFound } from 'next/navigation';
 import { formatarArea } from '@/src/lib/utils';
 import Navbar from '@/app/sections/NavBar';
 import Footer from '@/app/sections/Footer';
+import SecaoApresentacaoValor from '@/app/sections/Valor';
 
 // Função para gerar os parâmetros estáticos
 export async function generateStaticParams() {
@@ -75,9 +76,14 @@ export default function Page({
 }) {
     const { slug } = use(params);
     return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <ImovelPage slug={slug} />
-        </Suspense>
+        <div>
+            <Navbar />
+            <Suspense fallback={<div>Loading...</div>}>
+                <ImovelPage slug={slug} />
+            </Suspense>
+            <SecaoApresentacaoValor />
+            <Footer />
+        </div>
     );
 }
 
