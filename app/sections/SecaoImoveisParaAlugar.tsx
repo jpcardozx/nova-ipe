@@ -10,31 +10,20 @@ import React, {
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useInView } from 'react-intersection-observer';
-import {
-    ChevronLeft,
-    ChevronRight,
-    ExternalLink,
-    Loader2,
-    AlertTriangle,
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight, ExternalLink, Loader2, AlertTriangle } from 'lucide-react';
 import { getImoveisParaAlugar } from '@/lib/sanity/fetchImoveis';
 import ImovelCard from '@/app/components/ImovelCard';
-import type { ImovelExtended } from '@/src/types/imovel-extended';
+import type { ImovelClient as Imovel } from '@/src/types/imovel-client';
 import type { OptimizedCarouselProps } from '@/app/components/OptimizedCarousel';
 import { cn } from '@/src/lib/utils';
 
-// Dynamic import tipado
-const OptimizedCarousel = dynamic<OptimizedCarouselProps<ImovelExtended>>(
-    () =>
-        import('@/app/components/OptimizedCarousel').then(
-            (mod) => mod.OptimizedCarousel
-        ),
+const OptimizedCarousel = dynamic<OptimizedCarouselProps<Imovel>>(
+    () => import('@/app/components/OptimizedCarousel').then((mod) => mod.OptimizedCarousel),
     { ssr: false, loading: () => <CarouselSkeleton /> }
 );
 
-// Hook de dados isolado
 function useDestaquesAluguel(staleTime = 300_000) {
-    const [data, setData] = useState<ImovelExtended[]>([]);
+    const [data, setData] = useState<Imovel[]>([]);
     const [status, setStatus] = useState<'loading' | 'success' | 'empty' | 'error'>('loading');
     const [retry, setRetry] = useState(0);
 
@@ -66,8 +55,12 @@ function useDestaquesAluguel(staleTime = 300_000) {
     return { data, status, refetch: () => setRetry((c) => c + 1) };
 }
 
-// Wrapper de seção (padrões visuais)
-function SectionWrapper({ title, subtitle, description, children }: {
+function SectionWrapper({
+    title,
+    subtitle,
+    description,
+    children,
+}: {
     title: string;
     subtitle: string;
     description: string;
@@ -92,15 +85,16 @@ function SectionWrapper({ title, subtitle, description, children }: {
     );
 }
 
-// Estado unificado (loading | error | empty)
-function SectionState({ status, onRetry, emptyLink }: {
+function SectionState({
+    status,
+    onRetry,
+    emptyLink,
+}: {
     status: 'loading' | 'empty' | 'error';
     onRetry: () => void;
     emptyLink: string;
 }) {
-    if (status === 'loading') {
-        return <CarouselSkeleton />;
-    }
+    if (status === 'loading') return <CarouselSkeleton />;
     if (status === 'error') {
         return (
             <div className="max-w-md mx-auto bg-white border border-stone-200 rounded-lg p-8 text-center shadow-md">
@@ -129,7 +123,6 @@ function SectionState({ status, onRetry, emptyLink }: {
     );
 }
 
-// Skeleton
 function CarouselSkeleton() {
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
@@ -150,10 +143,9 @@ function CarouselSkeleton() {
     );
 }
 
-// Componente final
 export default function SecaoImoveisParaAlugar() {
     const { data, status, refetch } = useDestaquesAluguel();
-    const { ref: sectionRef, inView } = useInView({ triggerOnce: true, rootMargin: '200px', threshold: 0.1 });
+    const { ref: sectionRef } = useInView({ triggerOnce: true, rootMargin: '200px', threshold: 0.1 });
     const navPrevRef = useRef<HTMLButtonElement>(null);
     const navNextRef = useRef<HTMLButtonElement>(null);
 
@@ -169,12 +161,10 @@ export default function SecaoImoveisParaAlugar() {
             description="Espaços selecionados por custo-benefício, localização e simbologia urbana."
         >
             <div ref={sectionRef} tabIndex={0} onKeyDown={handleKeyNav}>
-                {/* renderiza apenas states não-success */}
                 {status !== 'success' && (
                     <SectionState status={status} onRetry={refetch} emptyLink="/imoveis/alugar" />
                 )}
 
-                {/* sucesso */}
                 {status === 'success' && data.length > 0 && (
                     <>
                         <OptimizedCarousel

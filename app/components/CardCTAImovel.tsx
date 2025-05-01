@@ -10,6 +10,9 @@ interface CardCTAImovelProps {
   tipoCTA?: "whatsapp" | "agendar"
   destaque?: boolean
   linkPersonalizado?: string
+  finalidade?: "Venda" | "Aluguel" | "Temporada"
+  full?: boolean
+  onAgendar?: () => void
 }
 
 export default function CardCTAImovel({

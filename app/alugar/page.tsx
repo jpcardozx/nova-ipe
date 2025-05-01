@@ -1,7 +1,7 @@
 // app/alugar/page.tsx
 import { sanityClient } from "@/lib/sanity"
 import { queryImoveisParaAlugar } from "@/lib/queries"
-import type { ImovelExtended } from "@/src/types/imovel-extended"
+import type { Imovel } from "@/src/types/sanity-schema"
 import AlugarPage from "./AlugarPage"
 
 export const revalidate = 0
@@ -12,6 +12,6 @@ export const metadata = {
 }
 
 export default async function Page() {
-    const imoveis: ImovelExtended[] = await sanityClient.fetch(queryImoveisParaAlugar)
+    const imoveis: Imovel[] = await sanityClient.fetch(queryImoveisParaAlugar)
     return <AlugarPage />
 }

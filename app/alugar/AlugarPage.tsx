@@ -1,25 +1,22 @@
-"use client"
+// app/alugar/AlugarPage.tsx
+'use client';
 
-import { useEffect, useState } from "react"
-import Navbar from "@/app/sections/NavBar"
-import Footer from "@/app/sections/Footer"
-import Valor from "@/app/sections/Valor"
-import ImovelCard from "@/app/components/ImovelCard"
-import { sanityClient } from "@/lib/sanity"
-import type { ImovelExtended } from "@/src/types/imovel-extended"
+import { useState, useEffect } from 'react';
+import Navbar from '@/app/sections/NavBar';
+import Footer from '@/app/sections/Footer';
+import Valor from '@/app/sections/Valor';
+import ImovelCard from '@/app/components/ImovelCard';
+import { getImoveisParaAlugar } from '@/lib/sanity/fetchImoveis';
+import type { ImovelClient } from '@/src/types/imovel-client';
 
 export default function AlugarPage() {
-    const [imoveis, setImoveis] = useState<ImovelExtended[]>([])
+    const [imoveis, setImoveis] = useState<ImovelClient[]>([]);
 
     useEffect(() => {
-        const fetchImoveis = async () => {
-            const query = `*[_type == "imovel" && status == "disponivel"] | order(_createdAt desc)`
-            const data = await sanityClient.fetch<ImovelExtended[]>(query)
-            setImoveis(data)
-        }
-
-        fetchImoveis()
-    }, [])
+        getImoveisParaAlugar()
+            .then((data) => setImoveis(data))
+            .catch((err) => console.error('Erro ao buscar imóveis:', err));
+    }, []);
 
     return (
         <>
@@ -44,5 +41,5 @@ export default function AlugarPage() {
             </main>
             <Footer />
         </>
-    )
+    );
 }

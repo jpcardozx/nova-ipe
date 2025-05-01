@@ -1,17 +1,23 @@
 // app/comprar/ComprarPage.tsx
-"use client"
+'use client';
 
-import Navbar from "@/app/sections/NavBar"
-import Footer from "@/app/sections/Footer"
-import Valor from "@/app/sections/Valor"
-import ImovelCard from "@/app/components/ImovelCard"
-import type { ImovelExtended } from "@/src/types/imovel-extended"
+import { useState, useEffect } from 'react';
+import Navbar from '@/app/sections/NavBar';
+import Footer from '@/app/sections/Footer';
+import Valor from '@/app/sections/Valor';
+import ImovelCard from '@/app/components/ImovelCard';
+import { getImoveisParaVenda } from '@/lib/sanity/fetchImoveis';
+import type { ImovelClient } from '@/src/types/imovel-client';
 
-interface Props {
-    imoveis: ImovelExtended[]
-}
+export default function ComprarPage() {
+    const [imoveis, setImoveis] = useState<ImovelClient[]>([]);
 
-export default function ComprarPage({ imoveis }: Props) {
+    useEffect(() => {
+        getImoveisParaVenda()
+            .then((data) => setImoveis(data))
+            .catch((err) => console.error('Erro ao buscar imóveis para venda:', err));
+    }, []);
+
     return (
         <>
             <Navbar />
@@ -36,7 +42,11 @@ export default function ComprarPage({ imoveis }: Props) {
                     ) : (
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
                             {imoveis.map((imovel) => (
-                                <ImovelCard key={imovel._id} imovel={imovel} finalidade="Venda" />
+                                <ImovelCard
+                                    key={imovel._id}
+                                    imovel={imovel}
+                                    finalidade="Venda"
+                                />
                             ))}
                         </div>
                     )}
@@ -45,5 +55,5 @@ export default function ComprarPage({ imoveis }: Props) {
             <Valor />
             <Footer />
         </>
-    )
+    );
 }
