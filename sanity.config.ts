@@ -17,3 +17,5 @@ export const sanityConfig = defineConfig({
     visionTool({ defaultApiVersion: apiVersion }),
   ],
 });
+
+export default sanityConfig;
