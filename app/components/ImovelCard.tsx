@@ -57,8 +57,8 @@ export default function ImovelCard({
       : imovel.cidade
 
     // Metragem formatada
-    const metragem = imovel.metros != null
-      ? formatarArea(Number(imovel.metros))
+    const metragem = imovel.areaUtil != null
+      ? formatarArea(Number(imovel.areaUtil))
       : null
 
     // Tipo do imóvel
