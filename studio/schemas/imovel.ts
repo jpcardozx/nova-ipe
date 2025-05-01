@@ -46,10 +46,38 @@ export default defineType({
       fieldset: 'info'
     }),
     defineField({
-      name: 'metros',
-      title: '📐 Área (m²)',
+      name: 'dormitorios',
+      title: '🛏️ Dormitórios',
+      type: 'number',
+      fieldset: 'info'
+    }),
+    defineField({
+      name: 'banheiros',
+      title: '🛁 Banheiros',
+      type: 'number',
+      fieldset: 'info'
+    }),
+    defineField({
+      name: 'areaUtil',
+      title: '📐 Área útil (m²)',
+      type: 'number',
+      fieldset: 'info'
+    }),
+    defineField({
+      name: 'vagas',
+      title: '🚗 Vagas de garagem',
+      type: 'number',
+      fieldset: 'info'
+    }),
+    defineField({
+      name: 'tipoImovel',
+      title: '🏘️ Tipo de Imóvel',
       type: 'string',
       fieldset: 'info',
+      options: {
+        list: ['Casa', 'Apartamento', 'Terreno', 'Comercial', 'Outro'],
+        layout: 'dropdown'
+      }
     }),
     defineField({
       name: 'preco',
