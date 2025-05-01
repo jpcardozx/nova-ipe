@@ -78,17 +78,21 @@ export default function Page({
 // Componente assíncrono que busca e transforma os dados
 async function ImovelPage({ slug }: { slug: string }) {
   const imovel: SanityImovel | null = await sanityClient.fetch(queryImovelPorSlug, { slug })
-
   if (!imovel) return notFound()
-
-  const relacionados: SanityImovel[] = await sanityClient.fetch(queryImoveisRelacionados, {
-    id: imovel._id,
-    categoriaId: imovel.categoria?._ref,
-    cidade: imovel.cidade,
-  })
 
   const preco = imovel.preco ?? 0
   const metragem = imovel.areaUtil ? formatarArea(imovel.areaUtil) : null
+
+  // ⚠️ Evita erro ao passar categoriaId undefined
+  let relacionados: SanityImovel[] = []
+  const categoriaRef = imovel.categoria?._ref
+  if (categoriaRef) {
+    relacionados = await sanityClient.fetch(queryImoveisRelacionados, {
+      id: imovel._id,
+      categoriaId: categoriaRef,
+      cidade: imovel.cidade,
+    })
+  }
 
   const imovelClient: ImovelClientType = mapImovelToClient(imovel)
   const relacionadosClient: ImovelClientType[] = relacionados.map(mapImovelToClient)
