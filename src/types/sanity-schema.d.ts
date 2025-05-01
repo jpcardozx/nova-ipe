@@ -73,11 +73,39 @@ export interface Imovel extends SanityDocument {
   descricao?: string;
 
   /**
-   * 📐 Área (m²) — `string`
+   * 🛏️ Dormitórios — `number`
    *
    *
    */
-  metros?: string;
+  dormitorios?: number;
+
+  /**
+   * 🛁 Banheiros — `number`
+   *
+   *
+   */
+  banheiros?: number;
+
+  /**
+   * 📐 Área útil (m²) — `number`
+   *
+   *
+   */
+  areaUtil?: number;
+
+  /**
+   * 🚗 Vagas de garagem — `number`
+   *
+   *
+   */
+  vagas?: number;
+
+  /**
+   * 🏘️ Tipo de Imóvel — `string`
+   *
+   *
+   */
+  tipoImovel?: "Casa" | "Apartamento" | "Terreno" | "Comercial" | "Outro";
 
   /**
    * 💰 Preço (R$) — `number`

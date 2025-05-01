@@ -32,4 +32,9 @@ export interface ImovelData {
   destaque?: boolean
   aceitaFinanciamento?: boolean
   linkPersonalizado?: string
+  dormitorios?: number;
+  banheiros?: number;
+  areaUtil?: number;
+  vagas?: number;
+  tipoImovel?: string;
 }

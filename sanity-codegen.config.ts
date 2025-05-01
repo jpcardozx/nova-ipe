@@ -1,7 +1,7 @@
 import { SanityCodegenConfig } from 'sanity-codegen';
 
 const config: SanityCodegenConfig = {
-    schemaPath: './app/studio/schemas/index.ts',
+    schemaPath: './studio/schemas/index.ts',
     outputPath: './src/types/sanity-schema.d.ts',
     babelOptions: {
         plugins: [
