@@ -36,7 +36,7 @@ export default function BlocoCTAConversao({ titulo, subtitulo, ctaText, ctaLink 
                     <Phone className="w-4 h-4" /> {ctaText}
                 </Link>
                 <p className="text-xs text-white/60 mt-2 flex items-center justify-center gap-1">
-                    <ShieldCheck className="w-3 h-3" /> Atendimento seguro e sem compromisso
+                    <ShieldCheck className="w-3 h-3" /> Atendimento seguro e confiável
                 </p>
             </motion.div>
         </section>
