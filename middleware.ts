@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-const STUDIO_PATH = "/studio"
+const STUDIO_PATH = "@/../studio"
 const AUTH_COOKIE_NAME = "admin-auth"
 const AUTH_COOKIE_VALUE = process.env.ADMIN_PASS || "suasenha123"
 
