@@ -6,7 +6,8 @@ import Link from 'next/link';
 import { useInView } from 'react-intersection-observer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getImovelEmDestaque } from '@/lib/sanity/fetchImoveis';
-import type { ImovelExtended } from '@/src/types/imovel-extended';
+import type { ImovelClient } from '@/src/types/imovel-client';
+type Imovel = ImovelClient;
 import { ImovelData } from '@/src/types/imovel';
 import { Compass, MapPin, ArrowUpRight, Loader2, AlertTriangle, Star } from 'lucide-react';
 import { cn, formatarMoeda, formatarArea, formatarQuantidade } from '@/src/lib/utils';
@@ -26,9 +27,9 @@ interface Feature {
 }
 
 // Componente principal
-export default function SecaoShowcaseImoveis() {
+export default function SecaoImoveisAVenda() {
     // Estado e refs
-    const [imoveis, setImoveis] = useState<ImovelExtended[]>([]);
+    const [imoveis, setImoveis] = useState<ImovelClient[]>([]);
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [activeIndex, setActiveIndex] = useState(0);
     const [isTransitioning, setIsTransitioning] = useState(false);
@@ -150,7 +151,7 @@ export default function SecaoShowcaseImoveis() {
     const activeImovel = imoveis[activeIndex];
 
     // Características para destaque com formatação adequada
-    const getFeatures = (imovel: ImovelExtended): Feature[] => {
+    const getFeatures = (imovel: Imovel): Feature[] => {
         return [
             {
                 label: 'Dormitórios',
@@ -232,7 +233,7 @@ export default function SecaoShowcaseImoveis() {
                                             <div className="absolute inset-0 z-10 bg-gradient-to-b from-transparent via-transparent to-stone-900/70" />
 
                                             <Image
-                                                src={activeImovel.imagem?.asset.url || '/placeholder-property.jpg'}
+                                                src={activeImovel.imagem?.url || '/placeholder-property.jpg'}
                                                 alt={activeImovel.titulo || 'Imóvel em destaque'}
                                                 fill
                                                 priority
@@ -248,11 +249,16 @@ export default function SecaoShowcaseImoveis() {
                                                     </span>
                                                 )}
 
-                                                {activeImovel.categoria && (
-                                                    <span className="bg-white/90 backdrop-blur-sm text-stone-800 px-3 py-1 rounded-full text-xs font-medium">
-                                                        {activeImovel.categoria.titulo}
-                                                    </span>
-                                                )}
+                                                {/* badge da categoria */}
+                                                {activeImovel.categoria &&
+                                                    !("_ref" in activeImovel.categoria) && (
+                                                        <span className="bg-white/90 backdrop-blur-sm text-stone-800 px-3 py-1 rounded-full text-xs font-medium">
+                                                            {activeImovel.categoria.titulo}
+                                                        </span>
+                                                    )}
+
+
+
                                             </div>
 
                                             {/* Localização sobre a imagem */}
@@ -429,7 +435,7 @@ export default function SecaoShowcaseImoveis() {
                                         ref={scrollAreaRef}
                                         className="flex overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-amber-200 scrollbar-track-transparent"
                                     >
-                                        {imoveis.map((imovel, idx) => (
+                                        {imoveis.map((imovel: ImovelClient, idx) => (
                                             <div
                                                 key={imovel._id}
                                                 className={cn(
@@ -447,7 +453,7 @@ export default function SecaoShowcaseImoveis() {
                                                         )}
                                                     >
                                                         <Image
-                                                            src={imovel.imagem?.asset.url || '/placeholder-property.jpg'}
+                                                            src={imovel.imagem?.url || '/placeholder-property.jpg'}
                                                             alt={imovel.titulo || 'Miniatura'}
                                                             fill
                                                             sizes="48px"

@@ -12,6 +12,10 @@ interface HeroImovelSimbolicoProps {
     cidade?: string
     tipo?: string
     metros?: string
+    imagem?: string
+    preco?: number
+    precoFormatado?: string
+    finalidade?: 'Venda' | 'Aluguel' | 'Temporada'
 }
 
 export default function HeroImovelSimbolico({

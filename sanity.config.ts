@@ -1,20 +1,19 @@
+// sanity.config.ts (na raiz do repo)
 import { defineConfig } from "sanity";
-import { deskTool } from "sanity/desk"; // correto
+import { deskTool } from "sanity/desk";
 import { visionTool } from "@sanity/vision";
 import schemaTypes from "./studio/schemas";
-import { structure } from "./studio/sanity/customStructure"; // importa sua estrutura customizada
+import { structure } from "./studio/sanity/customStructure";
 import { projectId, dataset, apiVersion } from "./studio/env";
 
-export default defineConfig({
+export const sanityConfig = defineConfig({
   basePath: "/studio",
   projectId,
   dataset,
   apiVersion,
-  schema: {
-    types: schemaTypes,
-  },
+  schema: { types: schemaTypes },
   plugins: [
-    deskTool({ structure }), // ✅ correto
+    deskTool({ structure }),
     visionTool({ defaultApiVersion: apiVersion }),
   ],
 });

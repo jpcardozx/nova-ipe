@@ -7,6 +7,7 @@ interface BlocoLocalizacaoImovelProps {
     cidade: string;
     mapaLink?: string;
     apiKey?: string;
+    bairro?: string;
 }
 
 export default function BlocoLocalizacaoImovel({ endereco, cidade, mapaLink, apiKey }: BlocoLocalizacaoImovelProps) {

@@ -1,5 +1,8 @@
-// Todos os imóveis disponíveis (com fallback para listagem geral)
-export const queryTodosImoveis = `
+// src/lib/queries.ts
+
+import { FRAGMENT_CAPA, FRAGMENT_DETALHES } from './sanity/fragments.groq';
+
+export const queryTodosImoveis = /* groq */ `
   *[
     _type == "imovel" &&
     status == "disponivel"
@@ -9,104 +12,197 @@ export const queryTodosImoveis = `
     slug,
     preco,
     destaque,
-    categoria->{ titulo, slug },
     finalidade,
     bairro,
     cidade,
-    imagem { asset->{ url } }
+    categoria->{
+      _id,
+      "categoriaTitulo": titulo,
+      "categoriaSlug": slug
+    },
+    imagem {
+      "imagemUrl": asset->url,
+      "alt": alt
+    }
   }
-`
+`;
 
-// Imóvel individual por slug (detalhes simbólicos + SEO)
-export const queryImovelPorSlug = `
-  *[_type == "imovel" && slug.current == $slug][0] {
+export const queryImovelEmDestaque = /* groq */ `
+  *[
+    _type == "imovel" &&
+    status == "disponivel" &&
+    destaque == true
+  ] | order(_createdAt desc)[0...6] {
+    _id,
     titulo,
-    descricao,
+    slug,
     preco,
-    endereco,
+    finalidade,
+    tipoImovel,
     bairro,
     cidade,
-    estado,
-    categoria->{ titulo, slug },
-    imagem { asset->{ url } },
-    imagemOpenGraph { asset->{ url } },
+    descricao,
     aceitaFinanciamento,
-    metros,
-    area,
-    finalidade,
     destaque,
+    categoria->{
+      _id,
+      "categoriaTitulo": titulo,
+      "categoriaSlug": slug
+    },
+    imagem {
+      "imagemUrl": asset->url,
+      "alt": alt
+    }
+  }
+`;
+
+export const queryImovelPorSlug = /* groq */ `
+  *[_type == "imovel" && slug.current == $slug][0] {
+    _id,
+    titulo,
+    slug,
+    preco,
+    destaque,
+    finalidade,
+    bairro,
+    cidade,
+    descricao,
+    endereco,
+    estado,
+    aceitaFinanciamento,
+    area,
+    areaUtil,
     documentacaoOk,
     videoTour,
+    categoria->{
+      _id,
+      "categoriaTitulo": titulo,
+      "categoriaSlug": slug
+    },
+    imagem {
+      "imagemUrl": asset->url,
+      "alt": alt
+    },
+    imagemOpenGraph {
+      "imagemUrl": asset->url
+    },
     metaTitle,
     metaDescription,
     tags
   }
-`
+`;
 
-// Imóveis para aluguel com destaque (Home)
-export const queryImoveisAluguelDestaque = `
+export const queryImoveisAluguelDestaque = /* groq */ `
   *[
     _type == "imovel" &&
     status == "disponivel" &&
-    lower(finalidade) == "aluguel" &&
+    finalidade == "aluguel" &&
     destaque == true
   ] | order(_createdAt desc)[0...6] {
     _id,
-    slug,
     titulo,
-    cidade,
-    bairro,
+    slug,
     preco,
     destaque,
-    categoria->{ titulo, slug },
-    imagem { asset->{ url } },
+    finalidade,
+    bairro,
+    cidade,
+    categoria->{
+      _id,
+      "categoriaTitulo": titulo,
+      "categoriaSlug": slug
+    },
+    imagem {
+      "imagemUrl": asset->url,
+      "alt": alt
+    },
     aceitaFinanciamento,
     area,
-    metros,
-    finalidade
+    areaUtil
   }
-`
+`;
 
-// Imóveis para venda (ex: página /comprar)
-export const queryImoveisParaVenda = `
+export const queryImoveisParaVenda = /* groq */ `
   *[
     _type == "imovel" &&
     status == "disponivel" &&
-    lower(finalidade) == "venda"
+    finalidade == "venda"
   ] | order(_createdAt desc)[0...30] {
     _id,
-    slug,
     titulo,
+    slug,
     preco,
-    cidade,
-    bairro,
-    imagem { asset->{ url } },
-    categoria->{ titulo, slug },
     destaque,
+    finalidade,
+    bairro,
+    cidade,
+    categoria->{
+      _id,
+      "categoriaTitulo": titulo,
+      "categoriaSlug": slug
+    },
+    imagem {
+      "imagemUrl": asset->url,
+      "alt": alt
+    },
+    aceitaFinanciamento,
     area,
-    metros,
-    aceitaFinanciamento
+    areaUtil
   }
-`
+`;
 
-// Imóveis para aluguel (ex: página /alugar)
-export const queryImoveisParaAlugar = `
+export const queryImoveisParaAlugar = /* groq */ `
   *[
     _type == "imovel" &&
     status == "disponivel" &&
-    lower(finalidade) == "aluguel"
+    finalidade == "aluguel"
   ] | order(_createdAt desc)[0...30] {
     _id,
-    slug,
     titulo,
+    slug,
     preco,
-    cidade,
-    bairro,
-    imagem { asset->{ url } },
-    categoria->{ titulo, slug },
     destaque,
+    finalidade,
+    bairro,
+    cidade,
+    categoria->{
+      _id,
+      "categoriaTitulo": titulo,
+      "categoriaSlug": slug
+    },
+    imagem {
+      "imagemUrl": asset->url,
+      "alt": alt
+    },
+    aceitaFinanciamento,
     area,
-    metros,
-    aceitaFinanciamento
+    areaUtil
   }
-`
+`;
+
+export const queryImoveisRelacionados = /* groq */ `
+  *[
+    _type == "imovel" &&
+    _id != $imovelId &&
+    (!defined($categoriaId) || categoria._ref == $categoriaId) &&
+    (!defined($cidade) || cidade == $cidade)
+  ][0...6] {
+    _id,
+    titulo,
+    slug,
+    preco,
+    destaque,
+    finalidade,
+    bairro,
+    cidade,
+    categoria->{
+      _id,
+      "categoriaTitulo": titulo,
+      "categoriaSlug": slug
+    },
+    imagem {
+      "imagemUrl": asset->url,
+      "alt": alt
+    }
+  }
+`;
