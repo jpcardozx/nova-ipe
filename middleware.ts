@@ -1,46 +1,54 @@
+// middleware.ts
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-const STUDIO_PATH = "@/../studio"
+// Roda no Node.js Runtime para ter acesso a process.env em tempo de execução
+export const runtime = "nodejs"
+
 const AUTH_COOKIE_NAME = "admin-auth"
-const AUTH_COOKIE_VALUE = process.env.ADMIN_PASS || "suasenha123"
+// Variável obrigatória: lança erro em build se não estiver definida
+const AUTH_SECRET = process.env.ADMIN_PASS
+if (!AUTH_SECRET) {
+  throw new Error(
+    "❌ ENV ADMIN_PASS não definida. Defina ADMIN_PASS em suas variáveis de ambiente."
+  )
+}
+
+const STUDIO_PREFIX = "/studio"
 
 /**
- * Middleware para proteger rotas administrativas (como /studio).
- * Bloqueia acesso não autenticado e redireciona para /acesso-negado.
+ * Middleware para proteger o painel do Sanity Studio.
+ * - Só roda para /studio e subcaminhos
+ * - Ignora assets estáticos do próprio Next (/_next, /static)
+ * - Reescreve para /acesso-negado em caso de cookie inválido
  */
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  const isStudioRoute =
-    pathname === STUDIO_PATH || pathname.startsWith(`${STUDIO_PATH}/`)
-
-  if (!isStudioRoute) return NextResponse.next()
-
-  const cookie = request.cookies.get(AUTH_COOKIE_NAME)
-  const cookieValue = cookie?.value
-
-  const isAuthorized = cookieValue === AUTH_COOKIE_VALUE
-
-  if (isAuthorized) {
+  // Só intervém se for rota do Studio
+  if (!pathname.startsWith(STUDIO_PREFIX)) {
     return NextResponse.next()
   }
 
-  // ❗Se a variável de ambiente estiver incorreta ou ausente
-  if (!process.env.ADMIN_PASS) {
-    console.warn(
-      "[middleware] ADMIN_PASS não definido no ambiente. Usando valor padrão."
-    )
+  // Deixa passar arquivos estáticos do Next.js
+  if (
+    pathname.startsWith(`${STUDIO_PREFIX}/_next`) ||
+    pathname.startsWith(`${STUDIO_PREFIX}/static`)
+  ) {
+    return NextResponse.next()
   }
 
-  const accessDeniedUrl = new URL("/acesso-negado", request.url)
-  return NextResponse.redirect(accessDeniedUrl)
+  const cookieValue = request.cookies.get(AUTH_COOKIE_NAME)?.value
+  if (cookieValue === AUTH_SECRET) {
+    return NextResponse.next()
+  }
+
+  // Se não autorizado, reescreve p/ página de acesso negado
+  const deniedUrl = new URL("/acesso-negado", request.url)
+  return NextResponse.rewrite(deniedUrl)
 }
 
-/**
- * Define quais rotas o middleware intercepta.
- * Aqui: protege /studio e todos os subcaminhos.
- */
 export const config = {
-  matcher: ["/studio", "/studio/:path*"],
+  // Protege /studio e tudo que vier depois
+  matcher: ["/studio/:path*"],
 }
