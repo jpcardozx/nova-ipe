@@ -1,33 +1,76 @@
+import Image from 'next/image';
 // src/types/imovel-client.ts
-import type { Imovel as CoreImovel } from "@/src/types/sanity-schema"
 
-// ——————————————————————————————————————————————————————————————————————————————
-// Quando a categoria vem só como referência do Sanity
-export interface CategoriaRef {
-    _type: "reference"
-    _ref: string
-}
+import type { Imovel as SanityImovel } from '@/types/sanity-schema'
 
-// Quando a categoria está populada (full) diretamente do Sanity
+// Tipo para categoria expandida
 export interface CategoriaFull {
-    _type: "categoria"
-    slug: { current: string }
-    titulo: string
+    _id: string
+    titulo?: string
+    slug?: {
+        current: string
+    }
+    categoriaSlug?: string  // Campo adicional para facilitar acesso
+    categoriaTitulo?: string  // Campo adicional para facilitar acesso
 }
 
-// União: pode ser ref _ou_ full
-export type Categoria = CategoriaRef | CategoriaFull
+// Tipo de imagem que o toClientImage retorna
+export interface ImagemClient {
+    imagemUrl?: string  // Alterado de url para imagemUrl para compatibilidade
+    alt?: string
+    url: string  // URL da imagem, compatível com o que o Sanity retorna
+}
 
-// ——————————————————————————————————————————————————————————————————————————————
-// Nosso payload de cliente: herda tudo de CoreImovel,
-// exceto imagem, imagemOpenGraph e categoria
-export interface ImovelClient
-    extends Omit<CoreImovel, "imagem" | "imagemOpenGraph" | "categoria"> {
+/**
+ * Interface para o imóvel já processado para o cliente
+ * Contém apenas os campos necessários para a UI
+ */
+export interface ImovelClient {
+    _id: string
+    _type?: string
+    titulo?: string
+    slug: string
+    preco?: number
+    finalidade?: 'Venda' | 'Aluguel' | 'Temporada'
+    tipoImovel?: 'Casa' | 'Apartamento' | 'Terreno' | 'Comercial' | 'Outro'
+    destaque?: boolean
+    bairro?: string
+    cidade?: string
+    estado?: string
+    descricao?: string
+    mapaLink?: string
 
-    // imagens normalizadas
-    imagem?: { url?: string; alt?: string }
-    imagemOpenGraph?: { url?: string }
+    // Características principais
+    dormitorios?: number
+    banheiros?: number
+    areaUtil?: number
+    vagas?: number
 
-    // categoria somente se veio populada
-    categoria?: Categoria
+    // Flags
+    aceitaFinanciamento?: boolean
+    documentacaoOk?: boolean
+
+    // Categoria
+    categoria?: CategoriaFull
+
+    // Imagens - agora usando ImagemClient
+    imagem?: ImagemClient
+    imagemOpenGraph?: ImagemClient
+    // Outros campos relevantes
+    endereco?: string
+    metaTitle?: string
+    metaDescription?: string
+    tags?: string[]
+    status?: 'disponivel' | 'reservado' | 'vendido'
+}
+
+export interface ImagemProjetada {
+    imagemUrl?: string
+    alt?: string
+}
+
+export interface ImovelProjetado extends Omit<SanityImovel, 'imagem' | 'imagemOpenGraph' | 'categoria'> {
+    imagem?: ImagemProjetada
+    imagemOpenGraph?: { imagemUrl?: string }
+    categoria?: CategoriaFull
 }

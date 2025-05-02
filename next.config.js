@@ -1,9 +1,9 @@
+// next.config.js
 const { withSentryConfig } = require('@sentry/nextjs');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    // ❗️A API 'images.domains' está **obsoleta** — use 'remotePatterns' em vez disso
     remotePatterns: [
       {
         protocol: 'https',
@@ -19,17 +19,19 @@ const nextConfig = {
       },
     ],
   },
-  rewrites: async () => [
-    {
-      source: '/studio/:path*',
-      destination: '/studio/index.html', // usado para SPA estática do Sanity
-    },
-  ],
 
+  async rewrites() {
+    return [
+      {
+        source: '/studio/:path*',
+        destination: '/studio/index.html', // usado para servir SPA estática do Sanity
+      },
+    ];
+  },
 };
 
 const sentryWebpackPluginOptions = {
-  silent: true, // evita logs no terminal do Sentry
+  silent: true, // evita logs desnecessários do Sentry
 };
 
 module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions);

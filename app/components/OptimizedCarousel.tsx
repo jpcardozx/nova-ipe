@@ -12,7 +12,7 @@ import { useKeenSlider } from 'keen-slider/react';
 import type { KeenSliderInstance, KeenSliderOptions } from 'keen-slider';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { cn } from '@/src/lib/utils';
+import { cn } from '@core/utils';
 import 'keen-slider/keen-slider.min.css';
 
 export interface OptimizedCarouselProps<T> {

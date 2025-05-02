@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import Navbar from '@/app/sections/NavBar'
-import Footer from '@/app/sections/Footer'
+import Navbar from '@sections/NavBar'
+import Footer from '@sections/Footer'
 
 const AUTH_COOKIE_NAME = 'admin-auth'
 
@@ -15,7 +15,6 @@ export default function LoginPage() {
 
   const redirecionarParaStudio = () => {
     if (typeof window !== 'undefined') {
-      // Redireciona como fallback via browser (SPA estática do Sanity)
       window.location.assign('/studio')
     }
   }
@@ -52,12 +51,6 @@ export default function LoginPage() {
     await fetch('/api/logout', { method: 'POST' })
     router.refresh()
   }
-
-  useEffect(() => {
-    // Verificação no client apenas para UX otimista (não é segura!)
-    const isAutenticado = document.cookie.includes(`${AUTH_COOKIE_NAME}=`)
-    if (isAutenticado) redirecionarParaStudio()
-  }, [])
 
   return (
     <div className="flex flex-col min-h-screen bg-neutral-50 text-neutral-800">
@@ -113,7 +106,7 @@ export default function LoginPage() {
             Sessão ativa?{' '}
             <button
               onClick={handleLogout}
-              className="text-emerald-600 hover:underline font-medium"
+              className="text-amber-400 hover:underline font-medium"
             >
               Finalizar acesso
             </button>

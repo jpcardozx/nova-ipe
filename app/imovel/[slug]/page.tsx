@@ -1,14 +1,13 @@
 import { use, Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import { sanityClient } from '@/lib/sanity'
-import { formatarArea } from '@/src/lib/utils'
-import { queryImovelPorSlug, queryImoveisRelacionados } from '@/lib/queries'
+import { formatarArea } from '@/lib/utils'
+import { queryImovelPorSlug, queryImoveisRelacionados } from '@lib/queries'
+import { getImovelPorSlug } from '@lib/sanity/fetchImoveis'
 
 import type { Metadata } from 'next'
-import type { Imovel as SanityImovel } from '@/src/types/sanity-schema'
-import type { ImovelClient as ImovelClientType } from '@/src/types/imovel-client'
-
-import { mapImovelToClient } from '@/src/lib/mapImovelToClient'
+import type { ImovelClient as ImovelClientType, ImovelProjetado } from '@/types/imovel-client'
+import { mapImovelToClient } from '@/lib/mapImovelToClient'
 import ImovelClient from './ImovelClient'
 
 // Geração estática das rotas dinâmicas
@@ -19,12 +18,14 @@ export async function generateStaticParams() {
   return slugs.map(({ slug }) => ({ slug: slug.current }))
 }
 
+
+
 // SSR Metadata com fallback inteligente
 export async function generateMetadata(
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: { slug: string } }
 ): Promise<Metadata> {
   const { slug } = await params
-  const imovel: SanityImovel | null = await sanityClient.fetch(queryImovelPorSlug, { slug })
+  const imovel: ImovelProjetado | null = await sanityClient.fetch(queryImovelPorSlug, { slug })
 
   if (!imovel) return {}
 
@@ -34,7 +35,7 @@ export async function generateMetadata(
     `Veja os detalhes deste imóvel em ${imovel.cidade}. Curadoria exclusiva da Ipê Imóveis.`
 
   const imageUrl =
-    imovel.imagemOpenGraph?.asset?._ref || imovel.imagem?.asset?._ref || undefined
+    imovel.imagemOpenGraph?.imagemUrl || imovel.imagem?.imagemUrl || undefined
 
   return {
     title,
@@ -64,37 +65,36 @@ export async function generateMetadata(
 export default function Page({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: { slug: string }
 }) {
-  const { slug } = use(params)
 
   return (
     <Suspense fallback={<div className="h-[70vh] bg-gray-100 animate-pulse" />}>
-      <ImovelPage slug={slug} />
+      <ImovelPage slug={params.slug} />
     </Suspense>
   )
 }
 
 // Componente assíncrono que busca e transforma os dados
 async function ImovelPage({ slug }: { slug: string }) {
-  const imovel: SanityImovel | null = await sanityClient.fetch(queryImovelPorSlug, { slug })
-  if (!imovel) return notFound()
 
-  const preco = imovel.preco ?? 0
-  const metragem = imovel.areaUtil ? formatarArea(imovel.areaUtil) : null
+  const imovelClient = await getImovelPorSlug(slug)
+  if (!imovelClient) return notFound()
+
+  const preco = imovelClient.preco ?? 0
+  const metragem = imovelClient.areaUtil ? formatarArea(imovelClient.areaUtil) : null
 
   // ⚠️ Evita erro ao passar categoriaId undefined
-  let relacionados: SanityImovel[] = []
-  const categoriaRef = imovel.categoria?._ref
-  if (categoriaRef) {
-    relacionados = await sanityClient.fetch(queryImoveisRelacionados, {
-      id: imovel._id,
-      categoriaId: categoriaRef,
-      cidade: imovel.cidade,
+  let relacionados: ImovelProjetado[] = []
+  const categoriaId = imovelClient.categoria?._id
+  if (categoriaId) {
+    relacionados = await sanityClient.fetch<ImovelProjetado[]>(queryImoveisRelacionados, {
+      imovelId: imovelClient._id,
+      categoriaId: categoriaId,
+      cidade: imovelClient.cidade,
     })
   }
 
-  const imovelClient: ImovelClientType = mapImovelToClient(imovel)
   const relacionadosClient: ImovelClientType[] = relacionados.map(mapImovelToClient)
 
   return (

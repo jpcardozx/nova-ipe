@@ -1,40 +1,25 @@
 // app/api/login/route.ts
 import { NextResponse } from "next/server"
-import type { NextRequest } from "next/server"
-import { getAdminSecret, signToken } from "@/lib/auth"
+import { getAdminSecret, signToken } from "@lib/auth"
 
-const COOKIE_NAME = "admin-auth"
-
-export async function POST(req: NextRequest) {
-    let body: any
-    try {
-        body = await req.json()
-    } catch {
-        return NextResponse.json(
-            { error: "Payload inválido, JSON esperado." },
-            { status: 400 }
-        )
-    }
-
-    const { senha } = body
+export async function POST(req: Request) {
+    const { senha } = await req.json()
     const secret = getAdminSecret()
 
     if (senha !== secret) {
-        return NextResponse.json(
-            { error: "Senha incorreta." },
-            { status: 401 }
-        )
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Gera e seta o cookie assinado
-    const token = signToken(secret)
+    const token = await signToken(secret)
     const res = NextResponse.json({ ok: true })
-    res.cookies.set(COOKIE_NAME, token, {
+
+    res.cookies.set("admin-auth", token, {
         path: "/",
-        maxAge: 60 * 60 * 12,            // 12 horas
+        maxAge: 60 * 60 * 12,
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: process.env.NODE_ENV === "production", // só secure em prod
         sameSite: "lax",
     })
+
     return res
 }

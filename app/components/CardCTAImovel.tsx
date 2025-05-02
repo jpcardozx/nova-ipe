@@ -1,8 +1,7 @@
 "use client"
 
 import { Phone, Calendar, UserCheck } from "lucide-react"
-import { cn } from "@/src/lib/utils"
-import { formatarMoeda } from "@/src/lib/utils"
+import { formatarMoeda, cn } from "@/lib/utils"
 
 interface CardCTAImovelProps {
   preco?: number
