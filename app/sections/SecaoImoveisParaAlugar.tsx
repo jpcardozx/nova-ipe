@@ -11,14 +11,14 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useInView } from 'react-intersection-observer';
 import { ChevronLeft, ChevronRight, ExternalLink, Loader2, AlertTriangle } from 'lucide-react';
-import { getImoveisParaAlugar } from '@/lib/sanity/fetchImoveis';
-import ImovelCard from '@/app/components/ImovelCard';
-import type { ImovelClient as Imovel } from '@/src/types/imovel-client';
-import type { OptimizedCarouselProps } from '@/app/components/OptimizedCarousel';
-import { cn } from '@/src/lib/utils';
+import { getImoveisParaAlugar } from '@lib/sanity/fetchImoveis';
+import ImovelCard from '@components/ImovelCard';
+import type { ImovelClient as Imovel } from '@/types/imovel-client';
+import type { OptimizedCarouselProps } from '@components/OptimizedCarousel';
+import { cn } from '@/lib/utils';
 
 const OptimizedCarousel = dynamic<OptimizedCarouselProps<Imovel>>(
-    () => import('@/app/components/OptimizedCarousel').then((mod) => mod.OptimizedCarousel),
+    () => import('@components/OptimizedCarousel').then((mod) => mod.OptimizedCarousel),
     { ssr: false, loading: () => <CarouselSkeleton /> }
 );
 

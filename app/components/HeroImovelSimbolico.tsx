@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import Image from "next/image"
 import { BadgeCheck } from "lucide-react"
-import { formatarArea } from "@/src/lib/utils"
+import { formatarArea } from "@/lib/utils"
 
 interface HeroImovelSimbolicoProps {
     titulo: string

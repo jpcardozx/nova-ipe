@@ -1,27 +1,27 @@
-// src/lib/data.ts (ou onde preferir)
-import type { Imovel } from '@/src/types/sanity-schema'
+// src/lib/data.ts
+import { cache } from 'react'
 import { sanityClient } from '@/lib/sanity'
 import {
     queryImovelPorSlug,
     queryImoveisRelacionados,
-} from '@/lib/queries'
-import { cache } from 'react'
+} from '@lib/queries'
 
-export const getImovelData = cache((slug: string) =>
-    sanityClient.fetch<Imovel | null>(queryImovelPorSlug, { slug })
+import type { Imovel } from '@/types/sanity-schema'
+
+// Carrega 1 imóvel completo pelo slug (usado no SSR da página)
+export const getImovelData = cache((slug: string): Promise<Imovel | null> =>
+    sanityClient.fetch(queryImovelPorSlug, { slug })
 )
 
+// Carrega imóveis relacionados com filtros opcionais
 export const getImoveisRelacionados = cache((
-    id: string,
+    imovelId: string,
     categoriaId?: string,
-    cidade?: string,
-) =>
-    sanityClient.fetch<Imovel[]>(
-        queryImoveisRelacionados,
-        {
-            imovelId: id,
-            categoriaId: categoriaId ?? '',
-            cidade: cidade ?? '',
-        },
-    )
+    cidade?: string
+): Promise<Imovel[]> =>
+    sanityClient.fetch(queryImoveisRelacionados, {
+        imovelId, // ⚠️ deve corresponder ao parâmetro da query
+        categoriaId: categoriaId || undefined,
+        cidade: cidade || undefined,
+    })
 )

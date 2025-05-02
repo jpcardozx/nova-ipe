@@ -1,4 +1,3 @@
-// src/lib/sanity/fragments.groq.ts
 export const FRAGMENT_CAPA = /* groq */ `
   _id,
   titulo,
@@ -9,13 +8,13 @@ export const FRAGMENT_CAPA = /* groq */ `
   bairro,
   cidade,
   imagem {
-    "url": asset->url,
+    "imagemUrl": asset->url,
     "alt": alt
   },
   categoria->{
     _id,
-    titulo,
-    slug
+    "categoriaTitulo": titulo,
+    "categoriaSlug": slug
   }
 `;
 
@@ -25,7 +24,7 @@ export const FRAGMENT_DETALHES = /* groq */ `
   endereco,
   estado,
   imagemOpenGraph {
-    "url": asset->url
+    "imagemUrl": asset->url
   },
   aceitaFinanciamento,
   area,

@@ -10,9 +10,8 @@ import React, {
 import Image from 'next/image';
 import Link from 'next/link';
 import { MapPin, ArrowRight, Sparkles, Home, Scale } from 'lucide-react';
-import { formatarMoeda, formatarArea } from '@/src/lib/utils';
-import type { ImovelClient as Imovel } from '@/src/types/imovel-client';
-import { cn } from '@/src/lib/utils';
+import { formatarMoeda, formatarArea, cn } from '@/lib/utils';
+import type { ImovelClient as Imovel } from '@/types/imovel-client';
 
 const FINALIDADE_CONFIG = {
   Venda: {
@@ -69,7 +68,7 @@ export default function ImovelCard({
   const cardRef = useAppear();
 
   // slug & URL
-  const slug = useMemo(() => imovel.slug?.current ?? '', [imovel.slug]);
+  const slug = useMemo(() => imovel.slug ?? '', [imovel.slug]);
   const detailsUrl = slug ? `/imovel/${encodeURIComponent(slug)}` : '#';
 
   // titles & images

@@ -2,12 +2,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Navbar from '@/app/sections/NavBar';
-import Footer from '@/app/sections/Footer';
-import Valor from '@/app/sections/Valor';
-import ImovelCard from '@/app/components/ImovelCard';
-import { getImoveisParaVenda } from '@/lib/sanity/fetchImoveis';
-import type { ImovelClient } from '@/src/types/imovel-client';
+import Navbar from '@sections/NavBar';
+import Footer from '@sections/Footer';
+import Valor from '@sections/Valor';
+import ImovelCard from '@components/ImovelCard';
+import { getImoveisParaVenda } from '@lib/sanity/fetchImoveis';
+import type { ImovelClient } from '@/types/imovel-client';
 
 export default function Page() {
     const [imoveis, setImoveis] = useState<ImovelClient[]>([]);

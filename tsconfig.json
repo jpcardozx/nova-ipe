@@ -21,10 +21,28 @@
     "baseUrl": ".",
     "paths": {
       "@/*": [
-        "./*"
+        "src/*"
       ],
-      "lib/*": [
-        "./lib/*"
+      "@app/*": [
+        "app/*"
+      ],
+      "@components/*": [
+        "app/components/*"
+      ],
+      "@sections/*": [
+        "app/sections/*"
+      ],
+      "@lib/*": [
+        "lib/*"
+      ],
+      "@core/*": [
+        "src/lib/*"
+      ],
+      "@types/*": [
+        "src/types/*"
+      ],
+      "@/types/*": [
+        "src/types/*"
       ]
     },
     "plugins": [
@@ -34,15 +52,17 @@
     ]
   },
   "include": [
+    "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "next-env.d.ts",
     ".next/types/**/*.ts",
     "sanity.config.ts",
-    "sanity-codegen.config.ts",
-    "studio/sanity.cli.js"
+    "sanity-codegen.config.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "studio/sanity.cli.js",
+    ".next",
+    "dist"
   ]
 }

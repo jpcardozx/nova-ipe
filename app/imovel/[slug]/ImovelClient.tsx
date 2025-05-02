@@ -10,15 +10,15 @@ import {
     Home as Casa,
 } from 'lucide-react'
 
-import HeroImovelSimbolico from '@/app/components/HeroImovelSimbolico'
-import CardCTAImovel from '@/app/components/CardCTAImovel'
-import BlocoLocalizacaoImovel from '@/app/components/BlocoLocalizacaoImovel'
-import SecaoApresentacaoValor from '@/app/sections/Valor'
-import Referencias from '@/app/sections/Referencias'
-import Navbar from '@/app/sections/NavBar'
-import Footer from '@/app/sections/Footer'
+import HeroImovelSimbolico from '@components/HeroImovelSimbolico'
+import CardCTAImovel from '@components/CardCTAImovel'
+import BlocoLocalizacaoImovel from '@components/BlocoLocalizacaoImovel'
+import SecaoApresentacaoValor from '@sections/Valor'
+import Referencias from '@sections/Referencias'
+import Navbar from '@sections/NavBar'
+import Footer from '@sections/Footer'
 
-import { ImovelClient as ImovelData } from '@/src/types/imovel-client'
+import { ImovelClient as ImovelData } from '@/types/imovel-client'
 
 
 /* --------------------------- PROPS -------------------------------- */
@@ -172,7 +172,7 @@ export default function ImovelClient({
 
 /* Card de relacionado simplificado -------------------------------- */
 function ImovelRelacionadoCard({ imovel }: { imovel: ImovelData }) {
-    const slug = imovel.slug?.current ?? ''
+    const slug = imovel.slug ?? ''
     return (
         <a
             href={`/imovel/${slug}`}

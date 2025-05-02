@@ -7,36 +7,36 @@ import {
     queryImoveisAluguelDestaque,
     queryImovelEmDestaque,
     queryImovelPorSlug,
-} from '@/lib/queries'
+} from '@lib/queries'
 
-import { mapImovelToClient } from '@/src/lib/mapImovelToClient'
-import type { ImovelClient } from '@/src/types/imovel-client'
-import type { Imovel as ImovelSanity } from '@/src/types/sanity-schema'
+import { mapImovelToClient } from '@core/mapImovelToClient'
+import type { ImovelClient } from '@/types/imovel-client'
+import type { ImovelProjetado } from '@/types/imovel-client'
 
 // utilzinho para evitar repetição ↓
-const mapMany = (data: ImovelSanity[]): ImovelClient[] =>
+const mapMany = (data: ImovelProjetado[]): ImovelClient[] =>
     data.map(mapImovelToClient)
 
 // ———————————————————————————————————————————————————————————————————
 // LISTAGENS
 // ———————————————————————————————————————————————————————————————————
 export async function getTodosImoveis(): Promise<ImovelClient[]> {
-    const data = await sanityClient.fetch<ImovelSanity[]>(queryTodosImoveis)
+    const data = await sanityClient.fetch<ImovelProjetado[]>(queryTodosImoveis)
     return mapMany(data)
 }
 
 export async function getImoveisParaVenda(): Promise<ImovelClient[]> {
-    const data = await sanityClient.fetch<ImovelSanity[]>(queryImoveisParaVenda)
+    const data = await sanityClient.fetch<ImovelProjetado[]>(queryImoveisParaVenda)
     return mapMany(data)
 }
 
 export async function getImoveisParaAlugar(): Promise<ImovelClient[]> {
-    const data = await sanityClient.fetch<ImovelSanity[]>(queryImoveisParaAlugar)
+    const data = await sanityClient.fetch<ImovelProjetado[]>(queryImoveisParaAlugar)
     return mapMany(data)
 }
 
 export async function getImoveisAluguelDestaque(): Promise<ImovelClient[]> {
-    const data = await sanityClient.fetch<ImovelSanity[]>(
+    const data = await sanityClient.fetch<ImovelProjetado[]>(
         queryImoveisAluguelDestaque
     )
     return mapMany(data)
@@ -48,7 +48,7 @@ export async function getImoveisAluguelDestaque(): Promise<ImovelClient[]> {
 export async function getImovelPorSlug(
     slug: string
 ): Promise<ImovelClient | null> {
-    const data = await sanityClient.fetch<ImovelSanity | null>(
+    const data = await sanityClient.fetch<ImovelProjetado | null>(
         queryImovelPorSlug,
         { slug }
     )
@@ -59,7 +59,7 @@ export async function getImovelPorSlug(
 export async function getImovelPorId(
     id: string
 ): Promise<ImovelClient | null> {
-    const data = await sanityClient.fetch<ImovelSanity | null>(
+    const data = await sanityClient.fetch<ImovelProjetado | null>(
         queryImovelPorSlug,
         { id }
     )
@@ -70,7 +70,7 @@ export async function getImovelPorId(
 // VITRINE (ex-home)
 // ———————————————————————————————————————————————————————————————————
 export async function getImovelEmDestaque(): Promise<ImovelClient[]> {
-    const data = await sanityClient.fetch<ImovelSanity[]>(
+    const data = await sanityClient.fetch<ImovelProjetado[]>(
         queryImovelEmDestaque
     )
     return mapMany(data)

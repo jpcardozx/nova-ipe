@@ -1,7 +1,7 @@
 // app/alugar/page.tsx
 import { sanityClient } from "@/lib/sanity"
-import { queryImoveisParaAlugar } from "@/lib/queries"
-import type { Imovel } from "@/src/types/sanity-schema"
+import { queryImoveisParaAlugar } from "@lib/queries"
+import type { ImovelClient } from "@/types/imovel-client"
 import AlugarPage from "./AlugarPage"
 
 export const revalidate = 0
@@ -12,6 +12,6 @@ export const metadata = {
 }
 
 export default async function Page() {
-    const imoveis: Imovel[] = await sanityClient.fetch(queryImoveisParaAlugar)
+    const imoveis: ImovelClient[] = await sanityClient.fetch(queryImoveisParaAlugar)
     return <AlugarPage />
 }
