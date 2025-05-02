@@ -1,12 +1,13 @@
 import Footer from "./sections/Footer";
 import NavBar from "./sections/NavBar";
 import Hero from "./sections/Hero";
-import SecaoImoveisAVenda from "./sections/SecaoImoveisAVenda";
+import DestaquesVenda from "./sections/DestaquesVenda";
 import SecaoImoveisParaAlugar from "./sections/SecaoImoveisParaAlugar";
 import Referencias from "./sections/Referencias";
 import Valor from "./sections/Valor";
 import Destaques from "./sections/Destaques";
 import { Montserrat } from 'next/font/google';
+import DestaquesAluguel from "./sections/DestaquesAluguel";
 
 const montSerrat = Montserrat({
   subsets: ['latin'],
@@ -21,10 +22,9 @@ export default function Home() {
       <NavBar />
       <Hero />
       <Valor />
-      <SecaoImoveisAVenda />
+      <DestaquesVenda />
       <Referencias />
-      <SecaoImoveisParaAlugar />
-      <Destaques />
+      <DestaquesAluguel />
       <Footer />
     </div>
   );
