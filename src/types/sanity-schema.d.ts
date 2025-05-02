@@ -56,6 +56,7 @@ export interface Imovel extends SanityDocument {
    *
    *
    */
+
   categoria?: SanityReference<Categoria>;
 
   /**

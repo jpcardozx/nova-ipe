@@ -12,6 +12,7 @@ export interface CategoriaFull {
     }
     categoriaSlug?: string  // Campo adicional para facilitar acesso
     categoriaTitulo?: string  // Campo adicional para facilitar acesso
+    disponibilidadeImediata?: boolean
 }
 
 // Tipo de imagem que o toClientImage retorna
