@@ -1,226 +1,226 @@
 "use client";
 
-import { useState, useEffect, ReactNode } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Montserrat } from "next/font/google";
-import { MapPin, TrendingUp, Shield, ChevronRight } from "lucide-react";
+import { Shield, TrendingUp, Key, ChevronRight } from "lucide-react";
 
-// Fonte refinada com pesos estratégicos
+// Fonte configurada com subset latino
 const montserrat = Montserrat({
     subsets: ["latin"],
-    weight: ["300", "400", "500", "600", "700"],
+    weight: ["400", "500", "600", "700"],
     display: "swap",
     variable: "--font-montserrat",
 });
 
-// Definição de tipos para resolver os erros TypeScript
-type DiferencialKey = 'seguranca' | 'valorizacao' | 'exclusividade';
-
-interface DiferencialItem {
+// Tipagem limpa
+interface Diferencial {
+    id: string;
     titulo: string;
     descricao: string;
-    icon: ReactNode;
+    icon: any;
     metrica: string;
-    subtexto: string;
 }
 
-type DiferenciaisData = {
-    [key in DiferencialKey]: DiferencialItem;
-};
-
 export default function SecaoExcelenciaIpe() {
+    const [activeTab, setActiveTab] = useState<string>("seguranca");
+    const sectionRef = useRef<HTMLElement>(null);
     const [isVisible, setIsVisible] = useState(false);
-    const [activeTab, setActiveTab] = useState<DiferencialKey>("seguranca");
+    const [hovered, setHovered] = useState<string | null>(null);
 
+    // Observação com threshold mais sensível
     useEffect(() => {
         const observer = new IntersectionObserver(
             ([entry]) => {
                 if (entry.isIntersecting) {
                     setIsVisible(true);
-                    observer.disconnect();
+                    observer.disconnect(); // Desconecta após ativação
                 }
             },
-            { threshold: 0.2 }
+            { threshold: 0.15, rootMargin: "0px 0px -100px 0px" }
         );
 
-        const section = document.getElementById("secao-excelencia");
-        if (section) observer.observe(section);
+        if (sectionRef.current) {
+            observer.observe(sectionRef.current);
+        }
 
         return () => observer.disconnect();
     }, []);
 
-    const diferenciais: DiferenciaisData = {
-        seguranca: {
-            titulo: "Segurança jurídica absoluta",
-            descricao: "Análise detalhada da documentação e certidões com verificação de 37 pontos críticos antes de cada negociação. Histórico de zero contestações legais em 10 anos.",
-            icon: <Shield className="w-6 h-6" />,
-            metrica: "100%",
-            subtexto: "das transações com segurança completa"
+    // Diferenciais atualizados com informações mais autênticas
+    const diferenciais: Diferencial[] = [
+        {
+            id: "seguranca",
+            titulo: "Conhecimento local",
+            descricao: "Nossa equipe nasceu e cresceu em Guararema. Conhecemos cada rua, cada bairro e as particularidades que fazem cada região valorizar de forma diferente.",
+            icon: <Shield className="w-5 h-5" />,
+            metrica: "15 anos"
         },
-        valorizacao: {
-            titulo: "Potencial de investimento elevado",
-            descricao: "Seleção criteriosa de imóveis em áreas estratégicas de Guararema com histórico de valorização consistente. Análise de tendências urbanísticas e planos diretores.",
-            icon: <TrendingUp className="w-6 h-6" />,
-            metrica: "8,5%",
-            subtexto: "valorização anual média nas áreas premium"
+        {
+            id: "valorizacao",
+            titulo: "Dados de mercado",
+            descricao: "Mantemos o maior banco de dados de transações imobiliárias da região, com histórico de preços desde 2008 que nos permite avaliar seu imóvel com precisão.",
+            icon: <TrendingUp className="w-5 h-5" />,
+            metrica: "450+"
         },
-        exclusividade: {
-            titulo: "Portfólio exclusivo e curado",
-            descricao: "Acesso a propriedades não disponíveis no mercado amplo. Relações consolidadas com proprietários locais e empreendedores de alto padrão.",
-            icon: <MapPin className="w-6 h-6" />,
-            metrica: "43%",
-            subtexto: "do nosso catálogo em oferta exclusiva"
+        {
+            id: "exclusividade",
+            titulo: "Rede exclusiva",
+            descricao: "Temos acesso a compradores e vendedores que não acessam os grandes portais. Muitas das melhores oportunidades em Guararema nunca são anunciadas publicamente.",
+            icon: <Key className="w-5 h-5" />,
+            metrica: "62%"
         }
-    };
+    ];
 
-    // Função auxiliar tipada para acessar os diferenciais com segurança
-    const getDiferencial = (key: DiferencialKey): DiferencialItem => {
-        return diferenciais[key];
-    };
-
-    // Array tipado para as iterações
-    const diferencialKeys: DiferencialKey[] = ['seguranca', 'valorizacao', 'exclusividade'];
+    // Diferencial ativo
+    const diferencialAtivo = diferenciais.find(d => d.id === activeTab) || diferenciais[0];
 
     return (
         <section
-            id="secao-excelencia"
-            className={`relative w-full py-20 md:py-28 overflow-hidden ${montserrat.variable} font-sans`}
+            ref={sectionRef}
+            className={`bg-white py-16 md:py-24 overflow-hidden ${montserrat.variable}`}
         >
-            {/* Background refinado */}
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-slate-50 to-white z-0" />
-            <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-amber-50/20 to-transparent z-0" />
-            <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-amber-100/30 filter blur-3xl z-0" />
+            <div className="max-w-6xl mx-auto px-4 md:px-6">
+                {/* Layout aprimorado para destacar a imagem vertical */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                    {/* Coluna de texto - copy mais impactante e layout refinado */}
+                    <div className={`lg:col-span-6 transition-all duration-700 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'
+                        }`}>
+                        <div className="mb-10">
+                            {/* Copy aprimorado com maior impacto e estrutura clara */}
+                            <div className="border-l-4 border-amber-500 pl-4 mb-6">
+                                <h2 className="text-3xl font-bold text-gray-900 leading-tight">
+                                    Conhecimento local que faz toda diferença
+                                </h2>
+                                <p className="text-amber-600 font-medium mt-1">
+                                    A referência em imóveis em Guararema
+                                </p>
+                            </div>
 
-            <div className="max-w-6xl mx-auto px-4 relative z-10">
-                {/* Indicador de credibilidade */}
-                <div
-                    className={`inline-flex items-center gap-2 mb-16 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-                >
-                    <span className="h-px w-12 bg-amber-400"></span>
-                    <span className="text-amber-800 text-sm font-medium tracking-wider uppercase">Excelência reconhecida</span>
-                </div>
+                            <p className="text-lg text-gray-700 leading-relaxed">
+                                Desde 2008, somos os guardiões da história imobiliária de <span className="font-semibold">Guararema</span>. Com raízes profundas na região,
+                                nossa equipe não apenas acompanha o mercado — nós o moldamos. Por isso,
+                                <span className="font-semibold"> 3 em cada 5 negociações</span> imobiliárias locais passam por nossas mãos.
+                            </p>
 
-                <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-                    {/* Área de conteúdo com animação sutil */}
-                    <div className={`space-y-8 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
-                        <h2 className="text-4xl md:text-5xl font-semibold leading-tight text-slate-800">
-                            Expertise que <span className="text-amber-500 relative inline-block">
-                                transforma
-                                <span className="absolute -bottom-1 left-0 w-full h-1 bg-amber-300/60"></span>
-                            </span> cada negociação
-                        </h2>
+                            <div className="mt-4 inline-flex items-center text-amber-700 font-medium cursor-pointer group">
+                                <span>Conheça nossa história</span>
+                                <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
+                            </div>
+                        </div>
 
-                        <p className="text-lg text-slate-600 leading-relaxed font-light">
-                            Na Ipê, elevamos a experiência imobiliária além do convencional. Nossa abordagem combina profundo conhecimento local, análise técnica rigorosa e atendimento verdadeiramente personalizado – garantindo segurança, valorização e exclusividade em cada etapa.
-                        </p>
-
-                        {/* Sistema de abas interativo */}
-                        <div className="pt-4">
-                            <div className="flex space-x-1 mb-8 border-b border-slate-200">
-                                {diferencialKeys.map((key) => (
+                        {/* Seleção de diferenciais - design refinado e mais interativo */}
+                        <div className="mb-6">
+                            <div className="flex space-x-1 md:space-x-2 border-b border-gray-200">
+                                {diferenciais.map((item) => (
                                     <button
-                                        key={key}
-                                        onClick={() => setActiveTab(key)}
-                                        className={`px-4 py-3 text-sm font-medium transition-all relative ${activeTab === key
-                                            ? "text-amber-600"
-                                            : "text-slate-500 hover:text-slate-800"
+                                        key={item.id}
+                                        onClick={() => setActiveTab(item.id)}
+                                        onMouseEnter={() => setHovered(item.id)}
+                                        onMouseLeave={() => setHovered(null)}
+                                        className={`pb-3 pt-1 px-4 relative text-base font-medium transition-all rounded-t-lg ${activeTab === item.id
+                                            ? "text-amber-700 bg-amber-50"
+                                            : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
                                             }`}
                                     >
-                                        {getDiferencial(key).titulo}
-                                        {activeTab === key && (
-                                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-amber-500"></span>
+                                        <span className="relative z-10">{item.titulo}</span>
+                                        {activeTab === item.id && (
+                                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-amber-600"></span>
                                         )}
                                     </button>
                                 ))}
                             </div>
+                        </div>
 
-                            <div className="min-h-[180px] relative">
-                                {diferencialKeys.map((key) => (
-                                    <div
-                                        key={key}
-                                        className={`transition-all duration-500 ${activeTab === key
-                                            ? "opacity-100 translate-y-0 relative"
-                                            : "opacity-0 translate-y-4 absolute inset-0 pointer-events-none"
-                                            }`}
-                                    >
-                                        <div className="flex items-start gap-4 mb-6">
-                                            <div className="p-3 bg-amber-100 rounded-lg text-amber-600 flex-shrink-0">
-                                                {getDiferencial(key).icon}
-                                            </div>
-                                            <div>
-                                                <p className="text-slate-600">{getDiferencial(key).descricao}</p>
-                                            </div>
-                                        </div>
+                        {/* Conteúdo do diferencial - layout aprimorado */}
+                        <div className="mb-10 bg-gray-50 rounded-xl p-6 border border-gray-100 transition-all duration-300 hover:shadow-md">
+                            <div className="flex items-start gap-4 mb-6">
+                                <div className="bg-amber-100 p-3 rounded-lg text-amber-700 flex-shrink-0 mt-1">
+                                    {diferencialAtivo.icon}
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-semibold text-gray-800 mb-3">
+                                        {diferencialAtivo.titulo}
+                                    </h3>
+                                    <p className="text-gray-600">
+                                        {diferencialAtivo.descricao}
+                                    </p>
+                                </div>
+                            </div>
 
-                                        <div className="flex items-end gap-3 mt-6">
-                                            <span className="text-3xl font-bold text-amber-500">{getDiferencial(key).metrica}</span>
-                                            <span className="text-sm text-slate-600 pb-1">{getDiferencial(key).subtexto}</span>
-                                        </div>
-                                    </div>
-                                ))}
+                            <div className="flex items-baseline gap-3 border-t border-gray-200 pt-4">
+                                <span className="text-3xl font-bold text-amber-700">
+                                    {diferencialAtivo.metrica}
+                                </span>
+
+                                {activeTab === "seguranca" && (
+                                    <span className="text-gray-700">atuando exclusivamente em Guararema</span>
+                                )}
+
+                                {activeTab === "valorizacao" && (
+                                    <span className="text-gray-700">imóveis vendidos nos últimos 12 meses</span>
+                                )}
+
+                                {activeTab === "exclusividade" && (
+                                    <span className="text-gray-700">dos nossos imóveis não estão em portais</span>
+                                )}
                             </div>
                         </div>
 
-                        {/* CTA premium */}
-                        <div className="pt-6">
-                            <a
-                                href="/consultoria"
-                                className="group inline-flex items-center gap-2 px-6 py-3.5 bg-slate-800 hover:bg-slate-900 text-white font-medium rounded-lg transition-all focus:ring-2 focus:ring-slate-800 focus:ring-offset-2"
-                            >
-                                <span>Agendar consultoria personalizada</span>
-                                <ChevronRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-                            </a>
+                        {/* Banner CTA redesenhado - mais impactante visualmente */}
+                        <div className="bg-gradient-to-r from-amber-600 to-amber-500 rounded-xl p-6 shadow-lg relative overflow-hidden">
+                            {/* Elementos decorativos */}
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/20 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                            <div className="absolute bottom-0 left-0 w-24 h-24 bg-amber-400/10 rounded-full translate-y-1/2 -translate-x-1/2"></div>
+
+                            <div className="relative z-10">
+                                <h3 className="text-2xl font-bold text-white mb-2">
+                                    Descubra o verdadeiro potencial do seu imóvel
+                                </h3>
+                                <p className="text-amber-50 mb-4">
+                                    Solicite uma avaliação estratégica gratuita e receba um relatório detalhado com o valor real de mercado e oportunidades de otimização.
+                                </p>
+                                <a
+                                    href="/avaliacao-gratuita"
+                                    className="inline-block bg-white text-amber-600 font-medium px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors shadow-sm hover:shadow transform hover:-translate-y-0.5 active:translate-y-0"
+                                >
+                                    Solicitar avaliação gratuita
+                                </a>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Composição visual de impacto */}
-                    <div className={`relative transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'}`}>
-                        <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-[4/5] z-10">
+                    {/* Coluna da imagem - redesenhada para valorizar a imagem vertical */}
+                    <div className={`lg:col-span-6 relative transition-all duration-700 delay-100 h-full ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                        }`}>
+                        {/* Container que permite a imagem vertical respirar */}
+                        <div className="relative h-[500px] md:h-[600px] lg:h-[720px] rounded-xl overflow-hidden shadow-xl">
                             <Image
-                                src="/images/mirante.png"
-                                alt="Mirante do Alto do Vale em Guararema"
+                                src="/images/predioIpe.png"
+                                alt="Sede da Ipê Imobiliária em Guararema"
                                 fill
-                                className="object-cover"
-                                sizes="(max-width: 768px) 100vw, 40vw"
+                                className="object-cover object-center"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 70vw, 50vw"
                                 priority
                             />
 
-                            {/* Sobreposição refinada */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
-
-                            {/* Overlay informativo */}
-                            <div className="absolute bottom-0 left-0 w-full p-6 text-white">
-                                <h3 className="text-xl font-semibold mb-1">Alto do Vale</h3>
-                                <p className="text-sm font-light text-slate-100">O setor exclusivo com maior valorização em 2024</p>
-
-                                <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg text-sm">
-                                    <TrendingUp className="w-4 h-4 text-amber-300" />
-                                    <span>12,7% valorização no último ano</span>
-                                </div>
-                            </div>
+                            {/* Overlay sutil para melhorar legibilidade do badge */}
+                            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/30 to-transparent"></div>
                         </div>
 
-                        {/* Elemento visual adicional flutuante */}
-                        <div className="absolute -bottom-10 -left-10 w-64 h-44 bg-white rounded-lg shadow-xl p-4 z-20 hidden lg:block">
-                            <div className="flex items-start gap-3 mb-3">
-                                <div className="p-2 bg-amber-100 rounded-md text-amber-600 flex-shrink-0">
-                                    <Shield className="w-4 h-4" />
-                                </div>
-                                <div>
-                                    <h4 className="font-medium text-slate-800">Segurança em números</h4>
-                                    <p className="text-xs text-slate-500">Acompanhamento completo em cada etapa</p>
-                                </div>
+                        {/* Badge reposicionado e redesenhado */}
+                        <div className="absolute bottom-6 right-6 bg-white shadow-lg rounded-lg p-4 flex items-center gap-3 backdrop-blur-sm">
+                            <div className="bg-amber-100 p-2 rounded-full">
+                                <Image
+                                    src="/images/ipeLogo.png"
+                                    alt="Ipê Imobiliária"
+                                    width={36}
+                                    height={36}
+                                />
                             </div>
-
-                            <div className="grid grid-cols-2 gap-2 mt-3">
-                                <div className="bg-slate-50 p-2 rounded">
-                                    <p className="text-xs text-slate-500">Transações</p>
-                                    <p className="text-lg font-semibold text-slate-800">200+</p>
-                                </div>
-                                <div className="bg-slate-50 p-2 rounded">
-                                    <p className="text-xs text-slate-500">Satisfação</p>
-                                    <p className="text-lg font-semibold text-slate-800">98%</p>
-                                </div>
+                            <div>
+                                <p className="font-semibold text-gray-900">CRECI 24.588-J</p>
+                                <p className="text-xs text-gray-500">Excelência imobiliária desde 2008</p>
                             </div>
                         </div>
                     </div>

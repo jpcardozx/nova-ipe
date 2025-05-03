@@ -16,7 +16,7 @@ export function mapImovelToClient(i: ImovelProjetado): ImovelClient {
     aceitaFinanciamento: i.aceitaFinanciamento,
     documentacaoOk: i.documentacaoOk,
     imagem: i.imagem ? {
-      url: i.imagem.imagemUrl ?? '',
+      imagemUrl: i.imagem.imagemUrl ?? '',
       alt: i.imagem.alt ?? ''
     } : undefined,
     imagemOpenGraph: i.imagemOpenGraph ? {

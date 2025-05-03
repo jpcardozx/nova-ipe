@@ -6,6 +6,7 @@ import SecaoImoveisParaAlugar from "./sections/SecaoImoveisParaAlugar";
 import Referencias from "./sections/Referencias";
 import Valor from "./sections/Valor";
 import Destaques from "./sections/Destaques";
+import FormularioContato from "./components/FormularioContato";
 import { Montserrat } from 'next/font/google';
 import DestaquesAluguel from "./sections/DestaquesAluguel";
 
@@ -25,6 +26,8 @@ export default function Home() {
       <DestaquesVenda />
       <Referencias />
       <DestaquesAluguel />
+      <Destaques />
+      <FormularioContato />
       <Footer />
     </div>
   );
