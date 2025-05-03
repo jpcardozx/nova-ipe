@@ -1,380 +1,246 @@
-'use client';
-
-import React, { useState, useEffect } from 'react';
+// 'use client';
+import React, { useState, useEffect, useMemo, memo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import {
-  MapPin, ArrowRight, Sparkles, Home, Scale,
-  Heart, Info, BarChart2, BedDouble, Bath, Car
+  MapPin,
+  ArrowRight,
+  Sparkles,
+  Home as HomeIcon,
+  Scale as RentIcon,
+  Heart,
+  Camera,
+  BedDouble,
+  Bath,
+  Car,
+  Share2
 } from 'lucide-react';
-import { motion } from 'framer-motion';
 import { formatarMoeda, formatarArea, cn } from '@/lib/utils';
 import type { ImovelClient as Imovel } from '@/types/imovel-client';
 
-// ---------------------------------------------------------------
-// Tipos e configurações
-// ---------------------------------------------------------------
-
 export type FinalidadeType = 'Venda' | 'Aluguel' | 'Temporada';
+export type VariantType = 'default' | 'grid' | 'list' | 'featured';
 
 interface ImovelCardProps {
   imovel: Imovel;
   finalidade: FinalidadeType;
   priority?: boolean;
-  variant?: 'default' | 'grid' | 'list' | 'featured';
+  variant?: VariantType;
   className?: string;
-  onFavoriteToggle?: (imovelId: string, state: boolean) => void;
+  showGallery?: boolean;
+  labelNovo?: boolean;
+  imagensAdicionais?: Array<{ url: string; alt?: string }>;
+  style?: React.CSSProperties;
+  onFavoriteToggle?: (imovelId: string, isFav: boolean) => void;
   onClick?: () => void;
+  onShare?: () => void;
 }
 
-const FINALIDADE_CONFIG = {
-  Venda: {
-    gradient: 'from-emerald-500 to-emerald-600',
-    gradientHover: 'from-emerald-600 to-emerald-700',
-    accent: 'text-emerald-600',
-    accentBg: 'bg-emerald-50',
-    border: 'border-emerald-300',
-    icon: Home
-  },
-  Aluguel: {
-    gradient: 'from-blue-500 to-blue-600',
-    gradientHover: 'from-blue-600 to-blue-700',
-    accent: 'text-blue-600',
-    accentBg: 'bg-blue-50',
-    border: 'border-blue-300',
-    icon: Scale
-  },
-  Temporada: {
-    gradient: 'from-violet-500 to-violet-600',
-    gradientHover: 'from-violet-600 to-violet-700',
-    accent: 'text-violet-600',
-    accentBg: 'bg-violet-50',
-    border: 'border-violet-300',
-    icon: Sparkles
-  }
+const FINALIDADE_CONFIG: Record<FinalidadeType, { color: string; icon: React.FC<any>; label: string }> = {
+  Venda: { color: 'emerald-600', icon: HomeIcon, label: 'Venda' },
+  Aluguel: { color: 'blue-600', icon: RentIcon, label: 'Aluguel' },
+  Temporada: { color: 'violet-600', icon: Sparkles, label: 'Temporada' }
 };
 
-// ---------------------------------------------------------------
-// Helper Hooks
-// ---------------------------------------------------------------
-
-const useFavoriteState = (imovelId: string, callback?: (id: string, state: boolean) => void) => {
-  const [isFavorite, setIsFavorite] = useState(() => {
+function useFavorite(id: string, onToggle?: (id: string, isFav: boolean) => void) {
+  const [fav, setFav] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
-    try {
-      const favorites = localStorage.getItem('imoveis-favoritos');
-      return favorites ? JSON.parse(favorites).includes(imovelId) : false;
-    } catch {
-      return false;
-    }
+    try { return JSON.parse(localStorage.getItem('favorites') || '[]').includes(id); } catch { return false; }
   });
 
-  const toggleFavorite = () => {
-    setIsFavorite((prev: boolean) => {
-      const newState = !prev;
-      if (typeof window !== 'undefined') {
-        try {
-          const favorites = localStorage.getItem('imoveis-favoritos');
-          const favoritesArray = favorites ? JSON.parse(favorites) : [];
-          localStorage.setItem(
-            'imoveis-favoritos',
-            JSON.stringify(
-              newState
-                ? [...favoritesArray, imovelId]
-                : favoritesArray.filter((id: string) => id !== imovelId)
-            )
-          );
-        } catch (error) {
-          console.error('Error updating favorites:', error);
-        }
-      }
-      if (callback) callback(imovelId, newState);
-      return newState;
-    });
-  };
+  useEffect(() => {
+    const list: string[] = JSON.parse(localStorage.getItem('favorites') || '[]');
+    const updated = fav ? Array.from(new Set([...list, id])) : list.filter(x => x !== id);
+    localStorage.setItem('favorites', JSON.stringify(updated));
+    onToggle?.(id, fav);
+  }, [fav, id, onToggle]);
 
-  return { isFavorite, toggleFavorite };
-};
+  const toggle = () => setFav((previous: boolean) => !previous);
+  return [fav, toggle] as const;
+}
 
-// ---------------------------------------------------------------
-// Main Component
-// ---------------------------------------------------------------
+interface BadgeProps {
+  color: string;
+  children: React.ReactNode;
+}
+const Badge: React.FC<BadgeProps> = ({ color, children }) => (
+  <span
+    className={cn(
+      'inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold text-white',
+      `bg-${color}`
+    )}
+  >
+    {children}
+  </span>
+);
 
-const ImovelCard = ({
+interface Feature {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}
+const FeatureList: React.FC<{ features: Feature[] }> = ({ features }) => (
+  <div className="grid grid-cols-2 gap-3 mb-3">
+    {features.map((f, i) => (
+      <div key={i} className="flex items-center gap-2">
+        <div className="p-1.5 bg-gray-100 rounded-md">{f.icon}</div>
+        <div>
+          <p className="text-xs text-gray-500">{f.label}</p>
+          <p className="text-sm font-medium">{f.value}</p>
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+interface GalleryControlsProps {
+  count: number;
+  current: number;
+  onSelect: (idx: number) => void;
+}
+const GalleryControls: React.FC<GalleryControlsProps> = ({ count, current, onSelect }) => (
+  <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1">
+    {Array.from({ length: count }).map((_, idx) => (
+      <button
+        key={idx}
+        onClick={() => onSelect(idx)}
+        className={cn(
+          'w-2 h-2 rounded-full transition-opacity',
+          idx === current ? 'bg-white' : 'bg-white/50 hover:bg-white'
+        )}
+        aria-label={`Imagem ${idx + 1}`}
+      />
+    ))}
+  </div>
+);
+
+function ImovelCard({
   imovel,
   finalidade,
   priority = false,
   variant = 'default',
-  className = '',
+  className,
+  showGallery = false,
+  labelNovo = false,
+  imagensAdicionais = [],
+  style,
   onFavoriteToggle,
   onClick,
-}: ImovelCardProps) => {
+  onShare
+}: ImovelCardProps) {
   const [loaded, setLoaded] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const { isFavorite, toggleFavorite } = useFavoriteState(
-    imovel._id,
-    onFavoriteToggle
-  );
+  const [currentImage, setCurrentImage] = useState(0);
+  const [isFav, toggleFav] = useFavorite(imovel._id, onFavoriteToggle);
 
-  const finalidadeStyle = FINALIDADE_CONFIG[finalidade];
-  const FinalidadeIcon = finalidadeStyle.icon;
+  const { images, priceLabel, address, title, disponivel, features, link, badgeColor, BadgeIcon, badgeLabel } = useMemo(() => {
+    const imgs = [imovel.imagem?.url || '/placeholder.png', ...imagensAdicionais.map(i => i.url)].slice(0, 5);
+    const preco = imovel.preco ? formatarMoeda(imovel.preco) : 'Sob consulta';
+    const addr = [imovel.bairro, imovel.cidade].filter(Boolean).join(', ') || 'Localização não informada';
+    const titulo = imovel.titulo || `${imovel.categoria?.titulo || 'Imóvel'} para ${finalidade}`;
+    const dispo = !['vendido', 'reservado', 'indisponivel'].includes(imovel.status || '');
+    const feats: Feature[] = [
+      imovel.areaUtil && { icon: <span>📐</span>, label: 'Área', value: formatarArea(imovel.areaUtil) },
+      imovel.dormitorios && { icon: <BedDouble />, label: 'Dorm.', value: `${imovel.dormitorios}` },
+      imovel.banheiros && { icon: <Bath />, label: 'Ban.', value: `${imovel.banheiros}` },
+      imovel.vagas && { icon: <Car />, label: 'Vaga(s)', value: `${imovel.vagas}` }
+    ].filter(Boolean) as Feature[];
 
-  // Format displayed data
-  const location = imovel.bairro
-    ? `${imovel.bairro}, ${imovel.cidade ?? ''}`
-    : imovel.cidade || 'Localização não informada';
+    const slugStr: string = imovel.slug as string || '';
+    const url = slugStr ? `/imovel/${encodeURIComponent(slugStr)}` : `/imovel/${imovel._id}`;
 
-  const formatPrice = () => {
-    if (!imovel.preco) return { formatted: 'Sob consulta', display: null };
-    const full = formatarMoeda(imovel.preco, false, true);
-    const [integer, decimal = '00'] = full.split(',');
+    const cfg = FINALIDADE_CONFIG[finalidade];
     return {
-      formatted: full,
-      display: { integer, decimal }
+      images: imgs,
+      priceLabel: preco,
+      address: addr,
+      title: titulo,
+      disponivel: dispo,
+      features: feats,
+      link: url,
+      badgeColor: cfg.color,
+      BadgeIcon: cfg.icon,
+      badgeLabel: cfg.label
     };
-  };
+  }, [imovel, finalidade, imagensAdicionais]);
 
-  const price = formatPrice();
-
-  // Card layout based on variant
-  const isListVariant = variant === 'list';
-  const isFeaturedVariant = variant === 'featured';
-
-  const containerClasses = {
-    default: 'flex flex-col rounded-2xl h-full',
-    grid: 'flex flex-col rounded-2xl h-full',
-    list: 'flex flex-row rounded-2xl h-36 sm:h-44',
-    featured: 'flex flex-col md:flex-row rounded-2xl h-full md:h-96'
-  };
-
-  const imageContainerClasses = isListVariant
-    ? 'w-1/3 relative rounded-l-2xl overflow-hidden'
-    : isFeaturedVariant
-      ? 'w-full md:w-3/5 relative rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none overflow-hidden aspect-[16/9]'
-      : 'w-full relative rounded-t-2xl overflow-hidden aspect-[16/9]';
-
-  const contentContainerClasses = isListVariant
-    ? 'w-2/3 p-4 flex flex-col'
-    : isFeaturedVariant
-      ? 'w-full md:w-2/5 p-5 md:p-6 flex flex-col'
-      : 'w-full p-5 flex flex-col';
-
-  // Features to display
-  const features = [
-    imovel.areaUtil != null && {
-      icon: <BarChart2 className="w-4 h-4" />,
-      label: 'Área',
-      value: formatarArea(Number(imovel.areaUtil))
-    },
-    imovel.dormitorios && {
-      icon: <BedDouble className="w-4 h-4" />,
-      label: 'Dormitórios',
-      value: imovel.dormitorios === 1 ? '1 quarto' : `${imovel.dormitorios} quartos`
-    },
-    imovel.banheiros && {
-      icon: <Bath className="w-4 h-4" />,
-      label: 'Banheiros',
-      value: imovel.banheiros === 1 ? '1 banheiro' : `${imovel.banheiros} banheiros`
-    },
-    imovel.vagas && {
-      icon: <Car className="w-4 h-4" />,
-      label: 'Vagas',
-      value: imovel.vagas === 1 ? '1 vaga' : `${imovel.vagas} vagas`
-    }
-  ].filter(Boolean);
+  const x = useMotionValue(0), y = useMotionValue(0);
+  const rx = useTransform(y, [-100, 100], [5, -5]);
+  const ry = useTransform(x, [-100, 100], [-5, 5]);
+  const spring = { damping: 20, stiffness: 200 };
+  const sx = useSpring(rx, spring), sy = useSpring(ry, spring);
 
   return (
     <motion.article
-      initial={{ y: 20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -5 }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className={cn(
-        containerClasses[variant],
-        'group bg-white overflow-hidden',
-        'border border-gray-100 shadow-lg shadow-gray-200/40',
-        'transition-all duration-500',
-        className
-      )}
-      aria-label={`${imovel.categoria?.titulo || 'Imóvel'} para ${finalidade}: ${imovel.titulo || 'Imóvel'}`}
+      className={cn('group bg-white rounded-xl overflow-hidden border hover:shadow-lg transition', className)}
+      style={{ perspective: 800, ...style }}
+      onMouseMove={e => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        x.set(e.clientX - (rect.left + rect.width / 2));
+        y.set(e.clientY - (rect.top + rect.height / 2));
+      }}
+      onMouseLeave={() => { x.set(0); y.set(0); }}
+      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
     >
-      {/* Image Section */}
-      <div className={imageContainerClasses}>
-        {/* Loading state */}
-        {!loaded && (
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse" />
-        )}
-
-        {/* Main Image */}
-        <Image
-          src={imovel.imagem?.url ?? '/images/placeholder.png'}
-          alt={imovel.imagem?.alt ?? imovel.titulo ?? 'Imóvel'}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          priority={priority}
-          loading={priority ? 'eager' : 'lazy'}
-          quality={85}
-          onLoad={() => setLoaded(true)}
-          className={cn(
-            'object-cover transition-all duration-700',
-            'transform-gpu',
-            hovered ? 'scale-105' : 'scale-100',
-            loaded ? 'opacity-100' : 'opacity-0'
-          )}
-        />
-
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-80" />
-
-        {/* Badges */}
-        <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
-          {/* Finalidade Badge */}
-          <div className={cn(
-            'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg',
-            'text-xs font-semibold uppercase tracking-wide text-white',
-            'bg-gradient-to-r backdrop-blur-md shadow-lg',
-            finalidadeStyle.gradient
-          )}>
-            <FinalidadeIcon className="w-3.5 h-3.5" />
-            <span>{finalidade}</span>
+      <motion.div style={{ rotateX: sx, rotateY: sy, transformStyle: 'preserve-3d' }}>
+        <Link href={link} onClick={onClick} className="grid grid-rows-[auto_1fr] h-full">
+          {/* Image Section */}
+          <div className="relative aspect-video">
+            {!loaded && <div className="absolute inset-0 animate-pulse bg-gray-100" />}
+            <AnimatePresence mode="wait">
+              <motion.div key={currentImage} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <Image
+                  src={images[currentImage]}
+                  alt={title}
+                  fill
+                  priority={priority}
+                  className="object-cover"
+                  onLoad={() => setLoaded(true)}
+                />
+              </motion.div>
+            </AnimatePresence>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <div className="absolute top-2 left-2 flex flex-col gap-2">
+              <Badge color={badgeColor}>
+                <BadgeIcon className="w-4 h-4" /> {badgeLabel}
+              </Badge>
+              {imovel.destaque && <Badge color="amber-500"><Sparkles className="w-4 h-4" /> Destaque</Badge>}
+              {labelNovo && <Badge color="rose-500">Novo</Badge>}
+            </div>
+            <div className="absolute top-2 right-2 flex gap-2">
+              <button onClick={e => { e.preventDefault(); toggleFav(); }} aria-label="Favoritar">
+                <Heart className={cn('w-5 h-5', isFav ? 'text-red-500' : 'text-white')} />
+              </button>
+              {onShare && <button onClick={e => { e.preventDefault(); onShare(); }}><Share2 className="w-5 h-5 text-white" /></button>}
+            </div>
+            {showGallery && images.length > 1 && <GalleryControls count={images.length} current={currentImage} onSelect={setCurrentImage} />}
           </div>
 
-          {/* Destaque Badge */}
-          {imovel.destaque && (
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-400 to-amber-500 text-xs font-semibold uppercase tracking-wide text-white backdrop-blur-md shadow-lg">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Destaque</span>
+          {/* Content Section */}
+          <div className="p-4 flex flex-col flex-grow">
+            <div className="flex items-center text-sm text-gray-500 mb-1">
+              <MapPin className="w-4 h-4 mr-1" />{address}
             </div>
-          )}
-        </div>
-
-        {/* Tipo Imóvel */}
-        {imovel.categoria?.titulo && (
-          <div className="absolute bottom-4 left-4 z-10">
-            <div className="px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-md text-xs font-medium text-white">
-              {imovel.categoria.titulo}
+            <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2">{title}</h3>
+            {features.length > 0 && <FeatureList features={features} />}
+            <div className="mt-auto flex items-center justify-between">
+              <span className="font-bold text-xl text-gray-800">{priceLabel}</span>
+              <button className={cn('inline-flex items-center gap-1 px-4 py-2 rounded-full text-white font-medium', `bg-${badgeColor}`)}>
+                Detalhes <ArrowRight className="w-4 h-4" />
+              </button>
             </div>
           </div>
-        )}
-
-        {/* Favorite Button */}
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleFavorite();
-          }}
-          className={cn(
-            'absolute top-4 right-4 z-10 p-2.5 rounded-full',
-            'backdrop-blur-md shadow-lg transition-all duration-300',
-            isFavorite
-              ? 'bg-white text-rose-500'
-              : 'bg-black/30 text-white hover:bg-black/40'
-          )}
-          aria-label={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
-        >
-          <Heart
-            className={cn(
-              'w-4 h-4 transition-all',
-              isFavorite ? 'fill-rose-500 stroke-rose-500' : ''
-            )}
-          />
-        </button>
-      </div>
-
-      {/* Content Section */}
-      <div className={contentContainerClasses}>
-        {/* Location */}
-        <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-2">
-          <MapPin className="w-4 h-4 text-gray-400" />
-          <span className="truncate">{location}</span>
-        </div>
-
-        {/* Title */}
-        <h3 className={cn(
-          isFeaturedVariant ? 'text-xl font-bold' : 'text-lg font-semibold',
-          'text-gray-900 mb-3 line-clamp-2'
-        )}>
-          {imovel.titulo ?? 'Imóvel'}
-        </h3>
-
-        {/* Features */}
-        {features.length > 0 && (isFeaturedVariant || !isListVariant) && (
-          <div className={cn(
-            'grid gap-3 mb-4',
-            isFeaturedVariant ? 'grid-cols-2' : 'grid-cols-2'
-          )}>
-            {features.map((feature, index) => (
-              feature && (
-                <div key={index} className="flex items-center gap-2">
-                  <div className={cn(
-                    'p-1.5 rounded-md',
-                    finalidadeStyle.accentBg
-                  )}>
-                    {feature.icon}
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500">{feature.label}</p>
-                    <p className="text-sm font-medium">{feature.value}</p>
-                  </div>
-                </div>
-              )
-            ))}
+        </Link>
+        {!disponivel && (
+          <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
+            <span className="bg-white px-4 py-2 rounded-lg text-gray-800 text-lg font-bold shadow-lg">
+              {finalidade === 'Venda' ? 'Vendido' : 'Alugado'}
+            </span>
           </div>
         )}
-
-        <div className="mt-auto pt-2 flex items-center justify-between">
-          {/* Price */}
-          <div>
-            {price.display ? (
-              <div className="flex items-baseline">
-                <span className="text-sm font-medium text-gray-600 mr-1">R$</span>
-                <span className={cn(
-                  'font-bold',
-                  isFeaturedVariant ? 'text-2xl' : 'text-xl',
-                  finalidadeStyle.accent
-                )}>
-                  {price.display.integer}
-                </span>
-                <span className="text-sm text-gray-600">,{price.display.decimal}</span>
-              </div>
-            ) : (
-              <span className="text-lg font-medium text-gray-500 italic">
-                Sob consulta
-              </span>
-            )}
-          </div>
-
-          {/* Action Button */}
-          <Link
-            href={imovel.slug ? `/imovel/${encodeURIComponent(imovel.slug)}` : '#'}
-            className={cn(
-              'inline-flex items-center gap-2 px-4 py-2.5 rounded-full',
-              'text-sm font-medium text-white',
-              'transition-all duration-300',
-              'bg-gradient-to-r shadow-lg',
-              finalidadeStyle.gradient,
-              'group-hover:' + finalidadeStyle.gradientHover
-            )}
-            onClick={(e) => {
-              if (onClick) {
-                e.preventDefault();
-                onClick();
-              }
-            }}
-          >
-            <span>Detalhes</span>
-            <ArrowRight className={cn(
-              'w-4 h-4 transition-transform duration-300',
-              'group-hover:translate-x-1'
-            )} />
-          </Link>
-        </div>
-      </div>
+      </motion.div>
     </motion.article>
   );
-};
+}
 
-export default ImovelCard;
+export default memo(ImovelCard);
