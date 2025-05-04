@@ -1,305 +1,320 @@
 'use client'
 
-import React, { memo } from 'react'
-import { motion } from 'framer-motion'
+import Image from 'next/image'
 import Link from 'next/link'
-import {
-    MapPin,
-    ArrowUpRight,
-    Loader2,
-    HomeIcon,
-    BedDouble,
-    Bath,
-    AreaChart,
-    Car,
-    AlertTriangle
-} from 'lucide-react'
+import { LuBedDouble, LuBath, LuCar, LuRuler, LuMapPin } from 'react-icons/lu'
+import { formatarMoeda, formatarImovelInfo } from '@/lib/utils'
+import type { Imovel } from '@/types/sanity-schema'
 
-import { cn, formatarMoeda, formatarArea, formatarQuantidade } from '@/lib/utils'
-import type { ImovelClient } from '@/types/imovel-client'
-import SanityImage from '@components/SanityImage'
-import { useImoveisDestaque } from './ImoveisDestaqueContext'
-
-// Tipos e interfaces
-export type ImovelFeature = {
-    label: string
-    value: string
-    icon: React.ReactNode
-}
-
-interface ImovelCardProps {
-    imovel: ImovelClient
-    isActive?: boolean
-    onClick?: () => void
-}
-
-// Componente de Característica do Imóvel
-export const ImovelFeatureItem = memo(({ feature }: { feature: ImovelFeature }) => (
-    <div className="flex items-start gap-2">
-        <div className="p-2 rounded-md bg-amber-50 text-amber-700">{feature.icon}</div>
-        <div>
-            <p className="text-xs text-stone-500">{feature.label}</p>
-            <p className="font-medium">{feature.value}</p>
-        </div>
-    </div>
-))
-ImovelFeatureItem.displayName = 'ImovelFeatureItem'
-
-// Badge de Destaque
-export const DestaqueBadge = memo(() => (
-    <div className="absolute top-4 right-4 bg-amber-500 text-white text-xs font-medium px-3 py-1.5 rounded-full">
-        Destaque
-    </div>
-))
-DestaqueBadge.displayName = 'DestaqueBadge'
-
-// Componente de Localização
-export const ImovelLocation = memo(
-    ({ bairro, cidade, className }: { bairro?: string; cidade?: string; className?: string }) => (
-        <div className={cn('flex items-center text-stone-500 text-sm', className)}>
-            <MapPin className="w-4 h-4 mr-1.5 flex-shrink-0" />
-            <span className="truncate">
-                {bairro ? `${bairro}, ` : ''}
-                {cidade || 'Localização não informada'}
-            </span>
-        </div>
-    )
-)
-ImovelLocation.displayName = 'ImovelLocation'
-
-// Componente de Preço
-export const ImovelPrice = memo(
-    ({ preco, tamanho = 'normal', className }: { preco?: number; tamanho?: 'pequeno' | 'normal' | 'grande'; className?: string }) => {
-        const formatarPreco = (valor?: number) => {
-            if (valor === undefined) return 'Consulte'
-            return formatarMoeda(valor)
-        }
-
-        const textSize = {
-            pequeno: 'text-base',
-            normal: 'text-2xl',
-            grande: 'text-3xl'
-        }
-
-        return (
-            <div className={cn('font-bold text-amber-700', textSize[tamanho], className)}>
-                {formatarPreco(preco)}
-            </div>
-        )
-    }
-)
-ImovelPrice.displayName = 'ImovelPrice'
-
-// Botão de Detalhes
-export const ImovelDetailsButton = memo(
-    ({ slug, finalidade, tamanho = 'normal', className }: { slug?: string; finalidade?: string; tamanho?: 'pequeno' | 'normal'; className?: string }) => {
-        const paddings = {
-            pequeno: 'px-4 py-2 text-sm',
-            normal: 'px-5 py-3'
-        }
-
-        return (
-            <Link
-                href={`/imoveis/${finalidade?.toLowerCase() || 'comprar'}/${slug}`}
-                className={cn(
-                    'w-full sm:w-auto inline-flex justify-center items-center',
-                    'bg-amber-700 text-white rounded-lg font-medium',
-                    'hover:bg-amber-800 transition-colors gap-2',
-                    paddings[tamanho],
-                    className
-                )}
-            >
-                Ver detalhes
-                <ArrowUpRight className="w-4 h-4" />
-            </Link>
-        )
-    }
-)
-ImovelDetailsButton.displayName = 'ImovelDetailsButton'
-
-// Card para Carousel
-export const CarouselCard = memo<ImovelCardProps>(({ imovel, isActive, onClick }) => {
-    return (
-        <motion.div
-            whileHover={{ y: -4 }}
-            whileTap={{ scale: 0.98 }}
-            className={cn(
-                'h-full bg-white rounded-xl overflow-hidden border shadow-sm cursor-pointer transition-all duration-300',
-                isActive ? 'border-amber-500 ring-2 ring-amber-200' : 'border-stone-100 hover:border-amber-200'
-            )}
-            onClick={onClick}
-            role="button"
-            aria-pressed={isActive}
-            tabIndex={0}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    onClick?.()
-                }
-            }}
-        >
-            <div className="aspect-[3/2] relative">
-                <SanityImage image={imovel.imagem} alt={imovel.titulo || 'Imóvel'} fill={true} />
-                {imovel.destaque && <DestaqueBadge />}
-            </div>
-            <div className="p-4">
-                <ImovelPrice preco={imovel.preco} tamanho="pequeno" className="mb-1" />
-                <h4 className="font-medium text-stone-800 mb-1 line-clamp-1">{imovel.titulo}</h4>
-                <ImovelLocation bairro={imovel.bairro} cidade={imovel.cidade} />
-            </div>
-        </motion.div>
-    )
-})
-CarouselCard.displayName = 'CarouselCard'
-
-// Componente de Destaque Principal (Hero)
-export const ImovelHero = memo(() => {
-    const { getActiveImovel } = useImoveisDestaque()
-    const imovel = getActiveImovel()
-
+/**
+ * Componente do imóvel em destaque (Hero)
+ */
+export function ImovelHero({
+    finalidade = 'Venda',
+    imovel
+}: {
+    finalidade?: string;
+    imovel: Imovel;
+}) {
+    // Se não houver imóvel, não renderiza nada
     if (!imovel) return null
 
-    // Gerar características do imóvel
-    const getFeatures = (imovel: ImovelClient): ImovelFeature[] => [
-        {
-            label: 'Dormitórios',
-            value: imovel.dormitorios ? formatarQuantidade(imovel.dormitorios, 'quarto') : '—',
-            icon: <BedDouble className="w-4 h-4" />
-        },
-        {
-            label: 'Banheiros',
-            value: imovel.banheiros ? formatarQuantidade(imovel.banheiros, 'banheiro') : '—',
-            icon: <Bath className="w-4 h-4" />
-        },
-        {
-            label: 'Área',
-            value: imovel.areaUtil ? formatarArea(imovel.areaUtil) : '—',
-            icon: <AreaChart className="w-4 h-4" />
-        },
-        {
-            label: 'Garagem',
-            value: imovel.vagas ? formatarQuantidade(imovel.vagas, 'vaga') : '—',
-            icon: <Car className="w-4 h-4" />
+    // Formata dados do imóvel para exibição
+    const imovelFormatado = formatarImovelInfo(imovel)
+
+    // Cores para a finalidade (verde para venda)
+    const cores = finalidade === 'Venda'
+        ? {
+            bg: 'bg-emerald-600',
+            light: 'bg-emerald-50',
+            text: 'text-emerald-700',
+            hover: 'hover:bg-emerald-700',
+            border: 'border-emerald-200'
         }
-    ]
+        : {
+            bg: 'bg-blue-600',
+            light: 'bg-blue-50',
+            text: 'text-blue-700',
+            hover: 'hover:bg-blue-700',
+            border: 'border-blue-200'
+        }
 
     return (
-        <motion.div
-            className="mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            key={imovel._id}
-            layout
-        >
-            <div className="bg-white rounded-xl overflow-hidden shadow-md border border-stone-100">
-                <div className="flex flex-col lg:flex-row">
-                    {/* Imagem do imóvel */}
-                    <div className="lg:w-1/2">
-                        <div className="aspect-[4/3] relative">
-                            <SanityImage
-                                image={imovel.imagem}
-                                alt={imovel.titulo || 'Imóvel em destaque'}
-                                fill={true}
-                                priority={true}
-                            />
-                            {imovel.destaque && <DestaqueBadge />}
-                        </div>
+        <div className="overflow-hidden bg-white rounded-2xl shadow-md border border-gray-100">
+            <div className="grid grid-cols-1 lg:grid-cols-2">
+                {/* Imagem do imóvel */}
+                <div className="relative h-64 md:h-80 lg:h-full overflow-hidden">
+                    <Image
+                        src={imovelFormatado.imagemUrl}
+                        alt={imovelFormatado.imagemAlt}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 500px"
+                        priority
+                        className="object-cover transition-all duration-500 hover:scale-105"
+                    />
+
+                    {/* Tag de finalidade */}
+                    <div className={`absolute top-4 left-4 ${cores.bg} text-white px-3 py-1 rounded-md text-sm font-medium`}>
+                        {imovelFormatado.finalidade}
                     </div>
 
-                    {/* Informações do imóvel */}
-                    <div className="lg:w-1/2 p-6 lg:p-8 flex flex-col">
-                        <h3 className="text-2xl font-bold text-stone-800 mb-2">{imovel.titulo}</h3>
-                        <ImovelLocation
-                            bairro={imovel.bairro}
-                            cidade={imovel.cidade}
-                            className="mb-3"
-                        />
-                        <ImovelPrice preco={imovel.preco} tamanho="grande" className="mb-4" />
+                    {/* Tag de destaque se aplicável */}
+                    {imovelFormatado.destaque && (
+                        <div className="absolute top-4 right-4 bg-amber-500 text-white px-3 py-1 rounded-md text-sm font-medium">
+                            Destaque
+                        </div>
+                    )}
+                </div>
 
-                        {imovel.descricao && (
-                            <p className="text-stone-600 mb-6 line-clamp-3">{imovel.descricao}</p>
-                        )}
+                {/* Informações do imóvel */}
+                <div className="p-6 md:p-8 flex flex-col">
+                    <div>
+                        <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
+                            {imovelFormatado.titulo}
+                        </h3>
+
+                        <div className="flex items-center text-gray-600 mb-4">
+                            <LuMapPin className="mr-1 flex-shrink-0" />
+                            <span className="truncate">{imovelFormatado.endereco}</span>
+                        </div>
+
+                        {/* Preço */}
+                        <div className="mb-6">
+                            <p className="text-sm text-gray-500 mb-1">Preço</p>
+                            <p className={`text-2xl font-bold ${cores.text}`}>
+                                {formatarMoeda(imovelFormatado.preco)}
+                            </p>
+                        </div>
 
                         {/* Características */}
-                        <div className="grid grid-cols-2 gap-4 mb-6">
-                            {getFeatures(imovel).map((feature, idx) => (
-                                <ImovelFeatureItem key={idx} feature={feature} />
-                            ))}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                            {imovelFormatado.caracteristicas.dormitorios !== undefined && (
+                                <div className={`flex items-center ${cores.light} p-3 rounded-lg`}>
+                                    <LuBedDouble className={`${cores.text} mr-2`} />
+                                    <div>
+                                        <p className="text-xs text-gray-500">Dormitórios</p>
+                                        <p className="font-medium">{imovelFormatado.caracteristicas.dormitorios}</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {imovelFormatado.caracteristicas.banheiros !== undefined && (
+                                <div className={`flex items-center ${cores.light} p-3 rounded-lg`}>
+                                    <LuBath className={`${cores.text} mr-2`} />
+                                    <div>
+                                        <p className="text-xs text-gray-500">Banheiros</p>
+                                        <p className="font-medium">{imovelFormatado.caracteristicas.banheiros}</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {imovelFormatado.caracteristicas.vagas !== undefined && (
+                                <div className={`flex items-center ${cores.light} p-3 rounded-lg`}>
+                                    <LuCar className={`${cores.text} mr-2`} />
+                                    <div>
+                                        <p className="text-xs text-gray-500">Vagas</p>
+                                        <p className="font-medium">{imovelFormatado.caracteristicas.vagas}</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {imovelFormatado.caracteristicas.areaUtil !== undefined && (
+                                <div className={`flex items-center ${cores.light} p-3 rounded-lg`}>
+                                    <LuRuler className={`${cores.text} mr-2`} />
+                                    <div>
+                                        <p className="text-xs text-gray-500">Área</p>
+                                        <p className="font-medium">{imovelFormatado.caracteristicas.areaUtil}m²</p>
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
-                        <div className="mt-auto">
-                            <ImovelDetailsButton slug={imovel.slug} finalidade={imovel.finalidade} />
-                        </div>
+                        {/* Descrição breve */}
+                        {imovelFormatado.descricao && (
+                            <div className="mb-6">
+                                <p className="text-gray-700 line-clamp-3">{imovelFormatado.descricao}</p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Botão de ver detalhes */}
+                    <div className="mt-auto">
+                        <Link
+                            href={`/imovel/${imovelFormatado.slug}`}
+                            className={`block w-full text-center ${cores.bg} text-white ${cores.hover} font-medium py-3 rounded-lg transition-colors`}
+                        >
+                            Ver detalhes
+                        </Link>
                     </div>
                 </div>
             </div>
-        </motion.div>
+        </div>
     )
-})
-ImovelHero.displayName = 'ImovelHero'
+}
 
-// Estado de Carregamento
-export const LoadingState = memo(() => (
-    <div className="flex flex-col items-center justify-center min-h-[40vh] py-12">
-        <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center mb-4"
-        >
-            <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
-        </motion.div>
-        <motion.h3
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-lg font-medium text-stone-800"
-        >
-            Carregando imóveis em destaque...
-        </motion.h3>
-    </div>
-))
-LoadingState.displayName = 'LoadingState'
+/**
+ * Card para o carousel
+ */
+export function CarouselCard({
+    imovel,
+    isActive,
+    onClick,
+    finalidade = 'Venda'
+}: {
+    imovel: Imovel;
+    isActive: boolean;
+    onClick: () => void;
+    finalidade?: string;
+}) {
+    // Formata dados do imóvel
+    const imovelFormatado = formatarImovelInfo(imovel)
 
-// Estado de Erro
-export const ErrorState = memo(() => (
-    <div className="flex flex-col items-center justify-center min-h-[40vh] py-12">
-        <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-4">
-            <AlertTriangle className="w-8 h-8 text-red-500" />
+    // Cores baseadas na finalidade
+    const cores = finalidade === 'Venda'
+        ? {
+            bg: 'bg-emerald-600',
+            light: 'bg-emerald-50',
+            text: 'text-emerald-700',
+            border: 'border-emerald-200'
+        }
+        : {
+            bg: 'bg-blue-600',
+            light: 'bg-blue-50',
+            text: 'text-blue-700',
+            border: 'border-blue-200'
+        }
+
+    return (
+        <div
+            className={`
+        relative overflow-hidden bg-white rounded-xl shadow-sm border transition cursor-pointer
+        ${isActive ? `${cores.border} shadow-md scale-[1.02]` : 'border-gray-100'}
+      `}
+            onClick={onClick}
+        >
+            {/* Imagem */}
+            <div className="relative aspect-[4/3] overflow-hidden">
+                <Image
+                    src={imovelFormatado.imagemUrl}
+                    alt={imovelFormatado.imagemAlt}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    className="object-cover"
+                />
+
+                {/* Tag de finalidade */}
+                <div className={`absolute top-3 left-3 ${cores.bg} text-white px-2 py-1 rounded text-xs font-medium`}>
+                    {imovelFormatado.finalidade}
+                </div>
+            </div>
+
+            {/* Informações */}
+            <div className="p-4">
+                <h4 className="font-medium text-gray-900 mb-1 truncate">{imovelFormatado.titulo}</h4>
+                <p className="text-sm text-gray-500 mb-2 truncate">{imovelFormatado.endereco}</p>
+
+                {/* Preço */}
+                <p className={`${cores.text} font-bold text-lg`}>
+                    {formatarMoeda(imovelFormatado.preco)}
+                </p>
+
+                {/* Características resumidas */}
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-3 text-sm text-gray-600">
+                    {imovelFormatado.caracteristicas.dormitorios !== undefined && (
+                        <div className="flex items-center">
+                            <LuBedDouble className="mr-1" />
+                            <span>{imovelFormatado.caracteristicas.dormitorios} dorm</span>
+                        </div>
+                    )}
+
+                    {imovelFormatado.caracteristicas.banheiros !== undefined && (
+                        <div className="flex items-center">
+                            <LuBath className="mr-1" />
+                            <span>{imovelFormatado.caracteristicas.banheiros} banh</span>
+                        </div>
+                    )}
+
+                    {imovelFormatado.caracteristicas.vagas !== undefined && (
+                        <div className="flex items-center">
+                            <LuCar className="mr-1" />
+                            <span>{imovelFormatado.caracteristicas.vagas} vaga{imovelFormatado.caracteristicas.vagas !== 1 ? 's' : ''}</span>
+                        </div>
+                    )}
+
+                    {imovelFormatado.caracteristicas.areaUtil !== undefined && (
+                        <div className="flex items-center">
+                            <LuRuler className="mr-1" />
+                            <span>{imovelFormatado.caracteristicas.areaUtil}m²</span>
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
-        <h3 className="text-lg font-medium text-stone-800 mb-3">
-            Não foi possível carregar os imóveis em destaque
-        </h3>
-        <p className="text-stone-600 text-center max-w-md mb-6">
-            Ocorreu um erro ao buscar os dados. Por favor, tente novamente mais tarde ou entre em contato com nosso suporte.
-        </p>
-        <Link
-            href="/imoveis"
-            className="inline-flex items-center px-4 py-2 bg-amber-700 text-white rounded-lg font-medium hover:bg-amber-800 transition-colors"
-        >
-            Ver catálogo completo
-            <ArrowUpRight className="w-4 h-4 ml-1" />
-        </Link>
-    </div>
-))
-ErrorState.displayName = 'ErrorState'
+    )
+}
 
-// Estado Vazio (sem imóveis)
-export const EmptyState = memo(() => (
-    <div className="flex flex-col items-center justify-center min-h-[40vh] py-12">
-        <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center mb-4">
-            <HomeIcon className="w-8 h-8 text-amber-300" />
+/**
+ * Estado de carregamento
+ */
+export function LoadingState() {
+    return (
+        <div className="py-16 text-center">
+            <div className="inline-block animate-spin text-emerald-600 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                </svg>
+            </div>
+            <h2 className="text-xl font-medium text-gray-900 mb-2">Carregando imóveis</h2>
+            <p className="text-gray-600">Buscando as melhores opções para você...</p>
         </div>
-        <h3 className="text-xl font-medium text-stone-800 mb-2">Novos imóveis em breve</h3>
-        <p className="text-stone-500 max-w-md text-center mb-6">
-            Estamos selecionando novas oportunidades para nosso catálogo. Volte em breve para conferir.
-        </p>
-        <Link
-            href="/imoveis"
-            className="inline-flex items-center px-5 py-3 bg-amber-700 text-white rounded-lg font-medium hover:bg-amber-800 transition-colors"
-        >
-            Ver todo o catálogo
-            <ArrowUpRight className="w-4 h-4 ml-2" />
-        </Link>
-    </div>
-))
-EmptyState.displayName = 'EmptyState'
+    )
+}
+
+/**
+ * Estado de erro
+ */
+export function ErrorState({ onClick }: { onClick?: () => void }) {
+    return (
+        <div className="py-16 text-center">
+            <div className="inline-block text-red-600 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+            </div>
+            <h2 className="text-xl font-medium text-gray-900 mb-2">Não foi possível carregar os imóveis</h2>
+            <p className="text-gray-600 mb-6">Ocorreu um erro ao buscar os dados. Por favor, tente novamente.</p>
+            <button
+                onClick={onClick}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+            >
+                Tentar novamente
+            </button>
+        </div>
+    )
+}
+
+/**
+ * Estado vazio (sem imóveis)
+ */
+export function EmptyState() {
+    return (
+        <div className="py-16 text-center">
+            <div className="inline-block text-emerald-600 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+            </div>
+            <h2 className="text-xl font-medium text-gray-900 mb-2">Nenhum imóvel disponível</h2>
+            <p className="text-gray-600 mb-6">No momento não temos imóveis cadastrados para esta categoria.</p>
+            <Link
+                href="/contato"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+            >
+                Fale conosco
+            </Link>
+        </div>
+    )
+}

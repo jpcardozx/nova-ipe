@@ -1,56 +1,33 @@
 'use client'
 
-import React, { createContext, useContext, useReducer, ReactNode, useCallback, useMemo } from 'react'
-import type { ImovelClient } from '@/types/imovel-client'
+import { createContext, useContext, useReducer, useCallback, useMemo, ReactNode } from 'react'
+import type { Imovel } from '@/types/sanity-schema'
 
-// Tipos
-export type ImoveisDestaqueStatus = 'idle' | 'loading' | 'success' | 'error'
-
-export type ImoveisDestaqueState = {
-    imoveis: ImovelClient[]
-    activeImovelId: string | null
-    status: ImoveisDestaqueStatus
-    error: Error | null
-    lastUpdated: number | null
+// Tipos de estado
+type ImoveisDestaqueState = {
+    imoveis: Imovel[];
+    activeImovel: string | null;
+    status: 'idle' | 'loading' | 'success' | 'error';
+    error: string | null;
 }
 
+// Ações do reducer
 type ImoveisDestaqueAction =
     | { type: 'FETCH_START' }
-    | { type: 'FETCH_SUCCESS'; payload: { imoveis: ImovelClient[] } }
-    | { type: 'FETCH_ERROR'; payload: { error: Error } }
-    | { type: 'SET_ACTIVE_IMOVEL'; payload: { id: string } }
-    | { type: 'RESET' }
-
-type ImoveisDestaqueContextType = {
-    state: ImoveisDestaqueState
-    dispatch: React.Dispatch<ImoveisDestaqueAction>
-    setActiveImovel: (id: string) => void
-    getActiveImovel: () => ImovelClient | undefined
-    isActiveImovel: (id: string) => boolean
-    fetchImoveis: () => Promise<void>
-}
+    | { type: 'FETCH_SUCCESS'; payload: Imovel[] }
+    | { type: 'FETCH_ERROR'; payload: string }
+    | { type: 'SET_ACTIVE_IMOVEL'; payload: string }
 
 // Estado inicial
 const initialState: ImoveisDestaqueState = {
     imoveis: [],
-    activeImovelId: null,
+    activeImovel: null,
     status: 'idle',
-    error: null,
-    lastUpdated: null
+    error: null
 }
 
-// Constantes para cache
-const CACHE_KEY = 'imoveis-destaque'
-const CACHE_DURATION = 5 * 60 * 1000 // 5 minutos
-
-// Criação do contexto
-const ImoveisDestaqueContext = createContext<ImoveisDestaqueContextType | undefined>(undefined)
-
-// Reducer para gerenciar as transições de estado
-function imoveisDestaqueReducer(
-    state: ImoveisDestaqueState,
-    action: ImoveisDestaqueAction
-): ImoveisDestaqueState {
+// Reducer para gerenciar o estado
+function imoveisDestaqueReducer(state: ImoveisDestaqueState, action: ImoveisDestaqueAction): ImoveisDestaqueState {
     switch (action.type) {
         case 'FETCH_START':
             return {
@@ -59,127 +36,118 @@ function imoveisDestaqueReducer(
                 error: null
             }
         case 'FETCH_SUCCESS':
-            const imoveis = action.payload.imoveis
             return {
                 ...state,
-                imoveis,
-                activeImovelId: imoveis.length > 0 ? imoveis[0]._id : null,
+                imoveis: action.payload,
                 status: 'success',
                 error: null,
-                lastUpdated: Date.now()
+                // Define o primeiro imóvel como ativo se não houver nenhum ativo ainda
+                activeImovel: state.activeImovel || (action.payload.length > 0 ? action.payload[0]._id : null)
             }
         case 'FETCH_ERROR':
             return {
                 ...state,
                 status: 'error',
-                error: action.payload.error
+                error: action.payload
             }
         case 'SET_ACTIVE_IMOVEL':
             return {
                 ...state,
-                activeImovelId: action.payload.id
+                activeImovel: action.payload
             }
-        case 'RESET':
-            return initialState
         default:
             return state
     }
 }
 
-// Provider Component
+// Criar contexto
+interface ImoveisDestaqueContextType {
+    state: ImoveisDestaqueState;
+    fetchImoveis: () => Promise<void>;
+    setActiveImovel: (id: string) => void;
+    isActiveImovel: (id: string) => boolean;
+}
+
+const ImoveisDestaqueContext = createContext<ImoveisDestaqueContextType | undefined>(undefined)
+
+// Provider component
 export function ImoveisDestaqueProvider({ children }: { children: ReactNode }) {
     const [state, dispatch] = useReducer(imoveisDestaqueReducer, initialState)
 
-    // Buscar imóveis da API
+    /**
+     * Função para buscar imóveis do Sanity
+     */
     const fetchImoveis = useCallback(async () => {
-        if (state.status === 'loading') return
-
         dispatch({ type: 'FETCH_START' })
 
         try {
-            // Verificar cache
-            const cached = sessionStorage.getItem(CACHE_KEY)
-            if (cached) {
-                const { data, timestamp } = JSON.parse(cached)
-                if (Date.now() - timestamp < CACHE_DURATION) {
-                    dispatch({ type: 'FETCH_SUCCESS', payload: { imoveis: data } })
-                    return
-                }
+            // Endpoint da API para buscar os imóveis em destaque
+            const response = await fetch('/api/imoveis/destaque')
+
+            if (!response.ok) {
+                throw new Error(`Erro ao buscar imóveis: ${response.status}`)
             }
 
-            // Buscar da API
-            const res = await fetch('/api/destaques')
+            const data = await response.json()
 
-            if (!res.ok) {
-                throw new Error(`API respondeu com status ${res.status}`)
+            // Se a resposta da API incluir uma propriedade error
+            if (data.error) {
+                throw new Error(data.error)
             }
 
-            const data = await res.json()
-
-            if (!Array.isArray(data)) {
-                throw new Error('Formato de dados inválido')
-            }
-
-            // Atualizar state e cache
-            dispatch({ type: 'FETCH_SUCCESS', payload: { imoveis: data } })
-            sessionStorage.setItem(
-                CACHE_KEY,
-                JSON.stringify({
-                    data,
-                    timestamp: Date.now()
-                })
-            )
-        } catch (err) {
-            console.error('Erro ao buscar destaques:', err)
+            // Assumindo que a API retorna um array de imóveis
+            dispatch({ type: 'FETCH_SUCCESS', payload: data.imoveis || [] })
+        } catch (error) {
+            console.error('Erro ao buscar imóveis:', error)
             dispatch({
                 type: 'FETCH_ERROR',
-                payload: { error: err instanceof Error ? err : new Error(String(err)) }
+                payload: error instanceof Error ? error.message : 'Erro desconhecido ao buscar imóveis'
             })
         }
-    }, [state.status])
+    }, [])
 
-    // Definir imóvel ativo
-    const setActiveImovel = useCallback(
-        (id: string) => {
-            dispatch({ type: 'SET_ACTIVE_IMOVEL', payload: { id } })
-        },
-        []
-    )
+    /**
+     * Define um imóvel como ativo para destaque na seção hero
+     */
+    const setActiveImovel = useCallback((id: string) => {
+        dispatch({ type: 'SET_ACTIVE_IMOVEL', payload: id })
+    }, [])
 
-    // Obter o imóvel ativo atual
-    const getActiveImovel = useCallback((): ImovelClient | undefined => {
-        return state.imoveis.find((imovel) => imovel._id === state.activeImovelId)
-    }, [state.imoveis, state.activeImovelId])
-
-    // Verificar se um imóvel é o ativo
+    /**
+     * Verifica se um imóvel está ativo
+     */
     const isActiveImovel = useCallback(
-        (id: string): boolean => {
-            return id === state.activeImovelId
-        },
-        [state.activeImovelId]
+        (id: string) => id === state.activeImovel,
+        [state.activeImovel]
     )
 
-    // Memoizar o valor do contexto para evitar re-renderizações desnecessárias
-    const value = useMemo(
+    // Memoiza o valor do contexto para evitar re-renderizações desnecessárias
+    const contextValue = useMemo(
         () => ({
             state,
-            dispatch,
+            fetchImoveis,
             setActiveImovel,
-            getActiveImovel,
-            isActiveImovel,
-            fetchImoveis
+            isActiveImovel
         }),
-        [state, setActiveImovel, getActiveImovel, isActiveImovel, fetchImoveis]
+        [state, fetchImoveis, setActiveImovel, isActiveImovel]
     )
 
-    return <ImoveisDestaqueContext.Provider value={value}>{children}</ImoveisDestaqueContext.Provider>
+    return (
+        <ImoveisDestaqueContext.Provider value={contextValue}>
+            {children}
+        </ImoveisDestaqueContext.Provider>
+    )
 }
 
-// Hook para usar o contexto
+/**
+ * Hook para usar o contexto de imóveis em destaque
+ */
 export function useImoveisDestaque() {
     const context = useContext(ImoveisDestaqueContext)
+
     if (context === undefined) {
-        throw new Error('useImoveisDestaque must be used within a ImoveisDestaqueProvider')
+        throw new Error('useImoveisDestaque deve ser usado dentro de um ImoveisDestaqueProvider')
     }
+
     return context
 }

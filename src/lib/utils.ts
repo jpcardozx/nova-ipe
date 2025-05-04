@@ -1,57 +1,222 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+// src/lib/utils.ts
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import type { Imovel, SanityImageAsset, SanityReference } from '@/types/sanity-schema';
 
+/**
+ * Combina nomes de classes condicionalmente com suporte a Tailwind
+ */
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
-// --- Moeda ------------------------
-
+/**
+ * Formata um valor numérico para moeda brasileira (R$)
+ * @param valor - Valor numérico a ser formatado
+ * @param opcoes - Opções de formatação
+ * @returns String formatada como moeda
+ */
 export function formatarMoeda(
-  valor: number,
-  exibirSimbolo = false,
-  comDecimais = false
-): string {
-  const formatado = valor.toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-    minimumFractionDigits: comDecimais ? 2 : 0,
-    maximumFractionDigits: comDecimais ? 2 : 0,
-  })
+  valor: number | undefined | null,
+  opcoes: {
+    moeda?: string;
+    exibirSimbolo?: boolean;
+    casasDecimais?: number;
+    separadorDecimal?: string;
+    separadorMilhar?: string;
+  } = {}
+) {
+  // Valor padrão caso undefined ou null
+  if (valor === undefined || valor === null) {
+    return '';
+  }
 
-  return exibirSimbolo ? formatado : formatado.replace('R$', '').trim()
+  // Valores padrão
+  const {
+    moeda = 'BRL',
+    exibirSimbolo = true,
+    casasDecimais = 2,
+    separadorDecimal = ',',
+    separadorMilhar = '.'
+  } = opcoes;
+
+  try {
+    // Determina o símbolo da moeda baseado no código
+    const simbolos: Record<string, string> = {
+      'BRL': 'R$',
+      'USD': '$',
+      'EUR': '€',
+      'GBP': '£'
+    };
+
+    // Usa o código da moeda diretamente se não houver símbolo definido
+    const simbolo = simbolos[moeda] || moeda;
+
+    // Formata o número
+    const parteInteira = Math.floor(Math.abs(valor));
+    const parteDecimal = Math.round(
+      (Math.abs(valor) - parteInteira) * Math.pow(10, casasDecimais)
+    ).toString().padStart(casasDecimais, '0');
+
+    // Formata parte inteira com separador de milhar
+    const parteInteiraFormatada = parteInteira
+      .toString()
+      .replace(/\B(?=(\d{3})+(?!\d))/g, separadorMilhar);
+
+    // Monta o valor formatado
+    const valorFormatado = `${parteInteiraFormatada}${separadorDecimal}${parteDecimal}`;
+
+    // Adiciona o símbolo da moeda, se solicitado
+    return `${valor < 0 ? '-' : ''}${exibirSimbolo ? `${simbolo} ` : ''}${valorFormatado}`;
+  } catch (error) {
+    console.error('Erro ao formatar moeda:', error);
+    // Fallback para formatação básica
+    return exibirSimbolo ? `R$ ${valor}` : `${valor}`;
+  }
 }
 
-// --- Área -------------------------
+/**
+ * Extrai URL de imagem do objeto Sanity
+ * @param imageRef Referência de imagem do Sanity
+ * @returns URL da imagem ou imagem padrão
+ */
+function extrairUrlImagem(imageRef: any): string {
+  // Placeholder padrão
+  if (!imageRef) return '/placeholder-imovel.jpg';
 
-export function formatarArea(area: number): string {
-  return `${area.toLocaleString('pt-BR')} m²`
+  // Casos possíveis de estrutura da imagem
+  if (typeof imageRef === 'string') return imageRef;
+
+  // Normalização da API do Sanity
+  if (imageRef.asset) {
+    // Caso 1: imageRef.asset é um objeto com propriedade url
+    if (typeof imageRef.asset === 'object' && imageRef.asset !== null && 'url' in imageRef.asset) {
+      return imageRef.asset.url;
+    }
+
+    // Caso 2: Sanity pode retornar uma referência que precisa ser processada no frontend
+    return `/api/sanity/image?ref=${encodeURIComponent(
+      typeof imageRef.asset === 'object' && imageRef.asset._ref
+        ? imageRef.asset._ref
+        : imageRef.asset
+    )}`;
+  }
+
+  // Para o caso em que a API já normalizou os dados com uma URL
+  if ('url' in imageRef) return imageRef.url;
+
+  // Fallback para placeholder
+  return '/placeholder-imovel.jpg';
 }
 
-// --- Quantidade com plural -------
+/**
+ * Extrai o título da categoria de forma segura
+ * @param categoria Objeto categoria do Sanity
+ * @returns Título da categoria ou null
+ */
+function extrairTituloCategoria(categoria: any): string | null {
+  if (!categoria) return null;
 
-export function formatarQuantidade(valor: number, unidade: string): string {
-  return `${valor} ${unidade}${valor === 1 ? '' : 's'}`
+  // Se categoria for um objeto completo
+  if (typeof categoria === 'object') {
+    // Checar propriedades possíveis em ordem de preferência
+    if ('categoriaTitulo' in categoria && categoria.categoriaTitulo) {
+      return categoria.categoriaTitulo;
+    }
+
+    if ('titulo' in categoria && categoria.titulo) {
+      return categoria.titulo;
+    }
+
+    if ('name' in categoria && categoria.name) {
+      return categoria.name;
+    }
+
+    // Se categoria.ref existe, pode ser uma referência não resolvida
+    if ('_ref' in categoria) {
+      return null; // Sem informação disponível para extrair
+    }
+  }
+
+  // Se categoria é string, retornar ela diretamente
+  if (typeof categoria === 'string') {
+    return categoria;
+  }
+
+  return null;
 }
 
-// --- Características --------------
+/**
+ * Formata informações básicas do imóvel
+ * @param imovel - Objeto com dados do imóvel
+ * @returns Objeto normalizado com dados do imóvel
+ */
+export function formatarImovelInfo(imovel: any) {
+  // Validação de entrada
+  if (!imovel) {
+    console.error('Imóvel inválido ou ausente');
+    return {
+      id: 'invalid',
+      slug: '',
+      imagemUrl: '/placeholder-imovel.jpg',
+      imagemAlt: 'Imóvel não disponível',
+      endereco: '',
+      titulo: 'Imóvel não disponível',
+      categoria: null,
+      preco: 0,
+      destaque: false,
+      status: 'indisponivel',
+      finalidade: 'Venda',
+      descricao: '',
+      caracteristicas: {
+        dormitorios: undefined,
+        banheiros: undefined,
+        vagas: undefined,
+        areaUtil: undefined
+      }
+    };
+  }
 
-export function formatarCaracteristicas(lista: string[]): string {
-  if (lista.length === 0) return ''
-  if (lista.length === 1) return lista[0]
-  const ultima = lista[lista.length - 1]
-  const inicio = lista.slice(0, -1).join(', ')
-  return `${inicio} e ${ultima}`
+  // Extrai e normaliza campos para apresentação consistente
+  const slug = typeof imovel.slug === 'string'
+    ? imovel.slug
+    : imovel.slug?.current || '';
+
+  // Processamento de imagens adaptado à estrutura real
+  const imagemUrl = imovel.imagemUrl || extrairUrlImagem(imovel.imagem);
+
+  // Processamento de texto alternativo
+  const textoAlt = imovel.imagem?.alt || '';
+
+  // Montagem do endereço
+  const endereco = [imovel.bairro, imovel.cidade, imovel.estado]
+    .filter(Boolean)
+    .join(', ');
+
+  // Extrair título da categoria
+  const categoria = extrairTituloCategoria(imovel.categoria);
+
+  // Montagem do título do imóvel
+  const titulo = imovel.titulo || `${categoria || 'Imóvel'} para ${imovel.finalidade || 'Venda'}`;
+
+  return {
+    id: imovel._id,
+    slug,
+    imagemUrl,
+    imagemAlt: textoAlt || titulo,
+    endereco,
+    titulo,
+    categoria,
+    preco: imovel.preco,
+    destaque: !!imovel.destaque,
+    status: imovel.status || 'disponivel',
+    finalidade: imovel.finalidade || 'Venda',
+    descricao: imovel.descricao,
+    caracteristicas: {
+      dormitorios: imovel.dormitorios,
+      banheiros: imovel.banheiros,
+      vagas: imovel.vagas,
+      areaUtil: imovel.areaUtil
+    }
+  };
 }
-
-// --- Data de publicação -----------
-
-export function formatarDataPublicacao(dataISO: string): string {
-  const data = new Date(dataISO)
-  return data.toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  })
-}
-

@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Montserrat } from "next/font/google";
-import { Shield, TrendingUp, Key, ChevronRight } from "lucide-react";
+import { Phone, MapPin, PieChart, Users } from "lucide-react";
 
-// Fonte configurada com subset latino
+// Font configuration
 const montserrat = Montserrat({
     subsets: ["latin"],
     weight: ["400", "500", "600", "700"],
@@ -13,31 +14,35 @@ const montserrat = Montserrat({
     variable: "--font-montserrat",
 });
 
-// Tipagem limpa
+// Types
+interface Estatistica {
+    valor: string;
+    legenda: string;
+    destaque?: boolean;
+}
+
 interface Diferencial {
     id: string;
     titulo: string;
     descricao: string;
-    icon: any;
-    metrica: string;
+    icon: React.ReactNode;
+    estatisticas: Estatistica[];
 }
 
 export default function SecaoExcelenciaIpe() {
-    const [activeTab, setActiveTab] = useState<string>("seguranca");
     const sectionRef = useRef<HTMLElement>(null);
     const [isVisible, setIsVisible] = useState(false);
-    const [hovered, setHovered] = useState<string | null>(null);
 
-    // Observação com threshold mais sensível
+    // Intersection Observer
     useEffect(() => {
         const observer = new IntersectionObserver(
             ([entry]) => {
                 if (entry.isIntersecting) {
                     setIsVisible(true);
-                    observer.disconnect(); // Desconecta após ativação
+                    observer.disconnect();
                 }
             },
-            { threshold: 0.15, rootMargin: "0px 0px -100px 0px" }
+            { threshold: 0.1 }
         );
 
         if (sectionRef.current) {
@@ -47,181 +52,175 @@ export default function SecaoExcelenciaIpe() {
         return () => observer.disconnect();
     }, []);
 
-    // Diferenciais atualizados com informações mais autênticas
+    // Dados concretos com enfoque em valor real para o cliente
     const diferenciais: Diferencial[] = [
         {
-            id: "seguranca",
-            titulo: "Conhecimento local",
-            descricao: "Nossa equipe nasceu e cresceu em Guararema. Conhecemos cada rua, cada bairro e as particularidades que fazem cada região valorizar de forma diferente.",
-            icon: <Shield className="w-5 h-5" />,
-            metrica: "15 anos"
+            id: "local",
+            titulo: "Especialistas locais",
+            descricao: "Equipe com 15 anos de experiência exclusiva em Guararema, especializada nos bairros Itapema, Centro e Itaóca.",
+            icon: <MapPin className="w-5 h-5" />,
+            estatisticas: [
+                { valor: "97%", legenda: "taxa de satisfação dos clientes", destaque: true },
+                { valor: "3x", legenda: "mais rápido que a média do mercado" }
+            ]
         },
         {
-            id: "valorizacao",
-            titulo: "Dados de mercado",
-            descricao: "Mantemos o maior banco de dados de transações imobiliárias da região, com histórico de preços desde 2008 que nos permite avaliar seu imóvel com precisão.",
-            icon: <TrendingUp className="w-5 h-5" />,
-            metrica: "450+"
+            id: "dados",
+            titulo: "Análise de mercado",
+            descricao: "Banco de dados proprietário com histórico de vendas desde 2008 e análise comparativa de mais de 2.500 imóveis.",
+            icon: <PieChart className="w-5 h-5" />,
+            estatisticas: [
+                { valor: "12%", legenda: "preço médio acima do mercado" },
+                { valor: "100+", legenda: "imóveis negociados de maneira segura", destaque: true }
+            ]
         },
         {
-            id: "exclusividade",
-            titulo: "Rede exclusiva",
-            descricao: "Temos acesso a compradores e vendedores que não acessam os grandes portais. Muitas das melhores oportunidades em Guararema nunca são anunciadas publicamente.",
-            icon: <Key className="w-5 h-5" />,
-            metrica: "62%"
+            id: "network",
+            titulo: "Rede premium",
+            descricao: "Acesso a rede qualificada de compradores e experiência de atendimento personalizada de acordo com as demandas emergentes no processo de compra e venda.",
+            icon: <Users className="w-5 h-5" />,
+            estatisticas: [
+                { valor: "62%", legenda: "das vendas por indicação", destaque: true },
+                { valor: "45", legenda: "dias aproximadamente de tempo médio de negociação" }
+            ]
         }
     ];
-
-    // Diferencial ativo
-    const diferencialAtivo = diferenciais.find(d => d.id === activeTab) || diferenciais[0];
 
     return (
         <section
             ref={sectionRef}
-            className={`bg-white py-16 md:py-24 overflow-hidden ${montserrat.variable}`}
+            className={`bg-white py-10 ${montserrat.variable}`}
+            aria-label="Por que escolher a Ipê Imobiliária"
         >
-            <div className="max-w-6xl mx-auto px-4 md:px-6">
-                {/* Layout aprimorado para destacar a imagem vertical */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-                    {/* Coluna de texto - copy mais impactante e layout refinado */}
-                    <div className={`lg:col-span-6 transition-all duration-700 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'
-                        }`}>
-                        <div className="mb-10">
-                            {/* Copy aprimorado com maior impacto e estrutura clara */}
-                            <div className="border-l-4 border-amber-500 pl-4 mb-6">
-                                <h2 className="text-3xl font-bold text-gray-900 leading-tight">
-                                    Conhecimento local que faz toda diferença
+            <div className="max-w-6xl mx-auto px-4">
+                {/* Layout repensado com grid responsivo e densidade de informação adequada */}
+                <div className="grid lg:grid-cols-12 gap-8 items-start">
+
+                    {/* Cabeçalho superior com título, descrição e CTA */}
+                    <div className="lg:col-span-12 mb-6">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between">
+                            <div className="mb-6 sm:mb-0 max-w-2xl">
+                                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
+                                    Por que a Ipê é a imobiliária mais bem avaliada em Guararema?
                                 </h2>
-                                <p className="text-amber-600 font-medium mt-1">
-                                    A referência em imóveis em Guararema
+                                <p className="text-gray-700 mt-2">
+                                    <span className="font-medium">3 em cada 5 negociações</span> passam por nossa equipe. Entenda o porquê!
                                 </p>
                             </div>
 
-                            <p className="text-lg text-gray-700 leading-relaxed">
-                                Desde 2008, somos os guardiões da história imobiliária de <span className="font-semibold">Guararema</span>. Com raízes profundas na região,
-                                nossa equipe não apenas acompanha o mercado — nós o moldamos. Por isso,
-                                <span className="font-semibold"> 3 em cada 5 negociações</span> imobiliárias locais passam por nossas mãos.
-                            </p>
-
-                            <div className="mt-4 inline-flex items-center text-amber-700 font-medium cursor-pointer group">
-                                <span>Conheça nossa história</span>
-                                <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
-                            </div>
+                            <Link
+                                href="/avaliacao-gratuita"
+                                className="bg-amber-600 hover:bg-amber-700 text-white font-medium px-5 py-3 rounded-lg transition-colors whitespace-nowrap text-center flex items-center justify-center gap-2"
+                            >
+                                <Phone className="w-4 h-4" />
+                                <span>Avaliar meu imóvel</span>
+                            </Link>
                         </div>
 
-                        {/* Seleção de diferenciais - design refinado e mais interativo */}
-                        <div className="mb-6">
-                            <div className="flex space-x-1 md:space-x-2 border-b border-gray-200">
-                                {diferenciais.map((item) => (
-                                    <button
-                                        key={item.id}
-                                        onClick={() => setActiveTab(item.id)}
-                                        onMouseEnter={() => setHovered(item.id)}
-                                        onMouseLeave={() => setHovered(null)}
-                                        className={`pb-3 pt-1 px-4 relative text-base font-medium transition-all rounded-t-lg ${activeTab === item.id
-                                            ? "text-amber-700 bg-amber-50"
-                                            : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
-                                            }`}
-                                    >
-                                        <span className="relative z-10">{item.titulo}</span>
-                                        {activeTab === item.id && (
-                                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-amber-600"></span>
-                                        )}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Conteúdo do diferencial - layout aprimorado */}
-                        <div className="mb-10 bg-gray-50 rounded-xl p-6 border border-gray-100 transition-all duration-300 hover:shadow-md">
-                            <div className="flex items-start gap-4 mb-6">
-                                <div className="bg-amber-100 p-3 rounded-lg text-amber-700 flex-shrink-0 mt-1">
-                                    {diferencialAtivo.icon}
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-semibold text-gray-800 mb-3">
-                                        {diferencialAtivo.titulo}
-                                    </h3>
-                                    <p className="text-gray-600">
-                                        {diferencialAtivo.descricao}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-baseline gap-3 border-t border-gray-200 pt-4">
-                                <span className="text-3xl font-bold text-amber-700">
-                                    {diferencialAtivo.metrica}
-                                </span>
-
-                                {activeTab === "seguranca" && (
-                                    <span className="text-gray-700">atuando exclusivamente em Guararema</span>
-                                )}
-
-                                {activeTab === "valorizacao" && (
-                                    <span className="text-gray-700">imóveis vendidos nos últimos 12 meses</span>
-                                )}
-
-                                {activeTab === "exclusividade" && (
-                                    <span className="text-gray-700">dos nossos imóveis não estão em portais</span>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Banner CTA redesenhado - mais impactante visualmente */}
-                        <div className="bg-gradient-to-r from-amber-600 to-amber-500 rounded-xl p-6 shadow-lg relative overflow-hidden">
-                            {/* Elementos decorativos */}
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/20 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                            <div className="absolute bottom-0 left-0 w-24 h-24 bg-amber-400/10 rounded-full translate-y-1/2 -translate-x-1/2"></div>
-
-                            <div className="relative z-10">
-                                <h3 className="text-2xl font-bold text-white mb-2">
-                                    Descubra o verdadeiro potencial do seu imóvel
-                                </h3>
-                                <p className="text-amber-50 mb-4">
-                                    Solicite uma avaliação estratégica gratuita e receba um relatório detalhado com o valor real de mercado e oportunidades de otimização.
-                                </p>
-                                <a
-                                    href="/avaliacao-gratuita"
-                                    className="inline-block bg-white text-amber-600 font-medium px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors shadow-sm hover:shadow transform hover:-translate-y-0.5 active:translate-y-0"
-                                >
-                                    Solicitar avaliação gratuita
-                                </a>
-                            </div>
-                        </div>
+                        <div className="border-b border-gray-200 mt-6"></div>
                     </div>
 
-                    {/* Coluna da imagem - redesenhada para valorizar a imagem vertical */}
-                    <div className={`lg:col-span-6 relative transition-all duration-700 delay-100 h-full ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                        }`}>
-                        {/* Container que permite a imagem vertical respirar */}
-                        <div className="relative h-[500px] md:h-[600px] lg:h-[720px] rounded-xl overflow-hidden shadow-xl">
+                    {/* Coluna de imagem à esquerda */}
+                    <div className={`lg:col-span-5 transition-all duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+                        <div className="relative aspect-[3/4] h-full rounded-lg overflow-hidden border border-gray-100 shadow-sm">
                             <Image
                                 src="/images/predioIpe.png"
                                 alt="Sede da Ipê Imobiliária em Guararema"
                                 fill
                                 className="object-cover object-center"
-                                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 70vw, 50vw"
+                                sizes="(max-width: 1024px) 100vw, 33vw"
                                 priority
                             />
 
-                            {/* Overlay sutil para melhorar legibilidade do badge */}
-                            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/30 to-transparent"></div>
+                            {/* Badge de credencial */}
+                            <div className="absolute top-4 left-4 bg-white/90 py-1 px-3 rounded-md text-sm font-medium text-gray-800 backdrop-blur-sm">
+                                CRECI @@@.@@@
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Coluna de conteúdo à direita */}
+                    <div className={`lg:col-span-7 transition-all duration-500 delay-100 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+                        {/* Diferenciais em cards horizontais */}
+                        <div className="space-y-6">
+                            {diferenciais.map((item) => (
+                                <div
+                                    key={item.id}
+                                    className="p-5 bg-gray-50 rounded-lg border border-gray-100"
+                                >
+                                    <div className="flex items-start gap-4">
+                                        <div className="bg-amber-600 p-2 rounded-lg text-white flex-shrink-0">
+                                            {item.icon}
+                                        </div>
+
+                                        <div className="flex-1">
+                                            <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                                                {item.titulo}
+                                            </h3>
+                                            <p className="text-gray-600 mb-3 text-sm">
+                                                {item.descricao}
+                                            </p>
+
+                                            <div className="grid grid-cols-2 gap-4">
+                                                {item.estatisticas.map((stat, index) => (
+                                                    <div key={index} className="flex flex-col">
+                                                        <span className={`text-2xl font-bold ${stat.destaque ? 'text-amber-600' : 'text-gray-700'}`}>
+                                                            {stat.valor}
+                                                        </span>
+                                                        <span className="text-gray-500 text-sm">
+                                                            {stat.legenda}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
 
-                        {/* Badge reposicionado e redesenhado */}
-                        <div className="absolute bottom-6 right-6 bg-white shadow-lg rounded-lg p-4 flex items-center gap-3 backdrop-blur-sm">
-                            <div className="bg-amber-100 p-2 rounded-full">
-                                <Image
-                                    src="/images/ipeLogo.png"
-                                    alt="Ipê Imobiliária"
-                                    width={36}
-                                    height={36}
-                                />
+                        {/* Área de depoimento com informação social proof */}
+                        <div className="mt-8 p-5 bg-amber-50 rounded-lg border border-amber-100">
+                            <div className="flex items-start gap-4">
+                                <div className="rounded-full overflow-hidden w-12 h-12 flex-shrink-0 border-2 border-amber-200">
+                                    <Image
+                                        src="/images/ipeLogo.png"
+                                        alt="Logo da Ipê Imobiliária"
+                                        width={48}
+                                        height={48}
+                                        className="object-cover"
+                                    />
+                                </div>
+
+                                <div>
+                                    <p className="text-gray-700 italic mb-2 text-sm">
+                                        "Conhecemos a Ipê pela indicação de amigos e fomos surpreendidos. Nossa casa foi vendida em apenas 26 dias e com valor acima do que esperávamos."
+                                    </p>
+                                    <div className="flex justify-between items-end">
+                                        <div>
+                                            <p className="font-medium text-gray-900">Ricardo e Ana Oliveira</p>
+                                            <p className="text-xs text-gray-500">Venderam imóvel no Itapema</p>
+                                        </div>
+                                        <div className="flex">
+                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                <svg key={star} className="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                </svg>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <p className="font-semibold text-gray-900">CRECI 24.588-J</p>
-                                <p className="text-xs text-gray-500">Excelência imobiliária desde 2008</p>
-                            </div>
+                        </div>
+
+                        {/* Call-to-action secundário */}
+                        <div className="mt-8 text-center sm:text-left">
+                            <Link
+                                href="/sobre-nos"
+                                className="text-amber-700 font-medium hover:text-amber-800 underline-offset-4 hover:underline transition-colors"
+                            >
+                                Precisa de ajuda? Fale conosco!
+                            </Link>
                         </div>
                     </div>
                 </div>
