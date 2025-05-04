@@ -1,5 +1,4 @@
-// app/imovel/[slug]/page.tsx
-"use client";
+
 
 import React, { Suspense } from 'react';
 import { notFound } from 'next/navigation';
