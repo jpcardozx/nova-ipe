@@ -37,7 +37,7 @@ export default function Navbar() {
             initial={{ y: -50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className={`fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-lg border-b border-neutral-200 shadow-sm transition-all duration-700 ${scrolled ? "py-1.5" : "py-4"}`}
+            className={`fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-lg border-b border-neutral-200 shadow-sm transition-all duration-320 ${scrolled ? "py-1.5" : "py-4"}`}
         >
             <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
                 {/* ✅ Logo */}
