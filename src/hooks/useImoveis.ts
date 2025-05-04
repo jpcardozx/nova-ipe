@@ -1,7 +1,7 @@
 // src/hooks/useImoveisDestaque.ts
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useInView } from 'react-intersection-observer';
-import { client } from '@lib/sanity';
+import { client } from '@lib/sanity/client';
 import {
     queryImovelEmDestaque,
     queryImoveisParaVenda,
