@@ -1,76 +1,95 @@
-"use client"
+"use client";
 
-import { Phone, Calendar, UserCheck } from "lucide-react"
-import { formatarMoeda, cn } from "@/lib/utils"
+import { Phone, Calendar, UserCheck } from "lucide-react";
+import { formatarMoeda, cn } from "@/lib/utils";
+import Link from "next/link";
+import { FC, useMemo } from "react";
 
 interface CardCTAImovelProps {
-  preco?: number
-  titulo?: string
-  tipoCTA?: "whatsapp" | "agendar"
-  destaque?: boolean
-  linkPersonalizado?: string
-  finalidade?: "Venda" | "Aluguel" | "Temporada"
-  full?: boolean
-  onAgendar?: () => void
+  preco?: number;
+  titulo?: string;
+  tipoCTA?: "whatsapp" | "agendar";
+  destaque?: boolean;
+  linkPersonalizado?: string;
 }
 
-export default function CardCTAImovel({
+const CardCTAImovel: FC<CardCTAImovelProps> = ({
   preco,
   titulo,
   tipoCTA = "whatsapp",
   destaque = true,
-  linkPersonalizado
-}: CardCTAImovelProps) {
-  const labelCTA =
-    tipoCTA === "agendar" ? "Agendar visita guiada" : "Falar com especialista local"
+  linkPersonalizado,
+}) => {
+  // Texto e ícone dinâmico
+  const labelCTA = tipoCTA === "agendar" ? "Agendar visita guiada" : "Falar com especialista local";
+  const iconCTA = tipoCTA === "agendar" ? <Calendar className="w-5 h-5" /> : <Phone className="w-5 h-5" />;
 
-  const iconCTA =
-    tipoCTA === "agendar" ? <Calendar className="w-4 h-4" /> : <Phone className="w-4 h-4" />
+  // Formata preço apenas uma vez
+  const precoFormatado = useMemo(() => {
+    if (preco == null) return null;
+    // Usa opções padrão para moeda brasileira
+    return formatarMoeda(preco);
+  }, [preco]);
 
-  const precoFormatado = preco !== undefined ? formatarMoeda(preco, true, true) : null
-
-  const safeTitle = encodeURIComponent(titulo ?? "")
-  const defaultLink = `https://wa.me/5511981845016?text=Olá! Tenho interesse no imóvel: ${safeTitle} (via site)`
-  const ctaUrl = linkPersonalizado?.trim() || defaultLink
+  // URL do CTA
+  const safeTitle = encodeURIComponent(titulo ?? "");
+  const defaultLink = useMemo(
+    () =>
+      `https://wa.me/5511981845016?text=Olá! Tenho interesse no imóvel: ${safeTitle} (via site)`,
+    [safeTitle]
+  );
+  const ctaUrl = linkPersonalizado?.trim() || defaultLink;
 
   return (
-    <aside className="relative bg-white/90 backdrop-blur-lg rounded-3xl shadow-xl ring-1 ring-[#0D1F2D]/5 p-8 border-t-4 border-[#FFAD43] space-y-6 text-[#0D1F2D]">
+    <aside className="relative bg-white/90 backdrop-blur-lg rounded-3xl shadow-xl ring-1 ring-stone-200 p-8 border-t-4 border-amber-500 space-y-6 text-stone-900">
+      {/* Badge Em Destaque */}
       {destaque && (
-        <div className="absolute top-4 right-4 bg-[#FFAD43]/20 text-[#FFAD43] px-3 py-[6px] text-[10px] font-semibold rounded-full uppercase tracking-wider shadow-sm">
+        <div className="absolute top-4 right-4 bg-amber-500/20 text-amber-600 px-3 py-0.5 text-xs font-semibold rounded-full uppercase tracking-wide">
           Em destaque
         </div>
       )}
 
+      {/* Preço */}
       <div className="space-y-1">
-        <p className="text-sm text-[#0D1F2D]/60">Valor de referência</p>
+        <p className="text-sm text-stone-500">Valor de referência</p>
         {precoFormatado ? (
-          <p className="text-4xl font-bold tracking-tight leading-snug">
+          <p className="text-4xl font-bold tracking-tight leading-none">
             {precoFormatado}
           </p>
         ) : (
-          <p className="italic text-base text-[#0D1F2D]/50">Sob consulta</p>
+          <p className="italic text-base text-stone-400">Sob consulta</p>
         )}
       </div>
 
-      <a
+      {/* CTA Button */}
+      <Link
         href={ctaUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="group inline-flex items-center justify-center gap-2 w-full bg-gradient-to-br from-[#0D1F2D] to-[#1A2C3C] hover:scale-[1.03] transition-transform duration-200 text-white px-6 py-3 rounded-full text-sm font-medium shadow-md hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#FFAD43]"
+        className={cn(
+          "group flex items-center justify-center gap-2 w-full",
+          "bg-amber-600 text-white px-6 py-3 rounded-full font-medium",
+          "hover:scale-105 transition-transform shadow-md hover:shadow-lg",
+          "focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+        )}
         aria-label={labelCTA}
       >
         {iconCTA}
-        <span className="tracking-wide">{labelCTA}</span>
-      </a>
+        <span>{labelCTA}</span>
+      </Link>
 
-      <div className="mt-4 flex items-center gap-2 text-xs text-[#0D1F2D]/60">
-        <UserCheck className="w-4 h-4" />
+      {/* Verificação */}
+      <div className="flex items-center gap-2 text-xs text-stone-500">
+        <UserCheck className="w-4 h-4 text-amber-500" />
         <span>Imóvel verificado pela Ipê</span>
       </div>
 
-      <p className="text-xs leading-snug text-[#0D1F2D]/50 italic mt-4 border-t pt-3 border-dashed border-[#0D1F2D]/10">
-        Atendimento rápido. <br />Indicamos também imóveis com perfil semelhante.
+      {/* Nota adicional */}
+      <p className="text-xs italic text-stone-400 border-t border-stone-200 pt-3">
+        Atendimento rápido. Indicamos também imóveis similares conforme seu perfil.
       </p>
     </aside>
-  )
-}
+  );
+};
+
+export default CardCTAImovel;
