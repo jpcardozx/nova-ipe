@@ -132,7 +132,7 @@ export function Carousel({
             spacing: options.spacing || 16,
         },
         breakpoints: formattedBreakpoints,
-        slideChanged(slider) {
+        slideChanged(slider: any) {
             setCurrentSlide(slider.track.details.rel);
         },
         created() {
