@@ -231,7 +231,6 @@ const DestaquesVendaSection: FC = () => {
                     <div className="p-4 lg:p-0 border border-brand-green/20 rounded-xl bg-white shadow-xl lg:border-0 lg:shadow-none lg:bg-transparent">
                         <FeaturedProperty
                             property={imoveis[activeIndex]}
-                            badgeText="Recomendação do Corretor"
                         />
                     </div>
                 </motion.div>
