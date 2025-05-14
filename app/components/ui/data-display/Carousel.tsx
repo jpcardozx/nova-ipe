@@ -131,8 +131,7 @@ export function Carousel({
             perView: options.slidesPerView || 1,
             spacing: options.spacing || 16,
         },
-        breakpoints: formattedBreakpoints,
-        slideChanged(slider: any) {
+        breakpoints: formattedBreakpoints,        slideChanged(slider: import('keen-slider').KeenSliderInstance) {
             setCurrentSlide(slider.track.details.rel);
         },
         created() {
@@ -227,7 +226,7 @@ export function Carousel({
 
 // Plugin para autoplay
 function autoplayPlugin(options: CarouselProps['options'] = {}) {
-    return (slider: any) => {
+    return (slider: import('keen-slider').KeenSliderInstance) => {
         let timeout: ReturnType<typeof setTimeout>;
         let mouseOver = false;
 
