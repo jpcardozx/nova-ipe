@@ -14,11 +14,11 @@ import { ChevronLeft, ChevronRight, ExternalLink, Loader2, AlertTriangle } from 
 import { getImoveisParaAlugar } from '@lib/sanity/fetchImoveis';
 import ImovelCard from '@components/ImovelCard';
 import type { ImovelClient as Imovel } from '@/types/imovel-client';
-import type { OptimizedCarouselProps } from '@components/OptimizedCarousel';
+import type { OptimizedCarouselProps } from '@/app/components/ui/OptimizedCarousel';
 import { cn } from '@/lib/utils';
 
 const OptimizedCarousel = dynamic<OptimizedCarouselProps<Imovel>>(
-    () => import('@components/OptimizedCarousel').then((mod) => mod.OptimizedCarousel),
+    () => import('@/app/components/ui/OptimizedCarousel').then((mod) => mod.OptimizedCarousel),
     { ssr: false, loading: () => <CarouselSkeleton /> }
 );
 
@@ -166,24 +166,22 @@ export default function SecaoImoveisParaAlugar() {
                 )}
 
                 {status === 'success' && data.length > 0 && (
-                    <>
-                        <OptimizedCarousel
-                            items={data}
-                            getKey={(i) => i._id}
-                            renderItem={(i) => <ImovelCard imovel={i} finalidade="Aluguel" />}
-                            prevRef={navPrevRef}
-                            nextRef={navNextRef}
-                            options={{
-                                slidesPerView: 1.1,
-                                spacing: 24,
-                                loop: true,
-                                breakpoints: {
-                                    '(min-width: 768px)': { slidesPerView: 2.2, spacing: 24 },
-                                    '(min-width: 1024px)': { slidesPerView: 3, spacing: 24 },
-                                },
-                            }}
-                            className="overflow-visible"
-                        />
+                    <>                        <OptimizedCarousel
+                        items={data}
+                        getKey={(i: Imovel) => i._id}
+                        renderItem={(i: Imovel) => <ImovelCard imovel={i} finalidade="Aluguel" />}
+                        prevRef={navPrevRef}
+                        nextRef={navNextRef} options={{
+                            slidesToShow: 1.1,
+                            spacing: 24,
+                            loop: true,
+                            breakpoints: {
+                                '(min-width: 768px)': { slidesToShow: 2.2, spacing: 24 },
+                                '(min-width: 1024px)': { slidesToShow: 3, spacing: 24 },
+                            },
+                        }}
+                        className="overflow-visible"
+                    />
 
                         <button
                             ref={navPrevRef}

@@ -1,5 +1,7 @@
 // lib/sanity/fetchImoveis.ts
-import { sanityClient } from '@/lib/sanity'
+'use server';
+
+import { serverClient } from './sanity.server';
 import {
     queryTodosImoveis,
     queryImoveisParaVenda,
@@ -13,6 +15,24 @@ import { mapImovelToClient } from '@core/mapImovelToClient'
 import type { ImovelClient } from '@/types/imovel-client'
 import type { ImovelProjetado } from '@/types/imovel-client'
 
+// Server-side fetcher with caching
+async function fetchWithCache<T>(
+    query: string,
+    params = {},
+    tags: string[] = []
+): Promise<T> {
+    try {
+        const data = await serverClient.fetch<T>(query, params, {
+            cache: 'force-cache',
+            next: { tags },
+        });
+        return data;
+    } catch (err) {
+        console.error('Sanity fetch error:', err);
+        throw new Error(`Failed to fetch from Sanity: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    }
+}
+
 // utilzinho para evitar repetição ↓
 const mapMany = (data: ImovelProjetado[]): ImovelClient[] =>
     data.map(mapImovelToClient)
@@ -21,23 +41,37 @@ const mapMany = (data: ImovelProjetado[]): ImovelClient[] =>
 // LISTAGENS
 // ———————————————————————————————————————————————————————————————————
 export async function getTodosImoveis(): Promise<ImovelClient[]> {
-    const data = await sanityClient.fetch<ImovelProjetado[]>(queryTodosImoveis)
+    const data = await fetchWithCache<ImovelProjetado[]>(
+        queryTodosImoveis,
+        {},
+        ['imoveis']
+    )
     return mapMany(data)
 }
 
 export async function getImoveisParaVenda(): Promise<ImovelClient[]> {
-    const data = await sanityClient.fetch<ImovelProjetado[]>(queryImoveisParaVenda)
+    const data = await fetchWithCache<ImovelProjetado[]>(
+        queryImoveisParaVenda,
+        {},
+        ['imoveis', 'venda']
+    )
     return mapMany(data)
 }
 
 export async function getImoveisParaAlugar(): Promise<ImovelClient[]> {
-    const data = await sanityClient.fetch<ImovelProjetado[]>(queryImoveisParaAlugar)
+    const data = await fetchWithCache<ImovelProjetado[]>(
+        queryImoveisParaAlugar,
+        {},
+        ['imoveis', 'aluguel']
+    )
     return mapMany(data)
 }
 
 export async function getImoveisAluguelDestaque(): Promise<ImovelClient[]> {
-    const data = await sanityClient.fetch<ImovelProjetado[]>(
-        queryImoveisAluguelDestaque
+    const data = await fetchWithCache<ImovelProjetado[]>(
+        queryImoveisAluguelDestaque,
+        {},
+        ['imoveis', 'aluguel', 'destaque']
     )
     return mapMany(data)
 }
@@ -48,30 +82,44 @@ export async function getImoveisAluguelDestaque(): Promise<ImovelClient[]> {
 export async function getImovelPorSlug(
     slug: string
 ): Promise<ImovelClient | null> {
-    const data = await sanityClient.fetch<ImovelProjetado | null>(
-        queryImovelPorSlug,
-        { slug }
-    )
-    return data ? mapImovelToClient(data) : null
+    try {
+        const data = await fetchWithCache<ImovelProjetado | null>(
+            queryImovelPorSlug,
+            { slug },
+            [`imovel:${slug}`]
+        )
+        return data ? mapImovelToClient(data) : null
+    } catch (error) {
+        console.error(`Error fetching imovel with slug ${slug}:`, error)
+        return null
+    }
 }
 
 // consulta por ID se precisar (usa a mesma query; slug é ignorado)
 export async function getImovelPorId(
     id: string
 ): Promise<ImovelClient | null> {
-    const data = await sanityClient.fetch<ImovelProjetado | null>(
-        queryImovelPorSlug,
-        { id }
-    )
-    return data ? mapImovelToClient(data) : null
+    try {
+        const data = await fetchWithCache<ImovelProjetado | null>(
+            queryImovelPorSlug,
+            { id },
+            [`imovel:${id}`]
+        )
+        return data ? mapImovelToClient(data) : null
+    } catch (error) {
+        console.error(`Error fetching imovel with id ${id}:`, error)
+        return null
+    }
 }
 
 // ———————————————————————————————————————————————————————————————————
 // VITRINE (ex-home)
 // ———————————————————————————————————————————————————————————————————
 export async function getImovelEmDestaque(): Promise<ImovelClient[]> {
-    const data = await sanityClient.fetch<ImovelProjetado[]>(
-        queryImovelEmDestaque
+    const data = await fetchWithCache<ImovelProjetado[]>(
+        queryImovelEmDestaque,
+        {},
+        ['imoveis', 'destaque']
     )
     return mapMany(data)
 }

@@ -132,10 +132,9 @@ const ImovelMiniCard: FC<MiniCardProps> = ({ imovel, isActive, onClick, isFav, t
             <button onClick={e => { e.stopPropagation(); toggleFav(); }} className="absolute top-2 right-2 p-1 bg-white rounded-full shadow">
                 <Heart className={cn('w-5 h-5 transition-colors', isFav ? 'fill-red-500 text-red-500' : 'text-gray-800')} />
             </button>
-        </div>
-        <div className="p-3 bg-white">
+        </div>        <div className="p-3 bg-white">
             <h3 className="text-sm font-semibold text-stone-900 truncate mb-1">{imovel.titulo}</h3>
-            <div className="text-sm text-amber-600 font-bold">{formatarMoeda(imovel.preco)}/mês</div>
+            <div className="text-sm text-amber-600 font-bold">{imovel.preco ? formatarMoeda(imovel.preco) : 'Sob consulta'}/mês</div>
         </div>
     </motion.div>
 );

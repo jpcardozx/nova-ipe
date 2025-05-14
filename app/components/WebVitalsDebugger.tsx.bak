@@ -1,0 +1,142 @@
+// Componente de diagnóstico de Web Vitals para auxiliar na detecção de problemas
+'use client';
+
+import { useEffect } from 'react';
+
+export function LCPDetector() {
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const observer = new PerformanceObserver((entryList) => {
+            for (const entry of entryList.getEntries()) {
+                if (entry.entryType === 'largest-contentful-paint') {
+                    console.log('[LCP] Elemento detectado:', entry.element);
+                    console.log('[LCP] Tempo:', entry.startTime.toFixed(1) + 'ms');
+                    console.log('[LCP] Tamanho:', entry.size);
+
+                    // Destacar visualmente
+                    if (entry.element) {
+                        entry.element.style.outline = '5px solid red';
+                        entry.element.setAttribute('title', `LCP: ${entry.startTime.toFixed(1)}ms`);
+                    }
+                }
+            }
+        });
+
+        observer.observe({ type: 'largest-contentful-paint', buffered: true });
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
+
+    return null;
+}
+
+export function CLSDetector() {
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        let cumulativeScore = 0;
+
+        const observer = new PerformanceObserver((entryList) => {
+            for (const entry of entryList.getEntries()) {
+                if (!entry.hadRecentInput) {
+                    const currentShift = entry.value;
+                    cumulativeScore += currentShift;
+
+                    console.log('[CLS] Shift detectado:', currentShift.toFixed(4));
+                    console.log('[CLS] Acumulado:', cumulativeScore.toFixed(4));
+
+                    if (entry.sources && entry.sources.length) {
+                        entry.sources.forEach(source => {
+                            if (source.node) {
+                                console.log('[CLS] Elemento causador:', source.node);
+                                source.node.style.outline = '3px dashed orange';
+                            }
+                        });
+                    }
+                }
+            }
+        });
+
+        observer.observe({ type: 'layout-shift', buffered: true });
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
+
+    return null;
+}
+
+export function INPDetector() {
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        // Polyfill simples para navegadores que não suportam INP diretamente
+        const observer = new PerformanceObserver((entryList) => {
+            const events = entryList.getEntries();
+
+            events.forEach(event => {
+                if (event.duration > 200) {
+                    console.log('[INP] Interação lenta detectada:');
+                    console.log(`[INP] Duração: ${event.duration.toFixed(1)}ms`);
+                    console.log('[INP] Elemento:', event.target);
+
+                    if (event.target) {
+                        const severity = Math.min(1, (event.duration - 200) / 800);
+                        const color = `rgba(255, ${Math.floor(255 - (severity * 255))}, 0, 0.3)`;
+
+                        const originalBg = event.target.style.backgroundColor;
+
+                        event.target.style.backgroundColor = color;
+                        event.target.setAttribute('title', `Interação lenta: ${event.duration.toFixed(1)}ms`);
+
+                        setTimeout(() => {
+                            event.target.style.backgroundColor = originalBg;
+                        }, 2000);
+                    }
+                }
+            });
+        });
+
+        observer.observe({ type: 'event', buffered: true });
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
+
+    return null;
+}
+
+export function WebVitalsDebugger({ enabled = true }) {
+    if (!enabled || typeof window === 'undefined' || process.env.NODE_ENV === 'production') {
+        return null;
+    }
+
+    return (
+        <>
+            <LCPDetector />
+            <CLSDetector />
+            <INPDetector />
+            <div
+                style={{
+                    position: 'fixed',
+                    bottom: 0,
+                    left: 0,
+                    background: 'rgba(0,0,0,0.8)',
+                    color: 'white',
+                    padding: '8px',
+                    fontSize: '12px',
+                    zIndex: 9999
+                }}
+            >
+                Web Vitals Debugger Ativo
+            </div>
+        </>
+    );
+}
+
+export default WebVitalsDebugger;

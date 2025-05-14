@@ -1,60 +1,163 @@
-<h1 align="center">
-  🌳 Nova Ipê Imóveis
-</h1>
+# Nova Ipê - Site Imobiliário Premium
 
-<p align="center">
-  <strong>Transformando a experiência imobiliária de Guararema-SP com tecnologia, design e performance.</strong>
-</p>
+Um site moderno e elegante para uma imobiliária de alto padrão, com foco em experiência do usuário e design premium.
 
-<p align="center">
-  <a href="https://nova-ipe.vercel.app" target="_blank"><img src="https://img.shields.io/badge/🟢 Online-nova--ipe.vercel.app-success?style=flat-square" /></a>
-  <img src="https://img.shields.io/github/license/jpcardozx/nova-ipe?style=flat-square" />
-  <img src="https://img.shields.io/github/languages/top/jpcardozx/nova-ipe?style=flat-square" />
-  <img src="https://img.shields.io/badge/made%20with-Next.js-black?logo=next.js&style=flat-square" />
-  <img src="https://img.shields.io/badge/styled%20with-TailwindCSS-06b6d4?logo=tailwindcss&style=flat-square" />
-</p>
+## Visão Geral
 
----
+O Nova Ipê é um projeto de site imobiliário desenvolvido com tecnologias modernas como Next.js, React, TypeScript, Tailwind CSS e Framer Motion. O objetivo é oferecer uma experiência digital premium para clientes que buscam imóveis de alto padrão.
 
-## ✨ Visão Geral
+## Características Principais
 
-O **Nova Ipê** é um projeto real de transformação digital de uma imobiliária tradicional. Foi criado para:
+- **Design Premium**: Interface elegante e sofisticada com animações suaves e micro-interações
+- **Sistema de Design Consistente**: Definições padronizadas de cores, tipografia, espaçamentos e componentes
+- **Componentes Reutilizáveis**: Biblioteca de componentes UI modulares e extensíveis
+- **Responsivo**: Adaptação perfeita para todos os tamanhos de tela
+- **Otimizado para Performance**: Carregamento rápido e experiência fluida
+- **Acessibilidade**: Conformidade com padrões WCAG para garantir usabilidade para todos
 
-- Posicionar a **Ipê Imóveis** como autoridade online.
-- Otimizar geração de leads qualificados.
-- Oferecer uma experiência de navegação **moderna, responsiva e elegante**.
-- Servir como **prova de conceito técnico e visual**.
+## Sistema de Design
 
-> ⚡️ Totalmente desenvolvido em Next.js 14, Tailwind, TypeScript e Plasmic.
+O projeto utiliza um sistema de design completo definido em `lib/design-system.ts` com:
 
----
+- **Cores**: Paleta principal e cores de acento
+- **Tipografia**: Hierarquia de textos e fontes
+- **Espaçamentos**: Sistema de grid e espaçamentos consistentes
+- **Breakpoints**: Pontos de quebra para responsividade
+- **Animações**: Transições e efeitos padronizados
 
-## 🎯 Principais Diferenciais
+## Componentes UI
 
-- ✅ Arquitetura moderna com **App Router do Next.js**
-- ✅ UI refinada e customizada via **Plasmic Studio**
-- ✅ Alta performance com **Vercel Hosting**
-- ✅ Design modular e escalável
-- ✅ Preparado para **SEO**, SSR e futuras automações
+### Componentes Core
 
----
+- **Button**: Botão customizável com múltiplas variantes, animações e estados
+  - Variantes: primary, secondary, outline, ghost, light, dark, premium, success, danger, link
+  - Animações: pulse, scale, float, glow, subtle
+  - Suporte a ícones, loading state e acessibilidade
 
-## 🔍 Preview
+### Componentes de Propriedade
 
-<div align="center">
-  <a href="https://nova-ipe.vercel.app" target="_blank">
-    <img src="./public/screenshot-nova-ipe.png" alt="Preview do site Nova Ipê" width="90%" />
-  </a>
-</div>
+- **PropertyCard**: Card para exibição de imóveis com imagens, informações e interações
+- **PropertyCarousel**: Carrossel para exibir coleções de imóveis com navegação e responsividade
+- **PropertyHero**: Seção hero para páginas de detalhes de imóveis com galeria de imagens
+- **PropertyFeatures**: Exibição de características e comodidades do imóvel
+- **PropertyMap**: Componente para mostrar localização e proximidades do imóvel
 
----
+## Como Usar
 
-## 🧠 Tecnologias Utilizadas
+### Instalação
 
-| Tecnologia     | Função                                     |
-|----------------|---------------------------------------------|
-| **Next.js 14** | Framework base com App Router              |
-| **TypeScript** | Tipagem estática para robustez             |
-| **Tailwind CSS** | Estilização rápida e responsiva         |
-| **[Em transição]**    | CMS visual para colaboração e design       |
-| **Vercel**     | Deploy automatizado e CDN global           |
+```bash
+# Clone o repositório
+git clone https://github.com/seu-usuario/nova-ipe.git
+
+# Navegue até o diretório
+cd nova-ipe
+
+# Instale as dependências
+npm install
+
+# Inicie o servidor de desenvolvimento
+npm run dev
+```
+
+### Exemplos de Uso
+
+#### Button
+
+```tsx
+import { Button } from '@/components/ui/core/Button';
+
+export default function Example() {
+  return (
+    <div className="space-y-4">
+      <Button variant="primary">Botão Primário</Button>
+      <Button variant="premium" animation="float" leftIcon={<StarIcon />}>
+        Botão Premium
+      </Button>
+      <Button variant="outline" loading>
+        Carregando...
+      </Button>
+    </div>
+  );
+}
+```
+
+#### PropertyCard
+
+```tsx
+import { PropertyCard } from '@/components/ui/property';
+
+export default function Example() {
+  return (
+    <PropertyCard
+      id="1"
+      title="Apartamento de Luxo"
+      slug="apartamento-luxo"
+      location="Jardins"
+      city="São Paulo"
+      price={1250000}
+      propertyType="sale"
+      area={120}
+      bedrooms={3}
+      bathrooms={2}
+      parkingSpots={2}
+      mainImage={{
+        url: "/images/apartamento.jpg",
+        alt: "Apartamento de Luxo"
+      }}
+      isPremium={true}
+    />
+  );
+}
+```
+
+#### PropertyCarousel
+
+```tsx
+import { PropertyCarousel } from '@/components/ui/property';
+
+export default function Example() {
+  return (
+    <PropertyCarousel
+      properties={propertiesArray}
+      title="Imóveis em Destaque"
+      subtitle="Confira nossas melhores opções"
+      slidesToShow={3}
+      showControls={true}
+      autoplay={true}
+      viewAllLink="/imoveis"
+    />
+  );
+}
+```
+
+## Estrutura do Projeto
+
+```
+├── app/                  # Páginas e rotas do Next.js
+├── components/           # Componentes React
+│   ├── ui/               # Componentes de UI
+│   │   ├── core/         # Componentes base (Button, etc)
+│   │   └── property/     # Componentes específicos de imóveis
+├── lib/                  # Utilitários e configurações
+│   └── design-system.ts  # Sistema de design
+├── public/               # Arquivos estáticos
+└── styles/               # Estilos globais
+```
+
+## Tecnologias Utilizadas
+
+- **Next.js**: Framework React para renderização híbrida
+- **React**: Biblioteca para construção de interfaces
+- **TypeScript**: Tipagem estática para JavaScript
+- **Tailwind CSS**: Framework CSS utilitário
+- **Framer Motion**: Biblioteca de animações
+- **Lucide Icons**: Ícones modernos e consistentes
+
+## Contribuição
+
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests.
+
+## Licença
+
+Este projeto está licenciado sob a licença MIT.

@@ -56,7 +56,7 @@ export default function HeroImovel({ imagem, titulo, cidade, tipo, metros, desta
                     {titulo}
                 </h1>
 
-                <p className="mt-3 text-white/90 text-[clamp(1rem,2vw,1.3rem)] italic">
+                <p className="mt-3 text-white/90 text-[clamp(1rem,2vw,1.3rem)] italic drop-shadow-md font-light tracking-wide">
                     {[cidade, tipo, metros].filter(Boolean).join(" · ")}
                 </p>
 
@@ -66,7 +66,7 @@ export default function HeroImovel({ imagem, titulo, cidade, tipo, metros, desta
                     transition={{ delay: 0.4 }}
                     className="mt-6 inline-block bg-white/10 backdrop-blur-sm text-white text-xs px-4 py-[6px] rounded-full uppercase tracking-wide font-medium shadow-sm border border-white/20"
                 >
-                    Curadoria Nova Ipê
+                    Curadoria Ipê Imóveis
                 </motion.div>
             </motion.div>
 

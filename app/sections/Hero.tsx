@@ -1,92 +1,161 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { MapPin, Home, ArrowRight } from "lucide-react";
-import AdvancedDropdown from "../components/AdvancedDropdown";
-import { Montserrat } from 'next/font/google';
+import React from 'react';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
-const montSerrat = Montserrat({
-    subsets: ['latin'],
-    weight: ['400'],
-    display: 'swap',
-    variable: '--font-montserrat',
-});
-const LOCATIONS = ['Guararema', 'São José dos Campos', 'Mogi das Cruzes', 'Santa Isabel', 'Todos'];
-const PROPERTY_TYPES = ["Compra", "Aluguel", "Temporada"];
-
-export default function Hero() {
-    const router = useRouter();
-    const [selectedLocation, setSelectedLocation] = useState("Guararema");
-    const [selectedType, setSelectedType] = useState("Todos");
-
-    const handleSearch = () => {
-        router.push(`/busca?local=${selectedLocation}&tipo=${selectedType}`);
-    };
-
+const ElegantHero: React.FC = () => {
     return (
-        <section className={`relative w-full h-[100vh] flex items-center justify-center bg-[#0D1F2D] overflow-hidden mt-21.5 ${montSerrat.className}`}>
-            {/* Background com overlay sutil */}
-            <div className="absolute inset-0 z-0">
-                <Image
-                    src="/images/hero-bg.jpg"
-                    alt="Vista aérea de Guararema"
-                    fill
-                    className="object-cover object-center brightness-[0.6] saturate-50"
-                    priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-[#0D1F2D]/90 via-[#0D1F2D]/60 to-[#0D1F2D]" />
+        <section className="relative min-h-screen bg-white">
+            {/* Grid sutil no background */}
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] bg-[size:100px_100px]" />
+
+            {/* Container principal com max-width controlado */}
+            <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
+                <div className="flex flex-col lg:flex-row items-center min-h-screen py-20 lg:py-0">
+
+                    {/* Conteúdo - Esquerda */}
+                    <motion.div
+                        className="flex-1 lg:pr-20"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.8 }}
+                    >
+                        {/* Pequeno destaque */}
+                        <div className="inline-block mb-6">
+                            <p className="text-sm font-medium text-gray-600 tracking-wide uppercase">
+                                Desde 2009 em Guararema
+                            </p>
+                        </div>
+
+                        {/* Título principal - tipografia elegante */}
+                        <h1 className="text-5xl lg:text-6xl font-light leading-none mb-6">
+                            <span className="font-semibold">Imóveis</span> que
+                            <br />
+                            definem <span className="font-semibold">estilo</span>
+                        </h1>
+
+                        {/* Descrição refinada */}
+                        <p className="text-lg text-gray-600 leading-relaxed mb-12 max-w-md">
+                            Curadoria especializada de propriedades excepcionais.
+                            Conectamos você ao imóvel ideal com discrição e excelência.
+                        </p>
+
+                        {/* CTAs minimalistas */}
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <Link href="/portfolio">
+                                <button className="group flex items-center justify-center px-8 py-4 bg-black text-white font-medium hover:bg-gray-900 transition-colors">
+                                    Ver Portfólio
+                                    <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                </button>
+                            </Link>
+
+                            <Link href="/consultoria">
+                                <button className="px-8 py-4 border border-gray-300 text-gray-700 font-medium hover:border-gray-400 transition-colors">
+                                    Consultoria Personalizada
+                                </button>
+                            </Link>
+                        </div>
+
+                        {/* Indicadores discretos */}
+                        <div className="flex gap-12 mt-16">
+                            <div>
+                                <p className="text-3xl font-light">1.200+</p>
+                                <p className="text-sm text-gray-600">Negócios realizados</p>
+                            </div>
+                            <div>
+                                <p className="text-3xl font-light">R$ 850M</p>
+                                <p className="text-sm text-gray-600">Em transações</p>
+                            </div>
+                            <div>
+                                <p className="text-3xl font-light">98%</p>
+                                <p className="text-sm text-gray-600">Satisfação</p>
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    {/* Imagem principal - Direita */}
+                    <motion.div
+                        className="flex-1 relative"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.8, delay: 0.2 }}
+                    >
+                        <div className="relative aspect-[4/5] max-w-lg mx-auto">
+                            {/* Frame elegante */}
+                            <div className="absolute inset-0 border border-gray-200" />
+
+                            {/* Imagem principal */}
+                            <div className="absolute inset-4">
+                                <Image
+                                    src="/images/luxury-home.jpg"
+                                    alt="Propriedade em destaque"
+                                    fill
+                                    className="object-cover"
+                                    priority
+                                    quality={90}
+                                />
+                            </div>
+
+                            {/* Card de destaque sobreposto */}
+                            <motion.div
+                                className="absolute bottom-8 left-8 right-8 bg-white p-6 shadow-lg"
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ delay: 0.5 }}
+                            >
+                                <p className="text-sm text-gray-500 mb-1">Em destaque</p>
+                                <h3 className="text-lg font-semibold mb-2">Residência Alto Padrão - Jardim Dulce</h3>
+                                <p className="text-sm text-gray-600 mb-3">
+                                    450m² | 4 suítes | Vista panorâmica
+                                </p>
+                                <Link href="/imovel/jardim-dulce-001" className="text-sm font-medium underline">
+                                    Ver detalhes
+                                </Link>
+                            </motion.div>
+                        </div>
+                    </motion.div>
+                </div>
             </div>
 
-            {/* Conteúdo principal */}
-            <div className="relative z-10 w-full max-w-4xl px-6 text-center text-white">
-                <h1 className="text-3xl md:text-5xl font-light tracking-tight mb-4 leading-tight">
-                    Viva o melhor de <span className="text-[#FFAD43] font-semibold">Guararema</span> com o imóvel ideal
-                </h1>
-
-                <p className="text-base md:text-lg text-[#F7D7A3] max-w-xl mx-auto mb-10 font-light">
-                    Atendimento exclusivo, imóveis selecionados com curadoria de quem conhece a região.
-                </p>
-
-                {/* Formulário de busca com destaque refinado */}
-                <div className="flex flex-col md:flex-row items-center gap-3 bg-white/10 border border-white/10 p-4 rounded-xl backdrop-blur-md shadow-md">
-                    <div className="w-full md:w-1/2">
-                        <AdvancedDropdown
-                            icon={<MapPin className="w-5 h-5 text-[#FFAD43]" />}
-                            options={LOCATIONS}
-                            selected={selectedLocation}
-                            onSelect={setSelectedLocation}
-                        />
+            {/* Seção inferior - Preview de propriedades */}
+            <motion.div
+                className="border-t border-gray-200"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+            >
+                <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+                    <div className="flex items-center justify-between mb-8">
+                        <h2 className="text-2xl font-light">Propriedades selecionadas</h2>
+                        <Link href="/portfolio" className="text-sm font-medium hover:underline">
+                            Ver todas →
+                        </Link>
                     </div>
-                    <div className="w-full md:w-1/2">
-                        <AdvancedDropdown
-                            icon={<Home className="w-5 h-5 text-[#FFAD43]" />}
-                            options={PROPERTY_TYPES}
-                            selected={selectedType}
-                            onSelect={setSelectedType}
-                        />
-                    </div>
-                    <button
-                        onClick={handleSearch}
-                        className="w-full md:w-auto flex items-center justify-center gap-2 px-5 py-3 bg-[#FFAD43] hover:bg-[#f9a52f] text-[#0D1F2D] font-medium rounded-lg transition-all text-sm"
-                    >
-                        Buscar imóveis
-                        <ArrowRight className="w-4 h-4" />
-                    </button>
-                </div>
 
-                {/* CTA secundária refinada */}
-                <div className="mt-6">
-                    <a
-                        href="https://wa.me/5511981024749"
-                        className="inline-flex items-center gap-2 text-[#F7D7A3] hover:text-[#FFAD43] text-sm transition-colors"
-                    >
-                        Atendimento direto via WhatsApp
-                        <ArrowRight className="w-4 h-4" />
-                    </a>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {[1, 2, 3].map((i) => (
+                            <motion.div
+                                key={i}
+                                className="group cursor-pointer"
+                                whileHover={{ y: -4 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                <div className="aspect-[4/3] bg-gray-100 mb-4 overflow-hidden">
+                                    <div className="w-full h-full bg-gray-200 group-hover:scale-105 transition-transform duration-300" />
+                                </div>
+                                <h3 className="font-medium mb-1">Casa Contemporânea</h3>
+                                <p className="text-sm text-gray-600 mb-1">Centro Histórico</p>
+                                <p className="text-sm font-medium">R$ 1.250.000</p>
+                            </motion.div>
+                        ))}
+                    </div>
                 </div>
-            </div>
+            </motion.div>
         </section>
     );
-}
+};
+
+export default ElegantHero;
