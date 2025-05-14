@@ -1,7 +1,6 @@
 {
     "name": "nova-ipe",
     "version": "0.1.0",
-    "private": false,
     "scripts": {
         "dev": "next dev",
         "build": "next build --no-lint",
