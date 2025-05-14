@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Navbar from '@sections/NavBar'
 import Footer from '@sections/Footer'
@@ -13,11 +13,9 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  const redirecionarParaStudio = () => {
-    if (typeof window !== 'undefined') {
-      window.location.assign('/studio')
-    }
-  }
+  const redirecionarParaStudio = useCallback(() => {
+    window.location.assign('/studio')
+  }, [])
 
   const autenticarSenha = useCallback(async () => {
     setErro('')
@@ -40,7 +38,7 @@ export default function LoginPage() {
     } finally {
       setLoading(false)
     }
-  }, [senha])
+  }, [senha, redirecionarParaStudio])
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

@@ -1,26 +1,25 @@
-
-
+// app/imovel/[slug]/page.tsx
 import React, { Suspense } from 'react';
 import { notFound } from 'next/navigation';
-import { sanityClient } from '@/lib/sanity';
+import { serverClient as sanityServer, serverFetch as sanityFetch } from '@/lib/sanity/sanity.server';
 import { formatarArea } from '@/lib/utils';
 import { queryImovelPorSlug, queryImoveisRelacionados } from '@lib/queries';
 import { getImovelPorSlug } from '@lib/sanity/fetchImoveis';
 
 import type { Metadata } from 'next';
 import type { ImovelProjetado } from '@/types/imovel-client';
-// renomeamos o tipo para não colidir com o componente
 import type { ImovelClient as ImovelDataType } from '@/types/imovel-client';
-import { mapImovelToClient } from '@/lib/mapImovelToClient';
+import { mapImovelToClient } from '@lib/mapImovelToClient';
 
-// Importa o componente de página (ImovelClient.tsx), que recebe { imovel, relacionados, preco, metragem }
+// Importa o componente de página
 import ImovelDetalhes from './ImovelClient';
 
 // Geração estática das rotas dinâmicas
 export async function generateStaticParams() {
-  const slugs: { slug: { current: string } }[] = await sanityClient.fetch(
-    `*[_type == "imovel" && defined(slug.current)]{ slug }`
-  );
+  const slugs: { slug: { current: string } }[] = await sanityFetch({
+    query: `*[_type == "imovel" && defined(slug.current)]{ slug }`,
+    tags: ['imoveis'] // Tag para revalidação
+  });
   return slugs.map(({ slug }) => ({ slug: slug.current }));
 }
 
@@ -31,7 +30,12 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   const { slug } = params;
-  const imovel: ImovelProjetado | null = await sanityClient.fetch(queryImovelPorSlug, { slug });
+
+  const imovel: ImovelProjetado | null = await sanityFetch({
+    query: queryImovelPorSlug,
+    params: { slug },
+    tags: ['imovel', `imovel-${slug}`]
+  });
 
   if (!imovel) return {};
 
@@ -78,6 +82,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 
 // Componente assíncrono que busca e transforma os dados
 async function ImovelPage({ slug }: { slug: string }) {
+  // Usa a função getImovelPorSlug que já deve estar configurada para servidor
   const imovelClient = await getImovelPorSlug(slug);
   if (!imovelClient) return notFound();
 
@@ -89,21 +94,23 @@ async function ImovelPage({ slug }: { slug: string }) {
   // Busca relacionados pela mesma categoria
   const categoriaId = imovelClient.categoria?._id;
   let relacionados: ImovelProjetado[] = [];
+
   if (categoriaId) {
-    relacionados = await sanityClient.fetch<ImovelProjetado[]>(
-      queryImoveisRelacionados,
-      {
+    relacionados = await sanityFetch<ImovelProjetado[]>({
+      query: queryImoveisRelacionados,
+      params: {
         imovelId: imovelClient._id,
         categoriaId,
         cidade: imovelClient.cidade,
-      }
-    );
+      },
+      tags: ['imoveis', `categoria-${categoriaId}`]
+    });
   }
 
   // Mapeia para o tipo de cliente
   const relacionadosClient: ImovelDataType[] = relacionados.map(mapImovelToClient);
 
-  // Aqui usamos o componente de detalhes, com props corretas:
+  // Usa o componente de detalhes
   return (
     <ImovelDetalhes
       imovel={imovelClient}

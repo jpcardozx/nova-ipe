@@ -5,15 +5,20 @@ import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { ImageOff, Home } from 'lucide-react';
 
-// Tipo de imagem que corresponde ao formato retornado pela função toClientImage
-type ClientImage = {
+// Unified image type that supports both format styles
+export interface ClientImage {
     imagemUrl?: string;
+    url?: string;
     alt?: string;
     hotspot?: {
         x: number;
         y: number;
     };
-};
+    asset?: {
+        _ref?: string;
+        url?: string;
+    };
+}
 
 interface SanityImageProps {
     image: ClientImage | null | undefined;
@@ -25,19 +30,17 @@ interface SanityImageProps {
     className?: string;
     priority?: boolean;
     aspectRatio?: string;
-    accentColor?: {
-        light: string;
-        dark: string;
-        accent: string;
-    };
+    quality?: number;
     onLoad?: () => void;
     showPlaceholderIcon?: boolean;
 }
 
 /**
- * Componente para renderizar imagens do Sanity
- * Compatível com o formato { imagemUrl, alt } retornado por toClientImage
- * Com melhorias visuais e de performance
+ * Componente aprimorado para renderizar imagens, com suporte a múltiplos formatos:
+ * - Formatos Sanity { url, imagemUrl, asset }
+ * - Imagens convencionais
+ * - Tratamento de erros e carregamento
+ * - Animações e efeitos visuais
  */
 export default function SanityImage({
     image,
@@ -49,37 +52,68 @@ export default function SanityImage({
     className,
     priority = false,
     aspectRatio,
-    accentColor,
     onLoad,
     showPlaceholderIcon = true,
 }: SanityImageProps) {
     const [loadState, setLoadState] = useState<'loading' | 'success' | 'error'>('loading');
-    const [isHovered, setIsHovered] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);    // Extract image URL from various possible formats
+    const getImageUrl = (img: ClientImage | null | undefined): string | null => {
+        if (!img) return null;
 
-    // Extrair a URL da imagem e hotspot se disponível
-    const imageUrl = image?.imagemUrl || null;
-    const hotspot = image?.hotspot;
+        // Direct URL on the image object
+        if (img.url) return img.url;
 
-    // Cores de destaque para os estados
-    const colors = accentColor || {
-        light: 'bg-gray-100',
-        dark: 'bg-gray-200',
-        accent: 'text-gray-500'
+        // For backward compatibility with imagemUrl naming
+        if (img.imagemUrl) return img.imagemUrl;
+
+        // Sanity asset reference format
+        if (img.asset?.url) return img.asset.url;
+
+        // Sanity reference that needs to be constructed
+        if (img.asset?._ref) {
+            try {
+                // Parse Sanity asset reference: image-abc123-800x600-jpg
+                const refParts = img.asset._ref.split('-');
+
+                // Handle different reference formats
+                if (refParts.length >= 4) {
+                    const [type, id, dimensions, extension] = refParts;
+
+                    if (type === 'image' && id) {
+                        const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'missing-project-id';
+                        const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
+                        // Correctly formatting URL with dimensions and extension
+                        return `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}-${dimensions}.${extension}`;
+                    }
+                }
+
+                console.error("Invalid Sanity asset reference format:", img.asset._ref);
+            } catch (error) {
+                console.error("Error parsing Sanity asset reference:", error, img.asset._ref);
+            }
+        }
+
+        console.warn("Could not determine image URL from:", img);
+        return null;
     };
 
-    // Calcular a posição do objeto com base no hotspot se disponível
+    // Get the URL and hotspot information
+    const imageUrl = getImageUrl(image);
+    const hotspot = image?.hotspot;
+
+    // Calculate object position based on hotspot data
     const objectPosition = hotspot
         ? `${hotspot.x * 100}% ${hotspot.y * 100}%`
         : '50% 50%';
 
-    // Notificar o componente pai quando a imagem for carregada com sucesso
+    // Notify parent component when the image loads successfully
     useEffect(() => {
         if (loadState === 'success' && onLoad) {
             onLoad();
         }
     }, [loadState, onLoad]);
 
-    // Fallback quando não há imagem ou ocorre erro
+    // Fallback when there's no image or it fails to load
     if (loadState === 'error' || !imageUrl) {
         return (
             <div
@@ -97,11 +131,8 @@ export default function SanityImage({
                 }}
             >
                 {showPlaceholderIcon && (
-                    <div className={cn(
-                        "flex items-center justify-center p-3 mb-2 rounded-full",
-                        colors.light
-                    )}>
-                        <ImageOff className={cn("w-6 h-6", colors.accent)} />
+                    <div className="flex items-center justify-center p-3 mb-2 rounded-full bg-stone-100">
+                        <ImageOff className="w-6 h-6 text-stone-500" />
                     </div>
                 )}
                 <p className="text-stone-500 text-sm font-medium px-4 text-center">
@@ -141,7 +172,7 @@ export default function SanityImage({
                     objectPosition,
                 }}
                 priority={priority}
-                onLoadingComplete={() => setLoadState('success')}
+                onLoad={() => setLoadState('success')}
                 onError={() => setLoadState('error')}
             />
 

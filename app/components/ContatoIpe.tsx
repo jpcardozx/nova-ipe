@@ -465,6 +465,7 @@ export default function ContatoRefinadoIpe() {
                                         alt="Ipê Imobiliária"
                                         width={20}
                                         height={20}
+                                        priority
                                     />
                                 </div>
                                 <div>

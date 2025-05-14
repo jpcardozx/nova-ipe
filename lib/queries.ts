@@ -1,8 +1,98 @@
 // src/lib/queries.ts
 
 import { FRAGMENT_CAPA, FRAGMENT_DETALHES } from './sanity/fragments.groq';
+import { sanityClient } from './sanity';
+import { buildImageProjectionQuery, normalizeDocuments } from './sanity-utils';
+import type { ImovelClient } from '@/src/types/imovel-client';
 
-export const queryTodosImoveis = /* groq */ `
+// Queries para a nova Home Page otimizada
+export const queryImoveisDestaque = /* groq */ `
+  *[
+    _type == "imovel" && 
+    destaque == true && 
+    status == "disponivel"
+  ] | order(_createdAt desc)[0...6] {
+    _id,
+    titulo,
+    slug,
+    preco,
+    finalidade,
+    tipoImovel,
+    bairro,
+    cidade,
+    dormitorios,
+    banheiros,
+    areaUtil,
+    vagas,
+    destaque,
+    imagem {
+      asset->{
+        url
+      },
+      alt,
+      hotspot
+    }
+  }
+`;
+
+export const queryImoveisAluguel = /* groq */ `
+  *[
+    _type == "imovel" && 
+    finalidade == "Aluguel" && 
+    status == "disponivel"
+  ] | order(_createdAt desc)[0...6] {
+    _id,
+    titulo,
+    slug,
+    preco,
+    finalidade,
+    tipoImovel,
+    bairro,
+    cidade,
+    dormitorios,
+    banheiros,
+    areaUtil,
+    vagas,
+    destaque,
+    imagem {
+      asset->{
+        url
+      },
+      alt,
+      hotspot
+    }
+  }
+`;
+
+/**
+ * Busca imóveis em destaque para a página inicial
+ * Otimizado para carregamento rápido com projeção
+ */
+export async function getImoveisDestaque(): Promise<any[]> {
+  try {
+    const data = await sanityClient.fetch(queryImoveisDestaque);
+    return data || [];
+  } catch (error) {
+    console.error('Erro ao buscar imóveis em destaque:', error);
+    return [];
+  }
+}
+
+/**
+ * Busca imóveis para aluguel para a página inicial
+ * Otimizado para carregamento rápido com projeção
+ */
+export async function getImoveisAluguel(): Promise<any[]> {
+  try {
+    const data = await sanityClient.fetch(queryImoveisAluguel);
+    return data || [];
+  } catch (error) {
+    console.error('Erro ao buscar imóveis para aluguel:', error);
+    return [];
+  }
+}
+
+export const queryTodosImoveis = /* groq */`
   *[
     _type == "imovel" &&
     status == "disponivel"
@@ -42,6 +132,10 @@ export const queryImovelEmDestaque = /* groq */ `
     bairro,
     cidade,
     descricao,
+    dormitorios,
+    banheiros,
+    areaUtil,
+    vagas,
     aceitaFinanciamento,
     destaque,
     categoria->{

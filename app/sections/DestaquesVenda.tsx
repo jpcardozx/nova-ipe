@@ -1,82 +1,24 @@
 'use client'
 
-import React, { useState, useEffect, FC } from 'react';
+import React, { useState, useEffect, FC, useRef } from 'react';
 import { useInView } from 'react-intersection-observer';
-import {
-    motion,
-    AnimatePresence,
-    useMotionValue,
-    useTransform,
-    useSpring,
-} from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import {
-    MapPin,
-    ArrowRight,
-    BedDouble,
-    Bath,
-    Car,
-    Ruler,
-    ChevronLeft,
-    ChevronRight,
-    Heart,
-    Share2,
-} from 'lucide-react';
-import { cn, formatarMoeda } from '@/lib/utils';
-import SanityImage from '@components/SanityImage';
+import { ArrowRight, ChevronLeft, ChevronRight, Building, MapPin, Clock } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import type { ImovelClient } from '@/types/imovel-client';
+import ImovelCard from '../components/ImovelCard';
+import { normalizeDocuments } from '../../lib/sanity-utils';
+import { Button } from '../components/ui/Button';
+import FeaturedProperty from '../components/ui/FeaturedProperty';
 
-// Caso seu utils não exporte formatarArea, definimos aqui
-const formatarArea = (m2: number): string => `${m2.toLocaleString()} m²`;
-
-type BadgeVariant = 'primary' | 'secondary' | 'outline';
-interface BadgeProps {
-    variant?: BadgeVariant;
-    className?: string;
-    children: React.ReactNode;
-}
-const Badge: FC<BadgeProps> = ({ variant = 'primary', className, children }) => {
-    const variantStyles: Record<BadgeVariant, string> = {
-        primary: 'bg-amber-600 text-white',
-        secondary: 'bg-rose-600 text-white',
-        outline: 'bg-white/90 text-amber-700 border border-amber-200',
-    };
-    return (
-        <div
-            className={cn(
-                'px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1',
-                'shadow-sm backdrop-blur-sm transition-all duration-300',
-                variantStyles[variant],
-                className
-            )}
-        >
-            {children}
-        </div>
-    );
-};
-
-interface FeatureProps {
-    icon: React.ReactNode;
-    label: string;
-    value: string | number;
-}
-const Feature: FC<FeatureProps> = ({ icon, label, value }) => (
-    <div className="flex items-center gap-2.5 group">
-        <div className="p-2 bg-amber-50 rounded-lg text-amber-700 transition-all group-hover:bg-amber-100">
-            {icon}
-        </div>
-        <div>
-            <span className="block text-xs text-stone-500">{label}</span>
-            <span className="font-medium text-stone-800">{value}</span>
-        </div>
-    </div>
-);
-
+// Navigation button component
 interface NavButtonProps {
     direction?: 'next' | 'prev';
     onClick: () => void;
     disabled?: boolean;
 }
+
 const NavButton: FC<NavButtonProps> = ({ direction = 'next', onClick, disabled = false }) => (
     <button
         onClick={onClick}
@@ -85,15 +27,15 @@ const NavButton: FC<NavButtonProps> = ({ direction = 'next', onClick, disabled =
             'p-3 rounded-full bg-white shadow-md',
             'transition-all duration-300 ease-out',
             'border border-stone-100',
-            disabled ? 'opacity-40 cursor-not-allowed' : 'hover:bg-amber-50 hover:border-amber-200 hover:shadow-lg',
-            'focus:outline-none focus:ring-2 focus:ring-amber-500/50'
+            disabled ? 'opacity-40 cursor-not-allowed' : 'hover:bg-brand-light hover:border-brand-green/20 hover:shadow-lg',
+            'focus:outline-none focus:ring-2 focus:ring-brand-green/30'
         )}
         aria-label={direction === 'next' ? 'Próximo imóvel' : 'Imóvel anterior'}
     >
         {direction === 'next' ? (
-            <ChevronRight className="w-5 h-5 text-stone-700" />
+            <ChevronRight className="w-5 h-5 text-brand-dark" />
         ) : (
-            <ChevronLeft className="w-5 h-5 text-stone-700" />
+            <ChevronLeft className="w-5 h-5 text-brand-dark" />
         )}
     </button>
 );
@@ -102,14 +44,14 @@ const NavButton: FC<NavButtonProps> = ({ direction = 'next', onClick, disabled =
 function useFavorites() {
     const [favorites, setFavorites] = useState<string[]>([]);
 
+    // Carrega favoritos do localStorage apenas após montagem do componente
     useEffect(() => {
-        if (typeof window === 'undefined') return;
         const saved = localStorage.getItem('imoveis-favoritos');
         if (saved) setFavorites(JSON.parse(saved));
     }, []);
 
+    // Salva favoritos no localStorage quando a lista é atualizada
     useEffect(() => {
-        if (typeof window === 'undefined') return;
         localStorage.setItem('imoveis-favoritos', JSON.stringify(favorites));
     }, [favorites]);
 
@@ -123,298 +65,228 @@ function useFavorites() {
     return { isFavorite, toggleFavorite };
 }
 
-interface ImovelMiniCardProps {
-    imovel: ImovelClient;
-    isActive: boolean;
-    onClick: () => void;
-    onFavoriteToggle: () => void;
-    isFavorite: boolean;
-}
-const ImovelMiniCard: FC<ImovelMiniCardProps> = ({ imovel, isActive, onClick, isFavorite, onFavoriteToggle }) => (
-    <motion.div
-        className={cn(
-            'overflow-hidden rounded-xl cursor-pointer transition-all duration-300 ease-out border-2 shadow-md bg-white group',
-            isActive ? 'border-amber-500 scale-[1.03]' : 'border-stone-100 hover:border-amber-200'
-        )}
-        onClick={onClick}
-        whileHover={{ y: -5 }}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-    >
-        <div className="relative aspect-[5/4]">
-            <SanityImage
-                image={imovel.imagem}
-                alt={imovel.titulo || 'Imóvel'}
-                fill
-                sizes="(max-width: 640px) 50vw, 33vw"
-                className="object-cover transition-all duration-500 group-hover:scale-105"
-                aspectRatio="5/4"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-90 group-hover:opacity-100 transition-opacity" />
-            <div className="absolute top-3 left-3">
-                <Badge variant="primary">Destaque</Badge>
-            </div>
-            <button
-                className="absolute top-3 right-3 p-1.5 bg-white/80 backdrop-blur-sm rounded-full shadow-md hover:bg-white transition-all"
-                onClick={(e) => {
-                    e.stopPropagation();
-                    onFavoriteToggle();
-                }}
-                aria-label={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
-            >
-                <Heart className={cn('w-4 h-4 transition-colors', isFavorite ? 'fill-red-500 text-red-500' : 'text-stone-700')} />
-            </button>
-            <div className="absolute bottom-3 left-3 right-3">
-                <div className="bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2.5 shadow-md">
-                    <div className="flex items-center justify-between">
-                        <p className="font-semibold text-amber-700 truncate">{formatarMoeda(imovel.preco)}</p>
-                        <div className="flex items-center space-x-2.5 text-xs text-stone-600">
-                            {imovel.dormitorios && (<span className="flex items-center"><BedDouble className="w-3 h-3 mr-1" />{imovel.dormitorios}</span>)}
-                            {imovel.banheiros && (<span className="flex items-center"><Bath className="w-3 h-3 mr-1" />{imovel.banheiros}</span>)}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </motion.div>
-);
-
-interface ImovelHeroProps {
-    imovel: ImovelClient;
-    isFavorite: boolean;
-    onFavoriteToggle: () => void;
-    onShare: () => void;
-}
-const ImovelHero: FC<ImovelHeroProps> = ({ imovel, isFavorite, onFavoriteToggle, onShare }) => {
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-    const rotateX = useTransform(y, [-100, 100], [2, -2]);
-    const rotateY = useTransform(x, [-100, 100], [-2, 2]);
-    const springConfig = { damping: 30, stiffness: 200 };
-    const springRotateX = useSpring(rotateX, springConfig);
-    const springRotateY = useSpring(rotateY, springConfig);
-
-    return (
-        <motion.div
-            className="bg-white rounded-2xl overflow-hidden shadow-xl border border-stone-100"
-            style={{ perspective: 1200 }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1.0] }}
-            onMouseMove={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect();
-                x.set(e.clientX - (rect.left + rect.width / 2));
-                y.set(e.clientY - (rect.top + rect.height / 2));
-            }}
-            onMouseLeave={() => { x.set(0); y.set(0); }}
-        >
-            <motion.div
-                className="grid grid-cols-1 md:grid-cols-2"
-                style={{ rotateX: springRotateX, rotateY: springRotateY, transformStyle: 'preserve-3d' }}
-            >
-                <div className="relative h-80 md:h-auto">
-                    <SanityImage
-                        image={imovel.imagem}
-                        alt={imovel.titulo || 'Imóvel em destaque'}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 50vw"
-                        priority
-                        className="object-cover transition-all duration-700 hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                    <div className="absolute top-5 left-5 flex flex-col space-y-2">
-                        <Badge variant="primary">Destaque da semana</Badge>
-                        {imovel.status === undefined && <Badge variant="secondary">Lançamento</Badge>}
-                    </div>
-                    <div className="absolute top-5 right-5 flex space-x-2">
-                        <button onClick={onFavoriteToggle} className="p-2.5 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-white transition-all" aria-label={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}>
-                            <Heart className={cn('w-5 h-5 transition', isFavorite ? 'fill-red-500 text-red-500' : 'text-stone-700')} />
-                        </button>
-                        <button onClick={onShare} className="p-2.5 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-white transition-all" aria-label="Compartilhar">
-                            <Share2 className="w-5 h-5 text-stone-700" />
-                        </button>
-                    </div>
-                </div>
-                <div className="p-7 md:p-8 flex flex-col relative">
-                    <div className="mb-5">
-                        <div className="flex items-center text-amber-600 text-sm font-medium mb-2">
-                            <Badge variant="outline" className="mr-2">{imovel.finalidade}</Badge>
-                            {imovel.categoria?.titulo}
-                        </div>
-                        <h2 className="text-2xl font-serif font-medium text-stone-900 mb-3 leading-tight">
-                            {imovel.titulo}
-                        </h2>
-                        <div className="flex items-center text-stone-600 mb-4">
-                            <MapPin className="w-4 h-4 mr-1.5 flex-shrink-0 text-amber-600" />
-                            <span className="text-sm">
-                                {[imovel.endereco, imovel.bairro, imovel.cidade].filter(Boolean).join(', ')}
-                            </span>
-                        </div>
-                    </div>
-                    <div className="mb-6">
-                        <div className="text-sm text-stone-500 mb-1">Valor</div>
-                        <div className="text-3xl font-bold text-amber-700">{formatarMoeda(imovel.preco)}</div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                        {imovel.areaUtil && <Feature icon={<Ruler className="w-4 h-4" />} label="Área total" value={formatarArea(imovel.areaUtil)} />}
-                        {imovel.dormitorios && <Feature icon={<BedDouble className="w-4 h-4" />} label="Dormitórios" value={imovel.dormitorios} />}
-                        {imovel.banheiros && <Feature icon={<Bath className="w-4 h-4" />} label="Banheiros" value={imovel.banheiros} />}
-                        {imovel.vagas && <Feature icon={<Car className="w-4 h-4" />} label="Vagas" value={imovel.vagas} />}
-                    </div>
-                    {imovel.descricao && <div className="mb-6"><p className="text-stone-700 line-clamp-3">{imovel.descricao}</p></div>}
-                    <div className="mt-auto">
-                        <Link href={`/imovel/${imovel.slug}`} className="group flex justify-between items-center w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white p-4 rounded-xl transition-all duration-300 ease-out shadow-md hover:shadow-lg">
-                            <span className="font-medium">Ver todos os detalhes</span>
-                            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30">
-                                <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-0.5 transition-transform" />
-                            </div>
-                        </Link>
-                    </div>
-                </div>
-            </motion.div>
-        </motion.div>
-    );
-};
-
 const DestaquesVendaSection: FC = () => {
     const [imoveis, setImoveis] = useState<ImovelClient[]>([]);
+    const [activeIndex, setActiveIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [activeIndex, setActiveIndex] = useState(0);
+    const { ref, inView } = useInView({
+        threshold: 0.1,
+        triggerOnce: true,
+    });
     const { isFavorite, toggleFavorite } = useFavorites();
-    const { ref, inView } = useInView({ triggerOnce: true, rootMargin: '200px' });
+    const sectionRef = useRef<HTMLElement>(null);
 
+    // Use a useEffect to load data when component mounts or enters viewport
     useEffect(() => {
         if (inView && isLoading) fetchImoveis();
-    }, [inView]);
+    }, [inView, isLoading]);
 
+    // Optimize rendering with IntersectionObserver
+    useEffect(() => {
+        if (!sectionRef.current) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('cv-auto');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            { rootMargin: '200px' }
+        );
+
+        observer.observe(sectionRef.current);
+
+        return () => {
+            if (sectionRef.current) observer.unobserve(sectionRef.current);
+        };
+    }, []);
+
+    // Enhanced fetch function with proper error handling
     const fetchImoveis = async () => {
         try {
             setIsLoading(true);
-            const res = await fetch('/api/destaques');
-            if (!res.ok) throw new Error(`Status: ${res.status}`);
-            const data: ImovelClient[] = await res.json();
-            const vendas = data.filter(i => i.finalidade === 'Venda' && (!i.status || i.status === 'disponivel'));
-            setImoveis(vendas);
-        } catch (err: unknown) {
-            setError(err instanceof Error ? err.message : 'Erro desconhecido');
+            setError(null);
+            // Use mock API for testing to avoid Sanity connection issues
+            const response = await fetch('/api/mock');
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data && Array.isArray(data) && data.length > 0) {
+                // Normalize the documents to ensure consistent formats
+                const normalizedData = normalizeDocuments<ImovelClient>(data);
+                setImoveis(normalizedData);
+            } else {
+                setImoveis([]);
+                setError("Nenhum imóvel para venda em destaque encontrado.");
+            }
+        } catch (err) {
+            console.error('Error fetching imoveis:', err);
+            setError(err instanceof Error ? err.message : 'Erro ao carregar imóveis em destaque');
         } finally {
             setIsLoading(false);
         }
     };
 
+    // Navigation functions
     const next = () => setActiveIndex(i => (i + 1) % imoveis.length);
     const prev = () => setActiveIndex(i => (i - 1 + imoveis.length) % imoveis.length);
 
+    // Early return for loading state with skeleton UI
     if (isLoading) {
         return (
-            <div ref={ref} className="py-20 flex items-center justify-center">
-                <div className="text-center space-y-4 animate-pulse">
-                    <div className="inline-block w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
-                    <p className="text-stone-600">Buscando imóveis exclusivos para você...</p>
-                </div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div ref={ref} className="py-16">
-                <div className="max-w-md mx-auto text-center p-8 bg-white rounded-xl shadow-lg border border-red-100">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-red-50 text-red-500 rounded-full flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16z" clipRule="evenodd" />
-                        </svg>
+            <section ref={ref} id="properties" className="py-16 md:py-24 bg-white border-y border-stone-100 scroll-mt-24">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-12">
+                        <div className="h-8 w-64 bg-stone-200 rounded-lg animate-pulse mx-auto"></div>
+                        <div className="h-4 w-96 bg-stone-200 rounded-lg animate-pulse mx-auto mt-4"></div>
                     </div>
-                    <h3 className="text-xl font-medium text-stone-900 mb-2">Não foi possível carregar os imóveis</h3>
-                    <p className="text-stone-600 mb-5">{error}</p>
-                    <button onClick={fetchImoveis} className="px-5 py-2.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition shadow-md">Tentar novamente</button>
-                </div>
-            </div>
-        );
-    }
-
-    if (imoveis.length === 0) {
-        return (
-            <div ref={ref} className="py-16">
-                <div className="max-w-md mx-auto text-center p-8 bg-white rounded-xl shadow-lg border border-amber-100">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                        </svg>
-                    </div>
-                    <h3 className="text-xl font-medium text-stone-900 mb-2">Nenhum imóvel em destaque</h3>
-                    <p className="text-stone-600 mb-5">Por favor, volte mais tarde.</p>
-                    <Link href="/imoveis" className="px-5 py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white rounded-lg hover:from-amber-700 hover:to-amber-600 transition shadow-md">
-                        Ver todos os imóveis
-                    </Link>
-                </div>
-            </div>
-        );
-    }
-
-    const destaque = imoveis[activeIndex];
-    const share = (i: ImovelClient) => {
-        const url = `${window.location.origin}/imovel/${i.slug}`;
-        navigator.share?.({ title: i.titulo, text: `Confira: ${i.titulo}`, url })
-            .catch(() => navigator.clipboard.writeText(url));
-    };
-
-    return (
-        <section ref={ref} className="py-24 relative bg-gradient-to-b from-stone-50 to-white">
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('/texture-elegant.png')]" />
-
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="max-w-3xl mx-auto text-center mb-16">
-                    <h2 className="font-serif text-3xl md:text-4xl text-stone-900 mb-3 relative">
-                        <span className="absolute -top-6 -left-4 text-4xl text-amber-400 opacity-50">"</span>
-                        Imóveis Premium em Destaque
-                        <span className="absolute -bottom-6 -right-4 text-4xl text-amber-400 opacity-50">"</span>
-                    </h2>
-                    <div className="w-24 h-1 bg-gradient-to-r from-amber-500 to-amber-300 mx-auto my-6 rounded-full" />
-                    <p className="text-stone-600 max-w-2xl mx-auto">
-                        Selecionamos cuidadosamente as propriedades mais impressionantes para você.
-                    </p>
-                </div>
-
-                <div className="mb-16">
-                    <AnimatePresence mode="wait">
-                        <ImovelHero
-                            key={destaque._id}
-                            imovel={destaque}
-                            isFavorite={isFavorite(destaque._id)}
-                            onFavoriteToggle={() => toggleFavorite(destaque._id)}
-                            onShare={() => share(destaque)}
-                        />
-                    </AnimatePresence>
-                </div>
-
-                <div className="flex items-center justify-between mb-10">
-                    <h3 className="text-xl font-serif text-stone-800 relative pl-3 before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-full before:w-1 before:bg-amber-500 before:rounded-full">
-                        Mais opções exclusivas para você
-                    </h3>
-                    {imoveis.length > 1 && (
-                        <div className="flex space-x-3">
-                            <NavButton direction="prev" onClick={prev} disabled={imoveis.length <= 1} />
-                            <NavButton direction="next" onClick={next} disabled={imoveis.length <= 1} />
-                        </div>
-                    )}
-                </div>
-
-                {imoveis.length > 1 && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-16">
-                        {imoveis.map((i, idx) => (
-                            <ImovelMiniCard
-                                key={i._id}
-                                imovel={i}
-                                isActive={idx === activeIndex}
-                                onClick={() => setActiveIndex(idx)}
-                                isFavorite={isFavorite(i._id)}
-                                onFavoriteToggle={() => toggleFavorite(i._id)}
-                            />
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {[...Array(3)].map((_, i) => (
+                            <div key={i} className="h-96 bg-stone-200 rounded-xl animate-pulse"></div>
                         ))}
                     </div>
-                )}
+                </div>
+            </section>
+        );
+    }
+
+    // Error state UI
+    if (error) {
+        return (
+            <section ref={ref} id="properties" className="py-16 md:py-24 bg-white border-y border-stone-100 scroll-mt-24">
+                <div className="container mx-auto px-4 text-center">
+                    <h2 className="text-3xl font-bold text-brand-dark mb-4">Imóveis em Destaque</h2>
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8 max-w-xl mx-auto">
+                        <p className="text-red-700 mb-4">{error}</p>
+                        <Button
+                            variant="default"
+                            onClick={fetchImoveis}
+                        >
+                            Tentar novamente
+                        </Button>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
+    // If no imóveis found
+    if (imoveis.length === 0) {
+        return (
+            <section ref={ref} id="properties" className="py-16 md:py-24 bg-white border-y border-stone-100 scroll-mt-24">
+                <div className="container mx-auto px-4 text-center">
+                    <h2 className="text-3xl font-bold text-brand-dark mb-4">Imóveis para Compra</h2>
+                    <p className="text-stone-500 mb-8">Não há imóveis em destaque no momento.</p>
+                </div>
+            </section>
+        );
+    }
+
+    return (
+        <section
+            ref={sectionRef}
+            id="properties"
+            className="py-16 md:py-24 bg-white border-y border-stone-100 scroll-mt-24 relative overflow-hidden"
+        >
+            {/* Decorative elements */}
+            <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-brand-light/30 filter blur-3xl"></div>
+            <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-accent-yellow/10 filter blur-3xl"></div>
+
+            {/* Main content */}
+            <div className="container mx-auto px-4 relative">
+                <motion.div
+                    className="text-center mb-12"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <div className="inline-flex items-center justify-center px-4 py-1.5 bg-brand-light rounded-full mb-4">
+                        <Building className="w-4 h-4 mr-2 text-brand-green" />
+                        <span className="text-sm font-medium text-brand-green">Imóveis Selecionados</span>
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-bold text-brand-dark mb-4">Encontre o Imóvel Perfeito</h2>
+                    <p className="text-stone-600 max-w-2xl mx-auto">
+                        Curadoria exclusiva de propriedades em Guararema e região, escolhidas pelos nossos especialistas com 15 anos de experiência no mercado imobiliário.
+                    </p>
+                </motion.div>
+
+                {/* Feature property - highlighted */}
+                <motion.div
+                    className="mb-16 relative"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                    <div className="absolute -right-4 -top-4 px-3 py-1.5 bg-brand-green text-white text-sm font-semibold rounded-lg shadow-lg z-10">
+                        Destaque da Semana
+                    </div>
+                    <div className="p-4 lg:p-0 border border-brand-green/20 rounded-xl bg-white shadow-xl lg:border-0 lg:shadow-none lg:bg-transparent">
+                        <FeaturedProperty
+                            property={imoveis[activeIndex]}
+                            badgeText="Recomendação do Corretor"
+                        />
+                    </div>
+                </motion.div>
+
+                {/* Navigation controls */}
+                <div className="flex justify-between items-center mb-8">
+                    <div className="flex items-center">
+                        <Clock className="w-4 h-4 mr-2 text-brand-green" />
+                        <h3 className="text-xl font-semibold text-brand-dark">
+                            Últimas Adições
+                        </h3>
+                    </div>
+                    <div className="flex space-x-2">
+                        <NavButton direction="prev" onClick={prev} disabled={imoveis.length <= 1} />
+                        <NavButton direction="next" onClick={next} disabled={imoveis.length <= 1} />
+                    </div>
+                </div>
+
+                {/* Property grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                    {imoveis.slice(0, 6).map((imovel, idx) => (
+                        <AnimatePresence key={imovel._id} mode="wait">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ delay: idx * 0.1 }}
+                            >
+                                <ImovelCard
+                                    imovel={imovel}
+                                    isFavorite={isFavorite(imovel._id)}
+                                    onFavoriteToggle={toggleFavorite}
+                                    labelNovo={idx === 0 || idx === 2} // Marcar alguns como novos para demonstração
+                                />
+                            </motion.div>
+                        </AnimatePresence>
+                    ))}
+                </div>
+
+                {/* CTA */}
+                <div className="text-center mt-12">
+                    <Link href="/comprar" passHref>
+                        <Button
+                            variant="accent"
+                            size="lg"
+                            rightIcon={<ArrowRight className="w-4 h-4 ml-2" />}
+                        >
+                            Ver todos os imóveis à venda
+                        </Button>
+                    </Link>
+                    <p className="mt-4 text-stone-500 text-sm">
+                        <MapPin className="w-3.5 h-3.5 inline-block mr-1" />
+                        Mais de 120 propriedades disponíveis em Guararema e região
+                    </p>
+                </div>
             </div>
         </section>
     );

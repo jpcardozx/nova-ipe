@@ -1,9 +1,10 @@
 // app/acesso-negado/page.tsx
 
-import { Metadata } from "next";
-import Navbar from "app/sections/NavBar";
-import Footer from "app/sections/Footer";
 import Link from "next/link";
+import { Metadata } from "next";
+
+import Footer from "app/sections/Footer";
+import Navbar from "app/sections/NavBar";
 
 export const metadata: Metadata = {
     title: "Acesso restrito - Ipê Imóveis",

@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { memo } from 'react'
 import { motion } from 'framer-motion'
 
@@ -7,9 +8,30 @@ import { motion } from 'framer-motion'
  * Componente de carregamento esqueleto (skeleton) para a seção de imóveis em destaque
  * Exibe uma versão esqueleto da UI enquanto os dados estão sendo carregados
  */
-function SkeletonLoader() {
+interface SkeletonLoaderProps {
+    height?: string;
+    width?: string;
+    className?: string;
+    variant?: 'simple' | 'property' | 'carousel';
+}
+
+const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
+    height = '200px',
+    width = '100%',
+    className = '',
+    variant = 'simple'
+}) => {
+    if (variant === 'simple') {
+        return (
+            <div
+                className={`animate-pulse bg-neutral-200 rounded-md ${className}`}
+                style={{ height, width }}
+            />
+        );
+    }
+
     return (
-        <div className="space-y-10 animate-pulse">
+        <div className="space-y-10 animate-pulse" style={{ height, width }}>
             {/* Esqueleto do imóvel principal */}
             <div className="bg-white rounded-xl overflow-hidden shadow-md border border-stone-100">
                 <div className="flex flex-col lg:flex-row">
@@ -56,26 +78,28 @@ function SkeletonLoader() {
             </div>
 
             {/* Esqueleto do carousel */}
-            <div>
-                <div className="flex justify-between items-center mb-6">
-                    <div className="h-7 bg-stone-200 rounded-md w-1/3"></div>
-                </div>
+            {variant === 'carousel' && (
+                <div>
+                    <div className="flex justify-between items-center mb-6">
+                        <div className="h-7 bg-stone-200 rounded-md w-1/3"></div>
+                    </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="bg-white rounded-xl overflow-hidden border border-stone-100 shadow-sm h-64">
-                            <div className="aspect-[3/2] bg-gradient-to-r from-stone-200 to-stone-100"></div>
-                            <div className="p-4 space-y-2">
-                                <div className="h-5 bg-amber-100 rounded w-1/2"></div>
-                                <div className="h-4 bg-stone-200 rounded w-5/6"></div>
-                                <div className="h-4 bg-stone-100 rounded w-2/3"></div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {[1, 2, 3, 4].map((i) => (
+                            <div key={i} className="bg-white rounded-xl overflow-hidden border border-stone-100 shadow-sm h-64">
+                                <div className="aspect-[3/2] bg-gradient-to-r from-stone-200 to-stone-100"></div>
+                                <div className="p-4 space-y-2">
+                                    <div className="h-5 bg-amber-100 rounded w-1/2"></div>
+                                    <div className="h-4 bg-stone-200 rounded w-5/6"></div>
+                                    <div className="h-4 bg-stone-100 rounded w-2/3"></div>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
-    )
+    );
 }
 
 export default memo(SkeletonLoader)

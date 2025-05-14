@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, Phone, ExternalLink } from "lucide-react";
+import { MapPin, Phone, ExternalLink, Mail, Instagram, Facebook, Linkedin, Twitter } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -38,13 +38,15 @@ export default function Footer() {
         <footer className={`relative w-full bg-[#0D1F2D] text-[#F7D7A3] overflow-hidden ${montSerrat.className}`}>
             {/* Fundo com textura e gradiente */}
             <div className="absolute inset-0">
-                <Image
-                    src="/images/black-felt.png" // certifique-se de que o nome e caminho estejam corretos
-                    alt="Textura de fundo do rodapé"
-                    fill
-                    className="object-cover object-center opacity-60"
-                    priority
-                />
+                <div className="relative w-full h-full">
+                    <Image
+                        src="/images/black-felt.png" // certifique-se de que o nome e caminho estejam corretos
+                        alt="Textura de fundo do rodapé"
+                        fill
+                        className="object-cover object-center opacity-60"
+                        priority
+                    />
+                </div>
                 <div className="absolute inset-0 bg-[#0D1F2D]/80" />
             </div>
 
@@ -59,7 +61,7 @@ export default function Footer() {
                         className="mx-auto md:mx-0 object-contain"
                     />
                     <p className="text-sm md:text-base text-[#F7D7A3] mt-4 font-light leading-relaxed">
-                        Imóveis com identidade, atendimento humano e experiência de mais de 20 anos na região de Guararema.
+                        Há 15 anos conectando pessoas aos imóveis ideais em Guararema, com atendimento personalizado e conhecimento profundo da região.
                     </p>
 
                     <div className="mt-6 flex justify-center md:justify-start">
@@ -67,9 +69,9 @@ export default function Footer() {
                             href="https://wa.me/5511981845016"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-[#FFAD43] text-[#0D1F2D] hover:bg-[#e89c36] transition-all text-sm font-medium"
+                            className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-[#FFAD43] text-[#0D1F2D] hover:bg-[#e89c36] transition-all text-sm font-medium shadow-md hover:shadow-lg"
                         >
-                            Fale conosco
+                            Agende uma consulta
                             <ExternalLink className="w-4 h-4" />
                         </a>
                     </div>
@@ -78,9 +80,9 @@ export default function Footer() {
                 <div className="mt-12 border-t border-white/10 pt-12 grid grid-cols-1 md:grid-cols-3 gap-10 text-sm">
                     {/* Coluna 1 */}
                     <div className="footer-animate opacity-0 translate-y-4 transition-all duration-700">
-                        <h4 className="text-[#FFAD43] text-xs uppercase mb-4 tracking-widest font-semibold">Institucional</h4>
+                        <h4 className="text-[#FFAD43] text-xs uppercase mb-4 tracking-widest font-semibold">Conheça a Nova Ipê</h4>
                         <ul className="space-y-3">
-                            {["Sobre nós", "Política de privacidade", "Blog"].map((text, idx) => (
+                            {["Sobre nós", "Nossa equipe", "Avaliações de clientes", "Política de privacidade", "Blog"].map((text, idx) => (
                                 <li key={idx}>
                                     <Link
                                         href={`/${text.toLowerCase().replace(/\s+/g, "-")}`}
