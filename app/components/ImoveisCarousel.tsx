@@ -23,7 +23,7 @@ export interface ImoveisCarouselProps<T> {
     /**
      * Função para extrair o identificador único de cada imóvel
      */
-    getKey?: (imovel: T) => string;
+    getKey?: (imovel: T & { _id?: string; id?: string }) => string;
 
     /**
      * Componente para renderizar cada item do carrossel
@@ -85,9 +85,8 @@ export interface ImoveisCarouselProps<T> {
  * Componente de carrossel otimizado especificamente para imóveis
  * Versão melhorada e específica para o caso de uso da Ipê Imóveis
  */
-export function ImoveisCarousel<T>({
-    imoveis,
-    getKey = (item: any) => item._id || item.id || Math.random().toString(),
+export function ImoveisCarousel<T extends { _id?: string; id?: string }>({    imoveis,
+    getKey = (item: T) => item._id || item.id || Math.random().toString(),
     renderItem,
     options = {},
     className,
@@ -140,8 +139,7 @@ export function ImoveisCarousel<T>({
                         },
                     ])
                 )
-                : {} as { [key: string]: Omit<KeenSliderOptions, "breakpoints"> },
-            slideChanged(slider: any) {
+                : {} as { [key: string]: Omit<KeenSliderOptions, "breakpoints"> },            slideChanged(slider: import('keen-slider').KeenSliderInstance) {
                 setCurrentSlide(slider.track.details.rel);
             },
             created() {
