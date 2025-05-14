@@ -16,7 +16,6 @@ interface PropertyFeature {
 interface FeaturedPropertyProps {
     property: ImovelClient;
     className?: string;
-    badgeText?: string;
 }
 
 export default function FeaturedProperty({ property, className = '' }: FeaturedPropertyProps) {
