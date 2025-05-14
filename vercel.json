@@ -1,8 +1,60 @@
 {
-    "buildCommand": "npm install --legacy-peer-deps && npm run build",
-    "installCommand": "npm install --legacy-peer-deps",
-    "framework": "nextjs",
-    "env": {
-        "NPM_CONFIG_LEGACY_PEER_DEPS": "true"
+    "name": "nova-ipe",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build --no-lint",
+        "build:vercel": "npm ci --legacy-peer-deps && next build --no-lint",
+        "start": "next start",
+        "lint": "next lint",
+        "type-check": "tsc --noEmit",
+        "clean": "rm -rf .next node_modules/.cache",
+        "postinstall": "npm rebuild"
+    },
+    "dependencies": {
+        "@radix-ui/react-dialog": "^1.1.13",
+        "@radix-ui/react-dropdown-menu": "^2.1.14",
+        "@radix-ui/react-slot": "^1.2.2",
+        "@radix-ui/react-toast": "^1.2.13",
+        "@sanity/image-url": "^1.1.0",
+        "@sanity/vision": "^3.86.0",
+        "@sentry/nextjs": "^9.13.0",
+        "@vercel/speed-insights": "^1.2.0",
+        "clsx": "^2.1.1",
+        "critters": "^0.0.24",
+        "embla-carousel-react": "^8.6.0",
+        "framer-motion": "^12.7.4",
+        "lucide-react": "^0.487.0",
+        "next": "15.2.4",
+        "next-sanity": "^9.10.6",
+        "react": "18.3.1",
+        "react-dom": "18.3.1",
+        "sanity": "^3.88.3",
+        "tailwind-merge": "^3.2.0",
+        "web-vitals": "^5.0.0"
+    },
+    "optionalDependencies": {
+        "@rollup/rollup-linux-x64-gnu": "4.14.0"
+    },
+    "devDependencies": {
+        "@next/bundle-analyzer": "^15.2.4",
+        "@tailwindcss/postcss": "^4.1.6",
+        "@types/node": "^20",
+        "@types/react": "^18",
+        "@types/react-dom": "^18",
+        "@typescript-eslint/eslint-plugin": "^8.32.0",
+        "@typescript-eslint/parser": "^8.32.0",
+        "autoprefixer": "^10.4.21",
+        "embla-carousel-autoplay": "^8.6.0",
+        "eslint": "^9",
+        "eslint-config-next": "15.2.4",
+        "postcss": "^8.5.3",
+        "prettier": "^2.8.8",
+        "typescript": "^5"
+    },
+    "overrides": {
+        "react": "18.3.1",
+        "react-dom": "18.3.1"
     }
 }
