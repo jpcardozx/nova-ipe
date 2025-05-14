@@ -141,7 +141,7 @@ export function ImoveisCarousel<T>({
                     ])
                 )
                 : {} as { [key: string]: Omit<KeenSliderOptions, "breakpoints"> },
-            slideChanged(slider) {
+            slideChanged(slider: any) {
                 setCurrentSlide(slider.track.details.rel);
             },
             created() {

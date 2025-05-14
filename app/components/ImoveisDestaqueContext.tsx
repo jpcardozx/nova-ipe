@@ -42,7 +42,7 @@ function imoveisDestaqueReducer(state: ImoveisDestaqueState, action: ImoveisDest
                 status: 'success',
                 error: null,
                 // Define o primeiro imóvel como ativo se não houver nenhum ativo ainda
-                activeImovel: state.activeImovel || (action.payload.length > 0 ? action.payload[0]._id : null)
+                activeImovel: state.activeImovel || (action.payload.length > 0 ? (action.payload[0] as any)._id : null)
             }
         case 'FETCH_ERROR':
             return {

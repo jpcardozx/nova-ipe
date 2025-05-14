@@ -3,7 +3,7 @@ import type { ImovelClient } from '@/types/imovel-client'
 
 export function mapImovelToClient(i: ImovelProjetado): ImovelClient {
   return {
-    _id: i._id,
+    _id: i._id as string,
     slug: i.slug?.current ?? '',
     titulo: i.titulo,
     preco: i.preco,
