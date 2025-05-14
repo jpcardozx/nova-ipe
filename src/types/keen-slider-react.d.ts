@@ -6,27 +6,27 @@ declare module 'keen-slider/react' {
         OptionsType = KeenSliderOptions
     >(
         options?: OptionsType,
-        plugins?: any[]
+        plugins?: Array<(slider: KeenSliderInstance) => void | (() => void)>
     ): [React.RefObject<HTMLElementType>, { current?: KeenSliderInstance }];
     export type { KeenSliderInstance, KeenSliderOptions };
 }
 
 declare module 'keen-slider' {
     export interface KeenSliderInstance {
-        on: (event: string, callback: Function) => void;
+        on: (event: string, callback: (slider: KeenSliderInstance) => void) => void;
         next: () => void;
         prev: () => void;
         moveToIdx: (index: number) => void;
         track: {
             details: {
                 rel: number;
-                slides: any[];
-                [key: string]: any;
+                slides: Array<Record<string, unknown>>;
+                [key: string]: unknown;
             };
-            [key: string]: any;
+            [key: string]: unknown;
         };
         container: HTMLElement;
-        [key: string]: any;
+        [key: string]: unknown;
     }
 
     export interface KeenSliderOptions {
@@ -36,13 +36,13 @@ declare module 'keen-slider' {
         slides?: {
             perView?: number;
             spacing?: number;
-            [key: string]: any;
+            [key: string]: unknown;
         };
         breakpoints?: {
-            [key: string]: any;
+            [key: string]: unknown;
         };
         slideChanged?: (slider: KeenSliderInstance) => void;
         created?: (slider: KeenSliderInstance) => void;
-        [key: string]: any;
+        [key: string]: unknown;
     }
 }
