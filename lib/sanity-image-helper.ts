@@ -81,9 +81,7 @@ export function getImageUrl(image: ImageType, fallbackUrl: string = '/images/pro
         if (image.asset?.url) {
             console.log('[getImageUrl] Usando URL do asset');
             return image.asset.url;
-        }
-
-        // Caso 6: Tem referência do Sanity para construção de URL
+        }        // Caso 6: Tem referência do Sanity para construção de URL
         if (image.asset?._ref) {
             const refString = image.asset._ref;
             console.log('[getImageUrl] Processando referência Sanity:', refString);
@@ -107,35 +105,57 @@ export function getImageUrl(image: ImageType, fallbackUrl: string = '/images/pro
             // Extrair componentes da referência
             const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '0nks58lj';
             const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
-            const id = refParts[1];
 
-            // Identificar formato da referência
-            if (refParts.length >= 4) {
+            try {
+                // Novo método de extração mais robusto
+                // Padrão de referência: image-{id}-{dimensions}-{format}
+                let id, dimensions, extension;
+
+                // Caso especial: formato mais longo (hash extenso)
+                if (refParts.length > 4) {
+                    // Identificar a parte que contém dimensões (formato: NxM)
+                    const dimIndex = refParts.findIndex(part => /^\d+x\d+$/.test(part));
+                    if (dimIndex > 1) {
+                        id = refParts.slice(1, dimIndex).join('-');
+                        dimensions = refParts[dimIndex];
+                        extension = refParts[dimIndex + 1].split('?')[0];
+                    } else {
+                        // Formato não reconhecido, usar primeiras partes
+                        id = refParts[1];
+                        dimensions = '';
+                        extension = 'jpg';
+                    }
+                }
                 // Formato padrão: image-abc123-800x600-jpg
-                const dimensions = refParts[2];
-                const extension = refParts[3].split('?')[0];
-                const url = `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}-${dimensions}.${extension}`;
-                console.log('[getImageUrl] URL gerada (formato padrão):', url);
-                return url;
-            }
-            else if (refParts.length === 3) {
+                else if (refParts.length >= 4 && refParts[2].includes('x')) {
+                    id = refParts[1];
+                    dimensions = refParts[2];
+                    extension = refParts[3].split('?')[0];
+                }
                 // Formato simplificado: image-abc123-jpg
-                const extension = refParts[2].split('?')[0];
-                const url = `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}.${extension}`;
-                console.log('[getImageUrl] URL gerada (formato simples):', url);
+                else if (refParts.length === 3) {
+                    id = refParts[1];
+                    dimensions = '';
+                    extension = refParts[2].split('?')[0];
+                }
+                // Fallback
+                else {
+                    id = refParts[1];
+                    dimensions = '';
+                    extension = 'jpg';
+                }
+
+                // Construir URL final
+                const url = dimensions
+                    ? `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}-${dimensions}.${extension}`
+                    : `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}.${extension}`;
+
+                console.log('[getImageUrl] URL gerada:', url);
                 return url;
-            }
-            // Handle specific formats like "image-1854e7dd5423c8cbe4ae42eb038cd95a0aa0db9a-3456x5184-jpg"
-            else if (refParts.length > 4 && refParts[2].includes('x') && refParts[0] === 'image') {
-                // This is likely a hash-based format with dimensions
-                const dimensions = refParts[2];
-                const extension = refParts[3].split('?')[0];
-                const url = `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}-${dimensions}.${extension}`;
-                console.log('[getImageUrl] URL gerada (formato complexo):', url);
-                return url;
-            }
-            else {
+            } catch (err) {
+                console.error('[getImageUrl] Erro ao processar referência:', err);
                 // Fallback para formato simples com extensão jpg
+                const id = refParts[1];
                 const url = `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}.jpg`;
                 console.log('[getImageUrl] URL gerada (fallback):', url);
                 return url;

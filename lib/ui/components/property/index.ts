@@ -7,7 +7,7 @@ export * from './PropertyMap';
 
 // Exportação de tipos
 export type {
-    PropertyImage,
+    PropertyImageType,
     PropertyFeature,
     PropertyStatus,
     PropertyType,

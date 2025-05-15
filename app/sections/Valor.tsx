@@ -90,13 +90,13 @@ const certifications: Certification[] = [
         year: "Desde 2010"
     },
     {
-        id: "cofeci",
+        id: "cofeci-alterar(inexistente)",
         name: "Certificação COFECI",
         description: "Padrão nacional de excelência",
         year: "Renovada em 2024"
     },
     {
-        id: "abmi",
+        id: "abmi(alterar(inexistente))",
         name: "Membro ABMI",
         description: "Associação Brasileira do Mercado Imobiliário",
         year: "Desde 2015"
@@ -107,15 +107,15 @@ const certifications: Certification[] = [
 const companyMetrics: CompanyMetric[] = [
     {
         id: "tempo-mercado",
-        value: "14 anos",
+        value: "15 anos",
         label: "No mercado",
         description: "Experiência consolidada em Guararema",
         icon: <Clock className="w-5 h-5" />
     },
     {
         id: "transacoes",
-        value: "850+",
-        label: "Transações realizadas",
+        value: "500+",
+        label: "Transações Imobiliárias",
         description: "Negócios concretizados com sucesso",
         icon: <TrendingUp className="w-5 h-5" />
     },
@@ -128,9 +128,9 @@ const companyMetrics: CompanyMetric[] = [
     },
     {
         id: "equipe",
-        value: "12",
-        label: "Profissionais",
-        description: "Equipe especializada e certificada",
+        value: "Esquipe Especializada",
+        label: "Atendimento rápido e personalizado",
+        description: "Corretores com conhecimento do mercado local",
         icon: <Users className="w-5 h-5" />
     }
 ];

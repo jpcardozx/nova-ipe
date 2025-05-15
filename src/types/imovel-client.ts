@@ -17,10 +17,12 @@ export interface CategoriaFull {
 
 // Tipo de imagem que o toClientImage retorna
 export interface ImagemClient {
+    _type?: string     // Tipo do objeto de imagem (geralmente 'image')
     imagemUrl?: string  // Alterado de url para imagemUrl para compatibilidade
     alt?: string
     url: string  // URL da imagem, compatível com o que o Sanity retorna
     asset?: {
+        _type?: string  // Tipo do asset (geralmente 'sanity.imageAsset')
         _ref?: string  // Referência do Sanity para a imagem (ex: image-abc123-800x600-jpg)
         url?: string   // URL direta do asset
     }

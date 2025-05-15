@@ -37,61 +37,59 @@ export function ExclusiveAnalysisOffer({
                                 </span>
                             </div>
 
-                            {/* Headline */}
-                            <div>
+                            {/* Headline */}                            <div>
                                 <h3 className="text-2xl md:text-3xl text-gray-900 font-light leading-tight">
-                                    Estudo estratégico de valorização
-                                    <span className="block text-gray-700 mt-1">
-                                        Guararema 2025-2030
+                                    Guia definitivo de investimentos
+                                    <span className="block text-gray-700 mt-1 font-medium">
+                                        Guararema 2025-2030: Alta Rentabilidade
                                     </span>
                                 </h3>
                             </div>
 
                             {/* Value Prop */}
                             <p className="text-gray-600 text-lg font-light leading-relaxed max-w-2xl">
-                                Análise proprietária desenvolvida por nossa equipe de research,
-                                incluindo modelagem financeira avançada e cenários de retorno
-                                baseados em 15 anos de dados históricos do mercado.
+                                Análise estratégica exclusiva desenvolvida por nossa equipe de especialistas,
+                                com tecnologia preditiva e modelagem financeira avançada para identificar
+                                oportunidades premium com potencial de valorização acima do mercado.
                             </p>
 
                             {/* Key Differentiators */}
-                            <div className="grid sm:grid-cols-2 gap-x-8 gap-y-4 mt-8">
-                                <div className="space-y-3">
-                                    <h4 className="text-sm font-medium text-gray-700 tracking-wide">
-                                        METODOLOGIA
-                                    </h4>
-                                    <ul className="space-y-2 text-sm text-gray-600">
-                                        <li className="flex items-start gap-2">
-                                            <span className="text-gray-400 mt-1">—</span>
-                                            Análise comparativa com 12 mercados similares
-                                        </li>
-                                        <li className="flex items-start gap-2">
-                                            <span className="text-gray-400 mt-1">—</span>
-                                            Projeções econométricas validadas
-                                        </li>
-                                        <li className="flex items-start gap-2">
-                                            <span className="text-gray-400 mt-1">—</span>
-                                            Stress test em 3 cenários macroeconômicos
-                                        </li>
-                                    </ul>
-                                </div>
+                            <div className="grid sm:grid-cols-2 gap-x-8 gap-y-4 mt-8">                                <div className="space-y-3">
+                                <h4 className="text-sm font-medium text-gray-700 tracking-wide">
+                                    METODOLOGIA AVANÇADA
+                                </h4>
+                                <ul className="space-y-2 text-sm text-gray-600">
+                                    <li className="flex items-start gap-2">
+                                        <span className="text-gray-400 mt-1">—</span>
+                                        Análise comparativa com 18 mercados premium
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <span className="text-gray-400 mt-1">—</span>
+                                        Machine learning para projeção de tendências
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <span className="text-gray-400 mt-1">—</span>
+                                        Simulação avançada com 5 cenários econômicos
+                                    </li>
+                                </ul>
+                            </div>
 
                                 <div className="space-y-3">
                                     <h4 className="text-sm font-medium text-gray-700 tracking-wide">
-                                        ENTREGÁVEIS
+                                        BENEFÍCIOS EXCLUSIVOS
                                     </h4>
                                     <ul className="space-y-2 text-sm text-gray-600">
                                         <li className="flex items-start gap-2">
                                             <span className="text-gray-400 mt-1">—</span>
-                                            Relatório executivo de 40 páginas
+                                            Relatório estratégico personalizado
                                         </li>
                                         <li className="flex items-start gap-2">
                                             <span className="text-gray-400 mt-1">—</span>
-                                            Dashboard interativo com métricas
+                                            Acesso antecipado a lançamentos exclusivos
                                         </li>
                                         <li className="flex items-start gap-2">
                                             <span className="text-gray-400 mt-1">—</span>
-                                            Sessão de Q&A com nossos analistas
+                                            Assessoria executiva com nosso diretor
                                         </li>
                                     </ul>
                                 </div>
@@ -100,16 +98,15 @@ export function ExclusiveAnalysisOffer({
 
                         {/* Side Panel - 2 cols */}
                         <div className="lg:col-span-2 lg:pl-8 lg:border-l border-gray-200">
-                            <div className="space-y-6">
-                                {/* Performance Metric */}
-                                <div className="bg-white p-6 rounded-sm shadow-sm">
+                            <div className="space-y-6">                                {/* Performance Metric */}
+                                <div className="bg-white p-6 rounded-sm shadow-sm border border-gray-100">
                                     <div className="text-3xl font-light text-gray-900 mb-1">
-                                        22.4% a.a.
+                                        27.6% a.a.
                                     </div>
                                     <div className="text-sm text-gray-600">
-                                        Taxa média de valorização
+                                        Taxa potencial de valorização
                                         <span className="block text-xs text-gray-500 mt-1">
-                                            Últimos 36 meses (CAGR)
+                                            Projeção 2025-2027 (áreas selecionadas)
                                         </span>
                                     </div>
                                 </div>
@@ -119,14 +116,14 @@ export function ExclusiveAnalysisOffer({
                                     <div className="text-sm text-gray-700">
                                         <span className="font-medium">Disponibilidade:</span>
                                         <span className="block text-gray-600 mt-1">
-                                            8 análises restantes este trimestre
+                                            Apenas 5 apresentações disponíveis em maio
                                         </span>
                                     </div>
 
                                     <div className="text-sm text-gray-700">
-                                        <span className="font-medium">Investimento mínimo:</span>
+                                        <span className="font-medium">Oportunidade de entrada:</span>
                                         <span className="block text-gray-600 mt-1">
-                                            R$ 380.000 (lote padrão)
+                                            A partir de R$ 450.000 (portfólio premium)
                                         </span>
                                     </div>
                                 </div>
@@ -137,13 +134,14 @@ export function ExclusiveAnalysisOffer({
                                         onClick={onEngagement}
                                         onMouseEnter={() => setIsHovering(true)}
                                         onMouseLeave={() => setIsHovering(false)}
-                                        className="w-full bg-gray-900 text-white px-6 py-3.5 text-sm font-medium tracking-wide transition-all duration-300 hover:bg-gray-800"
+                                        className="w-full bg-gray-900 text-white px-6 py-3.5 text-sm font-medium tracking-wide transition-all duration-300 hover:bg-gray-800 relative overflow-hidden group"
                                     >
-                                        AGENDAR APRESENTAÇÃO
+                                        <span className="relative z-10">RESERVAR APRESENTAÇÃO EXECUTIVA</span>
+                                        <span className="absolute inset-0 bg-amber-600 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
                                     </button>
 
                                     <p className="text-xs text-gray-500 text-center mt-3">
-                                        Análise sob NDA • Sem custos
+                                        Confidencialidade garantida • Consultoria gratuita
                                     </p>
                                 </div>
                             </div>

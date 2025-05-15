@@ -16,9 +16,10 @@ import {
 } from 'lucide-react';
 import { cn, formatarMoeda, formatarArea } from '../../../../lib/utils';
 import { Button } from '../../../ui/core/Button';
+import PropertyImage from '@/app/components/PropertyImage';
 
 // Interfaces
-export interface PropertyImage {
+export interface PropertyImageType {
     url: string;
     alt?: string;
 }
@@ -44,9 +45,8 @@ export interface PropertyCardProps {
     area?: number;
     bedrooms?: number;
     bathrooms?: number;
-    parkingSpots?: number;
-    mainImage: PropertyImage;
-    additionalImages?: PropertyImage[];
+    parkingSpots?: number; mainImage: PropertyImageType;
+    additionalImages?: PropertyImageType[];
     status?: PropertyStatus;
     isNew?: boolean;
     isHighlight?: boolean;
@@ -161,9 +161,7 @@ export function PropertyCard({
                         variant === 'featured' && "sm:w-2/5 sm:h-auto",
                         variant === 'list' && "w-1/3 h-auto",
                     )}>
-                        <Image
-                            src={allImages[currentImage].url}
-                            alt={allImages[currentImage].alt || title}
+                        <PropertyImage src={allImages[currentImage].url} alt={allImages[currentImage].alt || title}
                             className="object-cover transition-transform duration-700 hover:scale-110"
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

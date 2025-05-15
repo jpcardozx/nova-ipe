@@ -1,0 +1,149 @@
+'use client';
+
+import { useState } from 'react';
+
+/**
+ * Componente de feedback para o usuário
+ * Permite aos visitantes fornecerem feedback sobre a nova versão
+ */
+export function FeedbackBanner() {
+    const [isOpen, setIsOpen] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+    const [feedback, setFeedback] = useState({
+        rating: 0,
+        comments: '',
+        email: ''
+    });
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        try {
+            // Enviar feedback para a API (a ser implementada)
+            // await fetch('/api/feedback', {
+            //   method: 'POST',
+            //   headers: { 'Content-Type': 'application/json' },
+            //   body: JSON.stringify(feedback)
+            // });
+
+            // Simulando envio bem-sucedido
+            console.log('Feedback enviado:', feedback);
+            setSubmitted(true);
+
+            // Limpar formulário
+            setFeedback({ rating: 0, comments: '', email: '' });
+
+            // Fechar após 3 segundos
+            setTimeout(() => {
+                setIsOpen(false);
+
+                // Resetar para futuro uso após fechar
+                setTimeout(() => setSubmitted(false), 300);
+            }, 3000);
+        } catch (error) {
+            console.error('Erro ao enviar feedback:', error);
+            alert('Houve um erro ao enviar seu feedback. Tente novamente mais tarde.');
+        }
+    };
+
+    if (!isOpen) {
+        return (
+            <button
+                onClick={() => setIsOpen(true)}
+                className="fixed bottom-24 right-8 z-40 flex items-center gap-2 bg-white border border-gray-200 text-gray-700 py-2 px-4 rounded-full shadow-md hover:shadow-lg transition-all"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span className="text-sm font-medium">Feedback</span>
+            </button>
+        );
+    }
+
+    return (
+        <div className="fixed bottom-24 right-8 z-40 w-80 bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden">
+            <div className="bg-gradient-to-r from-amber-500 to-amber-600 py-3 px-4 flex justify-between items-center">
+                <h3 className="text-white font-medium">Sua opinião é importante</h3>
+                <button
+                    onClick={() => setIsOpen(false)}
+                    className="text-white/80 hover:text-white"
+                    aria-label="Fechar"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div className="p-4">
+                {submitted ? (
+                    <div className="py-8 text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 text-green-500 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <p className="text-gray-800 font-medium">Obrigado pelo seu feedback!</p>
+                    </div>
+                ) : (
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Como você avalia a nova versão?</label>
+                            <div className="flex space-x-3 justify-center">
+                                {[1, 2, 3, 4, 5].map((rating) => (
+                                    <button
+                                        key={rating}
+                                        type="button"
+                                        onClick={() => setFeedback({ ...feedback, rating })}
+                                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${feedback.rating >= rating
+                                                ? 'bg-amber-500 text-white'
+                                                : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                                            }`}
+                                    >
+                                        {rating}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label htmlFor="comments" className="block text-sm font-medium text-gray-700 mb-1">
+                                Comentários (opcional)
+                            </label>
+                            <textarea
+                                id="comments"
+                                rows={3}
+                                value={feedback.comments}
+                                onChange={(e) => setFeedback({ ...feedback, comments: e.target.value })}
+                                className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm"
+                                placeholder="O que você mais gostou ou o que poderia melhorar?"
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                                E-mail (opcional)
+                            </label>
+                            <input
+                                id="email"
+                                type="email"
+                                value={feedback.email}
+                                onChange={(e) => setFeedback({ ...feedback, email: e.target.value })}
+                                className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm"
+                                placeholder="Para contato posterior se necessário"
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={feedback.rating === 0}
+                            className="w-full py-2 bg-amber-600 text-white font-medium rounded-md disabled:opacity-50 hover:bg-amber-700 transition-colors"
+                        >
+                            Enviar feedback
+                        </button>
+                    </form>
+                )}
+            </div>
+        </div>
+    );
+}

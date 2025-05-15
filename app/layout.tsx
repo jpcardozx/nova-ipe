@@ -44,11 +44,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className={montserrat.variable} data-loading-state="loading">
-      <head>
-        {/* Preload de recursos críticos */}
-        <link rel="preload" href="/critical.css" as="style" />
-      </head>
+    <html lang="pt-BR" className={montserrat.variable} data-loading-state="loading">      <head>
+      {/* Preload e aplicação de recursos críticos */}
+      <link rel="preload" href="/critical.css" as="style" />
+      <link rel="stylesheet" href="/critical.css" />
+      <link rel="stylesheet" href="/styles/loading-effects.css" />
+    </head>
       <body>
         <Suspense fallback={
           <div className="flex items-center justify-center min-h-screen">
