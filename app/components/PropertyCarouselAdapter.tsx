@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { OptimizedPropertyCarouselProps } from '@/app/components/OptimizedPropertyCarousel';
-import { OptimizedCarouselProps } from '@/app/components/ui/OptimizedCarousel';
+import { OptimizedPropertyCarouselProps } from './OptimizedPropertyCarousel';
+import { OptimizedCarouselProps } from './ui/OptimizedCarousel';
 import OptimizedPropertyCard from './OptimizedPropertyCard';
 
 // Function to adapt OptimizedPropertyCarouselProps to OptimizedCarouselProps
