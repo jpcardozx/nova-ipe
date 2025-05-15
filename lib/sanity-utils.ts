@@ -2,6 +2,7 @@
  * Utilidades para integração com Sanity CMS
  */
 import type { ClientImage } from '../app/components/SanityImage';
+import { processImage } from './sanity-image-helper';
 
 /**
  * Converte uma referência de imagem do Sanity para um formato padronizado
@@ -38,34 +39,41 @@ export function normalizeImage(image: any, defaultAlt: string = ''): ClientImage
 
     // Formato do Sanity com asset._ref
     if (image.asset?._ref) {
-        console.log("normalizeImage: Image has Sanity asset reference");
+        console.log("normalizeImage: Image has Sanity asset reference", image.asset._ref);
 
-        // Construct URL from reference
-        let imageUrl = null;
-        try {
-            const refParts = image.asset._ref.split('-');
-            // Handle the format: image-abc123-800x600-jpg
-            if (refParts.length >= 4 && refParts[0] === 'image') {
-                const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'missing-project-id';
-                const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
-                const id = refParts[1];
-                const dimensions = refParts[2];
-                const extension = refParts[3];
+        // Import e use a função do módulo de imagem
+        const { extractImageUrl } = require('./image-sanity');
 
-                imageUrl = `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}-${dimensions}.${extension}`;
-                console.log("Generated Sanity image URL:", imageUrl);
+        // Usando a função especializada para extrair URL
+        let imageUrl = extractImageUrl(image);
+
+        if (!imageUrl) {
+            console.error("Failed to extract image URL using specialized function, falling back");
+            try {
+                const refParts = image.asset._ref.split('-');
+                // Handle the format: image-abc123-800x600-jpg
+                if (refParts.length >= 4 && refParts[0] === 'image') {
+                    const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '0nks58lj';
+                    const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
+                    const id = refParts[1];
+                    const dimensions = refParts[2];
+                    const extension = refParts[3];
+
+                    imageUrl = `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}-${dimensions}.${extension}`;
+                    console.log("Generated fallback Sanity image URL:", imageUrl);
+                }
+            } catch (error) {
+                console.error("Error in fallback image URL construction:", error);
             }
-        } catch (error) {
-            console.error("Error constructing image URL from ref:", error);
         }
 
         // Usando formato padronizado para imagens do Sanity
         return {
-            url: imageUrl || image.asset.url,
-            imagemUrl: imageUrl || image.asset.url,
+            url: imageUrl || (image.asset.url || ''),
+            imagemUrl: imageUrl || (image.asset.url || ''),
             asset: {
                 _ref: image.asset._ref,
-                url: imageUrl || image.asset.url
+                url: imageUrl || (image.asset.url || '')
             },
             alt: image.alt || defaultAlt,
             hotspot: image.hotspot

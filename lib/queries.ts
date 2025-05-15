@@ -25,12 +25,11 @@ export const queryImoveisDestaque = /* groq */ `
     areaUtil,
     vagas,
     destaque,
-    imagem {
-      asset->{
-        url
-      },
-      alt,
-      hotspot
+    "imagem": {
+      "asset": imagem.asset->,
+      "_type": "image", 
+      "alt": imagem.alt,
+      "hotspot": imagem.hotspot
     }
   }
 `;
@@ -54,12 +53,11 @@ export const queryImoveisAluguel = /* groq */ `
     areaUtil,
     vagas,
     destaque,
-    imagem {
-      asset->{
-        url
-      },
-      alt,
-      hotspot
+    "imagem": {
+      "asset": imagem.asset->,
+      "_type": "image", 
+      "alt": imagem.alt,
+      "hotspot": imagem.hotspot
     }
   }
 `;

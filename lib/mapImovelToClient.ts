@@ -7,12 +7,40 @@ import { formatarMoeda, formatarArea, formatarEndereco } from "@/lib/utils";
 export function mapImovelToClient(imovel: any): ImovelClient {
     if (!imovel) return {} as ImovelClient;
 
+    // Log para depurar a estrutura do objeto imagem recebido do Sanity
+    console.log("mapImovelToClient - Object received:", {
+        id: imovel._id,
+        titulo: imovel.titulo,
+        hasImagem: !!imovel.imagem,
+        imagemType: imovel.imagem ? typeof imovel.imagem : 'undefined',
+        imagemHasUrl: imovel.imagem?.url ? true : false,
+        imagemHasAsset: imovel.imagem?.asset ? true : false,
+        assetRef: imovel.imagem?.asset?._ref,
+    });
+
     // Converte a imagem para o formato esperado
-    const imagem: ImagemClient = imovel.imagem ? {
-        url: imovel.imagem.url || imovel.imagem.asset?.url || '',
-        imagemUrl: imovel.imagem.url || imovel.imagem.asset?.url || '',
-        alt: imovel.imagem.alt || imovel.titulo || 'Imagem do imóvel'
-    } : { url: '', imagemUrl: '', alt: 'Imagem não disponível' };
+    let imagem: ImagemClient;
+
+    if (imovel.imagem) {
+        // Se tem imagem, cria objeto com as propriedades necessárias
+        imagem = {
+            url: imovel.imagem.url || imovel.imagem.asset?.url || '',
+            imagemUrl: imovel.imagem.url || imovel.imagem.asset?.url || '',
+            alt: imovel.imagem.alt || imovel.titulo || 'Imagem do imóvel',
+            asset: imovel.imagem.asset, // Mantém a referência completa do asset
+        };
+
+        console.log("mapImovelToClient - Created image object:", {
+            url: imagem.url,
+            imagemUrl: imagem.imagemUrl,
+            hasAsset: !!imagem.asset,
+            assetRef: imagem.asset?._ref,
+        });
+    } else {
+        // Sem imagem, usa valores padrão
+        imagem = { url: '', imagemUrl: '', alt: 'Imagem não disponível' };
+        console.log("mapImovelToClient - No image provided, using defaults");
+    }
 
     // Formata o endereço como string
     const enderecoFormatado = imovel.endereco

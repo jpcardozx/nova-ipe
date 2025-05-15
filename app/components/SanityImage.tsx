@@ -17,6 +17,7 @@ export interface ClientImage {
     asset?: {
         _ref?: string;
         url?: string;
+        _type?: string;
     };
 }
 
@@ -56,45 +57,128 @@ export default function SanityImage({
     showPlaceholderIcon = true,
 }: SanityImageProps) {
     const [loadState, setLoadState] = useState<'loading' | 'success' | 'error'>('loading');
-    const [isHovered, setIsHovered] = useState(false);    // Extract image URL from various possible formats
-    const getImageUrl = (img: ClientImage | null | undefined): string | null => {
-        if (!img) return null;
+    const [isHovered, setIsHovered] = useState(false);    /**
+     * Extrai a URL da imagem a partir de diferentes formatos possíveis
+     * Função otimizada com cache e menor volume de logs
+     */
+    const getImageUrl = (img: ClientImage | null | undefined): string => {
+        // Cache local para esta renderização (memoização)
+        const cacheKey = JSON.stringify(img);
+        const cachedResults = (window as any).__imageUrlCache = (window as any).__imageUrlCache || {};
 
-        // Direct URL on the image object
-        if (img.url) return img.url;
+        if (cachedResults[cacheKey]) {
+            return cachedResults[cacheKey];
+        }
 
-        // For backward compatibility with imagemUrl naming
-        if (img.imagemUrl) return img.imagemUrl;
+        // Logger otimizado que só executa em ambiente de desenvolvimento
+        const logDebug = (message: string, data?: any) => {
+            if (process.env.NODE_ENV === 'development') {
+                console.log(`SanityImage: ${message}`, data);
+            }
+        };
 
-        // Sanity asset reference format
-        if (img.asset?.url) return img.asset.url;
+        // Informativo: versão resumida do diagnóstico
+        logDebug("Processando imagem:", {
+            hasImage: !!img,
+            imageType: img ? typeof img : 'null/undefined',
+            hasUrl: img?.url ? true : false,
+            hasImagemUrl: img?.imagemUrl ? true : false,
+            hasAsset: img?.asset ? true : false,
+            hasRef: img?.asset?._ref ? true : false,
+        });
 
-        // Sanity reference that needs to be constructed
+        // Verificações para cada formato possível
+        if (!img) {
+            logDebug("Sem imagem fornecida");
+            return '/placeholder.png';
+        }
+
+        // Direct URL on the image object (formato mais simples)
+        if (img.url) {
+            logDebug("Usando URL direta", img.url);
+            cachedResults[cacheKey] = img.url;
+            return img.url;
+        }
+
+        // For backward compatibility with imagemUrl naming (compatibilidade)
+        if (img.imagemUrl) {
+            logDebug("Usando imagemUrl", img.imagemUrl);
+            cachedResults[cacheKey] = img.imagemUrl;
+            return img.imagemUrl;
+        }
+
+        // Sanity asset with direct URL (objeto Sanity com URL direta)
+        if (img.asset?.url) {
+            logDebug("Usando asset.url", img.asset.url);
+            cachedResults[cacheKey] = img.asset.url;
+            return img.asset.url;
+        }
+
+        // Sanity reference that needs to be constructed (referência Sanity que precisa de construção)
         if (img.asset?._ref) {
             try {
-                // Parse Sanity asset reference: image-abc123-800x600-jpg
-                const refParts = img.asset._ref.split('-');
+                const refString = img.asset._ref;
 
-                // Handle different reference formats
-                if (refParts.length >= 4) {
-                    const [type, id, dimensions, extension] = refParts;
-
-                    if (type === 'image' && id) {
-                        const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'missing-project-id';
-                        const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
-                        // Correctly formatting URL with dimensions and extension
-                        return `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}-${dimensions}.${extension}`;
-                    }
+                // Validação da string de referência
+                if (!refString || typeof refString !== 'string') {
+                    throw new Error('Referência inválida');
                 }
 
-                console.error("Invalid Sanity asset reference format:", img.asset._ref);
+                const refParts = refString.split('-');
+                logDebug("Partes da referência", refParts);
+
+                // Validação do ID do projeto
+                const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '0nks58lj';
+                const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
+
+                // Estrutura para suportar múltiplos formatos de referência
+                if (refParts[0] === 'image') {
+                    const id = refParts[1];
+
+                    if (!id) {
+                        throw new Error('ID da imagem não encontrado na referência');
+                    }
+
+                    let url: string;
+
+                    // Formato completo: image-abc123-800x600-jpg
+                    if (refParts.length >= 4) {
+                        const dimensions = refParts[2];
+                        let extension = refParts[3];
+
+                        // Limpar parâmetros da URL se existirem
+                        if (extension && extension.includes('?')) {
+                            extension = extension.split('?')[0];
+                        }
+
+                        url = `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}-${dimensions}.${extension}`;
+                    }
+                    // Formato simplificado: image-abc123-jpg (sem dimensões)
+                    else if (refParts.length === 3) {
+                        let extension = refParts[2];
+                        if (extension && extension.includes('?')) {
+                            extension = extension.split('?')[0];
+                        }
+                        url = `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}.${extension}`;
+                    }
+                    // Formato mínimo: tenta inferir jpg (alta compatibilidade)
+                    else {
+                        url = `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}.jpg`;
+                    }
+
+                    logDebug("URL construída", url);
+                    cachedResults[cacheKey] = url;
+                    return url;
+                }
             } catch (error) {
-                console.error("Error parsing Sanity asset reference:", error, img.asset._ref);
+                console.error("Erro ao processar referência Sanity:", error);
             }
         }
 
-        console.warn("Could not determine image URL from:", img);
-        return null;
+        // Fallback para placeholder se nenhum formato for reconhecido
+        logDebug("Não foi possível determinar a URL da imagem");
+        cachedResults[cacheKey] = '/placeholder.png';
+        return '/placeholder.png';
     };
 
     // Get the URL and hotspot information
@@ -111,10 +195,18 @@ export default function SanityImage({
         if (loadState === 'success' && onLoad) {
             onLoad();
         }
-    }, [loadState, onLoad]);
+    }, [loadState, onLoad]);    // Fallback when there's no image or it fails to load
+    if (!imageUrl || loadState === 'error') {
+        console.log("SanityImage: Fallback usado", {
+            reason: !imageUrl ? 'URL de imagem não disponível' : 'Erro ao carregar imagem',
+            loadState,
+            imageUrl,
+            hasImage: !!image,
+            hasAsset: !!image?.asset,
+            hasAssetRef: !!image?.asset?._ref,
+            projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
+        });
 
-    // Fallback when there's no image or it fails to load
-    if (loadState === 'error' || !imageUrl) {
         return (
             <div
                 className={cn(
@@ -129,20 +221,17 @@ export default function SanityImage({
                     height: fill ? '100%' : height,
                     aspectRatio: fill ? undefined : aspectRatio,
                 }}
-            >
-                {showPlaceholderIcon && (
-                    <div className="flex items-center justify-center p-3 mb-2 rounded-full bg-stone-100">
-                        <ImageOff className="w-6 h-6 text-stone-500" />
-                    </div>
-                )}
+            >                {showPlaceholderIcon && (
+                <div className="flex items-center justify-center p-3 mb-2 rounded-full bg-stone-100">
+                    <Home className="w-6 h-6 text-amber-500" />
+                </div>
+            )}
                 <p className="text-stone-500 text-sm font-medium px-4 text-center">
-                    {image?.alt || alt || 'Imagem indisponível'}
+                    {image?.alt || alt || 'Imóvel disponível'}
                 </p>
             </div>
         );
-    }
-
-    return (
+    } return (
         <div
             className={cn(
                 "relative overflow-hidden group",
@@ -155,9 +244,8 @@ export default function SanityImage({
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            {/* Imagem principal */}
-            <Image
-                src={imageUrl}
+            {/* Imagem principal */}            <Image
+                src={imageUrl || '/placeholder.png'} /* Garantindo que src nunca seja null ou undefined */
                 alt={image?.alt || alt || 'Imagem do imóvel'}
                 width={fill ? undefined : width || 800}
                 height={fill ? undefined : height || 600}

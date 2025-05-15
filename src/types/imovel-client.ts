@@ -20,6 +20,10 @@ export interface ImagemClient {
     imagemUrl?: string  // Alterado de url para imagemUrl para compatibilidade
     alt?: string
     url: string  // URL da imagem, compatível com o que o Sanity retorna
+    asset?: {
+        _ref?: string  // Referência do Sanity para a imagem (ex: image-abc123-800x600-jpg)
+        url?: string   // URL direta do asset
+    }
 }
 
 /**

@@ -1,0 +1,259 @@
+import { Suspense } from 'react';
+import { Montserrat } from 'next/font/google';
+import Link from 'next/link';
+import Image from 'next/image';
+import OptimizationProvider from './components/OptimizationProvider';
+
+// Importações para dados dinâmicos do Sanity
+import { getImoveisDestaque, getImoveisAluguel } from '@/lib/queries';
+import { normalizeDocuments } from '@/lib/sanity-utils';
+import { extractImageUrl, extractAltText } from '@/lib/image-sanity';
+import type { ImovelClient } from '@/src/types/imovel-client';
+
+// UI Components
+import SectionHeader from './components/ui/SectionHeader';
+
+// Componentes otimizados
+import EnhancedHero from "./components/EnhancedHero";
+import NavbarResponsive from "./components/NavbarResponsive";
+import Footer from "./sections/Footer";
+import ClientProgressSteps from './components/ClientProgressSteps';
+import BlocoExploracaoSimbolica from './components/BlocoExploracaoSimbolica';
+import BlocoCTAConversao from './components/client/BlocoCTAConversao';
+import Destaques from './sections/Destaques';
+import { ImovelHero } from './components/ImoveisDestaqueComponents';
+
+// Componentes Client otimizados
+import ClientCarouselWrapper from './components/ClientCarouselWrapper';
+import DestaquesSanityCarousel from './components/DestaquesSanityCarousel';
+
+// Configuração da fonte
+const montSerrat = Montserrat({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  display: 'swap',
+  variable: '--font-montserrat',
+});
+
+// Importando tipos e componentes
+import type { PropertyType } from './components/OptimizedPropertyCard';
+import Valor from './sections/Valor';
+import FormularioContatoAprimorado from './components/FormularioContato';
+import { default as ClientSidePropertiesProvider } from './components/ClientComponents';
+import Testimonials from './sections/Testimonials';
+
+/**
+ * Transforma dados do Sanity para o formato esperado pelos componentes
+ */
+function transformPropertyData(imovel: ImovelClient, propertyType: PropertyType) {
+  // Debug da estrutura da imagem para entender melhor o problema
+  console.log(`Transformando imóvel ${imovel._id}:`, {
+    temImagem: !!imovel.imagem,
+    tipoImagem: imovel.imagem ? typeof imovel.imagem : 'undefined',
+    temAsset: imovel.imagem?.asset ? true : false,
+    assetTemUrl: imovel.imagem?.asset?.url ? true : false,
+    assetTemRef: imovel.imagem?.asset?._ref ? true : false,
+  });
+
+  // Extrair URL da imagem com fallback para placeholder
+  const imageUrl = extractImageUrl(imovel.imagem);
+  console.log(`URL extraída para imóvel ${imovel._id}:`, imageUrl);
+
+  return {
+    id: imovel._id,
+    title: imovel.titulo || 'Imóvel em destaque',
+    slug: imovel.slug,
+    location: imovel.bairro || '',
+    city: imovel.cidade || 'Guararema',
+    price: imovel.preco || 0,
+    propertyType,
+    area: imovel.areaUtil || undefined,
+    bedrooms: imovel.dormitorios || undefined,
+    bathrooms: imovel.banheiros || undefined,
+    parkingSpots: imovel.vagas || undefined,
+    mainImage: {
+      url: imageUrl || '/images/property-placeholder.jpg',
+      alt: extractAltText(imovel.imagem, imovel.titulo || 'Imóvel'),
+    },
+    isHighlight: true,
+    isPremium: imovel.destaque,
+    isNew: propertyType === 'rent' && Math.random() > 0.7,
+  };
+}
+
+/**
+ * Busca e processa dados de propriedades do Sanity
+ */
+async function fetchPropertiesData() {
+  try {
+    console.log('Iniciando busca de propriedades do Sanity');
+
+    const [imoveisDestaque, imoveisAluguel] = await Promise.all([
+      getImoveisDestaque(),
+      getImoveisAluguel(),
+    ]);
+
+    console.log('Imóveis recebidos:',
+      `Destaques: ${imoveisDestaque.length},`,
+      `Aluguel: ${imoveisAluguel.length}`
+    );
+
+    if (imoveisDestaque.length > 0) {
+      console.log('Exemplo de estrutura de imóvel recebido:', {
+        temImagem: !!imoveisDestaque[0]?.imagem,
+        tipoImagem: typeof imoveisDestaque[0]?.imagem,
+        estruturaImagem: JSON.stringify(imoveisDestaque[0]?.imagem, null, 2)
+      });
+    }
+
+    const destaques = normalizeDocuments<ImovelClient>(imoveisDestaque);
+    const aluguel = normalizeDocuments<ImovelClient>(imoveisAluguel);
+
+    console.log('Imóveis normalizados:',
+      `Destaques: ${destaques.length},`,
+      `Aluguel: ${aluguel.length}`
+    );
+
+    return {
+      destaques: destaques.map(imovel =>
+        transformPropertyData(imovel, imovel.finalidade === 'Venda' ? 'sale' : 'rent' as PropertyType)
+      ),
+      aluguel: aluguel.map(imovel =>
+        transformPropertyData(imovel, 'rent' as PropertyType)
+      ),
+    };
+  } catch (error) {
+    console.error('Erro ao buscar propriedades:', error);
+    return { destaques: [], aluguel: [] };
+  }
+}
+
+export default async function Home() {
+  // Buscar dados de propriedades
+  const { destaques, aluguel } = await fetchPropertiesData(); return (
+    <div className={`${montSerrat.className} flex flex-col min-h-screen bg-[#fafaf9]`}>
+      <OptimizationProvider>
+        <NavbarResponsive />
+
+        <EnhancedHero />
+
+        {/* Provider de dados para componentes client-side */}
+        <ClientSidePropertiesProvider destaques={destaques} aluguel={aluguel} />
+
+        <BlocoExploracaoSimbolica />        {/* Seção de Imóveis em Destaque - Versão Aprimorada */}
+        <Suspense fallback={<section className="py-24 bg-white"><div className="container mx-auto px-4 max-w-7xl"><PropertiesLoadingSkeleton /></div></section>}>
+          <DestaquesSanityCarousel
+            properties={destaques}
+            tipo="destaque"
+            titulo="Imóveis Cuidadosamente Selecionados"
+            subtitulo="Descubra propriedades que se destacam pela arquitetura impecável, localização estratégica e potencial de valorização excepcional em Guararema."
+            verTodosLink="/comprar"
+            verTodosLabel="Explorar todo o portfólio"
+          />
+        </Suspense>
+        
+        {/* Componente legacy para compatibilidade (temporário) */}
+        <div className="hidden">
+          <ClientCarouselWrapper
+                properties={destaques}
+                config={{
+                  title: "",
+                  subtitle: "",
+                  slidesToShow: 3,
+                  showControls: true,
+                  autoplay: true,
+                  autoplayInterval: 5000,
+                  viewAllLink: "/comprar",
+                  viewAllLabel: "Explorar todo o portfólio",
+                  className: "mb-16",
+                  hasAccentBackground: false,
+                  showEmptyState: destaques.length === 0,
+                  emptyStateMessage: "Carregando imóveis em destaque...",
+                  mobileLayout: "stack",
+                }}
+              />
+            </Suspense>
+          </div>
+        </section>
+
+        <section className="relative py-24 overflow-hidden bg-gradient-to-b from-white to-[#F8FAFC]">
+          <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
+          <Destaques />
+        </section>        {/* Seção de Imóveis para Alugar - Versão Aprimorada */}
+        <section className="py-24 bg-[#F8FAFC] relative">
+          <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent"></div>
+          <Suspense fallback={<div className="container mx-auto px-4 max-w-7xl relative z-10"><PropertiesLoadingSkeleton /></div>}>
+            <DestaquesSanityCarousel
+              properties={aluguel}
+              tipo="aluguel"
+              titulo="Seu Próximo Lar Está Aqui"
+              subtitulo="Uma seleção de imóveis para alugar que prioriza qualidade de vida, ótima localização e custo-benefício real. Experimente morar com qualidade em Guararema."
+              verTodosLink="/alugar"
+              verTodosLabel="Ver todas as opções de aluguel"
+            />
+          </Suspense>
+        </section>
+
+        <div className="relative bg-white">
+          <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
+          <Valor />
+        </div>
+
+        <section className="py-24 bg-gradient-to-b from-white to-[#F8FAFC]">
+          <div className="container mx-auto px-4 max-w-7xl">
+            <SectionHeader
+              badge="Histórias de Sucesso"
+              badgeColor="amber"
+              title="O que Nossos Clientes Dizem"
+              description="Descubra como ajudamos famílias e investidores a encontrarem o imóvel perfeito em Guararema."
+            />
+            <Testimonials />
+          </div>
+        </section>
+
+        <section className="py-24 bg-[#F8FAFC] relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-transparent"></div>
+          <div className="container mx-auto px-4 max-w-7xl relative z-10">
+            <SectionHeader
+              badge="Processo Simplificado"
+              badgeColor="green"
+              title="Sua Jornada Imobiliária"
+              description="Conduzimos você por cada etapa com transparência e eficiência, transformando a busca pelo imóvel ideal em uma experiência agradável e segura."
+            />
+            <ClientProgressSteps />
+          </div>
+        </section>
+
+        <section className="relative py-24 overflow-hidden bg-gradient-to-b from-[#F8FAFC] to-white">
+          <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
+          <FormularioContatoAprimorado />
+        </section>
+
+        <section className="bg-[#0D1F2D] relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0D1F2D] to-[#1a3040] mix-blend-soft-light"></div>
+          <div className="absolute inset-0 bg-[url('/wood-pattern.png')] opacity-10"></div>
+          <div className="container mx-auto relative z-10">
+            <BlocoCTAConversao
+              titulo="Vamos Encontrar Seu Espaço Ideal?"
+              subtitulo="Nossa equipe está pronta para transformar sua busca imobiliária em Guararema em uma jornada personalizada e gratificante. Dê o primeiro passo agora."
+              ctaText="Iniciar Conversa"
+              ctaLink="https://wa.me/5511981845016?text=Olá! Gostaria de conhecer opções de imóveis em Guararema (via site)"
+            />
+          </div>
+        </section>        <Footer />
+      </OptimizationProvider>
+    </div>
+  );
+}
+
+// Componente de loading para propriedades
+const PropertiesLoadingSkeleton = () => (
+  <div className="space-y-4">
+    <div className="h-8 w-56 bg-neutral-200 animate-pulse rounded-lg mb-8"></div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {[1, 2, 3].map(i => (
+        <div key={i} className="h-80 bg-neutral-100 animate-pulse rounded-lg shadow-md"></div>
+      ))}
+    </div>
+  </div>
+);

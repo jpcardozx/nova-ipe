@@ -1,103 +1,94 @@
-// components/Destaques.tsx
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import React, { useState, useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import {
-    Sparkles,
-    ChevronRight,
+    Trees,
+    Train,
     TrendingUp,
-    Lock,
-    Eye,
-    Users,
-    Timer,
-    Award,
-    Target,
-    Zap,
-    Building,
-    MapPin
+    Clock,
+    Shield,
+    MapPin,
+    Home,
+    ArrowRight,
+    Mountain,
+    Building
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Tipos
-interface InsightTrigger {
+interface StrategicPoint {
     id: string;
     icon: React.ReactNode;
-    label: string;
-    tease: string;
-    unlockCondition: string;
-    content: {
-        headline: string;
-        value: string;
-        proof: string;
-        cta: string;
-    };
-    urgency?: {
-        type: "limited" | "exclusive" | "trending";
-        message: string;
-    };
+    title: string;
+    value: string;
+    description: string;
+    highlight?: string;
 }
 
-// Dados estruturados para engajamento progressivo
-const insightTriggers: InsightTrigger[] = [
+interface LocationAdvantage {
+    id: string;
+    title: string;
+    description: string;
+    metric: string;
+    visual: React.ReactNode;
+}
+
+// Pontos estratégicos selecionados
+const strategicPoints: StrategicPoint[] = [
     {
-        id: "hidden-gem",
-        icon: <Sparkles className="w-5 h-5" />,
-        label: "Insight Exclusivo",
-        tease: "O segredo dos 15% que lucram...",
-        unlockCondition: "Clique para descobrir",
-        content: {
-            headline: "Por que apenas 15% dos investidores lucram de verdade",
-            value: "ROI médio de 47% ao ano",
-            proof: "Dados auditados pela KPMG em 2024",
-            cta: "Quero fazer parte deste grupo"
-        },
-        urgency: {
-            type: "exclusive",
-            message: "Apenas 3 vagas este mês"
-        }
+        id: "natureza",
+        icon: <Trees className="w-6 h-6" />,
+        title: "Qualidade de Vida",
+        value: "92%",
+        description: "de satisfação dos moradores",
+        highlight: "Natureza preservada e ar puro"
     },
     {
-        id: "timing-secret",
-        icon: <Timer className="w-5 h-5" />,
-        label: "Timing Perfeito",
-        tease: "O momento que todos perderam...",
-        unlockCondition: "Revele a oportunidade",
-        content: {
-            headline: "Janela de entrada que só abre agora",
-            value: "Preços 2019 em localização 2025",
-            proof: "Valorização garantida pós-obra",
-            cta: "Garantir minha posição"
-        },
-        urgency: {
-            type: "limited",
-            message: "Oferta expira em 72h"
-        }
+        id: "acesso",
+        icon: <Train className="w-6 h-6" />,
+        title: "Conexão com SP",
+        value: "88km",
+        description: "via Dutra ou trem direto",
+        highlight: "Trabalhe em SP, viva em Guararema"
     },
     {
-        id: "insider-data",
-        icon: <Lock className="w-5 h-5" />,
-        label: "Dados Confidenciais",
-        tease: "Informação que poucos conhecem...",
-        unlockCondition: "Acesso restrito",
-        content: {
-            headline: "Novo hub empresarial confirmado",
-            value: "500+ empresas chegando em 2026",
-            proof: "Decreto municipal publicado",
-            cta: "Ver mapa de valorização"
-        },
-        urgency: {
-            type: "trending",
-            message: "Procura aumentou 300% esta semana"
-        }
+        id: "valorizacao",
+        icon: <TrendingUp className="w-6 h-6" />,
+        title: "Crescimento Estável",
+        value: "5,2%",
+        description: "valorização anual média",
+        highlight: "Acima da inflação consistentemente"
     }
 ];
 
-// Componente principal otimizado para conversão
-export function Destaques() {
-    const [activeInsight, setActiveInsight] = useState<string | null>(null);
-    const [viewedInsights, setViewedInsights] = useState<Set<string>>(new Set());
-    const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+// Vantagens de localização
+const locationAdvantages: LocationAdvantage[] = [
+    {
+        id: "centro-historico",
+        title: "Centro Histórico Preservado",
+        description: "Charme colonial com infraestrutura moderna",
+        metric: "Patrimônio tombado",
+        visual: <Building className="w-8 h-8 text-amber-600" />
+    },
+    {
+        id: "serra-mar",
+        title: "Entre a Serra e o Vale",
+        description: "Clima ameno e paisagens deslumbrantes",
+        metric: "19°C média anual",
+        visual: <Mountain className="w-8 h-8 text-green-600" />
+    },
+    {
+        id: "investimento",
+        title: "Momento de Entrada",
+        description: "Preços ainda acessíveis com alto potencial",
+        metric: "Oportunidade única",
+        visual: <Clock className="w-8 h-8 text-blue-600" />
+    }
+];
+
+export function DestaquesEstrategicos() {
+    const [activeSection, setActiveSection] = useState<string | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
     const { scrollYProgress } = useScroll({
@@ -105,210 +96,203 @@ export function Destaques() {
         offset: ["start end", "end start"]
     });
 
-    const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-    const scale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.9, 1, 1, 0.9]);
-
-    // Rastreia insights visualizados
-    const handleInsightClick = (insightId: string) => {
-        setActiveInsight(insightId);
-        setViewedInsights(prev => new Set([...prev, insightId]));
-
-        // Analytics
-        if (typeof window !== 'undefined' && window.gtag) {
-            window.gtag('event', 'unlock_insight', {
-                insight_id: insightId,
-                timestamp: new Date().toISOString()
-            });
-        }
-    };
-
-    // Contador de urgência
-    const [timeLeft, setTimeLeft] = useState(259200); // 72 horas em segundos
-
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setTimeLeft(prev => prev > 0 ? prev - 1 : 0);
-        }, 1000);
-
-        return () => clearInterval(timer);
-    }, []);
-
-    const formatTime = (seconds: number) => {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        return `${hours}h ${minutes}min`;
-    };
+    const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.8, 1, 1, 0.8]);
 
     return (
-        <section ref={containerRef} className="relative py-20 overflow-hidden bg-gradient-to-b from-gray-50 via-white to-gray-50">
-            {/* Background animado */}
-            <div className="absolute inset-0 pointer-events-none">
-                <motion.div
-                    className="absolute top-1/4 -right-1/4 w-1/2 h-1/2 bg-blue-100/20 rounded-full blur-3xl"
-                    animate={{
-                        x: [0, 50, 0],
-                        y: [0, -30, 0],
-                    }}
-                    transition={{
-                        duration: 20,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                    }}
-                />
-                <motion.div
-                    className="absolute bottom-1/4 -left-1/4 w-1/2 h-1/2 bg-green-100/20 rounded-full blur-3xl"
-                    animate={{
-                        x: [0, -50, 0],
-                        y: [0, 30, 0],
-                    }}
-                    transition={{
-                        duration: 25,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                    }}
-                />
+        <section ref={containerRef} className="relative py-24 bg-white overflow-hidden">
+            {/* Background pattern sutil */}
+            <div className="absolute inset-0">
+                <div className="absolute inset-0 bg-gradient-to-b from-amber-50/50 via-transparent to-amber-50/30" />
+                <div className="absolute top-0 right-0 w-96 h-96 bg-amber-100/20 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 left-0 w-96 h-96 bg-green-100/20 rounded-full blur-3xl" />
             </div>
 
             <motion.div
-                style={{ opacity, scale }}
-                className="max-w-7xl mx-auto px-4 relative z-10"
+                style={{ opacity }}
+                className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
             >
-                {/* Header com gatilho psicológico */}
-                <div className="text-center mb-16">
+                {/* Header estratégico */}
+                <div className="text-center mb-20">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
                     >
-                        {/* Badge de autoridade */}
-                        <div className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full mb-6">
-                            <Award className="w-4 h-4" />
-                            <span className="text-sm font-medium">
-                                Líder em valorização • Vale do Paraíba 2024
+                        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                            Por que Guararema é diferente
+                            <span className="block text-amber-600 mt-2">
+                                do que você imagina
                             </span>
-                        </div>
-
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 mb-4">
-                            3 segredos que os
-                            <span className="block font-normal bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                                milionários já descobriram
-                            </span>
-                        </h1>
-
-                        <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-                            Enquanto 85% ainda procuram, os mais espertos já garantiram
-                            sua posição no próximo boom imobiliário de Guararema.
+                        </h2>
+                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                            Uma cidade que equilibra perfeitamente natureza preservada,
+                            acesso estratégico e potencial de crescimento sustentável
                         </p>
-
-                        {/* Timer de urgência */}
-                        <div className="inline-flex items-center gap-3 bg-red-50 text-red-700 px-5 py-3 rounded-lg">
-                            <Timer className="w-5 h-5 animate-pulse" />
-                            <span className="font-medium">
-                                Oportunidade fecha em: {formatTime(timeLeft)}
-                            </span>
-                        </div>
                     </motion.div>
                 </div>
 
-                {/* Grid de Insights com Micro-interações */}
-                <div className="grid md:grid-cols-3 gap-6 mb-16">
-                    {insightTriggers.map((trigger, index) => (
+                {/* Grid assimétrico de pontos estratégicos */}
+                <div className="grid lg:grid-cols-3 gap-8 mb-24">
+                    {strategicPoints.map((point, index) => (
                         <motion.div
-                            key={trigger.id}
-                            initial={{ opacity: 0, y: 20 }}
+                            key={point.id}
+                            initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, delay: index * 0.1 }}
-                            className="relative"
+                            transition={{ delay: index * 0.2 }}
+                            className="group"
                         >
-                            <InsightCard
-                                trigger={trigger}
-                                isUnlocked={viewedInsights.has(trigger.id)}
-                                isActive={activeInsight === trigger.id}
-                                onUnlock={() => handleInsightClick(trigger.id)}
-                                onHover={(hovering) => setHoveredCard(hovering ? index : null)}
-                                isHovered={hoveredCard === index}
-                                otherHovered={hoveredCard !== null && hoveredCard !== index}
-                            />
+                            <div className="bg-white rounded-2xl p-8 h-full border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1">
+                                <div className="flex items-start gap-4 mb-6">
+                                    <div className="p-3 bg-amber-50 rounded-xl text-amber-700 group-hover:bg-amber-100 transition-colors">
+                                        {point.icon}
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="text-xl font-semibold text-gray-900 mb-1">
+                                            {point.title}
+                                        </h3>
+                                        <p className="text-3xl font-bold text-amber-600">
+                                            {point.value}
+                                        </p>
+                                    </div>
+                                </div>
+                                <p className="text-gray-600 mb-4">
+                                    {point.description}
+                                </p>
+                                {point.highlight && (
+                                    <p className="text-sm font-medium text-amber-700 bg-amber-50 rounded-lg px-4 py-2">
+                                        {point.highlight}
+                                    </p>
+                                )}
+                            </div>
                         </motion.div>
                     ))}
                 </div>
 
-                {/* Seção de Prova Social Dinâmica */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8 }}
-                    className="mb-16"
-                >
-                    <LiveProofSection viewedInsights={viewedInsights.size} />
-                </motion.div>
+                {/* Seção visual de localização */}
+                <div className="mb-24">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        className="grid lg:grid-cols-2 gap-12 items-center"
+                    >
+                        <div>
+                            <h3 className="text-3xl font-bold text-gray-900 mb-8">
+                                Localização estratégica que
+                                <span className="text-amber-600"> faz a diferença</span>
+                            </h3>
 
-                {/* CTA Final com Escassez */}
+                            <div className="space-y-6">
+                                {locationAdvantages.map((advantage) => (
+                                    <motion.div
+                                        key={advantage.id}
+                                        className="flex gap-4 p-4 rounded-xl hover:bg-amber-50 transition-colors cursor-pointer"
+                                        onClick={() => setActiveSection(advantage.id)}
+                                        whileHover={{ x: 8 }}
+                                    >
+                                        <div className="flex-shrink-0">
+                                            {advantage.visual}
+                                        </div>
+                                        <div className="flex-1">
+                                            <h4 className="font-semibold text-gray-900 mb-1">
+                                                {advantage.title}
+                                            </h4>
+                                            <p className="text-gray-600 text-sm mb-2">
+                                                {advantage.description}
+                                            </p>
+                                            <p className="text-amber-600 font-medium text-sm">
+                                                {advantage.metric}
+                                            </p>
+                                        </div>
+                                        <ArrowRight className={cn(
+                                            "w-5 h-5 transition-transform",
+                                            activeSection === advantage.id ? "rotate-90 text-amber-600" : "text-gray-400"
+                                        )} />
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Mapa visual ou imagem */}
+                        <div className="relative h-96 lg:h-[500px] bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl overflow-hidden">
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="text-center">
+                                    <MapPin className="w-16 h-16 text-amber-600 mx-auto mb-4" />
+                                    <p className="text-gray-700 font-medium">
+                                        Visualização do mapa
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Pontos de interesse */}
+                            <div className="absolute top-8 left-8 bg-white rounded-lg p-3 shadow-md">
+                                <div className="flex items-center gap-2">
+                                    <Train className="w-4 h-4 text-blue-600" />
+                                    <span className="text-sm font-medium">Estação CPTM</span>
+                                </div>
+                            </div>
+
+                            <div className="absolute bottom-8 right-8 bg-white rounded-lg p-3 shadow-md">
+                                <div className="flex items-center gap-2">
+                                    <Home className="w-4 h-4 text-green-600" />
+                                    <span className="text-sm font-medium">Bairros residenciais</span>
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
+
+                {/* Proposta de valor final */}
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
                     className="text-center"
                 >
-                    <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-8 md:p-12 text-white relative overflow-hidden">
-                        {/* Efeito de brilho animado */}
-                        <motion.div
-                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
-                            animate={{
-                                x: ["-100%", "100%"],
-                            }}
-                            transition={{
-                                duration: 3,
-                                repeat: Infinity,
-                                repeatDelay: 3,
-                            }}
-                        />
+                    <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-12 text-white relative overflow-hidden">
+                        {/* Pattern overlay */}
+                        <div className="absolute inset-0 opacity-10">
+                            <div className="absolute inset-0" style={{
+                                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                            }} />
+                        </div>
 
-                        <h3 className="text-2xl md:text-3xl font-light mb-4 relative z-10">
-                            Você descobriu {viewedInsights.size} de 3 segredos
-                        </h3>
+                        <div className="relative z-10">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full mb-6">
+                                <Shield className="w-4 h-4" />
+                                <span className="text-sm font-medium">
+                                    Consultoria especializada desde 2010
+                                </span>
+                            </div>
 
-                        <p className="text-lg text-gray-300 mb-8 relative z-10">
-                            {viewedInsights.size === 3
-                                ? "Parabéns! Agora você está pronto para o próximo passo."
-                                : "Continue explorando para desbloquear sua vantagem completa."
-                            }
-                        </p>
+                            <h3 className="text-3xl md:text-4xl font-bold mb-6 text-white">
+                                Guararema não é apenas uma cidade,
+                                <span className="block text-amber-400 mt-2">
+                                    é uma escolha inteligente e estratégica
+                                </span>
+                            </h3>
 
-                        <button
-                            className={cn(
-                                "inline-flex items-center gap-3 px-8 py-4 rounded-lg font-medium transition-all relative z-10",
-                                viewedInsights.size === 3
-                                    ? "bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white scale-105"
-                                    : "bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm"
-                            )}
-                            disabled={viewedInsights.size < 3}
-                        >
-                            {viewedInsights.size === 3 ? (
-                                <>
-                                    <Zap className="w-5 h-5" />
-                                    Garantir minha vaga agora
-                                    <ChevronRight className="w-5 h-5" />
-                                </>
-                            ) : (
-                                <>
-                                    <Lock className="w-5 h-5" />
-                                    Desbloqueie todos os segredos primeiro
-                                </>
-                            )}
-                        </button>
+                            <p className="text-xl text-gray-300 mb-10 max-w-3xl mx-auto">
+                                Nossa equipe local conhece cada oportunidade e pode
+                                guiar você para a decisão certa no momento certo
+                            </p>
 
-                        {viewedInsights.size === 3 && (
-                            <motion.p
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="mt-4 text-sm text-green-300"
-                            >
-                                ✓ Acesso VIP liberado • Apenas 3 vagas restantes
-                            </motion.p>
-                        )}
+                            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                                <a
+                                    href="/contato"
+                                    className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-amber-600 text-white rounded-xl font-semibold hover:bg-amber-700 transition-all duration-300 transform hover:scale-105"
+                                >
+                                    Quero conhecer as oportunidades
+                                    <ArrowRight className="w-5 h-5" />
+                                </a>
+                                <a
+                                    href="/visita"
+                                    className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-xl font-semibold hover:bg-white/20 transition-colors border border-white/20"
+                                >
+                                    Agendar visita presencial
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </motion.div>
             </motion.div>
@@ -316,200 +300,4 @@ export function Destaques() {
     );
 }
 
-// Componente de Card com Micro-interações
-function InsightCard({
-    trigger,
-    isUnlocked,
-    isActive,
-    onUnlock,
-    onHover,
-    isHovered,
-    otherHovered
-}: {
-    trigger: InsightTrigger;
-    isUnlocked: boolean;
-    isActive: boolean;
-    onUnlock: () => void;
-    onHover: (hovering: boolean) => void;
-    isHovered: boolean;
-    otherHovered: boolean;
-}) {
-    return (
-        <motion.article
-            className={cn(
-                "relative bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer transition-all duration-300",
-                isHovered ? "scale-105 shadow-2xl z-10" : "",
-                otherHovered ? "scale-95 opacity-70" : "",
-                isUnlocked ? "ring-2 ring-green-500" : ""
-            )}
-            onHoverStart={() => onHover(true)}
-            onHoverEnd={() => onHover(false)}
-            onClick={onUnlock}
-            whileHover={{ y: -5 }}
-        >
-            {/* Status Badge */}
-            <div className="absolute top-4 right-4 z-20">
-                {isUnlocked ? (
-                    <div className="bg-green-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                        <Eye className="w-3 h-3" />
-                        Revelado
-                    </div>
-                ) : (
-                    <div className="bg-gray-900 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                        <Lock className="w-3 h-3" />
-                        Bloqueado
-                    </div>
-                )}
-            </div>
-
-            {/* Card Header */}
-            <div className="p-6 pb-4">
-                <div className="flex items-start gap-4">
-                    <div className={cn(
-                        "p-3 rounded-lg transition-colors",
-                        isUnlocked ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-600"
-                    )}>
-                        {trigger.icon}
-                    </div>
-                    <div className="flex-1">
-                        <h3 className="font-medium text-gray-900 mb-1">
-                            {trigger.label}
-                        </h3>
-                        <p className="text-sm text-gray-600 italic">
-                            {trigger.tease}
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            {/* Conteúdo Progressivo */}
-            <AnimatePresence mode="wait">
-                {!isUnlocked ? (
-                    <motion.div
-                        key="locked"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="px-6 pb-6"
-                    >
-                        <button className="w-full py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
-                            <Lock className="w-4 h-4" />
-                            {trigger.unlockCondition}
-                        </button>
-                    </motion.div>
-                ) : (
-                    <motion.div
-                        key="unlocked"
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="px-6 pb-6 border-t"
-                    >
-                        <div className="pt-4">
-                            <h4 className="font-semibold text-gray-900 mb-2">
-                                {trigger.content.headline}
-                            </h4>
-
-                            <div className="mb-3">
-                                <p className="text-2xl font-bold text-green-600">
-                                    {trigger.content.value}
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                    {trigger.content.proof}
-                                </p>
-                            </div>
-
-                            {trigger.urgency && (
-                                <div className={cn(
-                                    "text-xs px-3 py-1.5 rounded-full inline-flex items-center gap-1 mb-3",
-                                    trigger.urgency.type === "limited" && "bg-red-100 text-red-700",
-                                    trigger.urgency.type === "exclusive" && "bg-purple-100 text-purple-700",
-                                    trigger.urgency.type === "trending" && "bg-orange-100 text-orange-700"
-                                )}>
-                                    <Timer className="w-3 h-3" />
-                                    {trigger.urgency.message}
-                                </div>
-                            )}
-
-                            <button className="w-full py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg hover:from-green-600 hover:to-blue-600 transition-all flex items-center justify-center gap-2">
-                                {trigger.content.cta}
-                                <ChevronRight className="w-4 h-4" />
-                            </button>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Indicador de Hover */}
-            {isHovered && !isUnlocked && (
-                <motion.div
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 to-blue-500"
-                />
-            )}
-        </motion.article>
-    );
-}
-
-// Seção de Prova Social Dinâmica
-function LiveProofSection({ viewedInsights }: { viewedInsights: number }) {
-    const [liveCount, setLiveCount] = useState(127);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setLiveCount(prev => prev + Math.floor(Math.random() * 3));
-        }, 5000);
-
-        return () => clearInterval(interval);
-    }, []);
-
-    return (
-        <div className="bg-gray-50 rounded-xl p-6 md:p-8">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                <div className="flex items-center gap-4">
-                    <div className="relative">
-                        <div className="absolute inset-0 bg-green-500 rounded-full animate-ping" />
-                        <div className="relative w-3 h-3 bg-green-500 rounded-full" />
-                    </div>
-                    <div>
-                        <p className="font-medium text-gray-900">
-                            {liveCount} pessoas verificando agora
-                        </p>
-                        <p className="text-sm text-gray-600">
-                            {23 + viewedInsights * 7} já garantiram sua vaga hoje
-                        </p>
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-6">
-                    <div className="text-center">
-                        <p className="text-2xl font-bold text-gray-900">4.9</p>
-                        <div className="flex gap-0.5 mb-1">
-                            {[...Array(5)].map((_, i) => (
-                                <motion.div
-                                    key={i}
-                                    initial={{ opacity: 0, scale: 0 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ delay: i * 0.1 }}
-                                >
-                                    <Award className="w-4 h-4 text-yellow-500 fill-current" />
-                                </motion.div>
-                            ))}
-                        </div>
-                        <p className="text-xs text-gray-600">2.347 avaliações</p>
-                    </div>
-
-                    <div className="h-12 w-px bg-gray-300" />
-
-                    <div className="text-center">
-                        <p className="text-2xl font-bold text-gray-900">R$ 1.2B</p>
-                        <p className="text-xs text-gray-600">em negócios realizados</p>                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-// Exportação padrão para compatibilidade com importações existentes
-export default Destaques;
+export default DestaquesEstrategicos;

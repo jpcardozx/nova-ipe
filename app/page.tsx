@@ -7,11 +7,16 @@ import OptimizationProvider from './components/OptimizationProvider';
 // Importações para dados dinâmicos do Sanity
 import { getImoveisDestaque, getImoveisAluguel } from '@/lib/queries';
 import { normalizeDocuments } from '@/lib/sanity-utils';
+import { extractImageUrl, extractAltText } from '@/lib/image-sanity';
+import { ensureValidImageUrl } from '@/lib/sanity-image-utils';
 import type { ImovelClient } from '@/src/types/imovel-client';
 
+// UI Components
+import SectionHeader from './components/ui/SectionHeader';
+
 // Componentes otimizados
-import OptimizedHero from "./components/OptimizedHero";
-import Navbar from "./components/Navbar";
+import EnhancedHero from "./components/EnhancedHero";
+import NavbarResponsive from "./components/NavbarResponsive";
 import Footer from "./sections/Footer";
 import ClientProgressSteps from './components/ClientProgressSteps';
 import BlocoExploracaoSimbolica from './components/BlocoExploracaoSimbolica';
@@ -19,8 +24,9 @@ import BlocoCTAConversao from './components/client/BlocoCTAConversao';
 import Destaques from './sections/Destaques';
 import { ImovelHero } from './components/ImoveisDestaqueComponents';
 
-// Componente Client para o carousel
+// Componentes Client otimizados
 import ClientCarouselWrapper from './components/ClientCarouselWrapper';
+import DestaquesSanityCarousel from './components/DestaquesSanityCarousel';
 
 // Configuração da fonte
 const montSerrat = Montserrat({
@@ -36,255 +42,300 @@ import Valor from './sections/Valor';
 import FormularioContatoAprimorado from './components/FormularioContato';
 import { default as ClientSidePropertiesProvider } from './components/ClientComponents';
 import Testimonials from './sections/Testimonials';
+import { ensureNonNullProperties, extractSlugString } from './PropertyTypeFix';
 
 /**
- * Função para buscar imóveis de destaque diretamente do Sanity
- * Usa Server Components para otimizar o carregamento inicial
+ * Transforma dados do Sanity para o formato esperado pelos componentes
+ * com tratamento robusto de erros e validação
+ * 
+ * @param imovel Objeto de imóvel do Sanity
+ * @param propertyType Tipo de propriedade (venda/aluguel)
+ * @returns Objeto formatado para uso nos componentes
  */
-async function getDestaquesImobiliarios(): Promise<any[]> {
+function transformPropertyData(imovel: ImovelClient, propertyType: PropertyType) {
   try {
-    // Buscar do Sanity com dados completos
-    const imoveisData = await getImoveisDestaque();
-    const imoveisNormalizados = normalizeDocuments<ImovelClient>(imoveisData);
+    if (!imovel) {
+      console.error('Objeto de imóvel inválido ou indefinido');
+      return null;
+    }
 
-    // Converter para o formato esperado pelo componente
-    return imoveisNormalizados.map(imovel => ({
+    // Debug da estrutura da imagem para entender melhor o problema
+    console.log(`Transformando imóvel ${imovel._id || 'sem ID'}:`, {
+      temImagem: !!imovel.imagem,
+      tipoImagem: imovel.imagem ? typeof imovel.imagem : 'undefined',
+      temAsset: imovel.imagem?.asset ? true : false,
+      assetTemUrl: imovel.imagem?.asset?.url ? true : false,
+      assetTemRef: imovel.imagem?.asset?._ref ? true : false,
+      refValue: imovel.imagem?.asset?._ref || 'não disponível',
+    });    // Validar estruturas de dados essenciais
+    if (!imovel._id) {
+      console.warn('Imóvel sem ID encontrado, gerando ID temporário');
+      imovel._id = `temp-${Date.now()}`;
+    }    // Extrair e normalizar a imagem usando nossas funções aprimoradas
+    console.log(`\n📷 Processando imagem para imóvel ${imovel._id} (${imovel.titulo || 'sem título'})`);
+
+    // Primeiro verificar o formato da imagem para depuração
+    if (imovel.imagem) {
+      console.log(`- Tipo de imagem: ${typeof imovel.imagem}`);
+      if (typeof imovel.imagem === 'object') {
+        console.log(`- Propriedades disponíveis: ${Object.keys(imovel.imagem).join(', ')}`);
+        if (imovel.imagem.asset) {
+          console.log(`- Possui referência Sanity: ${!!imovel.imagem.asset._ref}`);
+        }
+      }
+    } else {
+      console.warn(`- ⚠️ Imóvel ${imovel._id} não possui imagem definida`);
+    }
+
+    // Agora extrair com tratamento de erro aprimorado
+    let processedImage;
+    try {
+      // Usar a função robusta para normalização de imagem
+      processedImage = ensureValidImageUrl(
+        imovel.imagem,
+        '/images/property-placeholder.jpg',
+        imovel.titulo || 'Imóvel'
+      );
+
+      if (processedImage.url && !processedImage.url.includes('placeholder')) {
+        console.log(`✅ URL extraída com sucesso: ${processedImage.url.substring(0, 60)}...`);
+      } else {
+        console.warn(`⚠️ Usando imagem placeholder para ${imovel._id}`);
+      }
+    } catch (error) {
+      console.error(`❌ Erro crítico ao processar imagem para imóvel ${imovel._id}:`, error);
+      processedImage = {
+        url: '/images/property-placeholder.jpg',
+        alt: imovel.titulo || 'Imóvel'
+      };
+    }
+
+    // Validação e conversão de tipos para todos os campos numéricos
+    const price = typeof imovel.preco === 'number' ? imovel.preco :
+      typeof imovel.preco === 'string' ? parseFloat(imovel.preco) || 0 : 0;
+
+    const area = typeof imovel.areaUtil === 'number' ? imovel.areaUtil :
+      typeof imovel.areaUtil === 'string' ? parseFloat(imovel.areaUtil) : undefined;
+
+    const bedrooms = typeof imovel.dormitorios === 'number' ? imovel.dormitorios :
+      typeof imovel.dormitorios === 'string' ? parseInt(imovel.dormitorios, 10) : undefined;
+
+    const bathrooms = typeof imovel.banheiros === 'number' ? imovel.banheiros :
+      typeof imovel.banheiros === 'string' ? parseInt(imovel.banheiros, 10) : undefined;
+
+    const parkingSpots = typeof imovel.vagas === 'number' ? imovel.vagas :
+      typeof imovel.vagas === 'string' ? parseInt(imovel.vagas, 10) : undefined;    // Extrair slug usando a função utilitária que lida com diferentes formatos
+    const slug = extractSlugString(imovel.slug, imovel._id);
+
+    return {
       id: imovel._id,
       title: imovel.titulo || 'Imóvel em destaque',
-      slug: imovel.slug,
+      slug,
       location: imovel.bairro || '',
       city: imovel.cidade || 'Guararema',
-      price: imovel.preco || 0,
-      propertyType: imovel.finalidade === 'Venda' ? 'sale' : 'rent' as PropertyType,
-      area: imovel.areaUtil || undefined,
-      bedrooms: imovel.dormitorios || undefined,
-      bathrooms: imovel.banheiros || undefined,
-      parkingSpots: imovel.vagas || undefined,
-      mainImage: {
-        url: imovel.imagem?.url || '/images/property-placeholder.jpg',
-        alt: imovel.titulo || 'Imóvel em destaque',
+      price,
+      propertyType,
+      area,
+      bedrooms,
+      bathrooms,
+      parkingSpots, mainImage: {
+        url: processedImage.url,
+        alt: processedImage.alt,
       },
       isHighlight: true,
-      isPremium: imovel.destaque,
-    }));
+      isPremium: Boolean(imovel.destaque),
+      isNew: propertyType === 'rent' && Math.random() > 0.7,
+    };
   } catch (error) {
-    console.error('Erro ao buscar imóveis em destaque:', error);
-    return [];
+    console.error('Erro grave ao transformar dados do imóvel:', error);
+    // Retornar objeto null para ser filtrado posteriormente
+    return null;
   }
 }
 
 /**
- * Função para buscar imóveis para aluguel diretamente do Sanity
+ * Busca e processa dados de propriedades do Sanity com validação robusta
+ * e tratamento de erros aprimorado
  */
-async function getImoveisAluguelDestaque(): Promise<any[]> {
+async function fetchPropertiesData() {
   try {
-    // Buscar do Sanity com dados completos
-    const imoveisData = await getImoveisAluguel();
-    const imoveisNormalizados = normalizeDocuments<ImovelClient>(imoveisData);
+    console.log('Iniciando busca de propriedades do Sanity');
 
-    // Converter para o formato esperado pelo componente
-    return imoveisNormalizados.map(imovel => ({
-      id: imovel._id,
-      title: imovel.titulo || 'Imóvel para aluguel',
-      slug: imovel.slug,
-      location: imovel.bairro || '',
-      city: imovel.cidade || 'Guararema',
-      price: imovel.preco || 0,
-      propertyType: 'rent' as PropertyType,
-      area: imovel.areaUtil || undefined,
-      bedrooms: imovel.dormitorios || undefined,
-      bathrooms: imovel.banheiros || undefined,
-      parkingSpots: imovel.vagas || undefined,
-      mainImage: {
-        url: imovel.imagem?.url || '/images/property-placeholder.jpg',
-        alt: imovel.titulo || 'Imóvel para aluguel',
-      },
-      isNew: Math.random() > 0.7, // Simulando propriedade "novo"
-      isPremium: imovel.destaque,
-    }));
+    // Buscar dados com tratamento de erro para cada chamada
+    let imoveisDestaque = [];
+    let imoveisAluguel = [];
+
+    try {
+      imoveisDestaque = await getImoveisDestaque();
+      console.log(`Obtidos ${imoveisDestaque.length} imóveis em destaque`);
+    } catch (error) {
+      console.error('Erro ao buscar imóveis em destaque:', error);
+      imoveisDestaque = [];
+    }
+
+    try {
+      imoveisAluguel = await getImoveisAluguel();
+      console.log(`Obtidos ${imoveisAluguel.length} imóveis para aluguel`);
+    } catch (error) {
+      console.error('Erro ao buscar imóveis para aluguel:', error);
+      imoveisAluguel = [];
+    }
+
+    console.log('Imóveis recebidos:',
+      `Destaques: ${imoveisDestaque.length},`,
+      `Aluguel: ${imoveisAluguel.length}`
+    );
+
+    // Diagnóstico detalhado do formato recebido
+    if (imoveisDestaque.length > 0) {
+      const sample = imoveisDestaque[0];
+      console.log('Exemplo de estrutura de imóvel recebido:', {
+        id: sample._id,
+        temImagem: !!sample?.imagem,
+        tipoImagem: typeof sample?.imagem,
+        estruturaImagemResumo: sample?.imagem ?
+          `asset: ${!!sample.imagem.asset}, ref: ${!!sample.imagem.asset?._ref}` :
+          'sem imagem',
+        amostraRef: sample?.imagem?.asset?._ref ?
+          sample.imagem.asset._ref.substring(0, 30) + '...' :
+          'N/A'
+      });
+    }
+
+    // Normalização com validação
+    const destaques = normalizeDocuments<ImovelClient>(imoveisDestaque);
+    const aluguel = normalizeDocuments<ImovelClient>(imoveisAluguel);
+
+    console.log('Imóveis normalizados:',
+      `Destaques: ${destaques.length},`,
+      `Aluguel: ${aluguel.length}`
+    );    // Transformação com filtragem de valores nulos usando função especializada
+    const destaquesProcessados = ensureNonNullProperties(
+      destaques.map(imovel => transformPropertyData(
+        imovel,
+        imovel.finalidade === 'Venda' ? 'sale' : 'rent' as PropertyType
+      ))
+    );
+
+    const aluguelProcessados = ensureNonNullProperties(
+      aluguel.map(imovel => transformPropertyData(imovel, 'rent' as PropertyType))
+    );
+
+    console.log('Imóveis processados com sucesso:',
+      `Destaques: ${destaquesProcessados.length},`,
+      `Aluguel: ${aluguelProcessados.length}`
+    );
+
+    return {
+      destaques: destaquesProcessados,
+      aluguel: aluguelProcessados,
+    };
   } catch (error) {
-    console.error('Erro ao buscar imóveis para aluguel:', error);
-    return [];
+    console.error('Erro ao buscar propriedades:', error);
+    return { destaques: [], aluguel: [] };
   }
 }
 
 export default async function Home() {
-  // Buscar dados do Sanity de forma otimizada
-  const [imoveisDestaque, imoveisAluguel] = await Promise.all([
-    getDestaquesImobiliarios(),
-    getImoveisAluguelDestaque(),
-  ]);
-
-  return (
+  // Buscar dados de propriedades
+  const { destaques, aluguel } = await fetchPropertiesData(); return (
     <div className={`${montSerrat.className} flex flex-col min-h-screen bg-[#fafaf9]`}>
-      {/* Optimization provider for client-side optimizations */}
       <OptimizationProvider>
-        {/* Navegação - Com marcação de página atual */}
-        <Navbar />
+        <NavbarResponsive />
 
-        {/* Hero principal com experiência visual aprimorada */}
-        <OptimizedHero />
+        <EnhancedHero />
 
-        {/* Provider para passar dados de propriedades para componentes client-side */}
-        <ClientSidePropertiesProvider
-          destaques={imoveisDestaque}
-          aluguel={imoveisAluguel}
-        />
+        {/* Provider de dados para componentes client-side */}
+        <ClientSidePropertiesProvider destaques={destaques} aluguel={aluguel} />        <BlocoExploracaoSimbolica />
 
-        {/* Seção de Busca aprimorada - UI moderna e totalmente responsiva */}
-        <BlocoExploracaoSimbolica />
+        {/* Seção de Imóveis em Destaque - Versão Aprimorada */}
+        <Suspense fallback={<section className="py-24 bg-white"><div className="container mx-auto px-4 max-w-7xl"><PropertiesLoadingSkeleton /></div></section>}>
+          <DestaquesSanityCarousel
+            properties={destaques}
+            tipo="destaque"
+            titulo="Imóveis Cuidadosamente Selecionados"
+            subtitulo="Descubra propriedades que se destacam pela arquitetura impecável, localização estratégica e potencial de valorização excepcional em Guararema."
+            verTodosLink="/comprar"
+            verTodosLabel="Explorar todo o portfólio"
+          />
+        </Suspense>
 
-        {/* Seção de Imóveis em Destaque - Agora com dados reais do Sanity */}
-        <section className="py-24 bg-white">
-          <div className="container mx-auto px-4 max-w-7xl">
-            <div className="max-w-3xl mx-auto text-center mb-16">
-              <span className="inline-block px-4 py-1.5 bg-amber-50 text-amber-700 rounded-full text-sm font-semibold mb-4 animate-fade-in">
-                Portfólio Exclusivo
-              </span>
-              <h2 className="text-3xl md:text-5xl font-bold text-[#0D1F2D] mb-6 tracking-tight">
-                Imóveis Cuidadosamente Selecionados
-              </h2>
-              <p className="text-lg md:text-xl text-[#0D1F2D]/70 leading-relaxed max-w-2xl mx-auto">
-                Descubra propriedades que se destacam pela arquitetura impecável, localização estratégica e potencial de valorização excepcional em Guararema.
-              </p>
-            </div>
+        {/* Componente legacy escondido (temporário) */}
+        <div className="hidden">
+          <ClientCarouselWrapper
+            properties={destaques}
+            config={{
+              title: "",
+              subtitle: "",
+              slidesToShow: 3,
+              showControls: true,
+              autoplay: true,
+              autoplayInterval: 5000,
+              viewAllLink: "/comprar",
+              viewAllLabel: "Explorar todo o portfólio",
+              className: "mb-16",
+              hasAccentBackground: false,
+              showEmptyState: destaques.length === 0,
+              emptyStateMessage: "Carregando imóveis em destaque...",
+              mobileLayout: "stack",
+            }}
+          />
+        </div>
 
-            <Suspense fallback={
-              <div className="space-y-4">
-                <div className="h-8 w-56 bg-neutral-200 animate-pulse rounded-lg mb-8"></div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="h-80 bg-neutral-100 animate-pulse rounded-lg shadow-md"></div>
-                  ))}
-                </div>
-              </div>
-            }>
-              <ClientCarouselWrapper
-                properties={imoveisDestaque}
-                config={{
-                  title: "Em Destaque",
-                  subtitle: "Oportunidades exclusias em Guararema",
-                  slidesToShow: 3,
-                  showControls: true,
-                  autoplay: true,
-                  autoplayInterval: 5000,
-                  viewAllLink: "/comprar",
-                  viewAllLabel: "Explorar todo o portfólio",
-                  className: "mb-16",
-                  hasAccentBackground: false,
-                  showEmptyState: imoveisDestaque.length === 0,
-                  emptyStateMessage: "Carregando imóveis em destaque...",
-                  mobileLayout: "stack",
-                }}
-              />
-            </Suspense>
-          </div>
-        </section>
-
-        {/* Nova seção visual de destaques com animações suaves */}
         <section className="relative py-24 overflow-hidden bg-gradient-to-b from-white to-[#F8FAFC]">
           <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
-          <Destaques />
-        </section>
+          <Destaques />        </section>
 
-        {/* Seção de Imóveis para Alugar - Com dados reais e UI aprimorada */}
+        {/* Seção de Imóveis para Alugar - Versão Aprimorada */}
         <section className="py-24 bg-[#F8FAFC] relative">
           <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent"></div>
-          <div className="container mx-auto px-4 max-w-7xl relative z-10">
-            <div className="max-w-3xl mx-auto text-center mb-16">
-              <span className="inline-block px-4 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold mb-4 animate-fade-in">
-                Conforto e Praticidade
-              </span>
-              <h2 className="text-3xl md:text-5xl font-bold text-[#0D1F2D] mb-6 tracking-tight">
-                Seu Próximo Lar Está Aqui
-              </h2>
-              <p className="text-lg md:text-xl text-[#0D1F2D]/70 leading-relaxed max-w-2xl mx-auto">
-                Uma seleção de imóveis para alugar que prioriza qualidade de vida, ótima localização e custo-benefício real. Experimente morar com qualidade em Guararema.
-              </p>
-            </div>
-
-            <Suspense fallback={
-              <div className="space-y-4">
-                <div className="h-8 w-56 bg-neutral-200 animate-pulse rounded-lg mb-8"></div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="h-80 bg-neutral-100 animate-pulse rounded-lg shadow-md"></div>
-                  ))}
-                </div>
-              </div>
-            }>
-              <ClientCarouselWrapper
-                properties={imoveisAluguel}
-                config={{
-                  title: "Aluguel Premium",
-                  subtitle: "Imóveis selecionados para seu conforto",
-                  slidesToShow: 3,
-                  showControls: true,
-                  autoplay: true,
-                  autoplayInterval: 6000,
-                  viewAllLink: "/alugar",
-                  viewAllLabel: "Ver todas as opções de aluguel",
-                  hasAccentBackground: true,
-                  showEmptyState: imoveisAluguel.length === 0,
-                  emptyStateMessage: "Carregando imóveis para aluguel...",
-                  mobileLayout: "stack",
-                }}
-              />
-            </Suspense>
-          </div>
+          <Suspense fallback={<div className="container mx-auto px-4 max-w-7xl relative z-10"><PropertiesLoadingSkeleton /></div>}>
+            <DestaquesSanityCarousel
+              properties={aluguel}
+              tipo="aluguel"
+              titulo="Seu Próximo Lar Está Aqui"
+              subtitulo="Uma seleção de imóveis para alugar que prioriza qualidade de vida, ótima localização e custo-benefício real. Experimente morar com qualidade em Guararema."
+              verTodosLink="/alugar"
+              verTodosLabel="Ver todas as opções de aluguel"
+            />
+          </Suspense>
         </section>
 
-        {/* Seção de proposta de valor com UI aprimorada e animações */}
         <div className="relative bg-white">
           <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
           <Valor />
         </div>
 
-        {/* Seção de depoimentos de clientes - Nova adição para social proof */}
         <section className="py-24 bg-gradient-to-b from-white to-[#F8FAFC]">
           <div className="container mx-auto px-4 max-w-7xl">
-            <div className="max-w-3xl mx-auto text-center mb-16">
-              <span className="inline-block px-4 py-1.5 bg-amber-50 text-amber-700 rounded-full text-sm font-semibold mb-4 animate-fade-in">
-                Histórias de Sucesso
-              </span>
-              <h2 className="text-3xl md:text-5xl font-bold text-[#0D1F2D] mb-6 tracking-tight">
-                O que Nossos Clientes Dizem
-              </h2>
-              <p className="text-lg md:text-xl text-[#0D1F2D]/70 leading-relaxed max-w-2xl mx-auto">
-                Descubra como ajudamos famílias e investidores a encontrarem o imóvel perfeito em Guararema.
-              </p>
-            </div>
-
+            <SectionHeader
+              badge="Histórias de Sucesso"
+              badgeColor="amber"
+              title="O que Nossos Clientes Dizem"
+              description="Descubra como ajudamos famílias e investidores a encontrarem o imóvel perfeito em Guararema."
+            />
             <Testimonials />
           </div>
         </section>
 
-        {/* Seção de Processo do Cliente com UI modernizada */}
         <section className="py-24 bg-[#F8FAFC] relative">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-transparent"></div>
           <div className="container mx-auto px-4 max-w-7xl relative z-10">
-            <div className="max-w-3xl mx-auto text-center mb-16">
-              <span className="inline-block px-4 py-1.5 bg-green-50 text-green-700 rounded-full text-sm font-semibold mb-4 animate-fade-in">
-                Processo Simplificado
-              </span>
-              <h2 className="text-3xl md:text-5xl font-bold text-[#0D1F2D] mb-6 tracking-tight">
-                Sua Jornada Imobiliária
-              </h2>
-              <p className="text-lg md:text-xl text-[#0D1F2D]/70 leading-relaxed max-w-2xl mx-auto">
-                Conduzimos você por cada etapa com transparência e eficiência, transformando a busca pelo imóvel ideal em uma experiência agradável e segura.
-              </p>
-            </div>
+            <SectionHeader
+              badge="Processo Simplificado"
+              badgeColor="green"
+              title="Sua Jornada Imobiliária"
+              description="Conduzimos você por cada etapa com transparência e eficiência, transformando a busca pelo imóvel ideal em uma experiência agradável e segura."
+            />
             <ClientProgressSteps />
           </div>
         </section>
 
-        {/* Formulário de contato aprimorado com validação e melhor UX */}
         <section className="relative py-24 overflow-hidden bg-gradient-to-b from-[#F8FAFC] to-white">
           <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
           <FormularioContatoAprimorado />
         </section>
 
-        {/* CTA de Conversão com elementos visuais mais atraentes */}
         <section className="bg-[#0D1F2D] relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-[#0D1F2D] to-[#1a3040] mix-blend-soft-light"></div>
           <div className="absolute inset-0 bg-[url('/wood-pattern.png')] opacity-10"></div>
@@ -296,11 +347,20 @@ export default async function Home() {
               ctaLink="https://wa.me/5511981845016?text=Olá! Gostaria de conhecer opções de imóveis em Guararema (via site)"
             />
           </div>
-        </section>
-
-        {/* Footer com links úteis e informações atualizadas */}
-        <Footer />
+        </section>        <Footer />
       </OptimizationProvider>
     </div>
   );
 }
+
+// Componente de loading para propriedades
+const PropertiesLoadingSkeleton = () => (
+  <div className="space-y-4">
+    <div className="h-8 w-56 bg-neutral-200 animate-pulse rounded-lg mb-8"></div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {[1, 2, 3].map(i => (
+        <div key={i} className="h-80 bg-neutral-100 animate-pulse rounded-lg shadow-md"></div>
+      ))}
+    </div>
+  </div>
+);

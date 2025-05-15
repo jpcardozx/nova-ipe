@@ -1,5 +1,6 @@
 // app/layout.tsx
 import './globals.css';
+import './cls-optimizations.css'; // Importando otimizações para CLS
 import { Metadata, Viewport } from 'next';
 import { Suspense } from 'react';
 import { Montserrat } from 'next/font/google';
