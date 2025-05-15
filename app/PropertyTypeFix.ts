@@ -5,6 +5,21 @@
 
 import type { PropertyType } from './components/OptimizedPropertyCard';
 
+// Custom implementation of extractImageUrl to replace the missing module
+function extractImageUrl(image: SanityImage): string | null {
+    // Basic implementation to extract URL from Sanity image reference
+    if (image?.asset?._ref) {
+        // Format: "image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg"
+        const ref = image.asset._ref;
+        const [, id, dimensions, format] = ref.split('-');
+
+        if (!id || !dimensions || !format) return null;
+
+        return `https://cdn.sanity.io/images/${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'yourprojectid'}/${process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'}/${id}-${dimensions}.${format}`;
+    }
+    return null;
+}
+
 // Define o tipo para slug do Sanity
 export interface SanitySlug {
     _type?: string;
@@ -127,7 +142,6 @@ export function ensureSanityImage(image: ImageType, fallbackUrl: string = '/imag
         // Se tem referência, tentar construir URL Sanity
         if (image.asset._ref) {
             try {
-                const { extractImageUrl } = require('../../lib/image-sanity');
                 const url = extractImageUrl(image);
                 if (url) return url;
             } catch (e) {
