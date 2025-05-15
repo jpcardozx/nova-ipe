@@ -16,11 +16,10 @@ export async function POST(request: NextRequest) {
                 { message: 'Token inválido' },
                 { status: 401 }
             );
-        }
-
-        // Revalida a página inicial e os caminhos relacionados
+        }        // Revalida a página inicial e os caminhos relacionados
         revalidatePath('/');
-        revalidatePath('/pagina-aprimorada');
+        // A página aprimorada agora está integrada na raiz
+        // revalidatePath('/pagina-aprimorada');
 
         return NextResponse.json(
             {
