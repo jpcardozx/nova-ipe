@@ -2,12 +2,12 @@ import { Suspense } from 'react';
 import { Montserrat } from 'next/font/google';
 import Link from 'next/link';
 import Image from 'next/image';
-import OptimizationProvider from '../components/OptimizationProvider';
+import OptimizationProvider from '../../app/components/OptimizationProvider';
 import { Metadata } from 'next';
-import WhatsAppButton from '../components/WhatsAppButton';
-import NotificacaoBanner from '../components/NotificacaoBanner';
-import SkipToContent from '../components/SkipToContent';
-import { FeedbackBanner } from '../components/FeedbackBanner';
+import WhatsAppButton from '../../app/components/WhatsAppButton';
+import NotificacaoBanner from '../../app/components/NotificacaoBanner';
+import SkipToContent from '../../app/components/SkipToContent';
+import { FeedbackBanner } from '../../app/components/FeedbackBanner';
 
 // Importações para dados dinâmicos do Sanity
 import { getImoveisDestaque, getImoveisAluguel } from '@/lib/queries';
@@ -18,20 +18,20 @@ import { loadImage } from '@/lib/enhanced-image-loader';
 import type { ImovelClient } from '@/src/types/imovel-client';
 
 // Componentes de UI
-import SectionHeader from '../components/ui/SectionHeader';
+import SectionHeader from '../../app/components/ui/SectionHeader';
 
 // Componentes aprimorados
-import EnhancedHero from "../components/EnhancedHero";
-import NavbarResponsive from "../components/NavbarResponsive";
-import FooterAprimorado from "../sections/FooterAprimorado";
-import ClientProgressSteps from '../components/ClientProgressSteps';
-import BlocoExploracaoSimbolica from '../components/BlocoExploracaoSimbolica';
-import BlocoCTAConversao from '../components/client/BlocoCTAConversao';
-import DestaquesSanityCarousel from '../components/DestaquesSanityCarousel';
-import ValorAprimorado from '../sections/ValorAprimorado';
-import FormularioContato from '../components/FormularioContato';
-import { DestaquesEstrategicos } from '../sections/Destaques';
-import { ExclusiveAnalysisOffer } from '../sections/ExclusiveAnalysisOffer';
+import EnhancedHero from "../../app/components/EnhancedHero";
+import NavbarResponsive from "../../app/components/NavbarResponsive";
+import FooterAprimorado from "../../app/sections/FooterAprimorado";
+import ClientProgressSteps from '../../app/components/ClientProgressSteps';
+import BlocoExploracaoSimbolica from '../../app/components/BlocoExploracaoSimbolica';
+import BlocoCTAConversao from '../../app/components/client/BlocoCTAConversao';
+import DestaquesSanityCarousel from '../../app/components/DestaquesSanityCarousel';
+import ValorAprimorado from '../../app/sections/ValorAprimorado';
+import FormularioContato from '../../app/components/FormularioContato';
+import { DestaquesEstrategicos } from '../../app/sections/Destaques';
+import { ExclusiveAnalysisOffer } from '../../app/sections/ExclusiveAnalysisOffer';
 
 // Configuração da fonte Montserrat
 const montSerrat = Montserrat({
@@ -42,9 +42,9 @@ const montSerrat = Montserrat({
 });
 
 // Importando tipos e utilitários
-import type { PropertyType } from '../components/OptimizedPropertyCard';
-import { default as ClientSidePropertiesProvider } from '../components/ClientComponents';
-import { ensureNonNullProperties, extractSlugString } from '../PropertyTypeFix';
+import type { PropertyType } from '../../app/components/OptimizedPropertyCard';
+import { default as ClientSidePropertiesProvider } from '../../app/components/ClientComponents';
+import { ensureNonNullProperties, extractSlugString } from '../../app/PropertyTypeFix';
 
 // Metadados otimizados para SEO
 export const metadata: Metadata = {
