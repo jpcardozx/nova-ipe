@@ -138,31 +138,25 @@ const DestaquesSanityCarousel = memo(function DestaquesSanityCarousel({
     verTodosLink,
     verTodosLabel = 'Ver todos'
 }: DestaquesSanityCarouselProps) {
-    // Mapeia os dados do Sanity para o formato esperado pelos componentes da UI
+    // Ensure formattedProperties is defined
     const formattedProperties = properties.map(mapSanityToUIFormat);
 
-    // Configurações específicas para cada tipo
+    // Ensure config is properly defined
     const config = {
         destaque: {
-            badgeColor: "amber" as "amber",
+            badgeColor: "amber" as const,
             badge: "Portfólio Exclusivo",
             hasAccentBackground: false,
         },
         aluguel: {
-            badgeColor: "blue" as "blue",
+            badgeColor: "blue" as const,
             badge: "Conforto e Praticidade",
             hasAccentBackground: true,
         }
     }[tipo];
 
-    // Não renderizar nada se não houver propriedades (evita componentes vazios)
-    if (properties.length === 0) {
-        return <EmptyState message={`Nenhum imóvel de ${tipo === 'destaque' ? 'destaque' : 'aluguel'} disponível no momento.`} />;
-    }
-
-    // Validar que as propriedades formatadas têm a estrutura esperada
+    // Ensure validatedProperties is properly filtered
     const validatedProperties = formattedProperties.filter(prop => {
-        // Validar propriedades essenciais
         const isValid = prop &&
             typeof prop.id === 'string' &&
             typeof prop.title === 'string' &&
@@ -171,11 +165,17 @@ const DestaquesSanityCarousel = memo(function DestaquesSanityCarousel({
             typeof prop.mainImage.url === 'string';
 
         if (!isValid) {
-            console.error('Propriedade inválida encontrada:', prop);
+            console.error('Invalid property found:', prop);
         }
 
         return isValid;
-    }); return (
+    });
+
+    if (validatedProperties.length === 0) {
+        return <EmptyState message={`Nenhum imóvel de ${tipo === 'destaque' ? 'destaque' : 'aluguel'} disponível no momento.`} />;
+    }
+
+    return (
         <section className="py-16 w-full">
             <div className="container mx-auto px-4 max-w-7xl">
                 <SectionHeader
@@ -183,7 +183,8 @@ const DestaquesSanityCarousel = memo(function DestaquesSanityCarousel({
                     badgeColor={config.badgeColor}
                     title={titulo}
                     description={subtitulo}
-                />        <div className="min-h-card carousel-container">
+                />
+                <div className="min-h-card carousel-container">
                     <OptimizedPropertyCarousel
                         properties={validatedProperties}
                         slidesToShow={3}

@@ -3,6 +3,7 @@
  */
 import type { ClientImage } from '../app/components/SanityImage';
 import { processImage } from './sanity-image-helper';
+import { extractImageUrl } from './image-sanity';
 
 /**
  * Converte uma referência de imagem do Sanity para um formato padronizado
@@ -26,7 +27,6 @@ export function normalizeImage(image: any, defaultAlt: string = ''): ClientImage
         return { alt: defaultAlt };
     }
 
-    // Já é um objeto no formato esperado
     if (image.imagemUrl || image.url) {
         console.log("normalizeImage: Image already has url or imagemUrl");
         return {
@@ -37,61 +37,26 @@ export function normalizeImage(image: any, defaultAlt: string = ''): ClientImage
         };
     }
 
-    // Formato do Sanity com asset._ref
     if (image.asset?._ref) {
         console.log("normalizeImage: Image has Sanity asset reference", image.asset._ref);
-
-        // Import e use a função do módulo de imagem
-        const { extractImageUrl } = require('./image-sanity');
-
-        // Usando a função especializada para extrair URL
-        let imageUrl = extractImageUrl(image);
+        const imageUrl = extractImageUrl(image);
 
         if (!imageUrl) {
             console.error("Failed to extract image URL using specialized function, falling back");
             try {
-                const refParts = image.asset._ref.split('-');
-                // Handle the format: image-abc123-800x600-jpg
-                if (refParts.length >= 4 && refParts[0] === 'image') {
-                    const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '0nks58lj';
-                    const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
-                    const id = refParts[1];
-                    const dimensions = refParts[2];
-                    const extension = refParts[3];
-
-                    imageUrl = `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}-${dimensions}.${extension}`;
-                    console.log("Generated fallback Sanity image URL:", imageUrl);
-                }
+                return { url: '', alt: defaultAlt };
             } catch (error) {
-                console.error("Error in fallback image URL construction:", error);
+                console.error("Error during fallback", error);
             }
         }
 
-        // Usando formato padronizado para imagens do Sanity
         return {
-            url: imageUrl || (image.asset.url || ''),
-            imagemUrl: imageUrl || (image.asset.url || ''),
-            asset: {
-                _ref: image.asset._ref,
-                url: imageUrl || (image.asset.url || '')
-            },
+            url: imageUrl,
             alt: image.alt || defaultAlt,
             hotspot: image.hotspot
         };
     }
 
-    // Caso seja apenas uma string URL
-    if (typeof image === 'string') {
-        console.log("normalizeImage: Image is a string URL");
-        return {
-            url: image,
-            imagemUrl: image,
-            alt: defaultAlt
-        };
-    }
-
-    // Fallback para não quebrar a interface
-    console.warn("normalizeImage: Unrecognized image format, returning fallback");
     return { alt: defaultAlt };
 }
 
