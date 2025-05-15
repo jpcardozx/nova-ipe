@@ -11,15 +11,13 @@ import Link from 'next/link';
  * - Mantém opção de voltar para a versão antiga se necessário
  */
 export default function RedirectPage() {
-    const router = useRouter();
-
-    useEffect(() => {
+    const router = useRouter(); useEffect(() => {
         // Registra a visita no localStorage para controle
         localStorage.setItem('saw_redirect_page', 'true');
 
         // Redireciona automaticamente depois de um curto período
         const timer = setTimeout(() => {
-            router.push('/pagina-aprimorada');
+            router.push('/');  // Redirecionamos para a página inicial em vez da página aprimorada
         }, 3500);
 
         return () => clearTimeout(timer);
@@ -42,11 +40,9 @@ export default function RedirectPage() {
 
                 <p className="text-gray-600 mb-8">
                     Desenvolvemos uma experiência mais moderna para você encontrar seu imóvel ideal em Guararema. Redirecionando automaticamente em instantes...
-                </p>
-
-                <div className="flex flex-col sm:flex-row items-center gap-4 justify-center">
+                </p>                <div className="flex flex-col sm:flex-row items-center gap-4 justify-center">
                     <Link
-                        href="/pagina-aprimorada"
+                        href="/"
                         className="w-full sm:w-auto px-6 py-3 bg-amber-600 text-white font-medium rounded-lg hover:bg-amber-700 transition-colors"
                     >
                         Ir para nova versão agora

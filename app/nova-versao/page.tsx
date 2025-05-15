@@ -1,4 +1,4 @@
-import PaginaAprimorada from '../pagina-aprimorada';
+import PaginaAprimorada from '../pagina-aprimorada/page';
 
 export default function NovaVersao() {
     return <PaginaAprimorada />;
