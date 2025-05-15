@@ -16,18 +16,34 @@ export function mapImovelToClient(imovel: any): ImovelClient {
         imagemHasUrl: imovel.imagem?.url ? true : false,
         imagemHasAsset: imovel.imagem?.asset ? true : false,
         assetRef: imovel.imagem?.asset?._ref,
-    });
-
-    // Converte a imagem para o formato esperado
+    });    // Converte a imagem para o formato esperado
     let imagem: ImagemClient;
 
     if (imovel.imagem) {
+        // Extração robusta dos dados da imagem
+        const imageData = imovel.imagem;
+        const assetData = imageData.asset || {};
+
+        // Extrai URL seguindo uma ordem de prioridade de múltiplas fontes
+        const imageUrl =
+            imageData.imagemUrl ||
+            imageData.url ||
+            assetData.url ||
+            '';
+
         // Se tem imagem, cria objeto com as propriedades necessárias
+        // Garantimos que todos os campos necessários estão presentes
         imagem = {
-            url: imovel.imagem.url || imovel.imagem.asset?.url || '',
-            imagemUrl: imovel.imagem.url || imovel.imagem.asset?.url || '',
-            alt: imovel.imagem.alt || imovel.titulo || 'Imagem do imóvel',
-            asset: imovel.imagem.asset, // Mantém a referência completa do asset
+            _type: 'image',
+            url: imageUrl,
+            imagemUrl: imageUrl,
+            alt: imageData.alt || imovel.titulo || 'Imagem do imóvel',
+            // Preserva a referência completa do asset, ou cria uma estrutura mínima
+            asset: {
+                ...assetData,
+                _type: assetData._type || 'sanity.imageAsset',
+                _ref: assetData._ref || ''
+            }
         };
 
         console.log("mapImovelToClient - Created image object:", {
@@ -35,10 +51,22 @@ export function mapImovelToClient(imovel: any): ImovelClient {
             imagemUrl: imagem.imagemUrl,
             hasAsset: !!imagem.asset,
             assetRef: imagem.asset?._ref,
+            assetUrl: imagem.asset?.url,
+            imageHasAsset: !!imageData.asset,
+            completeObject: !!imageUrl && !!imagem.asset
         });
     } else {
         // Sem imagem, usa valores padrão
-        imagem = { url: '', imagemUrl: '', alt: 'Imagem não disponível' };
+        imagem = {
+            _type: 'image',
+            url: '',
+            imagemUrl: '',
+            alt: 'Imagem não disponível',
+            asset: {
+                _type: 'sanity.imageAsset',
+                _ref: ''
+            }
+        };
         console.log("mapImovelToClient - No image provided, using defaults");
     }
 

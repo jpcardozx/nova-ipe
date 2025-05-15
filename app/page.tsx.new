@@ -1,0 +1,24 @@
+import { redirect } from 'next/navigation';
+import RedirectPage from './redirect-page';
+
+// Constante para controlar a transição entre versões
+const NEW_VERSION_ACTIVE = true;
+const SHOW_REDIRECT_PAGE = true;
+
+export default function Home() {
+  // Se a nova versão estiver ativa, redirecione diretamente
+  if (NEW_VERSION_ACTIVE && !SHOW_REDIRECT_PAGE) {
+    redirect('/pagina-aprimorada');
+    return null;
+  }
+  
+  // Se configurado para mostrar página de redirecionamento
+  if (NEW_VERSION_ACTIVE && SHOW_REDIRECT_PAGE) {
+    return <RedirectPage />;
+  }
+  
+  // Se não redirecionou, será mostrada a página atual (versão antiga)
+  // Este código não deve ser executado quando NEW_VERSION_ACTIVE é true
+  redirect('/versao-anterior');
+  return null;
+}

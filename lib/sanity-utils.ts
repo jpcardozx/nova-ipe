@@ -27,37 +27,40 @@ export function normalizeImage(image: any, defaultAlt: string = ''): ClientImage
         return { alt: defaultAlt };
     }
 
+    // Create a base image object that preserves the asset reference
+    const normalizedImage: ClientImage = {
+        _type: image._type || 'image',
+        alt: image.alt || defaultAlt,
+        hotspot: image.hotspot,
+        // Preserve the original asset reference
+        asset: image.asset ? {
+            _type: image.asset._type || 'sanity.imageAsset',
+            _ref: image.asset._ref,
+            url: image.asset.url
+        } : undefined
+    };
+
     if (image.imagemUrl || image.url) {
         console.log("normalizeImage: Image already has url or imagemUrl");
-        return {
-            url: image.url || image.imagemUrl,
-            imagemUrl: image.imagemUrl || image.url,
-            alt: image.alt || defaultAlt,
-            hotspot: image.hotspot
-        };
-    }
-
-    if (image.asset?._ref) {
+        normalizedImage.url = image.url || image.imagemUrl;
+        normalizedImage.imagemUrl = image.imagemUrl || image.url;
+    } else if (image.asset?._ref) {
         console.log("normalizeImage: Image has Sanity asset reference", image.asset._ref);
         const imageUrl = extractImageUrl(image);
 
         if (!imageUrl) {
             console.error("Failed to extract image URL using specialized function, falling back");
             try {
-                return { url: '', alt: defaultAlt };
+                normalizedImage.url = '';
             } catch (error) {
                 console.error("Error during fallback", error);
             }
+        } else {
+            normalizedImage.url = imageUrl;
         }
-
-        return {
-            url: imageUrl,
-            alt: image.alt || defaultAlt,
-            hotspot: image.hotspot
-        };
     }
 
-    return { alt: defaultAlt };
+    return normalizedImage;
 }
 
 /**

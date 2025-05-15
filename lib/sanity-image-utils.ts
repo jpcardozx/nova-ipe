@@ -12,9 +12,15 @@ import { debugImage } from './debug-image';
 export interface NormalizedImage {
     url: string;
     alt: string;
+    _type?: string;
     hotspot?: {
         x: number;
         y: number;
+    };
+    asset?: {
+        _ref?: string;
+        _type?: string;
+        url?: string;
     };
 }
 
@@ -52,11 +58,19 @@ export function ensureValidImageUrl(
                 url: image,
                 alt: defaultAlt
             };
-        }
-
-        // Extrair texto alternativo se disponível
+        }        // Extrair texto alternativo se disponível
         let alt = image.alt || defaultAlt;
-        let url: string | undefined;
+        let url: string | undefined;        // Criar a estrutura base mantendo a asset
+        const result: NormalizedImage = {
+            url: fallbackUrl, // Inicializa com fallback, será substituído se encontrarmos uma URL válida
+            alt: alt,
+            _type: image._type || 'image',
+            asset: image.asset ? {
+                _ref: image.asset._ref,
+                _type: image.asset._type || 'sanity.imageAsset',
+                url: image.asset.url
+            } : undefined
+        };
 
         // Estratégia 1: Usar URLs diretas (prioridade mais alta)
         if (image.url) {
@@ -82,14 +96,9 @@ export function ensureValidImageUrl(
         }
 
         // Log da URL final
-        console.log(`[Image Extractor] URL extraída com sucesso: ${url.substring(0, 50)}${url.length > 50 ? '...' : ''}`);
-
-        // Retornar imagem normalizada com todos os dados necessários
-        return {
-            url,
-            alt,
-            hotspot: image.hotspot
-        };
+        console.log(`[Image Extractor] URL extraída com sucesso: ${url.substring(0, 50)}${url.length > 50 ? '...' : ''}`);        // Retornar imagem normalizada com todos os dados necessários
+        result.url = url; // Atualiza a URL no resultado
+        return result;
     } catch (error) {
         console.error('[Image Extractor] Erro crítico ao processar imagem:', error);
         return {

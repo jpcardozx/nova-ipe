@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { cn, formatarMoeda } from '../../../../lib/utils';
 import { Button } from '../../../ui/core/Button';
-import { PropertyImage, PropertyStatus, PropertyType } from './PropertyCard';
+import { PropertyImageType, PropertyStatus, PropertyType } from './PropertyCard';
 
 interface PropertyHeroProps {
     id: string;
@@ -28,9 +28,8 @@ interface PropertyHeroProps {
     propertyType: PropertyType;
     status?: PropertyStatus;
     createdAt?: string;
-    updatedAt?: string;
-    mainImage: PropertyImage;
-    images?: PropertyImage[];
+    updatedAt?: string; mainImage: PropertyImageType;
+    images?: PropertyImageType[];
     className?: string;
     onScheduleVisit?: () => void;
     onShare?: () => void;

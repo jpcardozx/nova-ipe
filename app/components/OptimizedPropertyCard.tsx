@@ -1,20 +1,33 @@
 'use client';
 
-import { useState, memo } from 'react';
-import Image from 'next/image';
+import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { MapPin, BedDouble, Bath, CarFront, Maximize2, Heart } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Montserrat } from 'next/font/google';
+import PropertyImage from './PropertyImage';
+import {
+    BedDouble, Bath, Car, AreaChart,
+    Clock, ArrowUpRight, Home, TrendingUp,
+    Star
+} from 'lucide-react';
+import { cn, formatarMoeda } from '@/lib/utils';
+
+// Fonte otimizada
+const montSerrat = Montserrat({
+    subsets: ['latin'],
+    display: 'swap',
+    weight: ['400', '500', '600', '700'],
+    variable: '--font-montserrat',
+});
 
 // Tipos
 export type PropertyType = 'rent' | 'sale';
 
-interface PropertyCardProps {
+export interface OptimizedPropertyCardProps {
     id: string;
     title: string;
     slug: string;
-    location: string;
+    location?: string;
     city?: string;
     price: number;
     propertyType: PropertyType;
@@ -25,52 +38,24 @@ interface PropertyCardProps {
     mainImage: {
         url: string;
         alt: string;
-        blurDataUrl?: string;
     };
-    status?: 'available' | 'sold' | 'rented' | 'pending';
-    isNew?: boolean;
     isHighlight?: boolean;
     isPremium?: boolean;
+    isNew?: boolean;
     className?: string;
-    onFavoriteToggle?: (id: string) => void;
+    status?: string;
     isFavorite?: boolean;
-    priority?: boolean;
+    onFavoriteToggle?: (id: string) => void;
 }
 
-// Função para formatar preço
-const formatPrice = (value: number, propertyType: PropertyType) => {
-    return propertyType === 'rent'
-        ? `R$ ${value.toLocaleString('pt-BR')}/mês`
-        : `R$ ${value.toLocaleString('pt-BR')}`;
+// Função para formatar o preço do imóvel com unidade apropriada
+const formatPropertyPrice = (price: number, propertyType: PropertyType): string => {
+    const formattedPrice = formatarMoeda(price);
+    return `${formattedPrice}${propertyType === 'rent' ? '/mês' : ''}`;
 };
 
-// Função para formatar área
-const formatArea = (value: number) => {
-    return `${value}m²`;
-};
-
-// Componente de Feature - extraído para melhorar performance
-// Simplified feature component without motion effects for better performance
-const PropertyFeature = memo(({ icon, value }: { icon: React.ReactNode, value: React.ReactNode }) => (
-    <div className="flex items-center px-1.5 py-1 rounded-md bg-neutral-50 hover:bg-[#f8f4e3] transition-colors">
-        {icon}
-        <span className="ml-1">{value}</span>
-    </div>
-));
-
-PropertyFeature.displayName = 'PropertyFeature';
-
-// Componente de Badge - extraído para melhorar performance
-const PropertyBadge = memo(({ children, className }: { children: React.ReactNode, className?: string }) => (
-    <span className={cn("px-2.5 py-1 text-xs font-medium rounded-full shadow-md backdrop-blur-sm", className)}>
-        {children}
-    </span>
-));
-
-PropertyBadge.displayName = 'PropertyBadge';
-
-// Componente principal otimizado com memo para evitar re-renders desnecessários
-const OptimizedPropertyCard = memo(function OptimizedPropertyCard({
+// Componente principal com otimizações
+export const OptimizedPropertyCard: React.FC<OptimizedPropertyCardProps> = ({
     id,
     title,
     slug,
@@ -83,233 +68,154 @@ const OptimizedPropertyCard = memo(function OptimizedPropertyCard({
     bathrooms,
     parkingSpots,
     mainImage,
-    status = 'available',
-    isNew,
-    isHighlight,
-    isPremium,
-    className,
-    onFavoriteToggle,
-    isFavorite = false,
-    priority = false,
-}: PropertyCardProps) {
-    const [favorite, setFavorite] = useState(isFavorite);
-    const [imageLoaded, setImageLoaded] = useState(false);
-    const [isHovered, setIsHovered] = useState(false);
-
-    // Caminho completo para a página de detalhes
-    const detailsPath = `/imovel/${slug}`;
-
-    // Localização formatada
-    const formattedLocation = location + (city ? `, ${city}` : '');
-
-    // Preço formatado
-    const formattedPrice = formatPrice(price, propertyType);
-
-    // Handler de favoritos otimizado com evento único
-    const handleFavoriteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        // Update local state for immediate feedback
-        setFavorite(!favorite);
-
-        // Callback para estado global se disponível
-        if (onFavoriteToggle) {
-            onFavoriteToggle(id);
-        }
-    };
-
-    // Variantes para animação de entrada mais leve
-    const cardVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                duration: 0.3
-            }
-        }
-    };
-
+    isHighlight = false,
+    isPremium = false,
+    isNew = false,
+    className = '',
+}) => {
     return (
         <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={cardVariants}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-50px' }}
+            transition={{ duration: 0.5 }}
+            whileHover={{ y: -5 }}
             className={cn(
-                "group relative rounded-xl overflow-hidden bg-white transition-all",
-                "shadow-sm hover:shadow-xl transform hover:-translate-y-1",
-                isHighlight && "ring-2 ring-primary-500",
-                isPremium && "ring-1 ring-primary-300",
+                `group relative overflow-hidden bg-white rounded-2xl border shadow-md hover:shadow-xl transition-all duration-500 ${montSerrat.className}`,
+                isPremium ? 'border-amber-200' : 'border-gray-100',
                 className
             )}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            // Usa will-change apenas durante hover para otimizar GPU
-            style={{
-                willChange: isHovered ? 'transform, box-shadow' : 'auto'
-            }}
         >
-            <Link href={detailsPath} className="block">
-                <div className="relative">                    {/* Container da imagem com proporção fixa e prevenção de CLS */}
-                    <div
-                        className="aspect-property w-full relative overflow-hidden min-h-image"
-                        style={{
-                            backgroundColor: '#f0f0f0' // Placeholder background mesmo sem blur data
-                        }}
-                    >
-                        {/* Placeholder de blur para melhor LCP */}
-                        {mainImage.blurDataUrl && !imageLoaded && (
-                            <div
-                                className="absolute inset-0 bg-cover bg-center blur-lg scale-105"
-                                style={{ backgroundImage: `url(${mainImage.blurDataUrl})` }}
-                                aria-hidden="true"
-                            />
-                        )}
+            {/* Link envolvendo todo o card para melhorar UX */}
+            <Link
+                href={`/imovel/${slug}`}
+                className="block h-full"
+                aria-label={`Ver detalhes de ${title}`}
+            >
+                {/* Imagem com otimização de carregamento */}
+                <div className="relative h-52 w-full overflow-hidden bg-gray-100">
+                    {/* Overlay gradiente mais suave */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/30 z-10" />
 
-                        {/* Placeholder animado quando não tem blurDataUrl */}
-                        {!mainImage.blurDataUrl && !imageLoaded && (
-                            <div className="absolute inset-0 img-placeholder animate-pulse">
-                                <div className="h-full w-full bg-gradient-to-r from-transparent via-white/20 to-transparent shimmer" />
-                            </div>
-                        )}
+                    {/* Tag de destaque ou Novo */}
+                    {isNew && (
+                        <div className="absolute top-3 left-3 z-20 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                            <Clock className="w-3 h-3" />
+                            <span>Novo</span>
+                        </div>
+                    )}
 
-                        {/* Gradient overlay para melhor contraste com texto */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent z-10" /><Image
-                            src={mainImage.url}
-                            alt={mainImage.alt}
-                            fill
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                            className={cn(
-                                "object-cover transition-transform duration-500",
-                                isHovered ? "scale-110" : "scale-100",
-                                !imageLoaded && "opacity-0",
-                                imageLoaded && "opacity-100"
-                            )}
-                            onLoad={() => setImageLoaded(true)}
-                            priority={priority}
-                            loading={priority ? "eager" : "lazy"}
-                            placeholder={mainImage.blurDataUrl ? "blur" : "empty"}
-                            blurDataURL={mainImage.blurDataUrl}
-                        />
-                    </div>
+                    {isPremium && (
+                        <div className="absolute top-3 left-3 z-20 bg-amber-600 text-white text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                            <Star className="w-3 h-3" />
+                            <span>Destaque</span>
+                        </div>
+                    )}
 
-                    {/* Status Tags - Position Absolute para não afetar layout */}
-                    <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
-                        {isPremium && (
-                            <PropertyBadge className="bg-primary-500 text-white">
-                                Premium
-                            </PropertyBadge>
-                        )}
-
-                        {isNew && (
-                            <PropertyBadge className="bg-accent-emerald-500 text-white">
-                                Novo
-                            </PropertyBadge>
-                        )}
-
-                        {propertyType === 'rent' && (
-                            <PropertyBadge className="bg-accent-blue-500 text-white">
+                    {/* Tipo do imóvel */}
+                    <div className="absolute top-3 right-3 z-20 bg-black/60 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-md">
+                        {propertyType === 'rent' ? (
+                            <span className="flex items-center gap-1">
+                                <Home className="w-3 h-3" />
                                 Aluguel
-                            </PropertyBadge>
-                        )}
-
-                        {propertyType === 'sale' && !isPremium && (
-                            <PropertyBadge className="bg-primary-500 text-white">
+                            </span>
+                        ) : (
+                            <span className="flex items-center gap-1">
+                                <TrendingUp className="w-3 h-3" />
                                 Venda
-                            </PropertyBadge>
+                            </span>
                         )}
-                    </div>
+                    </div>                    {/* Imagem principal com tratamento de erro */}
+                    <PropertyImage
+                        src={mainImage.url}
+                        alt={mainImage.alt || title}
+                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                        width={640}
+                        height={480}
+                        title={title}
+                        propertyId={id}
+                        quality={isPremium ? 90 : 80}
+                        priority={isHighlight}
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
 
-                    {/* Favorite Button - Posicionamento absoluto */}
-                    <button
-                        onClick={handleFavoriteClick}
-                        className={cn(
-                            "absolute top-4 right-4 p-2.5 z-20 rounded-full transition-all shadow-md",
-                            "backdrop-blur-sm transform hover:scale-110 active:scale-100",
-                            favorite ? "bg-accent-red-500 text-white" : "bg-white/80 hover:bg-white text-neutral-400"
-                        )}
-                        aria-label={favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
-                    >
-                        <Heart
-                            size={18}
-                            className={cn(favorite && "fill-white")}
-                        />
-                    </button>
+                    {/* Localização */}
+                    {location && (
+                        <div className="absolute bottom-3 left-3 z-20 text-white text-xs bg-black/40 backdrop-blur-sm px-2 py-1 rounded-md">
+                            {city ? `${location}, ${city}` : location}
+                        </div>
+                    )}
                 </div>
 
                 {/* Conteúdo */}
-                <div className="p-4">
-                    {/* Título e localização */}
-                    <div className="flex flex-col gap-1 mb-3">
-                        <h3 className="font-semibold text-lg line-clamp-1 text-neutral-800 group-hover:text-primary-600 transition-colors">
-                            {title}
-                        </h3>
-                        <div className="flex items-center text-neutral-600 text-sm">
-                            <MapPin size={14} className="mr-1 inline flex-shrink-0" />
-                            <span className="line-clamp-1">{formattedLocation}</span>
-                        </div>
-                    </div>
-
+                <div className="p-5">
                     {/* Preço */}
-                    <div className="mb-4">
-                        <span className="text-xl font-bold text-primary-600">{formattedPrice}</span>
+                    <div className="flex items-center justify-between mb-3">
+                        <p className="text-lg font-bold text-gray-900">
+                            {formatPropertyPrice(price, propertyType)}
+                        </p>
+
+                        <motion.div
+                            whileHover={{ rotate: 45 }}
+                            className="h-7 w-7 bg-amber-50 rounded-full flex items-center justify-center text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                            <ArrowUpRight className="w-4 h-4" />
+                        </motion.div>
                     </div>
 
-                    {/* Linha separadora */}
-                    <div className="h-px bg-neutral-100 w-full my-4" />
+                    {/* Título */}
+                    <h3 className="text-gray-800 font-semibold line-clamp-2 min-h-[48px] mb-3">
+                        {title}
+                    </h3>
 
-                    {/* Características - Renderização condicional apenas dos itens disponíveis */}
-                    <div className="flex items-center justify-between gap-2 text-sm text-neutral-500">
-                        {area !== undefined && (
-                            <PropertyFeature
-                                icon={<Maximize2 size={14} className="mr-1 text-primary-500" />}
-                                value={formatArea(area)}
-                            />
-                        )}
-
+                    {/* Características */}
+                    <div className="grid grid-cols-2 gap-3">
                         {bedrooms !== undefined && (
-                            <PropertyFeature
-                                icon={<BedDouble size={14} className="mr-1 text-primary-500" />}
-                                value={bedrooms}
-                            />
+                            <div className="flex items-center gap-2">
+                                <div className="p-1.5 bg-amber-50 rounded-md text-amber-600">
+                                    <BedDouble className="w-3.5 h-3.5" />
+                                </div>
+                                <span className="text-xs text-gray-700">{bedrooms} quarto{bedrooms !== 1 ? 's' : ''}</span>
+                            </div>
                         )}
 
                         {bathrooms !== undefined && (
-                            <PropertyFeature
-                                icon={<Bath size={14} className="mr-1 text-primary-500" />}
-                                value={bathrooms}
-                            />
+                            <div className="flex items-center gap-2">
+                                <div className="p-1.5 bg-blue-50 rounded-md text-blue-600">
+                                    <Bath className="w-3.5 h-3.5" />
+                                </div>
+                                <span className="text-xs text-gray-700">{bathrooms} banheiro{bathrooms !== 1 ? 's' : ''}</span>
+                            </div>
                         )}
 
                         {parkingSpots !== undefined && (
-                            <PropertyFeature
-                                icon={<CarFront size={14} className="mr-1 text-primary-500" />}
-                                value={parkingSpots}
-                            />
+                            <div className="flex items-center gap-2">
+                                <div className="p-1.5 bg-gray-100 rounded-md text-gray-600">
+                                    <Car className="w-3.5 h-3.5" />
+                                </div>
+                                <span className="text-xs text-gray-700">{parkingSpots} vaga{parkingSpots !== 1 ? 's' : ''}</span>
+                            </div>
+                        )}
+
+                        {area !== undefined && (
+                            <div className="flex items-center gap-2">
+                                <div className="p-1.5 bg-green-50 rounded-md text-green-600">
+                                    <AreaChart className="w-3.5 h-3.5" />
+                                </div>
+                                <span className="text-xs text-gray-700">{area}m²</span>
+                            </div>
                         )}
                     </div>
                 </div>
-
-                {/* Overlay para imóveis indisponíveis */}
-                {status !== 'available' && (
-                    <div className="absolute inset-0 bg-neutral-800/60 backdrop-blur-sm z-30 flex flex-col items-center justify-center text-white">
-                        <span className="text-lg font-semibold mb-2">
-                            {status === 'sold' && "Vendido"}
-                            {status === 'rented' && "Alugado"}
-                            {status === 'pending' && "Reservado"}
-                        </span>
-                        {status === 'pending' && (
-                            <span className="text-sm opacity-90">
-                                Entre em contato para mais informações
-                            </span>
-                        )}
-                    </div>
-                )}
             </Link>
+
+            {/* Contorno premium para imóveis em destaque */}
+            {isPremium && (
+                <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-tr from-amber-300 via-amber-200 to-amber-300 opacity-30 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
+            )}
         </motion.div>
     );
-});
+};
 
-OptimizedPropertyCard.displayName = 'OptimizedPropertyCard';
-
+// Default export para mais facilidade de importação
 export default OptimizedPropertyCard;

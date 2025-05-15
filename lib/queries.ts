@@ -65,10 +65,28 @@ export const queryImoveisAluguel = /* groq */ `
 /**
  * Busca imóveis em destaque para a página inicial
  * Otimizado para carregamento rápido com projeção
+ * Inclui correção automática de referências de imagem
  */
 export async function getImoveisDestaque(): Promise<any[]> {
   try {
+    // Import dinâmico para evitar ciclos de dependência
+    const { fixSanityImageReferences } = await import('./image-fix');
+
     const data = await sanityClient.fetch(queryImoveisDestaque);
+
+    // Corrigir referências de imagens para todos os imóveis
+    if (Array.isArray(data)) {
+      return data.map(imovel => {
+        if (imovel && imovel.imagem) {
+          return {
+            ...imovel,
+            imagem: fixSanityImageReferences(imovel.imagem)
+          };
+        }
+        return imovel;
+      });
+    }
+
     return data || [];
   } catch (error) {
     console.error('Erro ao buscar imóveis em destaque:', error);
@@ -79,10 +97,28 @@ export async function getImoveisDestaque(): Promise<any[]> {
 /**
  * Busca imóveis para aluguel para a página inicial
  * Otimizado para carregamento rápido com projeção
+ * Inclui correção automática de referências de imagem
  */
 export async function getImoveisAluguel(): Promise<any[]> {
   try {
+    // Import dinâmico para evitar ciclos de dependência
+    const { fixSanityImageReferences } = await import('./image-fix');
+
     const data = await sanityClient.fetch(queryImoveisAluguel);
+
+    // Corrigir referências de imagens para todos os imóveis
+    if (Array.isArray(data)) {
+      return data.map(imovel => {
+        if (imovel && imovel.imagem) {
+          return {
+            ...imovel,
+            imagem: fixSanityImageReferences(imovel.imagem)
+          };
+        }
+        return imovel;
+      });
+    }
+
     return data || [];
   } catch (error) {
     console.error('Erro ao buscar imóveis para aluguel:', error);
@@ -109,6 +145,8 @@ export const queryTodosImoveis = /* groq */`
       "categoriaSlug": slug
     },
     imagem {
+      "asset": asset->,
+      "_type": "image",
       "imagemUrl": asset->url,
       "alt": alt
     }
@@ -142,6 +180,8 @@ export const queryImovelEmDestaque = /* groq */ `
       "categoriaSlug": slug
     },
     imagem {
+      "asset": asset->,
+      "_type": "image",
       "imagemUrl": asset->url,
       "alt": alt
     }
@@ -170,12 +210,15 @@ export const queryImovelPorSlug = /* groq */ `
       _id,
       "categoriaTitulo": titulo,
       "categoriaSlug": slug
-    },
-    imagem {
+    },    imagem {
+      "asset": asset->,
+      "_type": "image",
       "imagemUrl": asset->url,
       "alt": alt
     },
     imagemOpenGraph {
+      "asset": asset->,
+      "_type": "image",
       "imagemUrl": asset->url
     },
     metaTitle,
@@ -205,6 +248,8 @@ export const queryImoveisAluguelDestaque = /* groq */ `
       "categoriaSlug": slug
     },
     imagem {
+      "asset": asset->,
+      "_type": "image",
       "imagemUrl": asset->url,
       "alt": alt
     },
@@ -234,6 +279,8 @@ export const queryImoveisParaVenda = /* groq */ `
       "categoriaSlug": slug
     },
     imagem {
+      "asset": asset->,
+      "_type": "image",
       "imagemUrl": asset->url,
       "alt": alt
     },
@@ -263,6 +310,8 @@ export const queryImoveisParaAlugar = /* groq */ `
       "categoriaSlug": slug
     },
     imagem {
+      "asset": asset->,
+      "_type": "image",
       "imagemUrl": asset->url,
       "alt": alt
     },
@@ -293,6 +342,8 @@ export const queryImoveisRelacionados = /* groq */ `
       "categoriaSlug": slug
     },
     imagem {
+      "asset": asset->,
+      "_type": "image",
       "imagemUrl": asset->url,
       "alt": alt
     }

@@ -42,10 +42,10 @@ const etapasGuararema: EtapaProcesso[] = [
     {
         id: "encontro-inicial",
         fase: "1º Momento",
-        titulo: "Café na Nova Ipê",
-        descricao: "Conversamos sobre seus planos em nosso escritório no Centro Histórico",
+        titulo: "Café na Ipê",
+        descricao: "Conversamos sobre seus planos em nosso escritório no Centro",
         detalhesLocais: [
-            "Análise do seu perfil e orçamento",
+            "Análise do seu perfil e demandas",
             "Explicação sobre bairros de Guararema",
             "Tendências específicas do mercado local",
             "Documentação necessária em SP e Guararema"
@@ -152,8 +152,8 @@ const etapasGuararema: EtapaProcesso[] = [
 const estatisticasProcesso = [
     { label: "Tempo médio total", value: "45-60 dias", icon: <Clock className="w-4 h-4" /> },
     { label: "Taxa de sucesso", value: "94%", icon: <TrendingUp className="w-4 h-4" /> },
-    { label: "Clientes de SP", value: "67%", icon: <Train className="w-4 h-4" /> },
-    { label: "Indicações", value: "82%", icon: <Users className="w-4 h-4" /> }
+    { label: "Novos Clientes de SP (2025)", value: "+ 50%", icon: <Train className="w-4 h-4" /> },
+    { label: "Indicações Individualizadas (Compra & Venda)", value: "Conexões", icon: <Users className="w-4 h-4" /> }
 ]
 
 const ProcessoGuararema: React.FC<ProcessoGuararemaProps> = ({
@@ -185,21 +185,21 @@ const ProcessoGuararema: React.FC<ProcessoGuararemaProps> = ({
                         <div className="inline-flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-800 rounded-full mb-6">
                             <Building className="w-5 h-5" />
                             <span className="text-sm font-semibold">
-                                Processo exclusivo Nova Ipê
+                                Atendimento Ipê
                             </span>
                         </div>
 
                         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-                            De São Paulo para Guararema:
+                            Mudando para Guararema:
                             <span className="block text-amber-600 mt-2">
-                                uma mudança planejada em detalhes
+                                um processo planejado em detalhes
                             </span>
                         </h2>
 
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                            Nosso processo foi desenvolvido especialmente para famílias
+                            Nosso fluxo foi desenvolvido especialmente para famílias
                             e investidores que buscam qualidade de vida sem abrir mão
-                            da conexão com a capital.
+                            da conexão com os grandes centros.
                         </p>
                     </motion.div>
                 </div>
@@ -387,8 +387,8 @@ const ProcessoGuararema: React.FC<ProcessoGuararemaProps> = ({
                     viewport={{ once: true }}
                     className="text-center"
                 >
-                    <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-10 text-white">
-                        <h3 className="text-2xl md:text-3xl font-bold mb-4">
+                    <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-10 text-white lg:max-w-2xl mx-auto">
+                        <h3 className="text-2xl md:text-3xl font-bold mb-4 text-white">
                             Pronto para começar sua jornada?
                         </h3>
 
@@ -403,7 +403,7 @@ const ProcessoGuararema: React.FC<ProcessoGuararemaProps> = ({
                                 className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-amber-600 text-white rounded-lg font-medium hover:bg-amber-700 transition-colors"
                             >
                                 <Coffee className="w-5 h-5" />
-                                Agendar primeiro café
+                                Agendar atendimento
                             </a>
                             <a
                                 href="/guia-mudanca"

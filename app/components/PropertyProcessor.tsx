@@ -4,6 +4,13 @@ import React from 'react';
 import { processImage } from '@/lib/sanity-image-helper';
 import type { PropertyType } from './OptimizedPropertyCard';
 
+// Declare global custom property for unique counter
+declare global {
+    interface Window {
+        __PROPERTY_COUNTER?: number;
+    }
+}
+
 /**
  * Interface para o tipo de dados de imóvel depois de processados
  * para uso nos componentes de UI
@@ -43,10 +50,16 @@ export function processProperty(imovel: any): ProcessedPropertyData | null {
         if (!imovel || typeof imovel !== 'object') {
             console.error('Objeto de imóvel inválido ou não definido');
             return null;
+        }        // Identificar o imóvel para logs        // Use a combination of timestamp and a unique counter to avoid duplicate keys
+        let uniqueCounter = 0;
+        if (typeof window !== 'undefined') {
+            // Client-side execution
+            uniqueCounter = (window.__PROPERTY_COUNTER = (window.__PROPERTY_COUNTER || 0) + 1);
+        } else {
+            // Server-side execution
+            uniqueCounter = Math.floor(Math.random() * 1000000);
         }
-
-        // Identificar o imóvel para logs
-        const id = imovel._id || `property-${Date.now()}`;
+        const id = imovel._id || `property-${Date.now()}-${uniqueCounter}`;
         console.log(`Processando imóvel: ${id}`);
 
         // Verificar estrutura básica para diagnóstico
@@ -57,11 +70,61 @@ export function processProperty(imovel: any): ProcessedPropertyData | null {
             hasSlug: !!imovel.slug,
             imageType: imovel.imagem ? typeof imovel.imagem : 'undefined',
             finalidade: imovel.finalidade || 'Não definida'
-        });
+        });        // 1. Processamento da imagem (usando nosso helper robusto)
+        let imageToProcess = imovel.imagem;
 
-        // 1. Processamento da imagem (usando nosso helper robusto)
+        // Logging detalhado da estrutura da imagem
+        console.log(`[PropertyProcessor] Estrutura de imagem para imóvel ${id}:`,
+            JSON.stringify(imageToProcess, null, 2));
+
+        // Recuperação robusta de imagem com múltiplas estratégias
+        if (!imageToProcess || (typeof imageToProcess === 'object' && !imageToProcess.asset)) {
+            // Estratégia 1: Buscar em campos alternativos
+            if (imovel.imagemPrincipal) {
+                console.log(`[PropertyProcessor] Usando imagemPrincipal para imóvel ${id}`);
+                imageToProcess = imovel.imagemPrincipal;
+            } else if (imovel.imagemCapa) {
+                console.log(`[PropertyProcessor] Usando imagemCapa para imóvel ${id}`);
+                imageToProcess = imovel.imagemCapa;
+            } else if (imovel.imagens && Array.isArray(imovel.imagens) && imovel.imagens.length > 0) {
+                console.log(`[PropertyProcessor] Usando primeira imagem do array para imóvel ${id}`);
+                imageToProcess = imovel.imagens[0];
+            }
+
+            // Estratégia 2: Reconstruir objeto caso só tenha alt ou esteja incompleto
+            if (!imageToProcess || !imageToProcess.asset) {
+                // Verificar se temos ao menos alguma informação para trabalhar
+                const hasAlt = imageToProcess?.alt || imovel.titulo;
+
+                console.log(`[PropertyProcessor] Reconstruindo objeto de imagem para imóvel ${id}`);
+
+                // Reconstruir com valores mínimos necessários
+                imageToProcess = {
+                    _type: 'image',
+                    alt: hasAlt || 'Imóvel disponível',
+                    asset: {
+                        _type: 'sanity.imageAsset',
+                        _ref: ''  // Sem referência, cairá no fallback
+                    }
+                };
+            }
+        }
+
+        // Verificação adicional para garantir que temos uma estrutura minimamente válida
+        if (!imageToProcess.asset && imageToProcess.url) {
+            // Se temos URL mas não asset, criar uma estrutura compatível
+            imageToProcess = {
+                ...imageToProcess,
+                _type: 'image',
+                asset: {
+                    _type: 'sanity.imageAsset',
+                    url: imageToProcess.url
+                }
+            };
+        }
+
         const processedImageData = processImage(
-            imovel.imagem,
+            imageToProcess,
             imovel.titulo || 'Imóvel'
         );
 

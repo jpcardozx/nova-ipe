@@ -38,6 +38,16 @@ svg {
   }
 }
 
+/* Animação de progresso para a página de redirecionamento */
+@keyframes progress {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+.animate-progress {
+  animation: progress 3.5s linear forwards;
+}
+
 html {
   font-size: 16px;
   scroll-behavior: smooth;

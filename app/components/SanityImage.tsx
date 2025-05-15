@@ -4,9 +4,11 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { ImageOff, Home } from 'lucide-react';
+import { getImageUrl } from '@/lib/optimized-sanity-image';
 
 // Unified image type that supports both format styles
 export interface ClientImage {
+    _type?: string;
     imagemUrl?: string;
     url?: string;
     alt?: string;
@@ -57,133 +59,36 @@ export default function SanityImage({
     showPlaceholderIcon = true,
 }: SanityImageProps) {
     const [loadState, setLoadState] = useState<'loading' | 'success' | 'error'>('loading');
-    const [isHovered, setIsHovered] = useState(false);    /**
-     * Extrai a URL da imagem a partir de diferentes formatos possíveis
-     * Função otimizada com cache e menor volume de logs
-     */
-    const getImageUrl = (img: ClientImage | null | undefined): string => {
-        // Cache local para esta renderização (memoização)
-        const cacheKey = JSON.stringify(img);
-        const cachedResults = (window as any).__imageUrlCache = (window as any).__imageUrlCache || {};
+    const [isHovered, setIsHovered] = useState(false);
+    const [processedImage, setProcessedImage] = useState<ClientImage | null | undefined>(image);
 
-        if (cachedResults[cacheKey]) {
-            return cachedResults[cacheKey];
-        }
-
-        // Logger otimizado que só executa em ambiente de desenvolvimento
-        const logDebug = (message: string, data?: any) => {
-            if (process.env.NODE_ENV === 'development') {
-                console.log(`SanityImage: ${message}`, data);
-            }
-        };
-
-        // Informativo: versão resumida do diagnóstico
-        logDebug("Processando imagem:", {
-            hasImage: !!img,
-            imageType: img ? typeof img : 'null/undefined',
-            hasUrl: img?.url ? true : false,
-            hasImagemUrl: img?.imagemUrl ? true : false,
-            hasAsset: img?.asset ? true : false,
-            hasRef: img?.asset?._ref ? true : false,
-        });
-
-        // Verificações para cada formato possível
-        if (!img) {
-            logDebug("Sem imagem fornecida");
-            return '/placeholder.png';
-        }
-
-        // Direct URL on the image object (formato mais simples)
-        if (img.url) {
-            logDebug("Usando URL direta", img.url);
-            cachedResults[cacheKey] = img.url;
-            return img.url;
-        }
-
-        // For backward compatibility with imagemUrl naming (compatibilidade)
-        if (img.imagemUrl) {
-            logDebug("Usando imagemUrl", img.imagemUrl);
-            cachedResults[cacheKey] = img.imagemUrl;
-            return img.imagemUrl;
-        }
-
-        // Sanity asset with direct URL (objeto Sanity com URL direta)
-        if (img.asset?.url) {
-            logDebug("Usando asset.url", img.asset.url);
-            cachedResults[cacheKey] = img.asset.url;
-            return img.asset.url;
-        }
-
-        // Sanity reference that needs to be constructed (referência Sanity que precisa de construção)
-        if (img.asset?._ref) {
+    // Pré-processamento da imagem para resolver possíveis problemas de referência
+    useEffect(() => {
+        // Importar dinamicamente para evitar problemas de ciclo
+        import('@/lib/image-monitor').then(({ ensureValidImage, trackImageUsage }) => {
             try {
-                const refString = img.asset._ref;
+                // Garante que a imagem está válida
+                const validImage = ensureValidImage(image);
+                setProcessedImage(validImage);
 
-                // Validação da string de referência
-                if (!refString || typeof refString !== 'string') {
-                    throw new Error('Referência inválida');
-                }
-
-                const refParts = refString.split('-');
-                logDebug("Partes da referência", refParts);
-
-                // Validação do ID do projeto
-                const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '0nks58lj';
-                const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
-
-                // Estrutura para suportar múltiplos formatos de referência
-                if (refParts[0] === 'image') {
-                    const id = refParts[1];
-
-                    if (!id) {
-                        throw new Error('ID da imagem não encontrado na referência');
-                    }
-
-                    let url: string;
-
-                    // Formato completo: image-abc123-800x600-jpg
-                    if (refParts.length >= 4) {
-                        const dimensions = refParts[2];
-                        let extension = refParts[3];
-
-                        // Limpar parâmetros da URL se existirem
-                        if (extension && extension.includes('?')) {
-                            extension = extension.split('?')[0];
-                        }
-
-                        url = `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}-${dimensions}.${extension}`;
-                    }
-                    // Formato simplificado: image-abc123-jpg (sem dimensões)
-                    else if (refParts.length === 3) {
-                        let extension = refParts[2];
-                        if (extension && extension.includes('?')) {
-                            extension = extension.split('?')[0];
-                        }
-                        url = `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}.${extension}`;
-                    }
-                    // Formato mínimo: tenta inferir jpg (alta compatibilidade)
-                    else {
-                        url = `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}.jpg`;
-                    }
-
-                    logDebug("URL construída", url);
-                    cachedResults[cacheKey] = url;
-                    return url;
-                }
-            } catch (error) {
-                console.error("Erro ao processar referência Sanity:", error);
+                // Registra uso para monitoramento
+                trackImageUsage('SanityImage', validImage, 'loading');
+            } catch (err) {
+                console.error('Erro ao processar imagem:', err);
+                setProcessedImage(image);
             }
-        }
+        }).catch(err => {
+            console.error('Falha ao carregar utilitário de monitoramento:', err);
+        });
+    }, [image]);
 
-        // Fallback para placeholder se nenhum formato for reconhecido
-        logDebug("Não foi possível determinar a URL da imagem");
-        cachedResults[cacheKey] = '/placeholder.png';
-        return '/placeholder.png';
-    };
+    // Usar a função otimizada com fallback manual adicional
+    const imageUrl = processedImage?.url ||
+        processedImage?.imagemUrl ||
+        (processedImage?.asset?.url) ||
+        (processedImage?.asset?._ref ? getImageUrl(processedImage) : '');
 
-    // Get the URL and hotspot information
-    const imageUrl = getImageUrl(image);
-    const hotspot = image?.hotspot;
+    const hotspot = processedImage?.hotspot;
 
     // Calculate object position based on hotspot data
     const objectPosition = hotspot
@@ -192,20 +97,32 @@ export default function SanityImage({
 
     // Notify parent component when the image loads successfully
     useEffect(() => {
-        if (loadState === 'success' && onLoad) {
+        if (loadState === 'success' && typeof onLoad === 'function') {
             onLoad();
         }
-    }, [loadState, onLoad]);    // Fallback when there's no image or it fails to load
+    }, [loadState, onLoad]);
+
+    // Registra quando a imagem carrega ou falha 
+    useEffect(() => {
+        if (loadState !== 'loading') {
+            import('@/lib/image-monitor').then(({ trackImageUsage }) => {
+                trackImageUsage('SanityImage', processedImage, loadState);
+            }).catch(() => { });
+        }
+    }, [loadState, processedImage]);
+
+    // Fallback when there's no image or it fails to load
     if (!imageUrl || loadState === 'error') {
-        console.log("SanityImage: Fallback usado", {
-            reason: !imageUrl ? 'URL de imagem não disponível' : 'Erro ao carregar imagem',
-            loadState,
-            imageUrl,
-            hasImage: !!image,
-            hasAsset: !!image?.asset,
-            hasAssetRef: !!image?.asset?._ref,
-            projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
-        });
+        if (process.env.NODE_ENV === 'development') {
+            console.log("SanityImage: Fallback usado", {
+                reason: !imageUrl ? 'URL de imagem não disponível' : 'Erro ao carregar imagem',
+                loadState,
+                imageUrl,
+                hasImage: !!processedImage,
+                hasAsset: !!processedImage?.asset,
+                hasAssetRef: !!processedImage?.asset?._ref
+            });
+        }
 
         return (
             <div
@@ -221,17 +138,20 @@ export default function SanityImage({
                     height: fill ? '100%' : height,
                     aspectRatio: fill ? undefined : aspectRatio,
                 }}
-            >                {showPlaceholderIcon && (
-                <div className="flex items-center justify-center p-3 mb-2 rounded-full bg-stone-100">
-                    <Home className="w-6 h-6 text-amber-500" />
-                </div>
-            )}
+            >
+                {showPlaceholderIcon && (
+                    <div className="flex items-center justify-center p-3 mb-2 rounded-full bg-stone-100">
+                        <Home className="w-6 h-6 text-amber-500" />
+                    </div>
+                )}
                 <p className="text-stone-500 text-sm font-medium px-4 text-center">
-                    {image?.alt || alt || 'Imóvel disponível'}
+                    {processedImage?.alt || alt || 'Imóvel disponível'}
                 </p>
             </div>
         );
-    } return (
+    }
+
+    return (
         <div
             className={cn(
                 "relative overflow-hidden group",
@@ -244,9 +164,10 @@ export default function SanityImage({
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            {/* Imagem principal */}            <Image
-                src={imageUrl || '/placeholder.png'} /* Garantindo que src nunca seja null ou undefined */
-                alt={image?.alt || alt || 'Imagem do imóvel'}
+            {/* Imagem principal */}
+            <Image
+                src={imageUrl}
+                alt={processedImage?.alt || alt || 'Imagem do imóvel'}
                 width={fill ? undefined : width || 800}
                 height={fill ? undefined : height || 600}
                 fill={fill}
@@ -282,20 +203,3 @@ export default function SanityImage({
         </div>
     );
 }
-
-/**
- * Adicione este estilo ao seu CSS global para o efeito de shimmer:
- * 
- * .shimmer {
- *   animation: shimmer 1.5s infinite;
- * }
- * 
- * @keyframes shimmer {
- *   0% {
- *     transform: translateX(-100%);
- *   }
- *   100% {
- *     transform: translateX(100%);
- *   }
- * }
- */

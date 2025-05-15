@@ -3,6 +3,7 @@ import { Montserrat } from 'next/font/google';
 import Link from 'next/link';
 import Image from 'next/image';
 import OptimizationProvider from './components/OptimizationProvider';
+import AnuncioNovaVersao from './components/AnuncioNovaVersao';
 
 // Importações para dados dinâmicos do Sanity
 import { getImoveisDestaque, getImoveisAluguel } from '@/lib/queries';
@@ -138,10 +139,7 @@ function transformPropertyData(imovel: ImovelClient, propertyType: PropertyType)
       area,
       bedrooms,
       bathrooms,
-      parkingSpots, mainImage: {
-        url: processedImage.url,
-        alt: processedImage.alt,
-      },
+      parkingSpots, mainImage: processedImage, // Keep the entire processed image object
       isHighlight: true,
       isPremium: Boolean(imovel.destaque),
       isNew: propertyType === 'rent' && Math.random() > 0.7,
@@ -241,6 +239,7 @@ export default async function Home() {
   const { destaques, aluguel } = await fetchPropertiesData(); return (
     <div className={`${montSerrat.className} flex flex-col min-h-screen bg-[#fafaf9]`}>
       <OptimizationProvider>
+        <AnuncioNovaVersao />
         <NavbarResponsive />
 
         <EnhancedHero />
@@ -249,15 +248,11 @@ export default async function Home() {
         <ClientSidePropertiesProvider destaques={destaques} aluguel={aluguel} />        <BlocoExploracaoSimbolica />
 
         {/* Seção de Imóveis em Destaque - Versão Aprimorada */}
-        <Suspense fallback={<section className="py-24 bg-white"><div className="container mx-auto px-4 max-w-7xl"><PropertiesLoadingSkeleton /></div></section>}>
-          <DestaquesSanityCarousel
-            properties={destaques}
-            tipo="destaque"
-            titulo="Imóveis Cuidadosamente Selecionados"
-            subtitulo="Descubra propriedades que se destacam pela arquitetura impecável, localização estratégica e potencial de valorização excepcional em Guararema."
-            verTodosLink="/comprar"
-            verTodosLabel="Explorar todo o portfólio"
-          />
+        <Suspense fallback={<section className="py-24 bg-white"><div className="container mx-auto px-4 max-w-7xl"><PropertiesLoadingSkeleton /></div></section>}>          <DestaquesSanityCarousel
+          rawProperties={destaques}
+          title="Imóveis Cuidadosamente Selecionados"
+          subtitle="Descubra propriedades que se destacam pela arquitetura impecável, localização estratégica e potencial de valorização excepcional em Guararema."
+        />
         </Suspense>
 
         {/* Componente legacy escondido (temporário) */}
@@ -280,24 +275,16 @@ export default async function Home() {
               mobileLayout: "stack",
             }}
           />
-        </div>
-
-        <section className="relative py-24 overflow-hidden bg-gradient-to-b from-white to-[#F8FAFC]">
+        </div>        <section className="relative py-24 overflow-hidden bg-gradient-to-b from-white to-[#F8FAFC]" style={{ position: 'relative' }}>
           <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
-          <Destaques />        </section>
-
-        {/* Seção de Imóveis para Alugar - Versão Aprimorada */}
-        <section className="py-24 bg-[#F8FAFC] relative">
+          <Destaques />        </section>        {/* Seção de Imóveis para Alugar - Versão Aprimorada */}
+        <section className="py-24 bg-[#F8FAFC]" style={{ position: 'relative' }}>
           <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent"></div>
-          <Suspense fallback={<div className="container mx-auto px-4 max-w-7xl relative z-10"><PropertiesLoadingSkeleton /></div>}>
-            <DestaquesSanityCarousel
-              properties={aluguel}
-              tipo="aluguel"
-              titulo="Seu Próximo Lar Está Aqui"
-              subtitulo="Uma seleção de imóveis para alugar que prioriza qualidade de vida, ótima localização e custo-benefício real. Experimente morar com qualidade em Guararema."
-              verTodosLink="/alugar"
-              verTodosLabel="Ver todas as opções de aluguel"
-            />
+          <Suspense fallback={<div className="container mx-auto px-4 max-w-7xl relative z-10"><PropertiesLoadingSkeleton /></div>}>            <DestaquesSanityCarousel
+            rawProperties={aluguel}
+            title="Seu Próximo Lar Está Aqui"
+            subtitle="Uma seleção de imóveis para alugar que prioriza qualidade de vida, ótima localização e custo-benefício real. Experimente morar com qualidade em Guararema."
+          />
           </Suspense>
         </section>
 
@@ -336,18 +323,7 @@ export default async function Home() {
           <FormularioContatoAprimorado />
         </section>
 
-        <section className="bg-[#0D1F2D] relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0D1F2D] to-[#1a3040] mix-blend-soft-light"></div>
-          <div className="absolute inset-0 bg-[url('/wood-pattern.png')] opacity-10"></div>
-          <div className="container mx-auto relative z-10">
-            <BlocoCTAConversao
-              titulo="Vamos Encontrar Seu Espaço Ideal?"
-              subtitulo="Nossa equipe está pronta para transformar sua busca imobiliária em Guararema em uma jornada personalizada e gratificante. Dê o primeiro passo agora."
-              ctaText="Iniciar Conversa"
-              ctaLink="https://wa.me/5511981845016?text=Olá! Gostaria de conhecer opções de imóveis em Guararema (via site)"
-            />
-          </div>
-        </section>        <Footer />
+        <Footer />
       </OptimizationProvider>
     </div>
   );

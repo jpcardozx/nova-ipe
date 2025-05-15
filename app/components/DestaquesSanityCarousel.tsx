@@ -1,44 +1,55 @@
 'use client';
 
-import React, { useState, useCallback, useEffect, memo } from 'react';
+import React, { useState, useCallback, useEffect, memo, useMemo } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import SectionHeader from './ui/SectionHeader';
 import { cn } from '@/lib/utils';
 import { processProperties, ProcessedPropertyData } from './PropertyProcessor';
 import type { PropertyType } from './OptimizedPropertyCard';
+import { motion } from 'framer-motion';
 
-// Lazy load pesados com priority para renderização inicial
+// Lazy load ícones para melhor performance
 const ArrowRight = dynamic(() => import('lucide-react').then(mod => ({ default: mod.ArrowRight })), { ssr: true });
+const ChevronRight = dynamic(() => import('lucide-react').then(mod => ({ default: mod.ChevronRight })), { ssr: true });
+const ChevronLeft = dynamic(() => import('lucide-react').then(mod => ({ default: mod.ChevronLeft })), { ssr: true });
+const Star = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Star })), { ssr: true });
+const FilterIcon = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Filter })), { ssr: true });
 
 // Componente principal otimizado com carregamento dinâmico
 const OptimizedPropertyCarousel = dynamic(() => import('@/app/components/OptimizedPropertyCarousel').then(mod => ({ default: mod.OptimizedPropertyCarousel })),
     {
         ssr: false,
         loading: () => <PropertiesLoadingSkeleton />,
-        // Aumentando a prioridade para iniciar o carregamento mais cedo
-        // Isso ajuda a reduzir o CLS (Cumulative Layout Shift)
-        // Nota: suspense foi removido pois não é uma propriedade válida para DynamicOptions
     }
 );
 
-// Componente de esqueleto de carregamento otimizado
+// Componente de esqueleto de carregamento otimizado e mais bonito
 const PropertiesLoadingSkeleton = memo(() => (
     <div className="animate-pulse">
-        <div className="h-8 w-64 bg-gray-200 rounded mb-4"></div>
-        <div className="h-4 w-96 bg-gray-100 rounded mb-8"></div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="flex items-center justify-between mb-8">
+            <div>
+                <div className="h-9 w-64 bg-gradient-to-r from-gray-200 to-gray-100 rounded-lg mb-3"></div>
+                <div className="h-5 w-96 bg-gradient-to-r from-gray-100 to-gray-50 rounded-md"></div>
+            </div>
+            <div className="flex gap-3">
+                <div className="h-10 w-10 bg-gray-100 rounded-full"></div>
+                <div className="h-10 w-10 bg-gray-100 rounded-full"></div>
+            </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map(i => (
-                <div key={i} className="h-[360px] bg-gray-100 rounded-xl overflow-hidden">
-                    <div className="h-48 bg-gray-200"></div>
-                    <div className="p-4">
-                        <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
-                        <div className="h-4 bg-gray-100 rounded w-1/2 mb-4"></div>
-                        <div className="h-5 bg-gray-200 rounded w-1/3 mb-4"></div>
-                        <div className="flex space-x-2">
-                            <div className="h-4 w-14 bg-gray-100 rounded"></div>
-                            <div className="h-4 w-14 bg-gray-100 rounded"></div>
-                            <div className="h-4 w-14 bg-gray-100 rounded"></div>
+                <div key={i} className="h-[400px] bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
+                    <div className="h-48 bg-gradient-to-r from-gray-200 to-gray-100"></div>
+                    <div className="p-5">
+                        <div className="h-7 bg-gray-200 rounded-md w-3/4 mb-4"></div>
+                        <div className="h-5 bg-gray-100 rounded-md w-1/2 mb-5"></div>
+                        <div className="grid grid-cols-2 gap-3 mb-4">
+                            <div className="h-8 bg-gray-50 rounded-md"></div>
+                            <div className="h-8 bg-gray-50 rounded-md"></div>
+                            <div className="h-8 bg-gray-50 rounded-md"></div>
+                            <div className="h-8 bg-gray-50 rounded-md"></div>
                         </div>
                     </div>
                 </div>
@@ -49,160 +60,174 @@ const PropertiesLoadingSkeleton = memo(() => (
 
 PropertiesLoadingSkeleton.displayName = 'PropertiesLoadingSkeleton';
 
-// Estado vazio com feedback visual
-const EmptyState = memo(({ message = 'Nenhum imóvel disponível no momento' }: { message?: string }) => (
-    <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                <polyline points="9 22 9 12 15 12 15 22" />
-            </svg>
-        </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum imóvel disponível</h3>
-        <p className="text-gray-600 max-w-md">{message}</p>
+// Botões de controle melhorados
+interface CarouselControlProps {
+    direction: 'prev' | 'next';
+    onClick: () => void;
+    disabled?: boolean;
+}
+
+const CarouselControl = memo(({ direction, onClick, disabled }: CarouselControlProps) => (
+    <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={onClick}
+        disabled={disabled}
+        className={cn(
+            "flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-md border border-gray-100 text-gray-700 hover:text-amber-600 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2",
+            disabled && "opacity-40 cursor-not-allowed"
+        )}
+        aria-label={direction === 'next' ? 'Próximo' : 'Anterior'}
+    >
+        {direction === 'next' ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+    </motion.button>
+));
+
+CarouselControl.displayName = 'CarouselControl';
+
+// Filtro de tipos de propriedade
+interface PropertyFilterProps {
+    activeFilter: PropertyType | 'all';
+    onChange: (filter: PropertyType | 'all') => void;
+}
+
+const PropertyFilter = memo(({ activeFilter, onChange }: PropertyFilterProps) => (
+    <div className="flex flex-wrap gap-2 mb-6">
+        <FilterBadge
+            isActive={activeFilter === 'all'}
+            onClick={() => onChange('all')}
+        >
+            <FilterIcon className="w-3.5 h-3.5 mr-1.5" />
+            Todos
+        </FilterBadge>
+        <FilterBadge
+            isActive={activeFilter === 'sale'}
+            onClick={() => onChange('sale')}
+        >
+            Venda
+        </FilterBadge>
+        <FilterBadge
+            isActive={activeFilter === 'rent'}
+            onClick={() => onChange('rent')}
+        >
+            Aluguel
+        </FilterBadge>
     </div>
 ));
 
-EmptyState.displayName = 'EmptyState';
+PropertyFilter.displayName = 'PropertyFilter';
 
-// Mapeador para transformar os dados do Sanity para o formato esperado pelos componentes de UI
-/**
- * Mapeia um imóvel do Sanity para o formato esperado pelos componentes UI
- * com tratamento de erro robusto e validação de cada campo
- */
-function mapSanityToUIFormat(imovel: any) {
-    try {
-        // Usar a função centralizada de processamento de imóveis
-        // que já inclui todo o tratamento de imagens, tipos e erros
-        const processedProperty = processProperties([imovel])[0];
-
-        // Se processou com sucesso, retornar
-        if (processedProperty) {
-            return processedProperty;
-        }
-
-        throw new Error('Falha ao processar propriedade');
-    } catch (error) {
-        console.error('Erro ao mapear imóvel:', error);
-
-        // Log detalhado do objeto com problema (apenas para diagnóstico)
-        if (imovel) {
-            try {
-                console.log('Objeto problemático:',
-                    JSON.stringify({
-                        id: imovel._id,
-                        hasImage: !!imovel.imagem,
-                        slug: imovel.slug
-                    }, null, 2)
-                );
-            } catch (e) {
-                console.log('Não foi possível serializar o objeto problemático');
-            }
-        }
-
-        // Retornar um objeto válido mesmo em caso de erro para evitar crash da UI
-        return {
-            id: `error-${Date.now()}`,
-            title: 'Imóvel disponível',
-            slug: 'imovel',
-            location: 'Guararema',
-            city: 'Guararema',
-            price: 0,
-            propertyType: 'sale' as PropertyType,
-            mainImage: {
-                url: '/images/property-placeholder.jpg',
-                alt: 'Imóvel',
-            },
-            isHighlight: false,
-            isPremium: false,
-            isNew: false,
-        };
-    }
+// Badge do filtro
+interface FilterBadgeProps {
+    children: React.ReactNode;
+    isActive: boolean;
+    onClick: () => void;
 }
 
-interface DestaquesSanityCarouselProps {
-    properties: any[];
-    tipo: 'destaque' | 'aluguel';
-    titulo: string;
-    subtitulo: string;
-    verTodosLink: string;
-    verTodosLabel?: string;
-}
+const FilterBadge = memo(({ children, isActive, onClick }: FilterBadgeProps) => (
+    <motion.button
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.97 }}
+        onClick={onClick}
+        className={cn(
+            "px-4 py-2 text-sm font-medium rounded-full transition-all flex items-center",
+            isActive
+                ? "bg-amber-500 text-white shadow-md"
+                : "bg-white text-gray-700 border border-gray-200 hover:border-amber-300"
+        )}
+    >
+        {children}
+    </motion.button>
+));
 
-// Componente principal otimizado com memo para evitar rerenderizações
-const DestaquesSanityCarousel = memo(function DestaquesSanityCarousel({
-    properties,
-    tipo,
-    titulo,
-    subtitulo,
-    verTodosLink,
-    verTodosLabel = 'Ver todos'
-}: DestaquesSanityCarouselProps) {
-    // Ensure formattedProperties is defined
-    const formattedProperties = properties.map(mapSanityToUIFormat);
+FilterBadge.displayName = 'FilterBadge';
 
-    // Ensure config is properly defined
-    const config = {
-        destaque: {
-            badgeColor: "amber" as const,
-            badge: "Portfólio Exclusivo",
-            hasAccentBackground: false,
-        },
-        aluguel: {
-            badgeColor: "blue" as const,
-            badge: "Conforto e Praticidade",
-            hasAccentBackground: true,
-        }
-    }[tipo];
+// Componente principal de Destaques com imóveis do Sanity CMS
+export function DestaquesSanityCarousel({
+    rawProperties,
+    title = "Imóveis em Destaque",
+    subtitle = "Confira nossas opções selecionadas de imóveis com ótimo potencial em toda Guararema"
+}: {
+    rawProperties: any[];
+    title?: string;
+    subtitle?: string;
+}) {
+    // Estado para filtro de propriedades
+    const [activeFilter, setActiveFilter] = useState<PropertyType | 'all'>('all');
 
-    // Ensure validatedProperties is properly filtered
-    const validatedProperties = formattedProperties.filter(prop => {
-        const isValid = prop &&
-            typeof prop.id === 'string' &&
-            typeof prop.title === 'string' &&
-            typeof prop.price === 'number' &&
-            prop.mainImage &&
-            typeof prop.mainImage.url === 'string';
+    // Processamento e memorização de propriedades para evitar re-renderizações
+    const processedProperties = useMemo(() => {
+        return processProperties(rawProperties);
+    }, [rawProperties]);
 
-        if (!isValid) {
-            console.error('Invalid property found:', prop);
-        }
-
-        return isValid;
-    });
-
-    if (validatedProperties.length === 0) {
-        return <EmptyState message={`Nenhum imóvel de ${tipo === 'destaque' ? 'destaque' : 'aluguel'} disponível no momento.`} />;
-    }
+    // Filtragem de propriedades baseada no filtro ativo
+    const filteredProperties = useMemo(() => {
+        if (activeFilter === 'all') return processedProperties;
+        return processedProperties.filter(prop => prop.propertyType === activeFilter);
+    }, [processedProperties, activeFilter]);
 
     return (
-        <section className="py-16 w-full">
-            <div className="container mx-auto px-4 max-w-7xl">
+        <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.6 }}
+            className="container mx-auto py-16 px-4 md:px-6"
+        >
+            <div className="mb-10">
                 <SectionHeader
-                    badge={config.badge}
-                    badgeColor={config.badgeColor}
-                    title={titulo}
-                    description={subtitulo}
+                    title={
+                        <div className="flex items-center gap-2">
+                            <Star className="w-6 h-6 text-amber-500" />
+                            <span>{title}</span>
+                        </div>
+                    }
+                    subtitle={subtitle}
+                    align="left"
+                    className="max-w-3xl"
+                    titleClassName="text-3xl md:text-4xl font-bold text-gray-800"
+                    subtitleClassName="text-gray-600 mt-2 text-lg"
                 />
-                <div className="min-h-card carousel-container">
-                    <OptimizedPropertyCarousel
-                        properties={validatedProperties}
-                        slidesToShow={3}
-                        showControls={true}
-                        autoplay={false}
-                        autoplayInterval={tipo === 'destaque' ? 5000 : 6000}
-                        viewAllLink={verTodosLink}
-                        viewAllLabel={verTodosLabel}
-                        className="mb-16"
-                        hasAccentBackground={config.hasAccentBackground}
-                        showEmptyState={true}
-                        emptyStateMessage={`Carregando imóveis ${tipo === 'destaque' ? 'em destaque' : 'para aluguel'}...`}
-                        mobileLayout="stack"
-                    />
-                </div>
+
+                <PropertyFilter activeFilter={activeFilter} onChange={setActiveFilter} />
             </div>
-        </section>
+
+            {filteredProperties.length > 0 ? (
+                <OptimizedPropertyCarousel
+                    properties={filteredProperties}
+                    variant="featured"
+                    slidesToShow={3}
+                    showControls={true}
+                    autoplay={true}
+                    autoplayInterval={6000}
+                    className="pb-8"
+                />
+            ) : (
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-8 text-center">
+                    <h3 className="text-xl font-semibold text-amber-700 mb-2">Nenhum imóvel encontrado</h3>
+                    <p className="text-amber-600">Não encontramos imóveis com os critérios de filtro selecionados.</p>
+                    <button
+                        onClick={() => setActiveFilter('all')}
+                        className="mt-4 inline-flex items-center px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition-colors"
+                    >
+                        Ver todos os imóveis
+                    </button>
+                </div>
+            )}
+
+            <div className="mt-8 flex justify-center">
+                <Link href="/imoveis" className="group inline-flex items-center gap-1.5 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-full shadow-md hover:shadow-lg transition duration-300 ease-in-out">
+                    Ver todos os imóveis
+                    <motion.span
+                        animate={{ x: [0, 4, 0] }}
+                        transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                    >
+                        <ArrowRight className="w-5 h-5" />
+                    </motion.span>
+                </Link>
+            </div>
+        </motion.section>
     );
-});
+}
 
 export default DestaquesSanityCarousel;
