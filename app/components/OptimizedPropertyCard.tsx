@@ -150,9 +150,9 @@ const OptimizedPropertyCard = memo(function OptimizedPropertyCard({
             }}
         >
             <Link href={detailsPath} className="block">
-                <div className="relative">                    {/* Container da imagem com proporção fixa */}
+                <div className="relative">                    {/* Container da imagem com proporção fixa e prevenção de CLS */}
                     <div
-                        className="aspect-[4/3] w-full relative overflow-hidden"
+                        className="aspect-property w-full relative overflow-hidden min-h-image"
                         style={{
                             backgroundColor: '#f0f0f0' // Placeholder background mesmo sem blur data
                         }}
@@ -166,8 +166,15 @@ const OptimizedPropertyCard = memo(function OptimizedPropertyCard({
                             />
                         )}
 
+                        {/* Placeholder animado quando não tem blurDataUrl */}
+                        {!mainImage.blurDataUrl && !imageLoaded && (
+                            <div className="absolute inset-0 img-placeholder animate-pulse">
+                                <div className="h-full w-full bg-gradient-to-r from-transparent via-white/20 to-transparent shimmer" />
+                            </div>
+                        )}
+
                         {/* Gradient overlay para melhor contraste com texto */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent z-10" />                        <Image
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent z-10" /><Image
                             src={mainImage.url}
                             alt={mainImage.alt}
                             fill

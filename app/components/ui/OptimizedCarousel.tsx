@@ -180,14 +180,16 @@ export function OptimizedCarousel<T>({
         flex: `0 0 ${100 / (options.slidesToShow || 1)}%`,
         paddingLeft: `${options.spacing || 16}px`,
         paddingRight: `${options.spacing || 16}px`,
-    };
-
-    // Renderização do componente
+    };    // Renderização do componente
     if (items.length === 0) return null;
 
     return (
         <div
-            className={cn("relative w-full", className)}
+            className={cn("relative w-full min-h-[450px]", className)}
+            style={{
+                // Layout Shift - Reservando o espaço necessário para evitar CLS
+                minHeight: "450px"
+            }}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
         >

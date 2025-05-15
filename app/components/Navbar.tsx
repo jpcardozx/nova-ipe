@@ -23,21 +23,35 @@ const links = [
 ]
 
 export default function Navbar() {
-    const [open, setOpen] = useState(false)
-    const [scrolled, setScrolled] = useState(false)
-    const [isMounted, setIsMounted] = useState(false)
-    const pathname = usePathname()
+    const [open, setOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
+    const pathname = usePathname();
 
-    useEffect(() => {
-        // Mark component as mounted to prevent hydration issues
-        setIsMounted(true)
+    useEffect(() => {        // Mark component as mounted to prevent hydration issues
+        setIsMounted(true);
 
-        const handleScroll = () => setScrolled(window.scrollY > 50)
-        window.addEventListener("scroll", handleScroll)
-        return () => window.removeEventListener("scroll", handleScroll)
-    }, [])    // Don't render anything during SSR to prevent hydration mismatches
+        const handleScroll = () => setScrolled(window.scrollY > 50);
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [])
+
+    // Don't render dynamic content during SSR to prevent hydration mismatches
     if (!isMounted) {
-        return null;
+        // Return a static navbar shell for SSR
+        return (
+            <nav className="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-lg border-b border-neutral-200 shadow-sm py-4">
+                <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+                    <div className="h-12 w-32 bg-gray-100"></div>
+                    <ul className="hidden md:flex gap-10">
+                        {links.map(({ label }) => (
+                            <li key={label} className="w-16 h-4 bg-gray-100"></li>
+                        ))}
+                    </ul>
+                    <div className="hidden md:block w-40 h-8 bg-gray-100 rounded-full"></div>
+                </div>
+            </nav>
+        );
     }
 
     return (
@@ -58,10 +72,8 @@ export default function Navbar() {
                         className="object-contain transition-all duration-300 cursor-pointer"
                         priority
                     />
-                </Link>
-
-                {/* ✅ Links Desktop */}
-                <ul className={`hidden md:flex gap-10 text-[#0D1F2D] text-sm font-medium ${montSerrat.className}`}>
+                </Link>                {/* ✅ Links Desktop */}
+                <ul className={`flex gap-10 text-[#0D1F2D] text-sm font-medium ${montSerrat.className}`}>
                     {links.map(({ label, href }) => (
                         <li key={label}>
                             <Link
@@ -81,7 +93,7 @@ export default function Navbar() {
                     href="https://wa.me/5511981845016"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hidden md:inline-flex items-center gap-2 bg-[#20b858] text-white px-5 py-2 rounded-full text-sm font-medium hover:brightness-105 transition shadow-sm"
+                    className="inline-flex items-center gap-2 bg-[#20b858] text-white px-5 py-2 rounded-full text-sm font-medium hover:brightness-105 transition shadow-sm"
                 >
                     <span className="navbar-icon">
                         <svg width="16" height="16" fill="currentColor" className="text-white" viewBox="0 0 24 24" aria-hidden="true">
@@ -89,11 +101,9 @@ export default function Navbar() {
                         </svg>
                     </span>
                     Conversar com consultor
-                </motion.a>
-
-                {/* ✅ Menu Toggle Mobile */}                <button
+                </motion.a>                {/* ✅ Menu Toggle Mobile */}                <button
                     onClick={() => setOpen(!open)}
-                    className="md:hidden text-gray-700 text-2xl flex items-center justify-center"
+                    className="ml-4 text-gray-700 text-2xl flex items-center justify-center"
                     aria-label="Abrir menu"
                     aria-expanded={open}
                 >

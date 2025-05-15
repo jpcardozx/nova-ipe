@@ -131,7 +131,7 @@ export function Carousel({
             perView: options.slidesPerView || 1,
             spacing: options.spacing || 16,
         },
-        breakpoints: formattedBreakpoints,        slideChanged(slider: import('keen-slider').KeenSliderInstance) {
+        breakpoints: formattedBreakpoints, slideChanged(slider: import('keen-slider').KeenSliderInstance) {
             setCurrentSlide(slider.track.details.rel);
         },
         created() {

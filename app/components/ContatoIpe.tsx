@@ -375,10 +375,10 @@ export default function ContatoRefinadoIpe() {
                                             href="tel:+551197123456"
                                             className="text-lg font-medium text-gray-900 hover:text-amber-600 transition-colors"
                                         >
-                                            (11) 97123-4567
+                                            (11) 98184-5016
                                         </a>
                                         <div className="text-sm text-gray-500 mt-1">
-                                            Segunda a sábado, 8h às 18h
+                                            Segunda a sábado, 9h às 18h
                                         </div>
                                     </div>
                                 </div>
@@ -396,10 +396,10 @@ export default function ContatoRefinadoIpe() {
                                             href="mailto:contato@ipeimobiliaria.com.br"
                                             className="text-lg font-medium text-gray-900 hover:text-amber-600 transition-colors"
                                         >
-                                            contato@ipeimobiliaria.com.br
+                                            fernandesleonardo@terra.com.br
                                         </a>
                                         <div className="text-sm text-gray-500 mt-1">
-                                            Resposta em até 3 horas em dias úteis
+                                            Resposta em até 1 dia útil
                                         </div>
                                     </div>
                                 </div>
@@ -419,10 +419,10 @@ export default function ContatoRefinadoIpe() {
                                             rel="noopener noreferrer"
                                             className="text-lg font-medium text-gray-900 hover:text-amber-600 transition-colors"
                                         >
-                                            Rua XV de Novembro, 123 - Centro
+                                            Praça IX de Julho, 65 - Centro
                                         </a>
                                         <div className="text-sm text-gray-500 mt-1">
-                                            Guararema/SP - Em frente à praça central
+                                            Guararema/SP - Em frente à Igreja Matriz
                                         </div>
                                     </div>
                                 </div>

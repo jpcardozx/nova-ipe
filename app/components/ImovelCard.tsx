@@ -165,10 +165,25 @@ function ImovelCard({
   const [isFav, toggleFav] = useFavorite(imovel._id, onFavoriteToggle);
 
   // Normalize the finalidade value to ensure it's valid
-  const normalizedFinalidade = getFinalidade(imovel.finalidade || finalidade);
+  const normalizedFinalidade = getFinalidade(imovel.finalidade || finalidade); const { images, priceLabel, address, title, disponivel, features, link, badgeColor, BadgeIcon, badgeLabel } = useMemo(() => {
+    // Só adiciona a URL da imagem principal se ela realmente existir como URL direta
+    // Caso contrário, deixa para o componente SanityImage lidar com ela
+    const hasDirectUrl = !!imovel.imagem?.url;
 
-  const { images, priceLabel, address, title, disponivel, features, link, badgeColor, BadgeIcon, badgeLabel } = useMemo(() => {
-    const imgs = [imovel.imagem?.url || '/placeholder.png', ...imagensAdicionais.map(i => i.url)].slice(0, 5);
+    // Garante que só URLs válidas são adicionadas
+    const mainImage = hasDirectUrl && typeof imovel.imagem?.url === 'string' ? imovel.imagem.url : null;
+    const additionalImages = imagensAdicionais
+      .filter(img => typeof img.url === 'string')
+      .map(img => img.url);
+
+    const imgs = [
+      mainImage,
+      ...additionalImages
+    ].filter(Boolean).slice(0, 5);
+
+    // Se não houver nenhuma imagem direta, certifique-se de que a lista não está vazia
+    if (imgs.length === 0) imgs.push('/placeholder.png');
+
     const preco = imovel.preco ? formatarMoeda(imovel.preco) : 'Sob consulta';
     const addr = [imovel.bairro, imovel.cidade].filter(Boolean).join(', ') || 'Localização não informada';
     const titulo = imovel.titulo || `${imovel.categoria?.titulo || 'Imóvel'} para ${normalizedFinalidade}`;
@@ -247,12 +262,11 @@ function ImovelCard({
             'relative overflow-hidden',
             isCompact ? 'h-48' : isFeatured ? 'h-80' : 'h-64'
           )}>
-            {!loaded && <div className="absolute inset-0 animate-pulse bg-slate-100" />}
-            <AnimatePresence mode="wait">
-              <motion.div key={currentImage} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            {!loaded && <div className="absolute inset-0 animate-pulse bg-slate-100" />}            <AnimatePresence mode="wait">
+              <motion.div key={currentImage} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>                {/* Se temos uma URL direta na imagem, usamos o componente Image padrão */}
                 {imovel.imagem?.url ? (
                   <Image
-                    src={images[currentImage]}
+                    src={images[currentImage] || '/placeholder.png'}
                     alt={imovel.imagem?.alt || title}
                     fill={true}
                     priority={priority}
@@ -264,6 +278,8 @@ function ImovelCard({
                     onLoad={() => setLoaded(true)}
                   />
                 ) : (
+                  // Se não temos URL direta, mas temos um asset de imagem do Sanity, 
+                  // usamos o componente SanityImage para converter a referência em URL
                   <SanityImage
                     image={imovel.imagem}
                     alt={title}

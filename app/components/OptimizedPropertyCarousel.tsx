@@ -284,26 +284,45 @@ export const OptimizedPropertyCarousel = memo(function OptimizedPropertyCarousel
                 subtitle={subtitle}
                 viewAllLink={viewAllLink}
                 viewAllLabel={viewAllLabel}
-            />
-
-            <OptimizedCarousel
-                {...adaptPropertyCarouselProps({
-                    properties,
-                    title,
-                    subtitle,
-                    variant,
-                    slidesToShow,
-                    showControls,
-                    autoplay,
-                    autoplayInterval,
-                    className,
-                    showEmptyState,
-                    emptyStateMessage,
-                    viewAllLink,
-                    viewAllLabel,
-                    mobileLayout,
-                    hasAccentBackground
-                })}
+            />            <OptimizedCarousel
+                items={properties || []}
+                getKey={(item: any) => item.id}
+                renderItem={(property: any, index: number) => (
+                    <OptimizedPropertyCard
+                        key={property.id}
+                        id={property.id}
+                        title={property.title}
+                        slug={property.slug}
+                        location={property.location}
+                        city={property.city}
+                        price={property.price}
+                        propertyType={property.propertyType}
+                        area={property.area}
+                        bedrooms={property.bedrooms}
+                        bathrooms={property.bathrooms}
+                        parkingSpots={property.parkingSpots}
+                        mainImage={property.mainImage}
+                        status={property.status}
+                        isNew={property.isNew}
+                        isHighlight={property.isHighlight}
+                        isPremium={property.isPremium}
+                        isFavorite={favorites[property.id] || false}
+                        onFavoriteToggle={(id: string) => handleFavoriteToggle(id)}
+                    />
+                )}
+                options={{
+                    align: 'start',
+                    loop: properties.length > (slidesToShow || 3),
+                    slidesToShow: slidesToShow || 3,
+                    spacing: 16,
+                    autoplay: autoplay || false,
+                    autoplayDelay: autoplayInterval || 5000,
+                    breakpoints: {
+                        '(max-width: 768px)': { slidesToShow: 1, spacing: 8 },
+                        '(min-width: 769px) and (max-width: 1024px)': { slidesToShow: 2, spacing: 12 },
+                    }
+                }}
+                className={className}
                 accentColor={accentColor}
             />
 
