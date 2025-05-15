@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
-import '../globals.css';
-import '../critical.css';
+import '../../app/globals.css';
+import '../../app/critical.css';
 import Script from 'next/script';
 
 // Configuração da fonte
