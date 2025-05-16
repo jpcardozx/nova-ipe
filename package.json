@@ -1,11 +1,10 @@
 {
   "name": "nova-ipe",
   "version": "0.1.0",
-  "private": true,
-  "scripts": {
+  "private": true,  "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:vercel": "node scripts/vercel-build.js",
+    "build:vercel": "node scripts/rollup-vercel-fix.js && node scripts/vercel-build.js",
     "preinstall": "node scripts/fallback-og-images.js",
     "start": "next start",
     "lint": "next lint",
@@ -13,7 +12,8 @@
     "prepare-images": "echo 'Using fallback OG images strategy'",
     "postinstall": "node -e \"console.log('Dependencies installed successfully')\"",
     "deploy": "node scripts/deploy-vercel.js",
-    "deploy:prod": "vercel --prod"
+    "deploy:prod": "vercel --prod",
+    "fix:rollup": "node scripts/rollup-vercel-fix.js"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.10",
@@ -50,9 +50,9 @@
     "styled-components": "^6.1.17",
     "tailwind-merge": "^3.2.0",
     "web-vitals": "^5.0.0"
-  },
-  "optionalDependencies": {
+  },  "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.14.0",
+    "@rollup/rollup-linux-x64-musl": "4.14.0",
     "lightningcss-linux-x64-gnu": "1.25.1",
     "lightningcss-linux-x64-musl": "1.25.1",
     "canvas": "^2.11.2"
