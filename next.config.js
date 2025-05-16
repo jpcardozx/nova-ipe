@@ -26,10 +26,10 @@ const nextConfig = {
     if (!config.resolve.alias) config.resolve.alias = {};
 
     // Set up path aliases for imports - using Object.assign to avoid spread operator issues
-    config.resolve.alias = Object.assign({}, config.resolve.alias, {
-      '@': path.join(__dirname, './'),
+    config.resolve.alias = Object.assign({}, config.resolve.alias, {      '@': path.join(__dirname, './'),
       '@app': path.join(__dirname, './app'),
-      '@components': path.join(__dirname, './app/components'), '@lib': path.join(__dirname, './lib'),
+      '@components': path.join(__dirname, './app/components'),
+      '@lib': path.join(__dirname, './lib'),
       '@src': path.join(__dirname, './src'),
       '@public': path.join(__dirname, './public'),
       '@sections': path.join(__dirname, './sections'),
