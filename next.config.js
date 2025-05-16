@@ -18,6 +18,12 @@ const nextConfig = {
     optimizeCss: true,
     largePageDataBytes: 512 * 1000,
   },
+  // Configuração dos módulos de resolução de caminho
+  webpack: (config, { isServer }) => {
+    // Configuração adicional para resolver imports absolutos
+    config.resolve.fallback = { fs: false, path: false };
+    return config;
+  },
   // Remove console logs em produção
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,

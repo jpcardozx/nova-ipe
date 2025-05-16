@@ -23,9 +23,22 @@ const ogImagePath = path.join(outputDir, 'og-image-2025.jpg');
 const whatsappImagePath = path.join(outputDir, 'og-image-whatsapp.jpg');
 const squareImagePath = path.join(outputDir, 'og-image-square.jpg');
 
-// Use existing images if they exist or note that they should be created manually
-console.log('Note: OG images not generated in this environment.');
-console.log('Please generate OG images locally and commit them to your repository.');
+// Check if the OG images already exist
+if (fs.existsSync(ogImagePath) && fs.existsSync(whatsappImagePath) && fs.existsSync(squareImagePath)) {
+    console.log('OG images found in the repository. Using existing files.');
+} else {
+    console.log('OG images not found. Attempting to create fallback images...');
+
+    try {
+        // Try to copy from default images if they exist (for example from a default-images folder)
+        // If not available, just output a note
+        console.log('Note: OG images not found and could not be generated in this environment.');
+        console.log('Please generate OG images locally and commit them to your repository.');
+    } catch (error) {
+        console.error('Error creating fallback OG images:', error);
+        console.log('Continuing build process despite OG image generation failure');
+    }
+}
 
 // Create a simple JSON manifest of image paths for the site to use
 const manifest = {

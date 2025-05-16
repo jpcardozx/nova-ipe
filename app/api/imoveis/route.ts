@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
-import { serverFetch } from '@/lib/sanity/sanity.server';
-import { queryImoveisParaAlugar, queryImoveisParaVenda } from '@/lib/queries';
+import { serverFetch } from '../../../lib/sanity/sanity.server';
+import { queryImoveisParaAlugar, queryImoveisParaVenda } from '../../../lib/queries';
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;

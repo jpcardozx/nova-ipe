@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { getImovelEmDestaque } from '@lib/sanity/fetchImoveis'
-import type { ImovelClient } from '@/types/imovel-client'
+import { getImovelEmDestaque } from '../../../lib/sanity/fetchImoveis'
+import type { ImovelClient } from '../../../src/types/imovel-client'
 
 export const runtime = 'edge'
 export const revalidate = 3600 // Revalidate every hour
