@@ -84,7 +84,6 @@ require('module')._resolveFilename = function (request, parent, isMain, options)
   return originalResolveFilename(request, parent, isMain, options);
 };
 /** @type {import('next').NextConfig} */
-const path = require('path');
 
 const nextConfig = {
   reactStrictMode: true,
