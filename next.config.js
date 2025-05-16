@@ -14,9 +14,9 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
-      },
-    ],
-  }, experimental: {
+      },],
+  },
+  experimental: {
     optimizeCss: true,
     largePageDataBytes: 512 * 1000,
   },
@@ -26,7 +26,8 @@ const nextConfig = {
     if (!config.resolve.alias) config.resolve.alias = {};
 
     // Set up path aliases for imports - using Object.assign to avoid spread operator issues
-    config.resolve.alias = Object.assign({}, config.resolve.alias, {      '@': path.join(__dirname, './'),
+    config.resolve.alias = Object.assign({}, config.resolve.alias, {
+      '@': path.join(__dirname, './'),
       '@app': path.join(__dirname, './app'),
       '@components': path.join(__dirname, './app/components'),
       '@lib': path.join(__dirname, './lib'),
