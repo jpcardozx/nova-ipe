@@ -20,36 +20,33 @@ const nextConfig = {
   experimental: {
     optimizeCss: true,
     largePageDataBytes: 512 * 1000,
-  },
-  webpack: (config, { isServer }) => {
+  }, webpack: (config, { isServer }) => {
     // Ensure basic configuration objects exist
     if (!config.resolve) config.resolve = {};
     if (!config.resolve.alias) config.resolve.alias = {};
-    
-    // Set up path aliases for imports
-    config.resolve.alias = {
-      ...config.resolve.alias,
+
+    // Set up path aliases for imports - using Object.assign to avoid spread operator issues
+    config.resolve.alias = Object.assign({}, config.resolve.alias, {
       '@': path.join(__dirname, './'),
       '@app': path.join(__dirname, './app'),
       '@components': path.join(__dirname, './app/components'),
       '@lib': path.join(__dirname, './lib'),
       '@src': path.join(__dirname, './src'),
-      '@public': path.join(__dirname, './public'),
-      '@sections': path.join(__dirname, './sections'),
+      '@public': path.join(__dirname, './public'), '@sections': path.join(__dirname, './sections'),
       'app/sections': path.join(__dirname, './app/sections'),
       '@core': path.join(__dirname, './lib/core'),
       // Critical tailwind CSS paths
       'tailwindcss/preflight': path.join(__dirname, 'node_modules/tailwindcss/preflight.css'),
       'tailwindcss/theme.css': path.join(__dirname, 'node_modules/tailwindcss/theme.css'),
-    };
+    });
 
     // Set up CSS processing
     if (config.module && config.module.rules) {
       // Find CSS rules
-      const cssRules = config.module.rules.filter(rule => 
-        rule.test && rule.test.toString().includes('.css')
-      );
-      
+      const cssRules = config.module.rules.filter(function (rule) {
+        return rule.test && rule.test.toString().includes('.css');
+      });
+
       // Configure CSS rules
       cssRules.forEach(cssRule => {
         // Handle oneOf rules (Next.js specific)
@@ -57,24 +54,24 @@ const nextConfig = {
           cssRule.oneOf.forEach(rule => {
             if (!rule.resolve) rule.resolve = {};
             if (!rule.resolve.alias) rule.resolve.alias = {};
-            
+
             // Add critical tailwind CSS aliases
             rule.resolve.alias['tailwindcss/preflight'] = path.join(__dirname, 'node_modules/tailwindcss/preflight.css');
             rule.resolve.alias['tailwindcss/theme.css'] = path.join(__dirname, 'node_modules/tailwindcss/theme.css');
           });
         }
-        
+
         // Handle direct use rules
         if (cssRule.use) {
           const useArray = Array.isArray(cssRule.use) ? cssRule.use : [cssRule.use];
-          
+
           useArray.forEach(loader => {
             if (typeof loader === 'object' && loader.loader === 'css-loader') {
               loader.options = loader.options || {};
               if (!loader.options.importLoaders) loader.options.importLoaders = 1;
             }
           });
-          
+
           // Add postcss-loader if not present
           if (!useArray.some(l =>
             (typeof l === 'object' && l.loader === 'postcss-loader') ||
@@ -95,10 +92,10 @@ const nextConfig = {
         }
       });
     }
-    
+
     // Disable Node.js polyfills
     config.resolve.fallback = { fs: false, path: false };
-    
+
     return config;
   },
   compiler: {

@@ -1,13 +1,10 @@
 
 // postcss.config.js
 // Versão otimizada para compatibilidade com Vercel e NextJS 15+
-const path = require('path');
-
+// Simplificada para evitar problemas de resolução de módulos
 module.exports = {
-  plugins: [
-    require('tailwindcss')({
-      config: path.join(__dirname, 'tailwind.config.js')
-    }),
-    require('autoprefixer')
-  ]
+  plugins: {
+    'tailwindcss': {},
+    'autoprefixer': {}
+  }
 };
