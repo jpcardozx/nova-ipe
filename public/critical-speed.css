@@ -1,0 +1,98 @@
+/* Otimizações críticas de velocidade para carregamento inicial */
+
+/* 
+  Este arquivo contém apenas o CSS essencial para garantir
+  que a página seja interativa o mais rápido possível.
+  As demais estilizações serão carregadas depois.
+*/
+
+/* Garante que elementos críticos sejam visíveis primeiro */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Previne Flash of Unstyled Content (FOUC) */
+.fouc-prevention {
+  opacity: 0;
+  animation: fadeIn 0.2s ease-in 0.1s forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+/* Estilos básicos para elementos importantes da página inicial */
+.navbar-placeholder,
+.hero-placeholder {
+  display: block;
+  width: 100%;
+}
+
+.navbar-placeholder {
+  height: 80px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.hero-placeholder {
+  height: 70vh;
+  min-height: 400px;
+  background-color: #f5f5f5;
+  position: relative;
+}
+
+/* Previne Content Layout Shift (CLS) para imagens */
+img, picture, video {
+  max-width: 100%;
+  display: block;
+}
+
+/* Indicadores de carregamento simplificados */
+.loading-indicator {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 3px solid #3498db;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -20px;
+  margin-left: -20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Tratamento especial para usuários WhatsApp */
+body.from-whatsapp {
+  animation: none !important;
+}
+
+body.from-whatsapp .loading-indicator {
+  display: none !important;
+}
+
+/* Otimizações para dispositivos móveis */
+@media (max-width: 768px) {
+  .hero-placeholder {
+    height: 50vh;
+  }
+  
+  /* Reduz o delay para exibir conteúdo em dispositivos móveis */
+  .fouc-prevention {
+    animation-delay: 0s;
+  }
+}
