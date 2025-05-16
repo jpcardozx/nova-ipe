@@ -1,7 +1,8 @@
 {
   "name": "nova-ipe",
   "version": "0.1.0",
-  "private": true,  "scripts": {
+  "private": true,
+  "scripts": {
     "dev": "next dev",
     "build": "next build",
     "build:vercel": "node scripts/rollup-vercel-fix.js && node scripts/vercel-build.js",
@@ -50,16 +51,16 @@
     "styled-components": "^6.1.17",
     "tailwind-merge": "^3.2.0",
     "web-vitals": "^5.0.0"
-  },  "optionalDependencies": {
+  },
+  "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.14.0",
     "@rollup/rollup-linux-x64-musl": "4.14.0",
     "lightningcss-linux-x64-gnu": "1.25.1",
     "lightningcss-linux-x64-musl": "1.25.1",
     "canvas": "^2.11.2"
-  },
-  "devDependencies": {
+  },  "devDependencies": {
     "@next/bundle-analyzer": "^15.2.4",
-    "@tailwindcss/postcss": "^4.1.6",
+    "tailwindcss": "^4.1.6", 
     "@fontsource/montserrat": "^5.0.7",
     "@types/node": "^20",
     "@types/react": "^18",

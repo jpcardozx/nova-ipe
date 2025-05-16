@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
             montserratMedium = await fetch(
                 new URL('../../../public/fonts/Montserrat-Medium.ttf', import.meta.url)
             ).then((res) => res.arrayBuffer());
-            
+
             montserratBold = await fetch(
                 new URL('../../../public/fonts/Montserrat-Bold.ttf', import.meta.url)
             ).then((res) => res.arrayBuffer());
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
             montserratMedium = await fetch(
                 'https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCu173w5aXp-p7K4KLg.woff2'
             ).then((res) => res.arrayBuffer());
-            
+
             montserratBold = await fetch(
                 'https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCuM73w5aXp-p7K4KLg.woff2'
             ).then((res) => res.arrayBuffer());
