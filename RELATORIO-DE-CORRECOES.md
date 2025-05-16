@@ -8,6 +8,7 @@
 4. Erro `__non_webpack_require__ is not defined` em ambientes Node.js v22
 5. Problemas com módulos ausentes em imports (@sections, @core, etc.)
 6. Problemas com importação do Embla Carousel Autoplay
+7. Erro `Can't resolve 'tailwindcss/preflight'` em arquivos CSS
 
 ## Soluções Implementadas
 
@@ -58,6 +59,13 @@ Este script executa todos os passos de correção e o build otimizado, permitind
 3. **Atualizações**: Mantenha as dependências principais (tailwindcss, postcss, autoprefixer) sempre atualizadas
 4. **Documentação**: Mantenha este documento atualizado com quaisquer novos problemas e soluções
 
+### 7. Correção do Erro "Can't resolve 'tailwindcss/preflight'"
+- Script `fix-tailwind-preflight.js` para resolver problemas com importação de preflight do Tailwind
+- Criação de arquivos stub para `tailwindcss/preflight.css` e `tailwindcss/theme.css`
+- Configuração de aliases no webpack para resolver corretamente as importações
+- Detecção e correção automática de arquivos CSS que importam `tailwindcss/preflight`
+- Implementação de solução compatível com o ambiente Vercel
+
 ## Configuração Final
 
 A combinação destes scripts garante uma build resiliente que:
@@ -66,5 +74,6 @@ A combinação destes scripts garante uma build resiliente que:
 2. Cria componentes stub para qualquer import ausente
 3. Garante que o CSS e os frameworks visuais funcionam corretamente
 4. Resolve problemas conhecidos com o build da Vercel
+5. Corrige problemas com importações do Tailwind CSS, incluindo arquivos preflight
 
 Esta abordagem em múltiplas camadas oferece proteção contra falhas e garante um processo de build consistente na Vercel.
