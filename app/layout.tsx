@@ -1,6 +1,5 @@
 // app/layout.tsx
-import './globals.css';
-import './cls-optimizations.css'; // Importando otimizações para CLS
+import './layout-styles'; // Consolidated CSS imports
 import { Suspense } from 'react';
 import { Montserrat } from 'next/font/google';
 import { ClientOnly } from './components/ClientComponents';
@@ -13,9 +12,6 @@ import ClientPerformanceMonitor from './components/ClientPerformanceMonitor';
 import WebVitalsDebuggerWrapper from './components/WebVitalsDebuggerWrapper';
 import { OrganizationSchema, WebsiteSchema, LocalBusinessSchema } from './components/StructuredData';
 import PerformanceDiagnostics from './components/PerformanceDiagnostics';
-
-// Metadata is imported from metadata.tsx to ensure consistency
-import { metadata } from './metadata';
 
 // Configuração otimizada da fonte Montserrat
 const montserrat = Montserrat({
@@ -31,20 +27,12 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (<html lang="pt-BR" className={montserrat.variable} data-loading-state="loading">      <head>    {/* Script crítico executado imediatamente para resolver problemas de carregamento */}
-    <script src="/js/critical-preload.js" />
+  return (<html lang="pt-BR" className={montserrat.variable} data-loading-state="loading">      <head>    {/* Script crítico executado usando o componente Script do Next.js */}
+    <Script src="/js/critical-preload.js" strategy="beforeInteractive" />
 
-    {/* Preload e aplicação de recursos críticos */}
+    {/* Preload de recursos críticos */}
     <link rel="preload" href="/critical-speed.css" as="style" />
-    <link rel="stylesheet" href="/critical-speed.css" />
-    <link rel="preload" href="/critical.css" as="style" />
-    <link rel="stylesheet" href="/critical.css" />
-
-    {/* Otimizações de carregamento - ordenadas por prioridade */}
-    <link rel="stylesheet" href="/styles/mobile-optimizations.css" />
-    <link rel="stylesheet" href="/styles/loading-fix.css" />
-    <link rel="stylesheet" href="/styles/loading-states.css" />
-    <link rel="stylesheet" href="/styles/loading-effects.css" />{/* Script para detectar quando a página está totalmente carregada - versão otimizada */}
+    <link rel="preload" href="/critical.css" as="style" />    {/* Stylesheets são importados diretamente via CSS ou no componente principal */}{/* Script para detectar quando a página está totalmente carregada - versão otimizada */}
     <script dangerouslySetInnerHTML={{
       __html: `
           (function() {
@@ -104,9 +92,8 @@ export default function RootLayout({
 
     {/* Habilita o modo de visualização avançada do WhatsApp */}
     <meta name="format-detection" content="telephone=no" />    {/* Script para otimização de WhatsApp */}
-    <link rel="stylesheet" href="/styles/loading-states.css" />
-    <script src="/js/whatsapp-optimizer.js" async></script>    {/* Script de timeout para garantir visibilidade mesmo em caso de falha */}
-    <script src="/js/loading-timeout.js" async defer></script>
+    <Script src="/js/whatsapp-optimizer.js" strategy="lazyOnload" />    {/* Script de timeout para garantir visibilidade mesmo em caso de falha */}
+    <Script src="/js/loading-timeout.js" strategy="lazyOnload" />
   </head><body>        {/* Structured Data for SEO and Social Sharing */}
       <ClientOnly>
         <Suspense fallback={null}>
