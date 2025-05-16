@@ -25,32 +25,40 @@ if (isVercelEnv) {
     console.log('Resolvendo problemas com dependências do Rollup...');
     const packageJsonPath = path.join(process.cwd(), 'package.json');
     let packageJson;
-    
+
     try {
         packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-        
+
         // Garantir que temos as dependências opcionais corretas para Linux
         if (!packageJson.optionalDependencies) {
             packageJson.optionalDependencies = {};
         }
-        
+
         // Adicionar ambas as variantes do Rollup para Linux
         packageJson.optionalDependencies['@rollup/rollup-linux-x64-gnu'] = '4.14.0';
         packageJson.optionalDependencies['@rollup/rollup-linux-x64-musl'] = '4.14.0';
-        
+
         fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2), 'utf8');
         console.log('✅ package.json atualizado com dependências opcionais do Rollup');
-        
+
         // Forçar reinstalação das dependências do Rollup
         try {
             console.log('Instalando dependências específicas do Rollup para Linux...');
-            execSync('npm install @rollup/rollup-linux-x64-gnu@4.14.0 @rollup/rollup-linux-x64-musl@4.14.0 --no-save', 
-                    { stdio: 'inherit' });
-        } catch (error) {
+            execSync('npm install @rollup/rollup-linux-x64-gnu@4.14.0 @rollup/rollup-linux-x64-musl@4.14.0 --no-save',
+                { stdio: 'inherit' });
+    } catch (error) {
             console.log('⚠️ Aviso: Não foi possível reinstalar dependências do Rollup:', error.message);
         }
     } catch (error) {
         console.error('⚠️ Erro ao modificar package.json:', error.message);
+    }
+
+    // Corrigir problemas de importação para o build
+    try {
+        console.log('Executando correção de imports...');
+        require('./fix-imports');
+    } catch (err) {
+        console.error('Erro ao corrigir imports:', err);
     }
 
     // Configurar .npmrc para dependências nativas
@@ -92,32 +100,32 @@ try {
     console.log('\n✅ Build concluído com sucesso!');
 } catch (error) {
     console.error('\n❌ Erro durante o build:', error.message);
-    
+
     // Verificar se é o erro específico do Rollup
     if (error.message.includes('@rollup/rollup-linux')) {
         console.log('\n⚠️ Detectado erro conhecido do Rollup. Tentando solução alternativa...');
-        
+
         try {
             // Criar um patch temporário para o módulo Rollup
             const rollupPatchDir = path.join(process.cwd(), 'node_modules', '@rollup');
             const rollupNativePath = path.join(process.cwd(), 'node_modules', 'rollup', 'dist', 'native.js');
-            
+
             if (fs.existsSync(rollupNativePath)) {
                 console.log('🔧 Aplicando patch no módulo Rollup...');
-                
+
                 // Ler o conteúdo do arquivo
                 let rollupNativeContent = fs.readFileSync(rollupNativePath, 'utf8');
-                
+
                 // Modificar o código para evitar a falha na dependência nativa
                 rollupNativeContent = rollupNativeContent.replace(
                     /try\s*{\s*nativePromise\s*=\s*Promise\.resolve\(\s*require\(modulePath\)/g,
                     'try { nativePromise = Promise.resolve(null)'
                 );
-                
+
                 // Salvar o arquivo modificado
                 fs.writeFileSync(rollupNativePath, rollupNativeContent, 'utf8');
                 console.log('✅ Patch aplicado. Tentando build novamente...');
-                
+
                 // Tentar o build novamente
                 execSync('next build', { stdio: 'inherit' });
                 console.log('\n✅ Build concluído com sucesso após aplicar patch!');
