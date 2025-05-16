@@ -1,0 +1,49 @@
+{
+    "buildCommand": "npm run build:vercel",
+    "installCommand": "npm install tailwindcss postcss autoprefixer --no-save --force && npm install --force --no-optional",
+    "framework": "nextjs",
+    "ignoreCommand": "node -e \"process.exit(!(process.env.VERCEL_ENV === 'preview' || process.env.VERCEL_ENV === 'production') ? 0 : 1)\"",
+    "outputDirectory": ".next",
+    "env": {
+        "NEXT_PUBLIC_SKIP_NATIVE_DEPS": "true",
+        "NODE_OPTIONS": "--max-old-space-size=4096",
+        "TAILWIND_MODE": "build",
+        "NEXT_TELEMETRY_DISABLED": "1",
+        "NEXT_FORCE_TAILWIND_DIRECT": "1",
+        "VERCEL_FORCE_INSTALL_DEPS": "1",
+        "CSS_MODULES_ALLOW_PATHS": "true",
+        "NODE_PATH": "/node22/lib/node_modules:/lib/node_modules:/vercel/path0/node_modules"
+    },
+    "headers": [
+        {
+            "source": "/(.*)",
+            "headers": [
+                {
+                    "key": "X-Content-Type-Options",
+                    "value": "nosniff"
+                },
+                {
+                    "key": "X-Frame-Options",
+                    "value": "DENY"
+                },
+                {
+                    "key": "X-XSS-Protection",
+                    "value": "1; mode=block"
+                },
+                {
+                    "key": "Referrer-Policy",
+                    "value": "strict-origin-when-cross-origin"
+                }
+            ]
+        },
+        {
+            "source": "/images/(.*)",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=86400, stale-while-revalidate=604800"
+                }
+            ]
+        }
+    ]
+}

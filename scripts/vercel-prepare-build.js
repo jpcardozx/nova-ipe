@@ -1,8 +1,7 @@
-﻿#!/usr/bin/env node
-/**
- * Script unificado para preparaÃ§Ã£o de build na Vercel
- * Este script executa todas as correÃ§Ãµes necessÃ¡rias em um Ãºnico processo
- * para resolver o problema do limite de caracteres no buildCommand do vercel.json
+﻿/**
+ * Script unificado para preparação de build na Vercel
+ * Este script executa todas as correções necessárias em um único processo
+ * para resolver o problema do limite de caracteres no buildCommand
  */
 
 const { execSync } = require('child_process');
