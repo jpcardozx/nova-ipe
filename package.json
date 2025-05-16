@@ -1,7 +1,8 @@
 {
   "name": "nova-ipe",
   "version": "0.1.0",
-  "private": true,  "scripts": {
+  "private": true,
+  "scripts": {
     "dev": "next dev",
     "build": "next build",
     "prepare-vercel": "node scripts/vercel-prepare-build.js && node scripts/create-tailwind-stubs.js",

@@ -105,122 +105,29 @@ const nextConfig = {
     largePageDataBytes: 512 * 1000,
   },  // Configuração dos módulos de resolução de caminho
   webpack: (config, { isServer }) => {
-    // Adicionar resolução para tailwindcss
+    // Inicialização das estruturas de configuração
     if (!config.resolve) config.resolve = {};
     if (!config.resolve.alias) config.resolve.alias = {};
-      // Resolver tailwindcss local
+    if (!config.resolveLoader) config.resolveLoader = {};
+    if (!config.resolveLoader.modules) config.resolveLoader.modules = ['node_modules'];
+
+    // Adicionar diretório local para resolução de loaders
+    config.resolveLoader.modules.push(path.resolve('./node_modules'));
+
+    // Configuração de aliases para resolução de módulos
     config.resolve.alias['tailwindcss'] = './node_modules/tailwindcss';
     config.resolve.alias['postcss'] = './node_modules/postcss';
     config.resolve.alias['autoprefixer'] = './node_modules/autoprefixer';
-    
-    // Resolver imports de app/sections
     config.resolve.alias['app/sections'] = './app/sections';
-    config.resolve.alias['@sections'] = './app/sections';
+    config.resolve.alias['@sections'] = './sections';
     config.resolve.alias['@app'] = './app';
-    // Resolver imports de sections e core
-    config.resolve.alias['@sections'] = './sections';
     config.resolve.alias['@core'] = './lib/core';
-    // Resolver imports de sections e core
-    config.resolve.alias['@sections'] = './sections';
-    config.resolve.alias['@core'] = './lib/core';
-    
-    // Configuração original continua abaixo
 
-    // Adicionar diretórios de resolução para loaders
-    if (!config.resolveLoader) {
-      config.resolveLoader = {};
-    }
-    
-    if (!config.resolveLoader.modules) {
-      config.resolveLoader.modules = ['node_modules'];
-    }
-    
-    // Adicionar diretório local para resolução de loaders
-    config.resolveLoader.modules.push(path.resolve('./node_modules'));
-    
-    // Configuração para módulos css
-    if (config.module && config.module.rules) {
-      const cssRule = config.module.rules.find(rule => 
-        rule.test && rule.test.toString().includes('.css')
-      );
-      
-      if (cssRule && cssRule.use) {
-        cssRule.use.forEach(loader => {
-          if (typeof loader === 'object' && loader.loader === 'css-loader') {
-            // Forçar resolução de tailwindcss no diretório do projeto
-            loader.options = loader.options || {};
-            loader.options.modules = loader.options.modules || {};
-            loader.options.modules.getLocalIdent = undefined;
-          }
-        });
-      }
-    }
-    
-    // Configuração original continua abaixo
+    // Aliases específicos para resolver problemas com o Tailwind CSS
+    config.resolve.alias['tailwindcss/preflight'] = path.join(__dirname, 'node_modules/tailwindcss/preflight.css');
+    config.resolve.alias['tailwindcss/theme.css'] = path.join(__dirname, 'node_modules/tailwindcss/theme.css');
 
-    // Adicionar resolução para tailwindcss
-    if (!config.resolve) config.resolve = {};
-    if (!config.resolve.alias) config.resolve.alias = {};
-      // Resolver tailwindcss local
-    config.resolve.alias['tailwindcss'] = './node_modules/tailwindcss';
-    config.resolve.alias['postcss'] = './node_modules/postcss';
-    config.resolve.alias['autoprefixer'] = './node_modules/autoprefixer';
-    
-    // Resolver imports de app/sections
-    config.resolve.alias['app/sections'] = './app/sections';
-    config.resolve.alias['@sections'] = './app/sections';
-    config.resolve.alias['@app'] = './app';
-    // Resolver imports de sections e core
-    config.resolve.alias['@sections'] = './sections';
-    config.resolve.alias['@core'] = './lib/core';
-    
-    // Configuração original continua abaixo
-
-    // Adicionar diretórios de resolução para loaders
-    if (!config.resolveLoader) {
-      config.resolveLoader = {};
-    }
-    
-    if (!config.resolveLoader.modules) {
-      config.resolveLoader.modules = ['node_modules'];
-    }
-    
-    // Adicionar diretório local para resolução de loaders
-    config.resolveLoader.modules.push(path.resolve('./node_modules'));
-    
-    // Configuração para módulos css
-    if (config.module && config.module.rules) {
-      const cssRule = config.module.rules.find(rule => 
-        rule.test && rule.test.toString().includes('.css')
-      );
-      
-      if (cssRule && cssRule.use) {
-        cssRule.use.forEach(loader => {
-          if (typeof loader === 'object' && loader.loader === 'css-loader') {
-            // Forçar resolução de tailwindcss no diretório do projeto
-            loader.options = loader.options || {};
-            loader.options.modules = loader.options.modules || {};
-            loader.options.modules.getLocalIdent = undefined;
-          }
-        });
-      }
-    }
-    
-    // Configuração original continua abaixo
-
-    // Adicionar diretórios de resolução para loaders
-    if (!config.resolveLoader) {
-      config.resolveLoader = {};
-    }
-
-    if (!config.resolveLoader.modules) {
-      config.resolveLoader.modules = ['node_modules'];
-    }
-
-    // Adicionar diretório local para resolução de loaders
-    config.resolveLoader.modules.push(path.resolve('./node_modules'));
-
-    // Configuração para módulos css
+    // Configuração para módulos CSS
     if (config.module && config.module.rules) {
       const cssRule = config.module.rules.find(rule =>
         rule.test && rule.test.toString().includes('.css')
@@ -233,62 +140,48 @@ const nextConfig = {
             loader.options = loader.options || {};
             loader.options.modules = loader.options.modules || {};
             loader.options.modules.getLocalIdent = undefined;
-          }
-        });
-      }
-    }
 
-    // Configuração original continua abaixo
-
-    // CSS LOADER PATCH
-    if (Array.isArray(config.module.rules)) {
-      // Encontrar a regra do css
-      const cssRule = config.module.rules.find(rule =>
-        rule.test && rule.test.toString().includes('.css')
-      );
-
-      if (cssRule && cssRule.use) {
-        // Ajusta o css-loader para usar o diretório correto do tailwindcss
-        cssRule.use.forEach(loader => {
-          if (typeof loader === 'object' && loader.loader === 'css-loader') {
-            if (!loader.options) loader.options = {};
+            // Configurar importLoaders
             if (!loader.options.importLoaders) loader.options.importLoaders = 1;
-
-            // Adicionar postcss-loader explicitamente
-            if (!cssRule.use.some(l =>
-              (typeof l === 'object' && l.loader === 'postcss-loader') ||
-              (typeof l === 'string' && l === 'postcss-loader')
-            )) {
-              cssRule.use.push({
-                loader: 'postcss-loader',
-                options: {
-                  postcssOptions: {
-                    plugins: [
-                      require('tailwindcss'),
-                      require('autoprefixer')
-                    ]
-                  }
-                }
-              });
-            }
           }
         });
+
+        // Adicionar postcss-loader explicitamente
+        if (!cssRule.use.some(l =>
+          (typeof l === 'object' && l.loader === 'postcss-loader') ||
+          (typeof l === 'string' && l === 'postcss-loader')
+        )) {
+          cssRule.use.push({
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [
+                  require('tailwindcss'),
+                  require('autoprefixer')
+                ]
+              }
+            }
+          });
+        }
       }
     }
 
-    // Ajusta a resolução de módulos para encontrar o tailwindcss
-    if (!config.resolve) config.resolve = {};
-    if (!config.resolve.alias) config.resolve.alias = {};
+    // CSS LOADER PATCH para regras adicionais
+    if (Array.isArray(config.module.rules)) {
+      // Verificar todas as regras CSS no array
+      config.module.rules.forEach(rule => {
+        if (rule.test && rule.test.toString().includes('.css') && rule.use) {
+          const useArray = Array.isArray(rule.use) ? rule.use : [rule.use];
 
-    config.resolve.alias['tailwindcss/preflight'] = './node_modules/tailwindcss/preflight.css';
-    config.resolve.alias['tailwindcss'] = './node_modules/tailwindcss';
-    config.resolve.alias['postcss'] = './node_modules/postcss';
-    config.resolve.alias['autoprefixer'] = './node_modules/autoprefixer';
-    // Resolver imports de sections e core
-    config.resolve.alias['@sections'] = './sections';
-    config.resolve.alias['@core'] = './lib/core';
-
-    // Configuração original continua abaixo
+          useArray.forEach(loader => {
+            if (typeof loader === 'object' && loader.loader === 'css-loader') {
+              if (!loader.options) loader.options = {};
+              if (!loader.options.importLoaders) loader.options.importLoaders = 1;
+            }
+          });
+        }
+      });
+    }
 
     // Configuração adicional para resolver imports absolutos
     config.resolve.fallback = { fs: false, path: false };
@@ -306,21 +199,23 @@ const nextConfig = {
       'tailwindcss/preflight': path.join(__dirname, 'node_modules/tailwindcss/preflight.css'),
       'tailwindcss/theme.css': path.join(__dirname, 'node_modules/tailwindcss/theme.css'),
     };
-    
+
     // Interceptar imports CSS que causam problemas no Vercel
-    const cssRule = config.module.rules.find(rule => rule.test && rule.test.toString().includes('.css'));
-    if (cssRule && cssRule.oneOf) {
-      cssRule.oneOf.forEach(rule => {
-        if (!rule.issuerLayer || rule.issuerLayer === 'app') {
-          if (!rule.resolve) rule.resolve = {};
-          if (!rule.resolve.alias) rule.resolve.alias = {};
-          
-          // Garantir que todos os imports problemáticos do tailwindcss sejam resolvidos
-          rule.resolve.alias['tailwindcss/preflight'] = path.join(__dirname, 'node_modules/tailwindcss/preflight.css');
-          rule.resolve.alias['tailwindcss/theme.css'] = path.join(__dirname, 'node_modules/tailwindcss/theme.css');
-        }
-      });
-    }
+    const cssRules = config.module.rules.filter(rule => rule.test && rule.test.toString().includes('.css'));
+    cssRules.forEach(cssRule => {
+      if (cssRule.oneOf) {
+        cssRule.oneOf.forEach(rule => {
+          if (!rule.issuerLayer || rule.issuerLayer === 'app') {
+            if (!rule.resolve) rule.resolve = {};
+            if (!rule.resolve.alias) rule.resolve.alias = {};
+
+            // Garantir que todos os imports problemáticos do tailwindcss sejam resolvidos
+            rule.resolve.alias['tailwindcss/preflight'] = path.join(__dirname, 'node_modules/tailwindcss/preflight.css');
+            rule.resolve.alias['tailwindcss/theme.css'] = path.join(__dirname, 'node_modules/tailwindcss/theme.css');
+          }
+        });
+      }
+    });
 
     return config;
   },
