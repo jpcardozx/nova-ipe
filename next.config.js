@@ -157,8 +157,8 @@ const nextConfig = {
             options: {
               postcssOptions: {
                 plugins: [
-                  require('tailwindcss'),
-                  require('autoprefixer')
+                  'tailwindcss',
+                  'autoprefixer'
                 ]
               }
             }
