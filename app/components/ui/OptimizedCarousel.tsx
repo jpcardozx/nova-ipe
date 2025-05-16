@@ -9,7 +9,7 @@ import { AnimatePresence } from 'framer-motion';
 import useEmblaCarousel, { type UseEmblaCarouselType } from 'embla-carousel-react';
 import { Button } from '@/src/components/ui/button';
 
-// Import t// Import the autoplay plugin directly
+// Import t// Import t// Import the autoplay plugin directly
 // Implementação minimalista do Autoplay para evitar problemas de build
 const Autoplay = () => ({
   name: 'autoplay',
@@ -20,7 +20,7 @@ const Autoplay = () => ({
   stop: () => {},
   reset: () => {}
 });
-// Define p// Define plugin type to match EmblaPluginType
+// Define p// Define p// Define plugin type to match EmblaPluginType
 type AutoplayType = ReturnType<typeof Autoplay>;
 
 // Helper function to get plugins based on options
