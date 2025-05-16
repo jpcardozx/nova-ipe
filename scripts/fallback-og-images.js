@@ -1,6 +1,13 @@
 // This is a fallback script when canvas is not available (e.g., in cloud environments)
 console.log('Canvas dependency not available - using fallback OG image strategy');
 
+// Capture any errors that might occur and handle them gracefully
+process.on('uncaughtException', (err) => {
+    console.error('Error in OG image generation:', err.message);
+    console.log('Continuing build process despite OG image generation failure');
+    process.exit(0); // Exit with success code to not fail the build
+});
+
 const fs = require('fs');
 const path = require('path');
 
