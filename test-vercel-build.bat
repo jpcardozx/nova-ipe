@@ -4,26 +4,26 @@ echo    TESTE DE BUILD DA NOVA IPE PARA VERCEL
 echo =====================================================
 
 echo.
-echo [1/6] Executando script de correcao do CSS Loader...
+echo [1/6] Executando script de correcao do Autoprefixer...
+call node scripts\autoprefixer-vercel-fix.js
+if %errorlevel% neq 0 (
+    echo [ERRO] Falha ao executar script de correcao do Autoprefixer
+    exit /b 1
+)
+
+echo.
+echo [2/6] Executando script de criacao de links para modulos criticos...
+call node scripts\create-critical-module-links.js
+if %errorlevel% neq 0 (
+    echo [ERRO] Falha ao executar script de criacao de links
+    exit /b 1
+)
+
+echo.
+echo [3/6] Executando script de correcao do CSS Loader...
 call node scripts\fix-css-loader.js
 if %errorlevel% neq 0 (
     echo [ERRO] Falha ao executar script de correcao do CSS Loader
-    exit /b 1
-)
-
-echo.
-echo [2/6] Executando script de fixacao do Tailwind CSS...
-call node scripts\direct-tailwind-patch.js
-if %errorlevel% neq 0 (
-    echo [ERRO] Falha ao executar script de fixacao do Tailwind CSS
-    exit /b 1
-)
-
-echo.
-echo [3/6] Executando script de fixacao de importacoes...
-call node scripts\fix-imports.js
-if %errorlevel% neq 0 (
-    echo [ERRO] Falha ao executar script de fixacao de importacoes
     exit /b 1
 )
 

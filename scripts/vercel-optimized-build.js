@@ -51,6 +51,87 @@ runCommand(`npm install --no-save ${requiredDeps.join(' ')}`);
 // 2. Aplicar correções específicas
 console.log('🔧 Aplicando correções específicas...');
 
+// Garantir que o diretório de fallbacks existe
+const fallbackDir = path.join(process.cwd(), 'scripts', 'module-fallbacks');
+if (!fs.existsSync(fallbackDir)) {
+    fs.mkdirSync(fallbackDir, { recursive: true });
+}
+
+// Verificar se o fallback de autoprefixer existe
+const autoprefixerFallbackPath = path.join(fallbackDir, 'autoprefixer-fallback.js');
+if (!fs.existsSync(autoprefixerFallbackPath)) {
+    console.log('📝 Criando fallback para autoprefixer...');
+    const autoprefixerFallback = `/**
+ * Implementação de fallback do autoprefixer
+ * Para usar quando o módulo original não está disponível
+ */
+
+'use strict';
+
+// Implementação minimalista do autoprefixer
+function autoprefixer(options) {
+  options = options || {};
+  
+  return {
+    postcssPlugin: 'autoprefixer',
+    Once(root) {
+      // Não faz nada, apenas retorna a raiz CSS sem modificações
+      return root;
+    },
+    info() {
+      return { browsers: [] };
+    }
+  };
+}
+
+// Configurações necessárias para o PostCSS
+autoprefixer.postcss = true;
+
+module.exports = autoprefixer;`;
+
+    fs.writeFileSync(autoprefixerFallbackPath, autoprefixerFallback);
+    console.log('✅ Fallback para autoprefixer criado com sucesso!');
+}
+
+// Criar diretório real do autoprefixer se não existir
+const autoprefixerDir = path.join(process.cwd(), 'node_modules', 'autoprefixer');
+if (!fs.existsSync(autoprefixerDir)) {
+    fs.mkdirSync(autoprefixerDir, { recursive: true });
+
+    // Criar package.json para o autoprefixer
+    const packageJson = {
+        "name": "autoprefixer",
+        "version": "10.4.16",
+        "main": "lib/autoprefixer.js",
+        "license": "MIT"
+    };
+
+    fs.writeFileSync(
+        path.join(autoprefixerDir, 'package.json'),
+        JSON.stringify(packageJson, null, 2)
+    );
+
+    // Criar lib diretório
+    const libDir = path.join(autoprefixerDir, 'lib');
+    if (!fs.existsSync(libDir)) {
+        fs.mkdirSync(libDir, { recursive: true });
+    }
+
+    // Copiar o fallback
+    fs.copyFileSync(
+        autoprefixerFallbackPath,
+        path.join(libDir, 'autoprefixer.js')
+    );
+
+    // Criar index.js para o autoprefixer
+    fs.writeFileSync(
+        path.join(autoprefixerDir, 'index.js'),
+        "module.exports = require('./lib/autoprefixer');"
+    );
+
+    console.log('✅ Diretório autoprefixer criado com sucesso!');
+}
+
 // Aplicar correção do CSS Loader
 if (fs.existsSync(path.join(process.cwd(), 'scripts', 'fix-css-loader.js'))) {
     runCommand('node scripts/fix-css-loader.js');
