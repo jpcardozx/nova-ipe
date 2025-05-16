@@ -1,33 +1,48 @@
-// This is a fallback script when canvas is not available (e.g., in cloud environments)
-console.log('Canvas dependency not available - using fallback OG image strategy');
+/**
+ * Script de fallback para geração de imagens OG quando canvas não estiver disponível
+ * Especialmente útil para deploy no Vercel onde temos limitações com dependências nativas
+ */
+console.log('🖼️ Configurando fallbacks para imagens OG e preview do WhatsApp...');
 
-// Capture any errors that might occur and handle them gracefully
+// Capturar erros para não falhar o build
 process.on('uncaughtException', (err) => {
-    console.error('Error in OG image generation:', err.message);
-    console.log('Continuing build process despite OG image generation failure');
-    process.exit(0); // Exit with success code to not fail the build
+    console.error('❌ Erro na geração de imagens OG:', err.message);
+    console.log('⚠️ Continuando build mesmo com falha na geração de imagens');
+    process.exit(0); // Sair com código de sucesso para não falhar o build
 });
 
 const fs = require('fs');
 const path = require('path');
 
-// Create directory if it doesn't exist
-const outputDir = path.join(__dirname, '../public/images');
-if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-}
+// Criar diretórios necessários
+const publicDir = path.join(__dirname, '../public');
+const imagesDir = path.join(publicDir, 'images');
+const fallbackDir = path.join(publicDir, 'fallbacks');
+const metaDir = path.join(publicDir, 'meta');
 
-// Check if the OG images already exist, if not copy the default ones
-const defaultOgImagePath = path.join(__dirname, '../public/images/default-og-image.jpg');
-const ogImagePath = path.join(outputDir, 'og-image-2025.jpg');
-const whatsappImagePath = path.join(outputDir, 'og-image-whatsapp.jpg');
-const squareImagePath = path.join(outputDir, 'og-image-square.jpg');
+// Criar diretórios se não existirem
+[imagesDir, fallbackDir, metaDir].forEach(dir => {
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+        console.log(`📁 Diretório criado: ${path.relative(process.cwd(), dir)}`);
+    }
+});
 
-// Check if the OG images already exist
-if (fs.existsSync(ogImagePath) && fs.existsSync(whatsappImagePath) && fs.existsSync(squareImagePath)) {
-    console.log('OG images found in the repository. Using existing files.');
+// Verificar imagens OG existentes e criar fallbacks
+const logoPath = path.join(imagesDir, 'logo.png'); // Logo original do site
+const defaultOgPath = path.join(imagesDir, 'default-og-image.jpg');
+const whatsappOgPath = path.join(imagesDir, 'og-image-whatsapp.jpg');
+const squareOgPath = path.join(imagesDir, 'og-image-square.jpg');
+
+// Verificar se as imagens OG já existem
+const ogImagesExist = fs.existsSync(defaultOgPath) &&
+    fs.existsSync(whatsappOgPath) &&
+    fs.existsSync(squareOgPath);
+
+if (ogImagesExist) {
+    console.log('✅ Imagens OG encontradas no repositório. Usando arquivos existentes.');
 } else {
-    console.log('OG images not found. Attempting to create fallback images...');
+    console.log('⚠️ Imagens OG não encontradas. Criando imagens de fallback...');
 
     try {
         // Try to copy from default images if they exist (for example from a default-images folder)

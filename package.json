@@ -1,15 +1,18 @@
 {
   "name": "nova-ipe",
   "version": "0.1.0",
-  "private": true,  "scripts": {
+  "private": true,
+  "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:vercel": "node scripts/vercel-build.js",
+    "preinstall": "node scripts/fallback-og-images.js",
     "start": "next start",
     "lint": "next lint",
     "generate-og-images": "node scripts/fallback-og-images.js",
     "prepare-images": "echo 'Using fallback OG images strategy'",
     "postinstall": "node -e \"console.log('Dependencies installed successfully')\"",
-    "deploy": "vercel",
+    "deploy": "node scripts/deploy-vercel.js",
     "deploy:prod": "vercel --prod"
   },
   "dependencies": {

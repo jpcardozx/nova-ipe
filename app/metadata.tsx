@@ -14,10 +14,12 @@ export const metadata: Metadata = {
         description: 'Encontre propriedades exclusivas para compra e aluguel em Guararema e região.',
         images: ['/images/og-image-2025.jpg'],
         creator: '@novaipe',
-    },
-    other: {
+    }, other: {
         'fb:app_id': '123456789',
         'whatsapp-platform': 'true', // Optimizes for WhatsApp
+        'whatsapp:card': 'summary_large_image',
+        'whatsapp:creator': '@novaipe',
+        'whatsapp:domain': 'novaipe.com.br',
         'theme-color': '#0D1F2D',
         'msapplication-TileColor': '#0D1F2D',
         'msapplication-config': '/browserconfig.xml',
