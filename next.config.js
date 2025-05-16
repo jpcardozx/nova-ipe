@@ -14,11 +14,12 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
-      },],
+      },
+    ]
   },
   experimental: {
     optimizeCss: true,
-    largePageDataBytes: 512 * 1000,
+    largePageDataBytes: 512 * 1000
   },
   webpack: (config, { isServer }) => {
     // Ensure basic configuration objects exist
@@ -105,12 +106,11 @@ const nextConfig = {
 };
 
 // Only add Sentry in production
-if (process.env.NODE_ENV === 'production') {
-  const { withSentryConfig } = require('@sentry/nextjs');
-  module.exports = withSentryConfig(nextConfig, {
-    silent: true,
-    dryRun: false,
-  });
-} else {
-  module.exports = nextConfig;
-}
+const withSentryConfig = process.env.NODE_ENV === 'production' 
+  ? require('@sentry/nextjs').withSentryConfig
+  : (config) => config;
+
+module.exports = withSentryConfig(nextConfig, {
+  silent: true,
+  dryRun: false,
+});
