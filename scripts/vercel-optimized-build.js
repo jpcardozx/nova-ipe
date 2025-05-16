@@ -182,8 +182,42 @@ process.env.NEXT_TELEMETRY_DISABLED = '1';
 process.env.NEXT_SHARP_PATH = path.join(process.cwd(), 'node_modules', 'sharp');
 process.env.TAILWIND_CSS_DISABLED = '0'; // Garantir que o Tailwind está ativado
 
-// Executar o build do Next.js
-const buildResult = runCommand('next build');
+// Tentar aplicar fixes específicos para Node.js v22 antes do build
+// Verificar se estamos em Node.js v22
+if (process.version.startsWith('v22')) {
+    console.log('⚠️ Detectado Node.js v22, aplicando patches específicos...');
+
+    // Fix para o problema de __non_webpack_require__
+    const requireHookPath = path.join(process.cwd(), 'node_modules', 'next', 'dist', 'server', 'require-hook.js');
+
+    if (fs.existsSync(requireHookPath)) {
+        // Criar backup se ainda não existir
+        if (!fs.existsSync(`${requireHookPath}.bak`)) {
+            fs.copyFileSync(requireHookPath, `${requireHookPath}.bak`);
+        }
+
+        // Ler o conteúdo
+        let hookContent = fs.readFileSync(requireHookPath, 'utf8');
+
+        // Verificar se contém o código problemático
+        if (hookContent.includes('__non_webpack_require__')) {
+            console.log('🔧 Corrigindo referência a __non_webpack_require__ em require-hook.js');
+            hookContent = hookContent.replace(
+                /let resolve = process\.env\.NEXT_MINIMAL \? __non_webpack_require__\.resolve : require\.resolve;/g,
+                'let resolve = require.resolve;'
+            );
+
+            // Escrever o arquivo modificado
+            fs.writeFileSync(requireHookPath, hookContent);
+        }
+    }
+}
+
+// Definir configurações especiais para o build
+process.env.NODE_OPTIONS = '--no-warnings --experimental-fetch';
+
+// Executar o build do Next.js usando o comando npx para evitar problemas de escopo
+const buildResult = runCommand('npx next build');
 
 if (buildResult) {
     console.log('🎉 Build completado com sucesso!');
@@ -191,11 +225,16 @@ if (buildResult) {
     console.error('❌ Build falhou. Tentando abordagem alternativa...');
 
     // Tentar abordagem alternativa com modo standalone
-    console.log('🔄 Tentando build com modo standalone...');
-    process.env.NEXT_MINIMAL = '1';
+    console.log('🔄 Tentando build com modo standalone e flags especiais...');
+
+    // Desativar o modo minimal que causa problemas no Node.js v22
+    delete process.env.NEXT_MINIMAL;
+
+    // Configurações alternativas para o build
+    process.env.NODE_OPTIONS = '--no-warnings --max_old_space_size=4096';
 
     // Tentar com --no-lint para evitar problemas não relacionados
-    const alternativeBuildResult = runCommand('next build --no-lint');
+    const alternativeBuildResult = runCommand('npx next build --no-lint');
 
     if (alternativeBuildResult) {
         console.log('🎉 Build alternativo completado com sucesso!');

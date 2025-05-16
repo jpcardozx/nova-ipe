@@ -26,8 +26,26 @@ console.log('✅ Backup do next.config.js criado em next.config.js.bak');
 // Ler o conteúdo do arquivo
 let configContent = fs.readFileSync(nextConfigPath, 'utf8');
 
+// Função para verificar módulos já importados
+const checkForModuleImports = (content) => {
+    const moduleRegex = /const\s+(\w+)\s*=\s*require\s*\(['"]([^'"]+)['"]\)/g;
+    const imports = {};
+
+    let match;
+    while ((match = moduleRegex.exec(content)) !== null) {
+        const varName = match[1];
+        const moduleName = match[2];
+        imports[varName] = moduleName;
+    }
+
+    return imports;
+};
+
 // Função para adicionar configurações ao webpack
 const addWebpackConfig = (content) => {
+    // Verificar módulos já importados para evitar duplicações
+    const existingImports = checkForModuleImports(content);
+
     // Verificar se já existe configuração webpack
     if (content.includes('webpack: (config,')) {
         console.log('⚠️ Configuração webpack já existe, modificando...');
@@ -40,16 +58,15 @@ const addWebpackConfig = (content) => {
     // Adicionar resolução para tailwindcss
     if (!config.resolve) config.resolve = {};
     if (!config.resolve.alias) config.resolve.alias = {};
-    
-    // Resolver tailwindcss local
-    config.resolve.alias['tailwindcss'] = path.resolve('./node_modules/tailwindcss');
-    config.resolve.alias['postcss'] = path.resolve('./node_modules/postcss');
-    config.resolve.alias['autoprefixer'] = path.resolve('./node_modules/autoprefixer');
+      // Resolver tailwindcss local
+    config.resolve.alias['tailwindcss'] = './node_modules/tailwindcss';
+    config.resolve.alias['postcss'] = './node_modules/postcss';
+    config.resolve.alias['autoprefixer'] = './node_modules/autoprefixer';
     
     // Resolver imports de app/sections
-    config.resolve.alias['app/sections'] = path.resolve('./app/sections');
-    config.resolve.alias['@sections'] = path.resolve('./app/sections');
-    config.resolve.alias['@app'] = path.resolve('./app');
+    config.resolve.alias['app/sections'] = './app/sections';
+    config.resolve.alias['@sections'] = './app/sections';
+    config.resolve.alias['@app'] = './app';
     
     // Configuração original continua abaixo
 `
@@ -61,16 +78,15 @@ const addWebpackConfig = (content) => {
     // Adicionar resolução para tailwindcss
     if (!config.resolve) config.resolve = {};
     if (!config.resolve.alias) config.resolve.alias = {};
-    
-    // Resolver tailwindcss local
-    config.resolve.alias['tailwindcss'] = path.resolve('./node_modules/tailwindcss');
-    config.resolve.alias['postcss'] = path.resolve('./node_modules/postcss');
-    config.resolve.alias['autoprefixer'] = path.resolve('./node_modules/autoprefixer');
+      // Resolver tailwindcss local
+    config.resolve.alias['tailwindcss'] = './node_modules/tailwindcss';
+    config.resolve.alias['postcss'] = './node_modules/postcss';
+    config.resolve.alias['autoprefixer'] = './node_modules/autoprefixer';
     
     // Resolver imports de app/sections
-    config.resolve.alias['app/sections'] = path.resolve('./app/sections');
-    config.resolve.alias['@sections'] = path.resolve('./app/sections');
-    config.resolve.alias['@app'] = path.resolve('./app');
+    config.resolve.alias['app/sections'] = './app/sections';
+    config.resolve.alias['@sections'] = './app/sections';
+    config.resolve.alias['@app'] = './app';
     
     return config;
   },`;

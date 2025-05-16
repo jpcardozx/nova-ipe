@@ -1,11 +1,12 @@
 {
   "name": "nova-ipe",
   "version": "0.1.0",
-  "private": true,  "scripts": {
+  "private": true,
+  "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:vercel": "node scripts/diagnose-and-fix-paths.js && node scripts/autoprefixer-vercel-fix.js && node scripts/override-nextjs-css-processing.js && node scripts/vercel-optimized-build.js",
-    "prebuild": "node scripts/diagnose-and-fix-paths.js && node scripts/autoprefixer-vercel-fix.js && node scripts/override-nextjs-css-processing.js && node scripts/fix-css-loader.js",
+    "build:vercel": "node scripts/verify-next-config.js && node scripts/diagnose-and-fix-paths.js && node scripts/fix-next-require-hook.js && node scripts/autoprefixer-vercel-fix.js && node scripts/override-nextjs-css-processing.js && node scripts/vercel-optimized-build.js",
+    "prebuild": "node scripts/verify-next-config.js && node scripts/diagnose-and-fix-paths.js && node scripts/fix-next-require-hook.js && node scripts/autoprefixer-vercel-fix.js && node scripts/override-nextjs-css-processing.js && node scripts/fix-css-loader.js",
     "preinstall": "node scripts/fallback-og-images.js",
     "start": "next start",
     "lint": "next lint",

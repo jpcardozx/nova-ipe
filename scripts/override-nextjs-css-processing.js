@@ -12,29 +12,29 @@ console.log('🔧 Criando override para processamento CSS do Next.js...');
 // Caminho para o diretório do Next.js
 const nextDir = path.join(process.cwd(), 'node_modules', 'next');
 if (!fs.existsSync(nextDir)) {
-  console.error('❌ Diretório do Next.js não encontrado');
-  process.exit(1);
+    console.error('❌ Diretório do Next.js não encontrado');
+    process.exit(1);
 }
 
 // Caminhos para os arquivos de configuração CSS do Next.js
 const cssConfigPath = path.join(nextDir, 'dist', 'build', 'webpack', 'config', 'blocks', 'css');
 if (!fs.existsSync(cssConfigPath)) {
-  console.error('❌ Diretório de configuração CSS do Next.js não encontrado');
-  process.exit(1);
+    console.error('❌ Diretório de configuração CSS do Next.js não encontrado');
+    process.exit(1);
 }
 
 // Arquivo de plugins
 const pluginsPath = path.join(cssConfigPath, 'plugins.js');
 if (!fs.existsSync(pluginsPath)) {
-  console.error('❌ Arquivo de plugins CSS não encontrado');
-  process.exit(1);
+    console.error('❌ Arquivo de plugins CSS não encontrado');
+    process.exit(1);
 }
 
 // Criar backup
 const backupPath = `${pluginsPath}.bak`;
 if (!fs.existsSync(backupPath)) {
-  fs.copyFileSync(pluginsPath, backupPath);
-  console.log('✅ Backup do arquivo de plugins criado');
+    fs.copyFileSync(pluginsPath, backupPath);
+    console.log('✅ Backup do arquivo de plugins criado');
 }
 
 // Substituir o conteúdo com uma implementação simplificada
