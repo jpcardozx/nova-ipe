@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 
 console.log('🔧 Fixing PostCSS configuration for Next.js 15+...');
+console.log('');
 
 // Standard valid PostCSS config for Next.js
 const validConfig = `// postcss.config.js
@@ -26,11 +27,13 @@ const postcssConfigPath = path.join(process.cwd(), 'postcss.config.js');
 // Write the valid config
 fs.writeFileSync(postcssConfigPath, validConfig);
 console.log('✅ PostCSS configuration fixed for Next.js compatibility');
+console.log('');
 
 // Create a guard file to prevent other scripts from modifying it
 const guardFilePath = path.join(process.cwd(), '.postcss-config-locked');
 fs.writeFileSync(guardFilePath, new Date().toISOString());
 console.log('🔒 PostCSS configuration locked to prevent modifications');
+console.log('');
 
 // Hook into the module system to enforce the correct config
 const hookPath = path.join(process.cwd(), 'scripts', 'postcss-config-hook.js');
@@ -82,3 +85,8 @@ require('./scripts/postcss-config-hook.js');\n\n${nextConfig}`;
 } else {
     console.log('⚠️ next.config.js not found');
 }
+
+// Important: Always exit with success code to ensure build continues
+console.log('');
+console.log('✅ PostCSS configuration setup complete - continuing with build...');
+process.exit(0); // Explicitly exit with success code
