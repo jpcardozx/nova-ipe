@@ -144,7 +144,8 @@ const corrections = [
     'scripts/direct-tailwind-patch.js',
     'scripts/create-minimal-tailwind.js',
     'scripts/create-minimal-postcss.js',
-    'scripts/fix-nextjs-config.js'
+    'scripts/fix-nextjs-config.js',
+    'scripts/fix-module-imports.js'
 ];
 
 corrections.forEach(script => {
@@ -181,67 +182,84 @@ console.log('🏗️ Iniciando build do Next.js...');
 process.env.NEXT_TELEMETRY_DISABLED = '1';
 process.env.NEXT_SHARP_PATH = path.join(process.cwd(), 'node_modules', 'sharp');
 process.env.TAILWIND_CSS_DISABLED = '0'; // Garantir que o Tailwind está ativado
+process.env.NODE_ENV = 'production';
+process.env.TAILWIND_MODE = 'build';
 
-// Tentar aplicar fixes específicos para Node.js v22 antes do build
-// Verificar se estamos em Node.js v22
+// Configurações específicas baseadas na versão do Node.js
 if (process.version.startsWith('v22')) {
-    console.log('⚠️ Detectado Node.js v22, aplicando patches específicos...');
+    console.log('⚠️ Detectado Node.js v22, aplicando configurações específicas...');
 
-    // Fix para o problema de __non_webpack_require__
-    const requireHookPath = path.join(process.cwd(), 'node_modules', 'next', 'dist', 'server', 'require-hook.js');
+    // Desativar modo NEXT_MINIMAL para evitar problemas com __non_webpack_require__
+    delete process.env.NEXT_MINIMAL;
 
-    if (fs.existsSync(requireHookPath)) {
-        // Criar backup se ainda não existir
-        if (!fs.existsSync(`${requireHookPath}.bak`)) {
-            fs.copyFileSync(requireHookPath, `${requireHookPath}.bak`);
-        }
+    // Configurar NODE_OPTIONS para máxima compatibilidade
+    process.env.NODE_OPTIONS = '--no-warnings --experimental-fetch --max-old-space-size=4096';
+} else {
+    // Para outras versões do Node.js, usar configurações padrão
+    process.env.NODE_OPTIONS = '--max-old-space-size=4096';
+}
 
-        // Ler o conteúdo
-        let hookContent = fs.readFileSync(requireHookPath, 'utf8');
+// Estratégia de múltiplas tentativas para o build
+console.log('🏗️ Iniciando processo de build com recuperação de falhas...');
 
-        // Verificar se contém o código problemático
-        if (hookContent.includes('__non_webpack_require__')) {
-            console.log('🔧 Corrigindo referência a __non_webpack_require__ em require-hook.js');
-            hookContent = hookContent.replace(
-                /let resolve = process\.env\.NEXT_MINIMAL \? __non_webpack_require__\.resolve : require\.resolve;/g,
-                'let resolve = require.resolve;'
-            );
+// Primeira tentativa: build normal
+console.log('🔄 Tentativa 1: Build padrão com npx next build');
+let buildSuccess = runCommand('npx next build');
 
-            // Escrever o arquivo modificado
-            fs.writeFileSync(requireHookPath, hookContent);
-        }
+// Segunda tentativa: build com --no-lint se a primeira falhou
+if (!buildSuccess) {
+    console.log('⚠️ Primeira tentativa falhou, tentando sem lint...');
+    console.log('🔄 Tentativa 2: Build sem lint');
+    buildSuccess = runCommand('npx next build --no-lint');
+}
+
+// Terceira tentativa: usar o binário do next diretamente
+if (!buildSuccess) {
+    console.log('⚠️ Segunda tentativa falhou, tentando binário do next diretamente...');
+    console.log('🔄 Tentativa 3: Usando binário do next diretamente');
+
+    const nextBinPath = path.join(process.cwd(), 'node_modules', '.bin', 'next');
+    if (fs.existsSync(nextBinPath)) {
+        buildSuccess = runCommand(`${nextBinPath} build --no-lint`);
+    } else {
+        console.log('❌ Binário do next não encontrado');
     }
 }
 
-// Definir configurações especiais para o build
-process.env.NODE_OPTIONS = '--no-warnings --experimental-fetch';
+// Quarta tentativa: criar um wrapper próprio usando o next interno
+if (!buildSuccess) {
+    console.log('⚠️ Terceira tentativa falhou, criando wrapper personalizado...');
+    console.log('🔄 Tentativa 4: Usando wrapper personalizado');
 
-// Executar o build do Next.js usando o comando npx para evitar problemas de escopo
-const buildResult = runCommand('npx next build');
-
-if (buildResult) {
-    console.log('🎉 Build completado com sucesso!');
-} else {
-    console.error('❌ Build falhou. Tentando abordagem alternativa...');
-
-    // Tentar abordagem alternativa com modo standalone
-    console.log('🔄 Tentando build com modo standalone e flags especiais...');
-
-    // Desativar o modo minimal que causa problemas no Node.js v22
-    delete process.env.NEXT_MINIMAL;
-
-    // Configurações alternativas para o build
-    process.env.NODE_OPTIONS = '--no-warnings --max_old_space_size=4096';
-
-    // Tentar com --no-lint para evitar problemas não relacionados
-    const alternativeBuildResult = runCommand('npx next build --no-lint');
-
-    if (alternativeBuildResult) {
-        console.log('🎉 Build alternativo completado com sucesso!');
-    } else {
-        console.error('❌ Todas as tentativas de build falharam.');
+    // Criar um script temporário de build
+    const tempBuildScript = path.join(process.cwd(), 'scripts', 'temp-build.js');
+    fs.writeFileSync(tempBuildScript, `
+    // Script temporário de build
+    // Este script usa diretamente o módulo next/dist/cli/next-build
+    // evitando problemas com o CLI
+    process.env.NODE_ENV = 'production';
+    
+    const nextBuild = require('next/dist/cli/next-build');
+    nextBuild.nextBuild([process.cwd()], {})
+      .then(() => console.log('Build completado com sucesso'))
+      .catch((err) => {
+        console.error('Erro no build:', err);
         process.exit(1);
+      });
+    `);
+
+    buildSuccess = runCommand(`node ${tempBuildScript}`);
+
+    // Limpar arquivo temporário
+    if (fs.existsSync(tempBuildScript)) {
+        fs.unlinkSync(tempBuildScript);
     }
+}// Final do bloco de tentativas
+if (!buildSuccess) {
+    console.error('❌ Todas as tentativas de build falharam.');
+    process.exit(1);
+} else {
+    console.log('🎉 Build completado com sucesso!');
 }
 
 console.log('✅ Processo de build finalizado.');
