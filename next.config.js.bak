@@ -1,30 +1,3 @@
-
-// TAILWIND DIRECT PATCH
-const fs = require('fs');
-const originalResolveFilename = require('module')._resolveFilename;
-
-// Substituir o mecanismo de resolução de módulo do Node.js
-require('module')._resolveFilename = function(request, parent, isMain, options) {
-  if (request === 'tailwindcss' || request.startsWith('tailwindcss/')) {
-    try {
-      return originalResolveFilename(request, parent, isMain, options);
-    } catch (e) {
-      console.warn('⚠️ Redirecionando resolução de tailwindcss para implementação local');
-      return originalResolveFilename(request.replace('tailwindcss', 'C:\Users\João Pedro Cardozo\OneDrive\Área de Trabalho\projetos\nova-ipe\node_modules\tailwindcss'), parent, isMain, options);
-    }
-  }
-  
-  if (request === 'postcss' || request.startsWith('postcss/')) {
-    try {
-      return originalResolveFilename(request, parent, isMain, options);
-    } catch (e) {
-      console.warn('⚠️ Redirecionando resolução de postcss para implementação local');
-      return originalResolveFilename(request.replace('postcss', 'C:\Users\João Pedro Cardozo\OneDrive\Área de Trabalho\projetos\nova-ipe\node_modules\postcss'), parent, isMain, options);
-    }
-  }
-  
-  return originalResolveFilename(request, parent, isMain, options);
-};
 /** @type {import('next').NextConfig} */
 const path = require('path');
 
@@ -48,38 +21,6 @@ const nextConfig = {
     largePageDataBytes: 512 * 1000,
   },  // Configuração dos módulos de resolução de caminho
   webpack: (config, { isServer }) => {
-    // Adicionar diretórios de resolução para loaders
-    if (!config.resolveLoader) {
-      config.resolveLoader = {};
-    }
-    
-    if (!config.resolveLoader.modules) {
-      config.resolveLoader.modules = ['node_modules'];
-    }
-    
-    // Adicionar diretório local para resolução de loaders
-    config.resolveLoader.modules.push(path.resolve('./node_modules'));
-    
-    // Configuração para módulos css
-    if (config.module && config.module.rules) {
-      const cssRule = config.module.rules.find(rule => 
-        rule.test && rule.test.toString().includes('.css')
-      );
-      
-      if (cssRule && cssRule.use) {
-        cssRule.use.forEach(loader => {
-          if (typeof loader === 'object' && loader.loader === 'css-loader') {
-            // Forçar resolução de tailwindcss no diretório do projeto
-            loader.options = loader.options || {};
-            loader.options.modules = loader.options.modules || {};
-            loader.options.modules.getLocalIdent = undefined;
-          }
-        });
-      }
-    }
-    
-    // Configuração original continua abaixo
-
     // CSS LOADER PATCH
     if (Array.isArray(config.module.rules)) {
       // Encontrar a regra do css

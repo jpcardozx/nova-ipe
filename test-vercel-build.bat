@@ -4,16 +4,16 @@ echo    TESTE DE BUILD DA NOVA IPE PARA VERCEL
 echo =====================================================
 
 echo.
-echo [1/6] Executando script de fixacao do Rollup...
-call node scripts\rollup-vercel-fix.js
+echo [1/6] Executando script de correcao do CSS Loader...
+call node scripts\fix-css-loader.js
 if %errorlevel% neq 0 (
-    echo [ERRO] Falha ao executar script de fixacao do Rollup
+    echo [ERRO] Falha ao executar script de correcao do CSS Loader
     exit /b 1
 )
 
 echo.
 echo [2/6] Executando script de fixacao do Tailwind CSS...
-call node scripts\fix-tailwind.js
+call node scripts\direct-tailwind-patch.js
 if %errorlevel% neq 0 (
     echo [ERRO] Falha ao executar script de fixacao do Tailwind CSS
     exit /b 1
@@ -49,13 +49,32 @@ if exist .next (
 )
 
 echo.
-echo [6/6] Executando build...
+echo [6/6] Executando build otimizado...
 echo [INFO] Este processo pode demorar alguns minutos
-call next build
+call node scripts\vercel-optimized-build.js
 if %errorlevel% neq 0 (
     echo.
-    echo [ERRO] Falha no build do Next.js
-    exit /b 1
+    echo [ERRO] Falha no build otimizado
+    echo [RECUPERACAO] Tentando abordagem alternativa com modo de depuracao...
+    
+    echo.
+    echo [DEBUG] Exibindo modulos instalados:
+    call npm list tailwindcss postcss autoprefixer
+    
+    echo.
+    echo [DEBUG] Verificando arquivos no diretorio node_modules\tailwindcss:
+    if exist node_modules\tailwindcss dir node_modules\tailwindcss
+    
+    echo.
+    echo [DEBUG] Tentando build com opcoes de depuracao...
+    set NODE_OPTIONS=--trace-warnings --trace-deprecation
+    call node scripts\vercel-optimized-build.js
+    
+    if %errorlevel% neq 0 (
+        echo.
+        echo [ERRO CRITICO] Falha em todas as tentativas de build
+        exit /b 1
+    )
 )
 
 echo.
@@ -65,5 +84,9 @@ echo =====================================================
 echo.
 echo O projeto esta pronto para deploy na Vercel.
 echo.
+echo Verificando arquivos CSS gerados:
+if exist .next\static\css dir .next\static\css /b
 
+echo.
+pause
 exit /b 0

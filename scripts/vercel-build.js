@@ -27,7 +27,7 @@ if (isVercelEnv) {
     } catch (installError) {
         console.warn('⚠️ Erro ao instalar dependências, mas continuando:', installError.message);
     }
-    
+
     // ETAPA 2: Executar script para corrigir o Tailwind CSS
     console.log('🔄 Executando script para corrigir problemas do Tailwind CSS...');
     try {
@@ -40,18 +40,18 @@ if (isVercelEnv) {
         }
     } catch (e) {
         console.error('❌ Erro ao executar script de correção do Tailwind CSS:', e.message);
-        
+
         // ETAPA 3: Fallback - criar implementação mínima do tailwindcss
         console.log('🔄 Implementando solução de emergência para tailwindcss...');
         try {
             const nodeModulesDir = path.join(process.cwd(), 'node_modules');
             const tailwindDir = path.join(nodeModulesDir, 'tailwindcss');
-            
+
             // Garantir diretório node_modules/tailwindcss
             if (!fs.existsSync(tailwindDir)) {
                 fs.mkdirSync(tailwindDir, { recursive: true });
             }
-            
+
             // Criar estrutura mínima para o tailwindcss
             const indexContent = `
 // Tailwind CSS emergency fallback
@@ -62,14 +62,14 @@ module.exports = {
 module.exports.postcss = true;
 `;
             fs.writeFileSync(path.join(tailwindDir, 'index.js'), indexContent);
-            
+
             const packageContent = `{
   "name": "tailwindcss",
   "version": "3.3.5",
   "main": "index.js"
 }`;
             fs.writeFileSync(path.join(tailwindDir, 'package.json'), packageContent);
-            
+
             console.log('✅ Solução de emergência para tailwindcss implementada');
         } catch (emergencyError) {
             console.error('❌ Falha na solução de emergência:', emergencyError.message);
