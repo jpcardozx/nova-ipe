@@ -19,6 +19,8 @@ const publicDir = path.join(__dirname, '../public');
 const imagesDir = path.join(publicDir, 'images');
 const fallbackDir = path.join(publicDir, 'fallbacks');
 const metaDir = path.join(publicDir, 'meta');
+// Define outputDir for image generation - available globally
+const outputDir = fallbackDir;
 
 // Criar diretórios se não existirem
 [imagesDir, fallbackDir, metaDir].forEach(dir => {
@@ -42,12 +44,7 @@ const ogImagesExist = fs.existsSync(defaultOgPath) &&
 if (ogImagesExist) {
     console.log('✅ Imagens OG encontradas no repositório. Usando arquivos existentes.');
 } else {
-    console.log('⚠️ Imagens OG não encontradas. Criando imagens de fallback...');
-
-    try {
-        // Define outputDir for image generation
-        const outputDir = fallbackDir;
-
+    console.log('⚠️ Imagens OG não encontradas. Criando imagens de fallback...');    try {
         // Try to copy from default images if they exist (for example from a default-images folder)
         // If not available, just output a note
         console.log('Note: OG images not found and could not be generated in this environment.');
