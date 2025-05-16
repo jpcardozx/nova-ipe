@@ -1,28 +1,86 @@
 
-// TAILWIND DIRECT PATCH
+// TAILWIND DIRECT PATCH - VERSÃO VERCEL SEGURA
 const fs = require('fs');
+const path = require('path');
 const originalResolveFilename = require('module')._resolveFilename;
 
+// Patches dinâmicos para vários contextos (local e Vercel)
+const resolvedModules = {};
+
+// Implementações de fallback para módulos críticos
+const fallbackModules = {
+  'autoprefixer': {
+    postcssPlugin: 'autoprefixer',
+    Once(root) { return root; },
+    info() { return { browsers: [] }; }
+  },
+  'tailwindcss': {
+    postcssPlugin: 'tailwindcss',
+    Once(root) { return root; }
+  }
+};
+
 // Substituir o mecanismo de resolução de módulo do Node.js
-require('module')._resolveFilename = function(request, parent, isMain, options) {
-  if (request === 'tailwindcss' || request.startsWith('tailwindcss/')) {
+require('module')._resolveFilename = function (request, parent, isMain, options) {
+  const criticalModules = ['tailwindcss', 'postcss', 'autoprefixer'];
+
+  // Verificar se é um módulo crítico
+  const moduleBase = request.split('/')[0];
+
+  if (criticalModules.includes(moduleBase)) {
+    // Tentar usar caminho em cache primeiro
+    if (resolvedModules[request]) {
+      return resolvedModules[request];
+    }
+
+    // Tentar resolver normalmente primeiro
     try {
-      return originalResolveFilename(request, parent, isMain, options);
+      const resolved = originalResolveFilename(request, parent, isMain, options);
+      resolvedModules[request] = resolved;
+      return resolved;
     } catch (e) {
-      console.warn('⚠️ Redirecionando resolução de tailwindcss para implementação local');
-      return originalResolveFilename(request.replace('tailwindcss', 'C:\Users\João Pedro Cardozo\OneDrive\Área de Trabalho\projetos\nova-ipe\node_modules\tailwindcss'), parent, isMain, options);
+      console.warn(`⚠️ Não foi possível resolver ${request} normalmente, tentando abordagens alternativas`);
+
+      // Tentar caminhos relativos ao projeto
+      try {
+        let nodeModulesPath = path.join(process.cwd(), 'node_modules');
+        let relativePath = request;
+
+        // Para subpaths como tailwindcss/plugin
+        const parts = request.split('/');
+        if (parts.length > 1) {
+          const [base, ...rest] = parts;
+          relativePath = path.join(base, ...rest);
+        }
+
+        const absolutePath = path.join(nodeModulesPath, relativePath);
+        if (fs.existsSync(absolutePath)) {
+          resolvedModules[request] = absolutePath;
+          return absolutePath;
+        }
+
+        // Verificar no pacote Next.js
+        const nextPath = path.join(process.cwd(), 'node_modules', 'next', 'node_modules', relativePath);
+        if (fs.existsSync(nextPath)) {
+          resolvedModules[request] = nextPath;
+          return nextPath;
+        }
+
+        // Para autoprefixer específicamente, injetar módulo inline
+        if (moduleBase === 'autoprefixer') {
+          console.warn('⚠️ Usando implementação interna de autoprefixer');
+          resolvedModules[request] = require.resolve('./scripts/module-fallbacks/autoprefixer-fallback.js');
+          return resolvedModules[request];
+        }
+      } catch (innerErr) {
+        console.error(`Erro ao tentar resolver ${request} de forma alternativa:`, innerErr);
+      }
+
+      // Se chegou aqui, continuar com o erro original
+      throw e;
     }
   }
-  
-  if (request === 'postcss' || request.startsWith('postcss/')) {
-    try {
-      return originalResolveFilename(request, parent, isMain, options);
-    } catch (e) {
-      console.warn('⚠️ Redirecionando resolução de postcss para implementação local');
-      return originalResolveFilename(request.replace('postcss', 'C:\Users\João Pedro Cardozo\OneDrive\Área de Trabalho\projetos\nova-ipe\node_modules\postcss'), parent, isMain, options);
-    }
-  }
-  
+
   return originalResolveFilename(request, parent, isMain, options);
 };
 /** @type {import('next').NextConfig} */
@@ -52,20 +110,20 @@ const nextConfig = {
     if (!config.resolveLoader) {
       config.resolveLoader = {};
     }
-    
+
     if (!config.resolveLoader.modules) {
       config.resolveLoader.modules = ['node_modules'];
     }
-    
+
     // Adicionar diretório local para resolução de loaders
     config.resolveLoader.modules.push(path.resolve('./node_modules'));
-    
+
     // Configuração para módulos css
     if (config.module && config.module.rules) {
-      const cssRule = config.module.rules.find(rule => 
+      const cssRule = config.module.rules.find(rule =>
         rule.test && rule.test.toString().includes('.css')
       );
-      
+
       if (cssRule && cssRule.use) {
         cssRule.use.forEach(loader => {
           if (typeof loader === 'object' && loader.loader === 'css-loader') {
@@ -77,26 +135,26 @@ const nextConfig = {
         });
       }
     }
-    
+
     // Configuração original continua abaixo
 
     // CSS LOADER PATCH
     if (Array.isArray(config.module.rules)) {
       // Encontrar a regra do css
-      const cssRule = config.module.rules.find(rule => 
+      const cssRule = config.module.rules.find(rule =>
         rule.test && rule.test.toString().includes('.css')
       );
-      
+
       if (cssRule && cssRule.use) {
         // Ajusta o css-loader para usar o diretório correto do tailwindcss
         cssRule.use.forEach(loader => {
           if (typeof loader === 'object' && loader.loader === 'css-loader') {
             if (!loader.options) loader.options = {};
             if (!loader.options.importLoaders) loader.options.importLoaders = 1;
-            
+
             // Adicionar postcss-loader explicitamente
-            if (!cssRule.use.some(l => 
-              (typeof l === 'object' && l.loader === 'postcss-loader') || 
+            if (!cssRule.use.some(l =>
+              (typeof l === 'object' && l.loader === 'postcss-loader') ||
               (typeof l === 'string' && l === 'postcss-loader')
             )) {
               cssRule.use.push({
@@ -115,15 +173,15 @@ const nextConfig = {
         });
       }
     }
-    
+
     // Ajusta a resolução de módulos para encontrar o tailwindcss
     if (!config.resolve) config.resolve = {};
     if (!config.resolve.alias) config.resolve.alias = {};
-    
+
     config.resolve.alias['tailwindcss'] = path.resolve('./node_modules/tailwindcss');
     config.resolve.alias['postcss'] = path.resolve('./node_modules/postcss');
     config.resolve.alias['autoprefixer'] = path.resolve('./node_modules/autoprefixer');
-    
+
     // Configuração original continua abaixo
 
     // Configuração adicional para resolver imports absolutos

@@ -1,18 +1,17 @@
 {
   "name": "nova-ipe",
   "version": "0.1.0",
-  "private": true,
-  "scripts": {
+  "private": true,  "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:vercel": "node scripts/vercel-optimized-build.js",
-    "prebuild": "node scripts/fix-css-loader.js",
+    "build:vercel": "node scripts/diagnose-and-fix-paths.js && node scripts/autoprefixer-vercel-fix.js && node scripts/override-nextjs-css-processing.js && node scripts/vercel-optimized-build.js",
+    "prebuild": "node scripts/diagnose-and-fix-paths.js && node scripts/autoprefixer-vercel-fix.js && node scripts/override-nextjs-css-processing.js && node scripts/fix-css-loader.js",
     "preinstall": "node scripts/fallback-og-images.js",
     "start": "next start",
     "lint": "next lint",
     "generate-og-images": "node scripts/fallback-og-images.js",
     "prepare-images": "echo 'Using fallback OG images strategy'",
-    "postinstall": "node scripts/vercel-install-deps.js && node scripts/fix-css-loader.js",
+    "postinstall": "node scripts/diagnose-and-fix-paths.js && node scripts/vercel-install-deps.js && node scripts/autoprefixer-vercel-fix.js && node scripts/fix-css-loader.js",
     "vercel-build": "npm run build:vercel",
     "deploy": "node scripts/deploy-vercel.js",
     "deploy:prod": "vercel --prod",
@@ -22,8 +21,9 @@
     "fix:postcss": "node scripts/create-minimal-postcss.js",
     "fix:imports": "node scripts/fix-imports.js",
     "fix:nextjs": "node scripts/fix-nextjs-config.js",
+    "fix:modules": "node scripts/create-critical-module-links.js",
     "install:deps": "node scripts/vercel-install-deps.js",
-    "prepare:build": "npm run fix:css && npm run fix:tailwind && npm run fix:postcss && npm run fix:imports && npm run fix:nextjs"
+    "prepare:build": "npm run fix:modules && npm run fix:css && npm run fix:tailwind && npm run fix:postcss && npm run fix:imports && npm run fix:nextjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.10",
