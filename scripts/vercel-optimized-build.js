@@ -145,7 +145,8 @@ const corrections = [
     'scripts/create-minimal-tailwind.js',
     'scripts/create-minimal-postcss.js',
     'scripts/fix-nextjs-config.js',
-    'scripts/fix-module-imports.js'
+    'scripts/fix-module-imports.js',
+    'scripts/fix-tailwind-preflight.js' // Novo script para resolver o erro "Can't resolve 'tailwindcss/preflight'"
 ];
 
 corrections.forEach(script => {

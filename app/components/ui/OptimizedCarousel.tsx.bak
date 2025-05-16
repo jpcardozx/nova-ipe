@@ -9,18 +9,9 @@ import { AnimatePresence } from 'framer-motion';
 import useEmblaCarousel, { type UseEmblaCarouselType } from 'embla-carousel-react';
 import { Button } from '@/src/components/ui/button';
 
-// Import t// Import the autoplay plugin directly
-// Implementação minimalista do Autoplay para evitar problemas de build
-const Autoplay = () => ({
-  name: 'autoplay',
-  options: { delay: 4000, stopOnInteraction: true, stopOnMouseEnter: false },
-  init: () => {},
-  destroy: () => {},
-  play: () => {},
-  stop: () => {},
-  reset: () => {}
-});
-// Define p// Define plugin type to match EmblaPluginType
+// Import the autoplay plugin directly
+import Autoplay from 'embla-carousel-autoplay';
+// Define plugin type to match EmblaPluginType
 type AutoplayType = ReturnType<typeof Autoplay>;
 
 // Helper function to get plugins based on options

@@ -1,37 +1,37 @@
 {
-    "compilerOptions": {
-        "baseUrl": ".",
-        "paths": {
-            "@/*": [
-                "./*"
-            ],
-            "@app/*": [
-                "app/*"
-            ],
-            "@components/*": [
-                "components/*"
-            ],
-            "@lib/*": [
-                "lib/*"
-            ],
-            "@sections/*": [
-                "sections/*"
-            ],
-            "@core/*": [
-                "lib/core/*"
-            ],
-            "@sanity/*": [
-                "lib/sanity/*"
-            ],
-            "@studio/*": [
-                "studio/*"
-            ],
-            "@public/*": [
-                "public/*"
-            ]
-        }
-    },
-    "exclude": [
-        "node_modules"
-    ]
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./*"
+      ],
+      "@app/*": [
+        "app/*"
+      ],
+      "@components/*": [
+        "components/*"
+      ],
+      "@lib/*": [
+        "lib/*"
+      ],
+      "@sections/*": [
+        "sections/*"
+      ],
+      "@core/*": [
+        "lib/core/*"
+      ],
+      "@sanity/*": [
+        "lib/sanity/*"
+      ],
+      "@studio/*": [
+        "studio/*"
+      ],
+      "@public/*": [
+        "public/*"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }

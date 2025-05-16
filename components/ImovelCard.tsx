@@ -1,0 +1,13 @@
+import React from 'react';
+
+/**
+ * Componente stub criado automaticamente para @components/ImovelCard
+ * Este componente é uma implementação minimalista para permitir o build
+ */
+export default function ImovelCard({ children, ...props }) {
+  return (
+    <div className="stub-component imovelcard" {...props}>
+      {children || <div>Stub para ImovelCard</div>}
+    </div>
+  );
+}
