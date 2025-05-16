@@ -7,10 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate-og-images": "node scripts/generate-og-images.js || node scripts/fallback-og-images.js",
-    "prepare-images": "npm run generate-og-images",
-    "build:production": "next build",
-    "postinstall": "node -e \"console.log('Dependencies installed successfully')\""
+    "generate-og-images": "node scripts/fallback-og-images.js",
+    "prepare-images": "echo 'Skipping image preparation in production build'",
+    "build:production": "npm run prepare-images && next build",
+    "postinstall": "node -e \"if (process.env.VERCEL) { console.log('Running in Vercel, skipping native dependencies'); } else { console.log('Dependencies installed successfully'); }\""
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.10",
