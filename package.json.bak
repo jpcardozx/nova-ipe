@@ -1,5 +1,7 @@
 {
-  "name": "no    "postinstall": "node scripts/diagnose-and-fix-paths.js && node scripts/vercel-install-deps.js && node scripts/autoprefixer-vercel-fix.js && node scripts/fix-postcss-inheritance.js && node scripts/fix-postcss-sync.js && node scripts/fix-css-loader.js", "vercel-build": "node scripts/complete-postcss-patch.js && node scripts/patch-nextjs-postcss.js && node scripts/fix-postcss-inheritance.js && node scripts/fix-postcss-sync.js && node scripts/validate-nesting-plugin.js && npm run build:vercel",-ipe","version": "0.1.0",
+  "name": "no    "postinstall": "node scripts/diagnose-and-fix-paths.js && node scripts/vercel-install-deps.js && node scripts/autoprefixer-vercel-fix.js && node scripts/fix-postcss-inheritance.js && node scripts/fix-postcss-sync.js && node scripts/fix-css-loader.js", 
+    "vercel-build": "node scripts/complete-postcss-patch.js && node scripts/patch-nextjs-postcss.js && node scripts/fix-postcss-inheritance.js && node scripts/fix-postcss-sync.js && node scripts/validate-nesting-plugin.js && npm run build:vercel",-ipe",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "build:ts-config": "npx tsc next.config.ts && next build",
