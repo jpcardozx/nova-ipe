@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { Metadata } from "next";
 
-import Footer from "app/sections/Footer";
-import Navbar from "app/sections/NavBar";
+// Importando componentes usando caminho relativo para garantir compatibilidade
+import Footer from "../sections/Footer";
+import Navbar from "../sections/NavBar";
 
 export const metadata: Metadata = {
     title: "Acesso restrito - Ipê Imóveis",

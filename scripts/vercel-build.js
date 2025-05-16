@@ -21,6 +21,30 @@ console.log(`Executando em ambiente ${isVercelEnv ? 'Vercel' : 'local'} (${isPro
 if (isVercelEnv) {
     console.log('Aplicando configurações específicas para ambiente Vercel...');
 
+    // Executar script para corrigir o Tailwind CSS
+    console.log('Executando script para corrigir problemas do Tailwind CSS...');
+    try {
+        require('./fix-tailwind');
+    } catch (e) {
+        console.error('❌ Erro ao executar script de correção do Tailwind CSS:', e);
+        // Fallback: tentar instalar o tailwindcss diretamente
+        console.log('⚠️ Tentando método alternativo para instalar tailwindcss...');
+        try {
+            execSync('npm install -D tailwindcss@3.3.5 postcss autoprefixer', { stdio: 'inherit' });
+            console.log('✅ tailwindcss instalado com sucesso (método alternativo)');
+        } catch (installError) {
+            console.error('❌ Erro ao instalar tailwindcss:', installError);
+        }
+    }
+
+    // Executar script de correção de importações
+    console.log('Executando script para correção de importações...');
+    try {
+        require('./fix-imports');
+    } catch (e) {
+        console.error('❌ Erro ao executar script de correção de importações:', e);
+    }
+
     // Resolver problemas com dependências do Rollup
     console.log('Resolvendo problemas com dependências do Rollup...');
     const packageJsonPath = path.join(process.cwd(), 'package.json');
@@ -46,7 +70,7 @@ if (isVercelEnv) {
             console.log('Instalando dependências específicas do Rollup para Linux...');
             execSync('npm install @rollup/rollup-linux-x64-gnu@4.14.0 @rollup/rollup-linux-x64-musl@4.14.0 --no-save',
                 { stdio: 'inherit' });
-    } catch (error) {
+        } catch (error) {
             console.log('⚠️ Aviso: Não foi possível reinstalar dependências do Rollup:', error.message);
         }
     } catch (error) {
