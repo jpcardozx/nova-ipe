@@ -21,29 +21,43 @@ if (!fs.existsSync(nestingIndexPath)) {
             fs.mkdirSync(nestingPluginPath, { recursive: true });
         }
 
-        // Criar um substituto do plugin de nesting que não usa o método sync
-        const nestingPluginContent = `
+        // Usar nosso substituto personalizado do plugin de nesting
+        const customNestingPath = path.join(process.cwd(), 'lib', 'plugins', 'nesting-fallback.js');
+
+        // Verificar se nosso plugin personalizado existe
+        if (fs.existsSync(customNestingPath)) {
+            // Copiar nosso plugin personalizado para o diretório do nesting
+            fs.copyFileSync(customNestingPath, nestingIndexPath);
+            console.log('✅ Plugin de nesting personalizado copiado com sucesso!');
+        } else {
+            // Se não existir, criar o arquivo com o conteúdo padrão
+            const nestingPluginContent = `
 /**
  * Substituto para o plugin de nesting do Tailwind CSS
  * Esta versão não usa o método sync que causa erros
  */
 'use strict';
 
-module.exports = function createPlugin() {
+// Criamos uma função simples que retorna um plugin válido para o PostCSS
+function createNestingPlugin(opts = {}) {
   return {
     postcssPlugin: 'tailwindcss-nesting',
-    Once(root, { result }) {
+    Once(root) {
       // Um plugin esvaziado que não faz nada, mas não quebra o build
       return root;
     }
   };
-};
+}
 
-module.exports.postcss = true;
+// Definir a propriedade postcss = true é essencial
+createNestingPlugin.postcss = true;
+
+module.exports = createNestingPlugin;
 `;
 
-        fs.writeFileSync(nestingIndexPath, nestingPluginContent, 'utf8');
-        console.log('✅ Substituto do plugin de nesting criado com sucesso!');
+            fs.writeFileSync(nestingIndexPath, nestingPluginContent, 'utf8');
+            console.log('✅ Substituto do plugin de nesting criado com sucesso!');
+        }
     } catch (error) {
         console.error('❌ Erro ao criar substituto para o plugin de nesting:', error.message);
     }
