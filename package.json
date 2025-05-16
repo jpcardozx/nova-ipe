@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:vercel": "node scripts/verify-next-config.js && node scripts/diagnose-and-fix-paths.js && node scripts/fix-next-require-hook.js && node scripts/fix-module-imports.js && node scripts/fix-optimized-carousel.js && node scripts/autoprefixer-vercel-fix.js && node scripts/override-nextjs-css-processing.js && node scripts/vercel-optimized-build.js",
+    "prepare-vercel": "node scripts/vercel-prepare-build.js",
+    "build:vercel": "npm run prepare-vercel && next build",
     "prebuild": "node scripts/vercel-environment-check.js && node scripts/fix-css-loader.js",
     "preinstall": "node scripts/fallback-og-images.js",
     "start": "next start",

@@ -120,6 +120,59 @@ const nextConfig = {
     // Resolver imports de sections e core
     config.resolve.alias['@sections'] = './sections';
     config.resolve.alias['@core'] = './lib/core';
+    // Resolver imports de sections e core
+    config.resolve.alias['@sections'] = './sections';
+    config.resolve.alias['@core'] = './lib/core';
+    
+    // Configuração original continua abaixo
+
+    // Adicionar diretórios de resolução para loaders
+    if (!config.resolveLoader) {
+      config.resolveLoader = {};
+    }
+    
+    if (!config.resolveLoader.modules) {
+      config.resolveLoader.modules = ['node_modules'];
+    }
+    
+    // Adicionar diretório local para resolução de loaders
+    config.resolveLoader.modules.push(path.resolve('./node_modules'));
+    
+    // Configuração para módulos css
+    if (config.module && config.module.rules) {
+      const cssRule = config.module.rules.find(rule => 
+        rule.test && rule.test.toString().includes('.css')
+      );
+      
+      if (cssRule && cssRule.use) {
+        cssRule.use.forEach(loader => {
+          if (typeof loader === 'object' && loader.loader === 'css-loader') {
+            // Forçar resolução de tailwindcss no diretório do projeto
+            loader.options = loader.options || {};
+            loader.options.modules = loader.options.modules || {};
+            loader.options.modules.getLocalIdent = undefined;
+          }
+        });
+      }
+    }
+    
+    // Configuração original continua abaixo
+
+    // Adicionar resolução para tailwindcss
+    if (!config.resolve) config.resolve = {};
+    if (!config.resolve.alias) config.resolve.alias = {};
+      // Resolver tailwindcss local
+    config.resolve.alias['tailwindcss'] = './node_modules/tailwindcss';
+    config.resolve.alias['postcss'] = './node_modules/postcss';
+    config.resolve.alias['autoprefixer'] = './node_modules/autoprefixer';
+    
+    // Resolver imports de app/sections
+    config.resolve.alias['app/sections'] = './app/sections';
+    config.resolve.alias['@sections'] = './app/sections';
+    config.resolve.alias['@app'] = './app';
+    // Resolver imports de sections e core
+    config.resolve.alias['@sections'] = './sections';
+    config.resolve.alias['@core'] = './lib/core';
     
     // Configuração original continua abaixo
 
