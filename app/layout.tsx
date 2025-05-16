@@ -12,6 +12,7 @@ import ClientWebVitals from './components/ClientWebVitals';
 import ClientPerformanceMonitor from './components/ClientPerformanceMonitor';
 import WebVitalsDebuggerWrapper from './components/WebVitalsDebuggerWrapper';
 import { OrganizationSchema, WebsiteSchema, LocalBusinessSchema } from './components/StructuredData';
+import PerformanceDiagnostics from './components/PerformanceDiagnostics';
 
 // Metadata is imported from metadata.tsx to ensure consistency
 import { metadata } from './metadata';
@@ -30,34 +31,12 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (<html lang="pt-BR" className={montserrat.variable} data-loading-state="loading">      <head>
-    {/* Script crítico executado imediatamente para resolver problemas de carregamento */}
-    <script dangerouslySetInnerHTML={{
-      __html: `
-      (function() {
-        // Detecta conexões lentas e ajusta comportamento
-        const startTime = Date.now();
-        const isSlowConnection = 'connection' in navigator && 
-          (navigator.connection.saveData || 
-          ['slow-2g', '2g', '3g'].includes(navigator.connection.effectiveType));
-        
-        // Se for conexão lenta, força visibilidade após um tempo menor
-        if (isSlowConnection) {
-          document.documentElement.setAttribute('data-slow-connection', 'true');
-          setTimeout(function() {
-            document.documentElement.removeAttribute('data-loading-state');
-            document.documentElement.setAttribute('data-loaded', 'true');
-          }, 1000);
-        }
-
-        // Fallback de segurança para todos os casos
-        setTimeout(function() {
-          document.documentElement.removeAttribute('data-loading-state');
-          document.documentElement.setAttribute('data-loaded', 'true');
-        }, 3500);
-      })();
-    ` }} />
+  return (<html lang="pt-BR" className={montserrat.variable} data-loading-state="loading">      <head>    {/* Script crítico executado imediatamente para resolver problemas de carregamento */}
+    <script src="/js/critical-preload.js" />
+    
     {/* Preload e aplicação de recursos críticos */}
+    <link rel="preload" href="/critical-speed.css" as="style" />
+    <link rel="stylesheet" href="/critical-speed.css" />
     <link rel="preload" href="/critical.css" as="style" />
     <link rel="stylesheet" href="/critical.css" />
 
@@ -124,10 +103,12 @@ export default function RootLayout({
     <meta property="fb:app_id" content="123456789" />
 
     {/* Habilita o modo de visualização avançada do WhatsApp */}
-    <meta name="format-detection" content="telephone=no" />
-    {/* Script para otimização de WhatsApp */}
+    <meta name="format-detection" content="telephone=no" />    {/* Script para otimização de WhatsApp */}
     <link rel="stylesheet" href="/styles/loading-states.css" />
     <script src="/js/whatsapp-optimizer.js" async></script>
+    
+    {/* Script de timeout para garantir visibilidade mesmo em caso de falha */}
+    <script src="/js/loading-timeout.js" async defer>
   </head>      <body>        {/* Structured Data for SEO and Social Sharing */}
       <ClientOnly>
         <Suspense fallback={null}>
@@ -167,9 +148,7 @@ export default function RootLayout({
       {/* Delay WebVitals loading */}
       <Suspense fallback={null}>
         <ClientWebVitals />
-      </Suspense>
-
-      {/* Only load monitoring tools in development */}
+      </Suspense>      {/* Only load monitoring tools in development */}
       {process.env.NODE_ENV !== 'production' ? (
         <>
           {/* Performance Debugging Tools - Development Only */}
@@ -179,6 +158,11 @@ export default function RootLayout({
           </Suspense>
         </>
       ) : null}
+      
+      {/* Ferramenta de diagnóstico que pode ser habilitada via URL com ?debug=performance */}
+      <Suspense fallback={null}>
+        <PerformanceDiagnostics />
+      </Suspense>
     </body>
   </html>
   );
