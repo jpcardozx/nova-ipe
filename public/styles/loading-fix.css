@@ -1,0 +1,47 @@
+/* Resolvendo o problema de página presa em carregamento */
+
+/* Reset de estados de carregamento após um tempo */
+html {
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Adiciona um timeout para garantir que a página sempre seja exibida */
+html[data-loading-state="loading"] {
+  animation: forceLoad 2s forwards;
+}
+
+@keyframes forceLoad {
+  0% {
+    opacity: 0.7;
+  }
+  99% {
+    opacity: 0.9;
+    data-loading-state: "loading";
+  }
+  100% {
+    opacity: 1;
+    data-loading-state: none;
+  }
+}
+
+/* Garante que após um breve período a página sempre seja visível */
+body {
+  animation: ensureVisibility 0.8s 1s forwards;
+}
+
+@keyframes ensureVisibility {
+  to {
+    opacity: 1 !important;
+  }
+}
+
+/* Dispositivos móveis - carregamento mais rápido */
+@media (max-width: 768px) {
+  html[data-loading-state="loading"] {
+    animation-duration: 0.5s;
+  }
+  
+  body {
+    animation-delay: 0.3s;
+  }
+}

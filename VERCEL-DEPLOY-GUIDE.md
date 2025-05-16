@@ -1,6 +1,13 @@
 # Guia Rápido de Deploy na Vercel - Nova Ipê
 
-Este guia contém instruções para fazer o deploy do site Nova Ipê na plataforma Vercel, resolvendo os problemas de importação e dependências nativas.
+Este guia contém instruções para fazer o deploy do site Nova Ipê na plataforma Vercel, resolvendo os problemas de importação, dependências nativas, carregamento contínuo e previews no WhatsApp.
+
+## Problemas Resolvidos
+
+✅ **Erros de path imports** - Corrigido substituindo imports absolutos por relativos
+✅ **Dependências nativas (canvas)** - Implementado fallback para ambientes sem suporte a compilação nativa
+✅ **Problemas de carregamento contínuo** - Adicionado timeout de segurança e otimizações CSS
+✅ **Preview de links no WhatsApp** - Implementados metatags específicas e geração dinâmica de OG Images
 
 ## Opção 1: Deploy automático (recomendado)
 
@@ -82,3 +89,34 @@ Quando for necessário atualizar o site:
 3. Faça o commit das mudanças
 4. Se configurado com integração GitHub, o deploy será automático
 5. Caso contrário, execute `npm run deploy`
+
+## Otimização para WhatsApp
+
+Implementamos várias melhorias para garantir a correta exibição de links compartilhados no WhatsApp:
+
+### 1. Componentes específicos
+
+- `WhatsAppPreviewCard` - Gera metatags otimizadas para o WhatsApp
+- `LoadingStateManager` - Resolve problemas de carregamento contínuo
+- API `/api/og` - Gera imagens dinâmicas para previews
+
+### 2. Metatags implementadas
+
+```html
+<meta property="whatsapp:title" content="Título do Imóvel" />
+<meta property="whatsapp:description" content="Descrição do imóvel" />
+<meta property="whatsapp:image" content="URL da imagem OG" />
+<meta property="whatsapp:card" content="summary_large_image" />
+```
+
+### 3. Testando previews
+
+Para testar as previews no WhatsApp:
+
+1. Compartilhe o link em um chat privado do WhatsApp (exemplo com você mesmo)
+2. Use o parâmetro `?v=123` para forçar a atualização do cache
+3. Verifique se a imagem é exibida corretamente e se o título/descrição aparecem
+
+### Mais detalhes
+
+Consulte o arquivo `WHATSAPP-PREVIEWS-GUIDE.md` para mais informações sobre as otimizações de WhatsApp.

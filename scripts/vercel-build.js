@@ -3,6 +3,7 @@
 /**
  * Script para build otimizado para Vercel
  * Executa o build com configurações otimizadas para o ambiente Vercel
+ * Resolve problemas de dependências nativas e carregamento
  */
 
 const { execSync } = require('child_process');
@@ -11,12 +12,10 @@ const path = require('path');
 
 console.log('🌳 Nova Ipê - Build otimizado para Vercel');
 
-// Simular ambiente Vercel para testes
-process.env.VERCEL = '1';
-
 // Detectar ambiente
 const isVercelEnv = !!process.env.VERCEL;
-console.log(`Executando em ambiente ${isVercelEnv ? 'Vercel' : 'local'}`);
+const isProduction = process.env.VERCEL_ENV === 'production' || process.env.NODE_ENV === 'production';
+console.log(`Executando em ambiente ${isVercelEnv ? 'Vercel' : 'local'} (${isProduction ? 'Produção' : 'Preview'})`);
 
 // Otimizar configurações para Vercel
 if (isVercelEnv) {
@@ -29,6 +28,8 @@ force=true
 canvas_skip_installation=true
 canvas_binary_host_mirror=https://github.com/Automattic/node-canvas/releases/download/
 update-binary=false
+sharp_binary_host=https://github.com/lovell/sharp/releases/download
+sharp_libvips_binary_host=https://github.com/lovell/sharp-libvips/releases/download
 ignore-optional=true
 unsafe-perm=true
 `;
