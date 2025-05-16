@@ -106,7 +106,7 @@ const GuararemaHero: React.FC = () => {
         },
         {
             id: 'time',
-            title: 'Consultores Certificados',
+            title: 'Corretores Certificados',
             value: '24h',
             subtitle: 'para atendimento',
             icon: <Clock className="w-5 h-5" />
@@ -250,12 +250,12 @@ const GuararemaHero: React.FC = () => {
                         >                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                                 Encontre seu refúgio
                                 <span className="block bg-clip-text text-transparent bg-gradient-to-r from-amber-600 to-amber-500">
-                                    na charmosa Guararema
+                                    em Guararema
                                 </span>
                             </h1>
 
                             <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto">
-                                Há 13 anos conectando pessoas aos melhores imóveis da região, com atendimento
+                                Com mais de 15 anos conectando famílias aos melhores imóveis da região, com atendimento
                                 personalizado para <span className="font-semibold">realizar sonhos</span> e <span className="font-semibold">garantir investimentos seguros</span>.
                             </p>
                         </motion.div>                            {/* Market metrics - visual aprimorado e dados atuais */}
@@ -376,7 +376,7 @@ const GuararemaHero: React.FC = () => {
                                                     animate={{ opacity: 1, x: 0 }}
                                                     transition={{ delay: index * 0.1 }}
                                                     whileHover={{ scale: 1.01 }}
-                                                    className="bg-gradient-to-r from-gray-50 to-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300"
+                                                    className="bg-gradient-to-r from-gray-50 to-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 mb-4"
                                                 >
                                                     <div className="flex items-start justify-between">
                                                         <div className="flex-1">
@@ -434,10 +434,10 @@ const GuararemaHero: React.FC = () => {
                                             <div className="flex items-center gap-3 mb-2">
                                                 <div className="flex -space-x-2">
                                                     <div className="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center text-white text-xs">JM</div>
-                                                    <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs">CR</div>
-                                                    <div className="w-7 h-7 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs">BT</div>
+                                                    <div className="w-7 ml-[-5px] h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs">LF</div>
+                                                    <div className="w-7 ml-[-5px] h-7 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs">JL</div>
                                                 </div>
-                                                <span className="text-sm text-gray-800 font-medium">3 consultores online agora</span>
+                                                <span className="text-sm text-gray-800 font-medium">3 corretores disponíveis agora</span>
                                             </div>
 
                                             <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-gray-500">

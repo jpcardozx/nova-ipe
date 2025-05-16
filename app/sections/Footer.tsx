@@ -61,7 +61,7 @@ export default function Footer() {
                         className="mx-auto md:mx-0 object-contain"
                     />
                     <p className="text-sm md:text-base text-[#F7D7A3] mt-4 font-light leading-relaxed">
-                        Há 15 anos conectando pessoas aos imóveis ideais em Guararema, com atendimento personalizado e conhecimento profundo da região.
+                        Consultoria Imobiliária e gestão de contratos de locação.
                     </p>
 
                     <div className="mt-6 flex justify-center md:justify-start">

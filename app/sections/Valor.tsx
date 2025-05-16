@@ -339,14 +339,15 @@ export default function ApresentacaoInstitucional() {
                     viewport={{ once: true }}
                     className="text-center"
                 >
-                    <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-10 text-white">
-                        <h3 className="text-3xl font-bold mb-4">
+                    <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-10 text-white max-w-3xl mx-auto">
+                        <Shield className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+                        <h3 className="text-3xl font-bold mb-4 text-white">
                             Pronto para uma experiência imobiliária diferenciada?
                         </h3>
 
                         <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
-                            Agende uma visita à nossa sede ou solicite uma consultoria
-                            personalizada. Nossa equipe está preparada para atender suas necessidades.
+                            Agende uma visita ao nosso escritório ou solicite uma consultoria
+                            personalizada. Nossa equipe está pronta para atender suas demandas.
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -366,8 +367,8 @@ export default function ApresentacaoInstitucional() {
 
                         <div className="mt-8 pt-8 border-t border-white/20">
                             <p className="text-sm text-gray-400">
-                                Atendimento: Segunda a Sexta das 8h às 18h | Sábado das 9h às 13h<br />
-                                Rua Dona Laurinda, 82 - Centro, Guararema/SP
+                                Atendimento: Segunda a Sexta das 9h às 18h | Sábado das 9h às 13h<br />
+                                Rua Dona Laurinda, 65 - Centro, Guararema/SP
                             </p>
                         </div>
                     </div>

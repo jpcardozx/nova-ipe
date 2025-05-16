@@ -1,9 +1,12 @@
+'use client';
+
 import { Suspense } from 'react';
 import { Montserrat } from 'next/font/google';
 import Link from 'next/link';
 import Image from 'next/image';
 import OptimizationProvider from './components/OptimizationProvider';
-import AnuncioNovaVersao from './components/AnuncioNovaVersao';
+import { motion } from 'framer-motion';
+import { ArrowRight, Award, Building2, Check, Home as HomeIcon, MapPin, Shield, Star, Zap } from 'lucide-react';
 
 // Importações para dados dinâmicos do Sanity
 import { getImoveisDestaque, getImoveisAluguel } from '@/lib/queries';
@@ -20,6 +23,8 @@ import EnhancedHero from "./components/EnhancedHero";
 import NavbarResponsive from "./components/NavbarResponsive";
 import Footer from "./sections/Footer";
 import ClientProgressSteps from './components/ClientProgressSteps';
+import WhatsAppButton from './components/WhatsAppButton';
+import SkipToContent from './components/SkipToContent';
 import BlocoExploracaoSimbolica from './components/BlocoExploracaoSimbolica';
 import BlocoCTAConversao from './components/client/BlocoCTAConversao';
 import Destaques from './sections/Destaques';
@@ -32,7 +37,7 @@ import DestaquesSanityCarousel from './components/DestaquesSanityCarousel';
 // Configuração da fonte
 const montSerrat = Montserrat({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
+  weight: ['300', '400', '500', '600', '700', '800'],
   display: 'swap',
   variable: '--font-montserrat',
 });
@@ -239,7 +244,7 @@ export default async function Home() {
   const { destaques, aluguel } = await fetchPropertiesData(); return (
     <div className={`${montSerrat.className} flex flex-col min-h-screen bg-[#fafaf9]`}>
       <OptimizationProvider>
-        <AnuncioNovaVersao />
+
         <NavbarResponsive />
 
         <EnhancedHero />
@@ -314,7 +319,9 @@ export default async function Home() {
               title="Sua Jornada Imobiliária"
               description="Conduzimos você por cada etapa com transparência e eficiência, transformando a busca pelo imóvel ideal em uma experiência agradável e segura."
             />
-            <ClientProgressSteps />
+            <div className='rounded-lg bg-white shadow-xl p-8 ease-in-out duration-300 hover:shadow-2xl'>
+              <ClientProgressSteps />
+            </div>
           </div>
         </section>
 

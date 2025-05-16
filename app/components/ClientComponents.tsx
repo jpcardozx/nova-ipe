@@ -11,11 +11,12 @@ const SentryInitClient = dynamic(() => import('../../instrumentation-client').th
 // Dynamic import for debug tools
 const DebugPanelClient = dynamic(() => import('./debug-tools').then(mod => ({ default: mod.DebugPanel })), { ssr: false });
 
-export function ClientOnly() {
+export function ClientOnly({ children }: { children: React.ReactNode }) {
     return (
         <>
             <SentryInitClient />
             {process.env.NODE_ENV === 'development' ? <DebugPanelClient /> : null}
+            {children}
         </>
     );
 }
