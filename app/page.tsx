@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { Suspense } from 'react';
 import { Montserrat } from 'next/font/google';
 import Link from 'next/link';
@@ -240,9 +241,22 @@ async function fetchPropertiesData() {
   }
 }
 
-export default async function Home() {
-  // Buscar dados de propriedades  
-  const { destaques, aluguel } = await fetchPropertiesData();
+// Remove async from client component - use a state hook instead
+export default function Home() {
+  // Using React state to handle async data
+  const [properties, setProperties] = React.useState<{ destaques: any[], aluguel: any[] }>({ destaques: [], aluguel: [] });
+
+  // Fetch data on mount
+  React.useEffect(() => {
+    const loadData = async () => {
+      const data = await fetchPropertiesData();
+      setProperties(data);
+    };
+
+    loadData();
+  }, []);
+
+  const { destaques, aluguel } = properties;
   return (
     <div className={`${montSerrat.className} flex flex-col min-h-screen bg-[#fafaf9]`}>
       {/* Otimizador de carregamento específico para a página inicial */}
