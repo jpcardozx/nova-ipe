@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:vercel": "node scripts/verify-next-config.js && node scripts/diagnose-and-fix-paths.js && node scripts/fix-next-require-hook.js && node scripts/autoprefixer-vercel-fix.js && node scripts/override-nextjs-css-processing.js && node scripts/vercel-optimized-build.js",
-    "prebuild": "node scripts/verify-next-config.js && node scripts/diagnose-and-fix-paths.js && node scripts/fix-next-require-hook.js && node scripts/autoprefixer-vercel-fix.js && node scripts/override-nextjs-css-processing.js && node scripts/fix-css-loader.js",
+    "build:vercel": "node scripts/verify-next-config.js && node scripts/diagnose-and-fix-paths.js && node scripts/fix-next-require-hook.js && node scripts/fix-module-imports.js && node scripts/fix-optimized-carousel.js && node scripts/autoprefixer-vercel-fix.js && node scripts/override-nextjs-css-processing.js && node scripts/vercel-optimized-build.js",
+    "prebuild": "node scripts/vercel-environment-check.js && node scripts/fix-css-loader.js",
     "preinstall": "node scripts/fallback-og-images.js",
     "start": "next start",
     "lint": "next lint",
@@ -20,11 +20,13 @@
     "fix:tailwind": "node scripts/direct-tailwind-patch.js",
     "fix:css": "node scripts/fix-css-loader.js",
     "fix:postcss": "node scripts/create-minimal-postcss.js",
-    "fix:imports": "node scripts/fix-imports.js",
-    "fix:nextjs": "node scripts/fix-nextjs-config.js",
+    "fix:module-imports": "node scripts/fix-module-imports.js",
+    "fix:missing-components": "node scripts/create-missing-stubs.js",
+    "fix:carousel": "node scripts/fix-optimized-carousel.js",
+    "fix:nextjs": "node scripts/verify-next-config.js && node scripts/fix-nextjs-config.js",
     "fix:modules": "node scripts/create-critical-module-links.js",
     "install:deps": "node scripts/vercel-install-deps.js",
-    "prepare:build": "npm run fix:modules && npm run fix:css && npm run fix:tailwind && npm run fix:postcss && npm run fix:imports && npm run fix:nextjs"
+    "prepare:build": "npm run fix:modules && npm run fix:css && npm run fix:tailwind && npm run fix:postcss && npm run fix:module-imports && npm run fix:missing-components && npm run fix:carousel && npm run fix:nextjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.10",

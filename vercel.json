@@ -1,5 +1,5 @@
 {
-    "buildCommand": "node scripts/verify-next-config.js && node scripts/diagnose-and-fix-paths.js && node scripts/fix-next-require-hook.js && npm run build:vercel",
+    "buildCommand": "node scripts/verify-next-config.js && node scripts/diagnose-and-fix-paths.js && node scripts/fix-module-imports.js && node scripts/create-missing-stubs.js && node scripts/fix-optimized-carousel.js && npm run build:vercel",
     "installCommand": "npm install tailwindcss postcss autoprefixer --no-save --force && npm install --force --no-optional",
     "framework": "nextjs",
     "ignoreCommand": "node -e \"process.exit(!(process.env.VERCEL_ENV === 'preview' || process.env.VERCEL_ENV === 'production') ? 0 : 1)\"",

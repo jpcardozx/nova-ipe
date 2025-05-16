@@ -4,7 +4,55 @@ echo    TESTE DE BUILD DA NOVA IPE PARA VERCEL
 echo =====================================================
 
 echo.
-echo [1/6] Executando script de correcao do Autoprefixer...
+echo [1/9] Verificando next.config.js...
+call node scripts\verify-next-config.js
+if %errorlevel% neq 0 (
+    echo [ERRO] Falha ao verificar next.config.js
+    exit /b 1
+)
+
+echo.
+echo [2/9] Diagnosticando e corrigindo paths...
+call node scripts\diagnose-and-fix-paths.js
+if %errorlevel% neq 0 (
+    echo [ERRO] Falha ao diagnosticar e corrigir paths
+    exit /b 1
+)
+
+echo.
+echo [3/9] Corrigindo módulo require-hook do Next.js...
+call node scripts\fix-next-require-hook.js
+if %errorlevel% neq 0 (
+    echo [ERRO] Falha ao corrigir módulo require-hook
+    exit /b 1
+)
+
+echo.
+echo [4/9] Corrigindo importações de módulos...
+call node scripts\fix-module-imports.js
+if %errorlevel% neq 0 (
+    echo [ERRO] Falha ao corrigir importações de módulos
+    exit /b 1
+)
+
+echo.
+echo [5/9] Criando stubs para componentes ausentes...
+call node scripts\create-missing-stubs.js
+if %errorlevel% neq 0 (
+    echo [ERRO] Falha ao criar stubs para componentes
+    exit /b 1
+)
+
+echo.
+echo [6/9] Corrigindo carousel otimizado...
+call node scripts\fix-optimized-carousel.js
+if %errorlevel% neq 0 (
+    echo [ERRO] Falha ao corrigir carousel otimizado
+    exit /b 1
+)
+
+echo.
+echo [7/9] Executando script de correcao do Autoprefixer...
 call node scripts\autoprefixer-vercel-fix.js
 if %errorlevel% neq 0 (
     echo [ERRO] Falha ao executar script de correcao do Autoprefixer
@@ -12,44 +60,22 @@ if %errorlevel% neq 0 (
 )
 
 echo.
-echo [2/6] Executando script de criacao de links para modulos criticos...
-call node scripts\create-critical-module-links.js
+echo [8/9] Sobrescrevendo processamento de CSS do Next.js...
+call node scripts\override-nextjs-css-processing.js
 if %errorlevel% neq 0 (
-    echo [ERRO] Falha ao executar script de criacao de links
+    echo [ERRO] Falha ao sobrescrever processamento de CSS do Next.js
     exit /b 1
 )
 
 echo.
-echo [3/6] Executando script de correcao do CSS Loader...
-call node scripts\fix-css-loader.js
-if %errorlevel% neq 0 (
-    echo [ERRO] Falha ao executar script de correcao do CSS Loader
-    exit /b 1
-)
-
-echo.
-echo [4/6] Verificando instalacao do Tailwind CSS...
-call npx tailwindcss --help > nul 2>&1
-if %errorlevel% neq 0 (
-    echo [ALERTA] Tailwind CSS nao esta acessivel. Tentando instalar...
-    call npm install -D tailwindcss@3.3.5 postcss autoprefixer
-    if %errorlevel% neq 0 (
-        echo [ERRO] Falha ao instalar Tailwind CSS
-        exit /b 1
-    )
-) else (
-    echo [INFO] Tailwind CSS esta instalado e acessivel
-)
-
-echo.
-echo [5/6] Limpando cache do Next.js...
+echo [9/9] Limpando cache do Next.js...
 if exist .next (
     echo [INFO] Removendo pasta .next para garantir build limpo
     rd /s /q .next
 )
 
 echo.
-echo [6/6] Executando build otimizado...
+echo Executando build otimizado...
 echo [INFO] Este processo pode demorar alguns minutos
 call node scripts\vercel-optimized-build.js
 if %errorlevel% neq 0 (
