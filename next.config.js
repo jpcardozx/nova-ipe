@@ -302,7 +302,25 @@ const nextConfig = {
       '@lib': path.join(__dirname, './lib'),
       '@src': path.join(__dirname, './src'),
       '@public': path.join(__dirname, './public'),
+      // Aliases específicos para resolver problemas com o tailwindcss
+      'tailwindcss/preflight': path.join(__dirname, 'node_modules/tailwindcss/preflight.css'),
+      'tailwindcss/theme.css': path.join(__dirname, 'node_modules/tailwindcss/theme.css'),
     };
+    
+    // Interceptar imports CSS que causam problemas no Vercel
+    const cssRule = config.module.rules.find(rule => rule.test && rule.test.toString().includes('.css'));
+    if (cssRule && cssRule.oneOf) {
+      cssRule.oneOf.forEach(rule => {
+        if (!rule.issuerLayer || rule.issuerLayer === 'app') {
+          if (!rule.resolve) rule.resolve = {};
+          if (!rule.resolve.alias) rule.resolve.alias = {};
+          
+          // Garantir que todos os imports problemáticos do tailwindcss sejam resolvidos
+          rule.resolve.alias['tailwindcss/preflight'] = path.join(__dirname, 'node_modules/tailwindcss/preflight.css');
+          rule.resolve.alias['tailwindcss/theme.css'] = path.join(__dirname, 'node_modules/tailwindcss/theme.css');
+        }
+      });
+    }
 
     return config;
   },

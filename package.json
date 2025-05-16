@@ -1,11 +1,10 @@
 {
   "name": "nova-ipe",
   "version": "0.1.0",
-  "private": true,
-  "scripts": {
+  "private": true,  "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "prepare-vercel": "node scripts/vercel-prepare-build.js",
+    "prepare-vercel": "node scripts/vercel-prepare-build.js && node scripts/create-tailwind-stubs.js",
     "build:vercel": "npm run prepare-vercel && next build",
     "prebuild": "node scripts/vercel-environment-check.js && node scripts/fix-css-loader.js",
     "preinstall": "node scripts/fallback-og-images.js",
