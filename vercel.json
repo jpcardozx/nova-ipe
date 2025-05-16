@@ -1,9 +1,13 @@
-{
-    "framework": "nextjs",
+{    "framework": "nextjs",
+    "buildCommand": "npm run build",
+    "installCommand": "npm install --force",
     "build": {
         "env": {
             "NEXT_TELEMETRY_DISABLED": "1",
-            "NODE_OPTIONS": "--max-old-space-size=4096"
+            "DISABLE_POSTCSS_PLUGIN_PATCHING": "1",
+            "NODE_OPTIONS": "--max-old-space-size=4096",
+            "SKIP_COMPLEX_PATCHES": "1"
         }
-    }
+    },
+    "ignoreCommand": "node scripts/fix-postcss-config.js"
 }
