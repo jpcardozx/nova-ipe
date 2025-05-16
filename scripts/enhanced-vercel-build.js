@@ -16,9 +16,9 @@ console.log('📦 Running Next.js build...');
 try {
     // Ensure environment is production
     process.env.NODE_ENV = 'production';
-    execSync('next build', { 
+    execSync('next build', {
         stdio: 'inherit',
-        env: { 
+        env: {
             ...process.env,
             NODE_ENV: 'production',
             NEXT_TELEMETRY_DISABLED: '1'

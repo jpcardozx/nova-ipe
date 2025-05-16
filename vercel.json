@@ -1,5 +1,6 @@
-{    "framework": "nextjs",
-    "buildCommand": "npm run build",
+{
+    "framework": "nextjs",
+    "buildCommand": "node scripts/fix-postcss-config.js && npm run build",
     "installCommand": "npm install --force",
     "build": {
         "env": {
@@ -8,6 +9,5 @@
             "NODE_OPTIONS": "--max-old-space-size=4096",
             "SKIP_COMPLEX_PATCHES": "1"
         }
-    },
-    "ignoreCommand": "node scripts/fix-postcss-config.js"
+    }
 }
