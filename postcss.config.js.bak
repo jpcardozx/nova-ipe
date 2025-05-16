@@ -22,9 +22,8 @@ module.exports = {
   plugins: {
     // Use our custom nesting implementation first
     'tailwindcss/nesting': nestingPlugin,
-    'tailwindcss': {
-      config: path.join(__dirname, 'tailwind.config.js')
-    },
+    'tailwindcss': {},
     'autoprefixer': {},
+    ...(process.env.NODE_ENV === 'production' ? { 'cssnano': {} } : {})
   }
 };

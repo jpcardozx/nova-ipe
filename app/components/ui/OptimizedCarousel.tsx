@@ -11,7 +11,11 @@ import { Button } from '@/src/components/ui/button';
 
 // Import the proper autoplay plugin
 import Autoplay, { AutoplayOptionsType } from 'embla-carousel-autoplay';
-import type { CreatePluginType, LoosePluginType } from 'embla-carousel';
+// Import needed types from embla-carousel main package
+import type { CreatePluginType, EmblaPluginType } from 'embla-carousel';
+
+// Define a simple type that mimics LoosePluginType
+type LoosePluginType = Record<string, unknown>;
 
 // Helper function to get plugins based on options
 function getPlugins(options: OptimizedCarouselProps<any>['options'] = {}): CreatePluginType<LoosePluginType, {}>[] {
