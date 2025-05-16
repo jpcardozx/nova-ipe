@@ -15,16 +15,28 @@ export async function GET(request: NextRequest) {
         // Cores e estilos com base no tipo
         const bgColor = type === 'whatsapp' ? '#128C7E' : '#0D1F2D';
         const textColor = '#FFFFFF';
-        const accentColor = '#E5A453';
-
-        // Carregando a fonte
-        const montserratMedium = await fetch(
-            new URL('/public/fonts/Montserrat-Medium.ttf', import.meta.url)
-        ).then((res) => res.arrayBuffer());
-
-        const montserratBold = await fetch(
-            new URL('/public/fonts/Montserrat-Bold.ttf', import.meta.url)
-        ).then((res) => res.arrayBuffer());
+        const accentColor = '#E5A453';        // Carregando a fonte
+        let montserratMedium, montserratBold;
+        try {
+            // Tenta carregar fontes localmente
+            montserratMedium = await fetch(
+                new URL('../../../public/fonts/Montserrat-Medium.ttf', import.meta.url)
+            ).then((res) => res.arrayBuffer());
+            
+            montserratBold = await fetch(
+                new URL('../../../public/fonts/Montserrat-Bold.ttf', import.meta.url)
+            ).then((res) => res.arrayBuffer());
+        } catch (e) {
+            // Fallback: usa fontes do Google Fonts CDN
+            console.warn('Fontes locais não encontradas, usando CDN:', e);
+            montserratMedium = await fetch(
+                'https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCu173w5aXp-p7K4KLg.woff2'
+            ).then((res) => res.arrayBuffer());
+            
+            montserratBold = await fetch(
+                'https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCuM73w5aXp-p7K4KLg.woff2'
+            ).then((res) => res.arrayBuffer());
+        }
 
         // Altura e largura com base no tipo (WhatsApp prefere imagens mais quadradas)
         const width = type === 'whatsapp' ? 800 : 1200;

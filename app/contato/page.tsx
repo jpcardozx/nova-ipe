@@ -2,9 +2,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Navbar from '@sections/NavBar';
-import Footer from '@sections/Footer';
-import Valor from '@sections/Valor';
+import Navbar from '../sections/NavBar';
+import Footer from '../sections/Footer';
+import Valor from '../sections/Valor';
 import ImovelCard from '@components/ImovelCard';
 import { getImoveisParaVenda } from '@lib/sanity/fetchImoveis';
 import type { ImovelClient } from '@/types/imovel-client';
