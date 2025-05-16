@@ -7,6 +7,7 @@ import Image from 'next/image';
 import OptimizationProvider from './components/OptimizationProvider';
 import { motion } from 'framer-motion';
 import { ArrowRight, Award, Building2, Check, Home as HomeIcon, MapPin, Shield, Star, Zap } from 'lucide-react';
+import HomepageLoadingOptimizer from './components/HomepageLoadingOptimizer';
 
 // Importações para dados dinâmicos do Sanity
 import { getImoveisDestaque, getImoveisAluguel } from '@/lib/queries';
@@ -240,99 +241,105 @@ async function fetchPropertiesData() {
 }
 
 export default async function Home() {
-  // Buscar dados de propriedades
-  const { destaques, aluguel } = await fetchPropertiesData(); return (
+  // Buscar dados de propriedades  
+  const { destaques, aluguel } = await fetchPropertiesData(); 
+    return (
     <div className={`${montSerrat.className} flex flex-col min-h-screen bg-[#fafaf9]`}>
+      {/* Otimizador de carregamento específico para a página inicial */}
+      <Suspense fallback={null}>
+        <HomepageLoadingOptimizer />
+      </Suspense>
+
       <OptimizationProvider>
 
-        <NavbarResponsive />
+      <NavbarResponsive />
 
-        <EnhancedHero />
+      <EnhancedHero />
 
-        {/* Provider de dados para componentes client-side */}
-        <ClientSidePropertiesProvider destaques={destaques} aluguel={aluguel} />        <BlocoExploracaoSimbolica />
+      {/* Provider de dados para componentes client-side */}
+      <ClientSidePropertiesProvider destaques={destaques} aluguel={aluguel} />        <BlocoExploracaoSimbolica />
 
-        {/* Seção de Imóveis em Destaque - Versão Aprimorada */}
-        <Suspense fallback={<section className="py-24 bg-white"><div className="container mx-auto px-4 max-w-7xl"><PropertiesLoadingSkeleton /></div></section>}>          <DestaquesSanityCarousel
-          rawProperties={destaques}
-          title="Imóveis Cuidadosamente Selecionados"
-          subtitle="Descubra propriedades que se destacam pela arquitetura impecável, localização estratégica e potencial de valorização excepcional em Guararema."
+      {/* Seção de Imóveis em Destaque - Versão Aprimorada */}
+      <Suspense fallback={<section className="py-24 bg-white"><div className="container mx-auto px-4 max-w-7xl"><PropertiesLoadingSkeleton /></div></section>}>          <DestaquesSanityCarousel
+        rawProperties={destaques}
+        title="Imóveis Cuidadosamente Selecionados"
+        subtitle="Descubra propriedades que se destacam pela arquitetura impecável, localização estratégica e potencial de valorização excepcional em Guararema."
+      />
+      </Suspense>
+
+      {/* Componente legacy escondido (temporário) */}
+      <div className="hidden">
+        <ClientCarouselWrapper
+          properties={destaques}
+          config={{
+            title: "",
+            subtitle: "",
+            slidesToShow: 3,
+            showControls: true,
+            autoplay: true,
+            autoplayInterval: 5000,
+            viewAllLink: "/comprar",
+            viewAllLabel: "Explorar todo o portfólio",
+            className: "mb-16",
+            hasAccentBackground: false,
+            showEmptyState: destaques.length === 0,
+            emptyStateMessage: "Carregando imóveis em destaque...",
+            mobileLayout: "stack",
+          }}
+        />
+      </div>        <section className="relative py-24 overflow-hidden bg-gradient-to-b from-white to-[#F8FAFC]" style={{ position: 'relative' }}>
+        <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
+        <Destaques />        </section>        {/* Seção de Imóveis para Alugar - Versão Aprimorada */}
+      <section className="py-24 bg-[#F8FAFC]" style={{ position: 'relative' }}>
+        <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent"></div>
+        <Suspense fallback={<div className="container mx-auto px-4 max-w-7xl relative z-10"><PropertiesLoadingSkeleton /></div>}>            <DestaquesSanityCarousel
+          rawProperties={aluguel}
+          title="Seu Próximo Lar Está Aqui"
+          subtitle="Uma seleção de imóveis para alugar que prioriza qualidade de vida, ótima localização e custo-benefício real. Experimente morar com qualidade em Guararema."
         />
         </Suspense>
+      </section>
 
-        {/* Componente legacy escondido (temporário) */}
-        <div className="hidden">
-          <ClientCarouselWrapper
-            properties={destaques}
-            config={{
-              title: "",
-              subtitle: "",
-              slidesToShow: 3,
-              showControls: true,
-              autoplay: true,
-              autoplayInterval: 5000,
-              viewAllLink: "/comprar",
-              viewAllLabel: "Explorar todo o portfólio",
-              className: "mb-16",
-              hasAccentBackground: false,
-              showEmptyState: destaques.length === 0,
-              emptyStateMessage: "Carregando imóveis em destaque...",
-              mobileLayout: "stack",
-            }}
-          />
-        </div>        <section className="relative py-24 overflow-hidden bg-gradient-to-b from-white to-[#F8FAFC]" style={{ position: 'relative' }}>
-          <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
-          <Destaques />        </section>        {/* Seção de Imóveis para Alugar - Versão Aprimorada */}
-        <section className="py-24 bg-[#F8FAFC]" style={{ position: 'relative' }}>
-          <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent"></div>
-          <Suspense fallback={<div className="container mx-auto px-4 max-w-7xl relative z-10"><PropertiesLoadingSkeleton /></div>}>            <DestaquesSanityCarousel
-            rawProperties={aluguel}
-            title="Seu Próximo Lar Está Aqui"
-            subtitle="Uma seleção de imóveis para alugar que prioriza qualidade de vida, ótima localização e custo-benefício real. Experimente morar com qualidade em Guararema."
-          />
-          </Suspense>
-        </section>
+      <div className="relative bg-white">
+        <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
+        <Valor />
+      </div>
 
-        <div className="relative bg-white">
-          <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
-          <Valor />
+      <section className="py-24 bg-gradient-to-b from-white to-[#F8FAFC]">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <SectionHeader
+            badge="Histórias de Sucesso"
+            badgeColor="amber"
+            title="O que Nossos Clientes Dizem"
+            description="Descubra como ajudamos famílias e investidores a encontrarem o imóvel perfeito em Guararema."
+          />
+          <Testimonials />
         </div>
+      </section>
 
-        <section className="py-24 bg-gradient-to-b from-white to-[#F8FAFC]">
-          <div className="container mx-auto px-4 max-w-7xl">
-            <SectionHeader
-              badge="Histórias de Sucesso"
-              badgeColor="amber"
-              title="O que Nossos Clientes Dizem"
-              description="Descubra como ajudamos famílias e investidores a encontrarem o imóvel perfeito em Guararema."
-            />
-            <Testimonials />
+      <section className="py-24 bg-[#F8FAFC] relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-transparent"></div>
+        <div className="container mx-auto px-4 max-w-7xl relative z-10">
+          <SectionHeader
+            badge="Processo Simplificado"
+            badgeColor="green"
+            title="Sua Jornada Imobiliária"
+            description="Conduzimos você por cada etapa com transparência e eficiência, transformando a busca pelo imóvel ideal em uma experiência agradável e segura."
+          />
+          <div className='rounded-lg bg-white shadow-xl p-8 ease-in-out duration-300 hover:shadow-2xl'>
+            <ClientProgressSteps />
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="py-24 bg-[#F8FAFC] relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-transparent"></div>
-          <div className="container mx-auto px-4 max-w-7xl relative z-10">
-            <SectionHeader
-              badge="Processo Simplificado"
-              badgeColor="green"
-              title="Sua Jornada Imobiliária"
-              description="Conduzimos você por cada etapa com transparência e eficiência, transformando a busca pelo imóvel ideal em uma experiência agradável e segura."
-            />
-            <div className='rounded-lg bg-white shadow-xl p-8 ease-in-out duration-300 hover:shadow-2xl'>
-              <ClientProgressSteps />
-            </div>
-          </div>
-        </section>
+      <section className="relative py-24 overflow-hidden bg-gradient-to-b from-[#F8FAFC] to-white">
+        <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
+        <FormularioContatoAprimorado />
+      </section>
 
-        <section className="relative py-24 overflow-hidden bg-gradient-to-b from-[#F8FAFC] to-white">
-          <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
-          <FormularioContatoAprimorado />
-        </section>
-
-        <Footer />
-      </OptimizationProvider>
-    </div>
+      <Footer />
+    </OptimizationProvider>
+  </div>
   );
 }
 
