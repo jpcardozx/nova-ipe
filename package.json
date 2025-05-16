@@ -1,28 +1,31 @@
 {
   "name": "nova-ipe",
   "version": "0.1.0",
-  "private": true,  "scripts": {
+  "private": true,
+  "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:vercel": "node scripts/vercel-install-deps.js && node scripts/create-minimal-tailwind.js && node scripts/create-minimal-postcss.js && node scripts/fix-nextjs-config.js && node scripts/rollup-vercel-fix.js && node scripts/vercel-build.js",
-    "prebuild": "node scripts/create-minimal-tailwind.js && node scripts/create-minimal-postcss.js",
+    "build:vercel": "node scripts/vercel-optimized-build.js",
+    "prebuild": "node scripts/fix-css-loader.js",
     "preinstall": "node scripts/fallback-og-images.js",
     "start": "next start",
     "lint": "next lint",
     "generate-og-images": "node scripts/fallback-og-images.js",
     "prepare-images": "echo 'Using fallback OG images strategy'",
-    "postinstall": "node scripts/vercel-install-deps.js && node scripts/fix-tailwind.js",
+    "postinstall": "node scripts/vercel-install-deps.js && node scripts/fix-css-loader.js",
     "vercel-build": "npm run build:vercel",
     "deploy": "node scripts/deploy-vercel.js",
     "deploy:prod": "vercel --prod",
     "fix:rollup": "node scripts/rollup-vercel-fix.js",
-    "fix:tailwind": "node scripts/fix-tailwind.js && node scripts/create-minimal-tailwind.js",
+    "fix:tailwind": "node scripts/direct-tailwind-patch.js",
+    "fix:css": "node scripts/fix-css-loader.js",
     "fix:postcss": "node scripts/create-minimal-postcss.js",
     "fix:imports": "node scripts/fix-imports.js",
     "fix:nextjs": "node scripts/fix-nextjs-config.js",
     "install:deps": "node scripts/vercel-install-deps.js",
-    "prepare:build": "npm run fix:tailwind && npm run fix:postcss && npm run fix:imports && npm run fix:nextjs"
-  },"dependencies": {
+    "prepare:build": "npm run fix:css && npm run fix:tailwind && npm run fix:postcss && npm run fix:imports && npm run fix:nextjs"
+  },
+  "dependencies": {
     "@radix-ui/react-accordion": "^1.2.10",
     "@radix-ui/react-aspect-ratio": "^1.1.6",
     "@radix-ui/react-avatar": "^1.1.9",
@@ -77,7 +80,8 @@
     "@typescript-eslint/eslint-plugin": "^8.32.0",
     "@typescript-eslint/parser": "^8.32.0",
     "autoprefixer": "^10.4.21",
-    "embla-carousel-autoplay": "^8.6.0",    "eslint": "^9",
+    "embla-carousel-autoplay": "^8.6.0",
+    "eslint": "^9",
     "eslint-config-next": "15.2.4",
     "prettier": "^2.8.8",
     "typescript": "^5"
