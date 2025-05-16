@@ -34,15 +34,15 @@ for (const scriptName of fixScripts) {
         continue;
     }
 
-    console.log(`\n📌 Executando script: ${scriptName}...`);    try {
+    console.log(`\n📌 Executando script: ${scriptName}...`); try {
         // Executar o script como um processo separado para capturar saída e erros
         // Usando execSync com aspas ao redor do caminho para lidar com espaços
         console.log(`Executando: node "${scriptPath}"`);
-        execSync(`node "${scriptPath}"`, { 
+        execSync(`node "${scriptPath}"`, {
             stdio: 'inherit',
             shell: true
         });
-        
+
         console.log(`✅ ${scriptName} concluído com sucesso`);
     } catch (error) {
         console.error(`❌ Erro ao executar ${scriptName}:`, error);
