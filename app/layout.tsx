@@ -31,23 +31,70 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (<html lang="pt-BR" className={montserrat.variable} data-loading-state="loading">      <head>
-    {/* Preload e aplicação de recursos críticos */}      <link rel="preload" href="/critical.css" as="style" />
-    <link rel="stylesheet" href="/critical.css" />
-    <link rel="stylesheet" href="/styles/loading-effects.css" />
-    <link rel="stylesheet" href="/styles/loading-states.css" />
-    <link rel="stylesheet" href="/styles/loading-fix.css" />
-
-    {/* Script para detectar quando a página está totalmente carregada */}
+    {/* Script crítico executado imediatamente para resolver problemas de carregamento */}
     <script dangerouslySetInnerHTML={{
       __html: `
-          window.addEventListener('load', function() {
-            document.documentElement.removeAttribute('data-loading-state');
-            document.documentElement.setAttribute('data-loaded', 'true');
-          });
+      (function() {
+        // Detecta conexões lentas e ajusta comportamento
+        const startTime = Date.now();
+        const isSlowConnection = 'connection' in navigator && 
+          (navigator.connection.saveData || 
+          ['slow-2g', '2g', '3g'].includes(navigator.connection.effectiveType));
+        
+        // Se for conexão lenta, força visibilidade após um tempo menor
+        if (isSlowConnection) {
+          document.documentElement.setAttribute('data-slow-connection', 'true');
           setTimeout(function() {
             document.documentElement.removeAttribute('data-loading-state');
             document.documentElement.setAttribute('data-loaded', 'true');
-          }, 5000);
+          }, 1000);
+        }
+
+        // Fallback de segurança para todos os casos
+        setTimeout(function() {
+          document.documentElement.removeAttribute('data-loading-state');
+          document.documentElement.setAttribute('data-loaded', 'true');
+        }, 3500);
+      })();
+    ` }} />
+    {/* Preload e aplicação de recursos críticos */}
+    <link rel="preload" href="/critical.css" as="style" />
+    <link rel="stylesheet" href="/critical.css" />
+
+    {/* Otimizações de carregamento - ordenadas por prioridade */}
+    <link rel="stylesheet" href="/styles/mobile-optimizations.css" />
+    <link rel="stylesheet" href="/styles/loading-fix.css" />
+    <link rel="stylesheet" href="/styles/loading-states.css" />
+    <link rel="stylesheet" href="/styles/loading-effects.css" />{/* Script para detectar quando a página está totalmente carregada - versão otimizada */}
+    <script dangerouslySetInnerHTML={{
+      __html: `
+          (function() {
+            // Função de remoção do estado de carregamento
+            function removeLoadingState() {
+              document.documentElement.removeAttribute('data-loading-state');
+              document.documentElement.setAttribute('data-loaded', 'true');
+              document.body.style.visibility = 'visible';
+              document.body.style.opacity = '1';
+            }
+            
+            // Executar imediatamente para garantir visibilidade rápida
+            if (document.readyState === 'interactive' || document.readyState === 'complete') {
+              removeLoadingState();
+            } else {
+              document.addEventListener('DOMContentLoaded', removeLoadingState);
+            }
+            
+            // Fallbacks progressivos
+            window.addEventListener('load', removeLoadingState);
+            setTimeout(removeLoadingState, 800);
+            setTimeout(removeLoadingState, 2000);
+            
+            // Último recurso - força visibilidade após 3 segundos
+            setTimeout(function() {
+              removeLoadingState();
+              document.body.classList.add('force-visible');
+            }, 3000);
+          })();
         `
     }} />
 

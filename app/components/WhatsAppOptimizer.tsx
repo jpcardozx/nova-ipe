@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 /**
  * Componente que adiciona metatags específicas para WhatsApp
  * para melhorar a visualização de links compartilhados
+ * e otimiza o carregamento para acessos via WhatsApp
  */
 export default function WhatsAppOptimizer() {
     const [appUrl, setAppUrl] = useState('');
@@ -16,12 +17,37 @@ export default function WhatsAppOptimizer() {
 
         // Detecta se o acesso está vindo do WhatsApp
         const isFromWhatsApp = /WhatsApp/.test(navigator.userAgent) ||
-            document.referrer.includes('whatsapp');
+            document.referrer.includes('whatsapp') ||
+            window.location.href.includes('utm_source=whatsapp');
 
-        // Podemos fazer otimizações adicionais se for do WhatsApp
+        // Otimizações específicas para WhatsApp
         if (isFromWhatsApp) {
             // Adiciona classe ao body para estilos específicos
             document.body.classList.add('from-whatsapp');
+
+            // Remove estado de carregamento imediatamente
+            document.documentElement.removeAttribute('data-loading-state');
+            document.documentElement.setAttribute('data-loaded', 'true');
+
+            // Força visibilidade imediata
+            document.body.style.opacity = '1';
+            document.body.style.visibility = 'visible';
+
+            // Pré-carrega imagens críticas para acelerar renderização
+            const preloadCriticalImages = () => {
+                const criticalImages = [
+                    '/images/logo.png',
+                    '/images/hero-image.jpg',
+                    '/images/og-image-whatsapp.jpg'
+                ];
+
+                criticalImages.forEach(src => {
+                    const img = new Image();
+                    img.src = src;
+                });
+            };
+
+            preloadCriticalImages();
         }
     }, []);
 
