@@ -344,39 +344,82 @@ cssFilesToCheck.forEach(filePath => {
 
         // Verificar se contém importação do preflight
         if (content.includes('@import "tailwindcss/preflight"') ||
-            content.includes("@import 'tailwindcss/preflight'")) {
+            content.includes("@import 'tailwindcss/preflight'")) {            console.log(`🔍 Encontrado import de tailwindcss/preflight em ${filePath}`);
+            
+            // Substituir as importações problemáticas com comentários
+            let modifiedContent = content;
+            
+            // Substituir @import tailwindcss/preflight
+            modifiedContent = modifiedContent.replace(
+                /@import\s+['"]tailwindcss\/preflight['"][^;]*;/g,
+                '/* AVISO: Importação de tailwindcss/preflight removida para compatibilidade com Vercel */'
+            );
+            
+            // Substituir @import tailwindcss/theme.css se existir
+            modifiedContent = modifiedContent.replace(
+                /@import\s+['"]tailwindcss\/theme\.css['"][^;]*;/g,
+                '/* AVISO: Importação de tailwindcss/theme.css removida para compatibilidade com Vercel */'
+            );
+            
+            // Adicionar comentário no início do arquivo
+            modifiedContent = `/* AVISO: Importações diretas do Tailwind removidas para compatibilidade com Vercel */
+/* Arquivo modificado para resolver erro: Can't resolve 'tailwindcss/preflight' */
+/* Data da modificação: ${new Date().toLocaleDateString()} */
 
-            console.log(`🔍 Encontrado import de tailwindcss/preflight em ${filePath}`);
-
-            // Adicionar comentário indicando a modificação
-            const modifiedContent = `/* AVISO: Importação de preflight substituída por um stub por compatibilidade com Vercel */
-/* Arquivo original modificado pelo script fix-tailwind-preflight.js */
-${content}`;
-
+${modifiedContent}`;
+            
             fs.writeFileSync(filePath, modifiedContent);
-            console.log(`✅ Adicionado comentário em ${filePath} para indicar modificação`);
+            console.log(`✅ Removidas importações problemáticas de ${filePath}`);
         }
     }
 });
 
 // Atualizar next.config.js para garantir que o alias para tailwindcss está correto
+// e adicionar configurações especiais para lidar com os imports problemáticos
 const nextConfigPath = path.join(process.cwd(), 'next.config.js');
 if (fs.existsSync(nextConfigPath)) {
     let nextConfig = fs.readFileSync(nextConfigPath, 'utf8');
-
+    let updated = false;
+    
     // Verificar se já existe configuração de alias para tailwindcss/preflight
     if (!nextConfig.includes("'tailwindcss/preflight'")) {
         // Encontrar onde estão os outros aliases para adicionar o novo
         const aliasRegex = /config\.resolve\.alias\['tailwindcss'\]/;
         if (aliasRegex.test(nextConfig)) {
-            const newNextConfig = nextConfig.replace(
+            nextConfig = nextConfig.replace(
                 aliasRegex,
                 "config.resolve.alias['tailwindcss/preflight'] = path.resolve('./node_modules/tailwindcss/preflight.css');\n    config.resolve.alias['tailwindcss']"
             );
-
-            fs.writeFileSync(nextConfigPath, newNextConfig);
+            updated = true;
             console.log('✅ Adicionado alias para tailwindcss/preflight em next.config.js');
         }
+    }
+    
+    // Adicionar configuração especial para lidar com o css-loader
+    if (!nextConfig.includes('onResolve({ filter: /tailwindcss\\/preflight/ })')) {
+        const webpackConfigRegex = /webpack: \(config(?:, [^)]+)?\) => {/;
+        if (webpackConfigRegex.test(nextConfig)) {
+            nextConfig = nextConfig.replace(
+                webpackConfigRegex,
+                `webpack: (config, { isServer }) => {
+    // Resolver problema de importação do tailwindcss/preflight
+    if (config.resolve && config.resolve.plugins) {
+      config.resolve.plugins.push({
+        name: 'replace-tailwindcss-preflight',
+        onResolve({ filter: /tailwindcss\\/preflight/ }) {
+          return { path: path.resolve('./node_modules/tailwindcss/preflight.css') };
+        },
+      });
+    }`
+            );
+            updated = true;
+            console.log('✅ Adicionada configuração para resolver tailwindcss/preflight em next.config.js');
+        }
+    }
+    
+    if (updated) {
+        fs.writeFileSync(nextConfigPath, nextConfig);
+        console.log('✅ next.config.js atualizado com resolução de módulos');
     }
 }
 

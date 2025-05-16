@@ -19,7 +19,8 @@ const fixScripts = [
     'fix-module-imports.js',
     'create-missing-stubs.js',
     'fix-optimized-carousel.js',
-    'fix-tailwind-preflight.js'
+    'fix-tailwind-preflight.js',
+    'create-tailwind-stubs.js'
 ];
 
 // Executar cada script em sequência

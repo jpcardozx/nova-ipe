@@ -7,6 +7,10 @@ module.exports = {
         './app/**/*.{js,ts,jsx,tsx,mdx}',
         './src/**/*.{js,ts,jsx,tsx,mdx}',
     ],
+    // Garantindo que o preflight está ativado para funcionar sem importações diretas
+    corePlugins: {
+        preflight: true,
+    },
     theme: {
         container: {
             center: true,

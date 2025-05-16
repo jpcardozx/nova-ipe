@@ -61,10 +61,12 @@ Este script executa todos os passos de correção e o build otimizado, permitind
 
 ### 7. Correção do Erro "Can't resolve 'tailwindcss/preflight'"
 - Script `fix-tailwind-preflight.js` para resolver problemas com importação de preflight do Tailwind
-- Criação de arquivos stub para `tailwindcss/preflight.css` e `tailwindcss/theme.css`
-- Configuração de aliases no webpack para resolver corretamente as importações
-- Detecção e correção automática de arquivos CSS que importam `tailwindcss/preflight`
-- Implementação de solução compatível com o ambiente Vercel
+- Remoção das importações problemáticas `@import "tailwindcss/preflight"` diretamente dos arquivos CSS
+- Script `create-tailwind-stubs.js` para criar arquivos stub específicos para cada importação
+- Criação de stubs para `tailwindcss/preflight.css`, `tailwindcss/theme.css` e `tailwindcss/nesting`
+- Configuração avançada de aliases no webpack para resolver corretamente as importações
+- Ajustes no `tailwind.config.js` para garantir que o preflight esteja ativado
+- Modificação do `package.json` do módulo tailwindcss para incluir exportações corretas
 
 ### 8. Simplificação do Processo de Build
 - Script unificado `vercel-prepare-build.js` que substitui a execução de múltiplos scripts

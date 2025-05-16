@@ -1,10 +1,6 @@
-/* AVISO: Importação de preflight substituída por um stub por compatibilidade com Vercel */
-/* Arquivo original modificado pelo script fix-tailwind-preflight.js */
-/* AVISO: Importação de preflight substituída por um stub por compatibilidade com Vercel */
-/* Arquivo original modificado pelo script fix-tailwind-preflight.js */
-/* AVISO: Importação de preflight substituída por um stub por compatibilidade com Vercel */
-/* Arquivo original modificado pelo script fix-tailwind-preflight.js */
-/* AVISO: Importação de preflight substituída por um stub por compatibilidade com Vercel */
-/* Arquivo original modificado pelo script fix-tailwind-preflight.js */
-@import "tailwindcss/preflight";
+/* AVISO: Importações diretas do Tailwind removidas para compatibilidade com Vercel */
+/* Arquivo modificado para resolver erro: Can't resolve 'tailwindcss/preflight' */
+/* Data da modificação: 16/05/2025 */
+
+/* Preflight removido e substituído por configurações diretas no Tailwind */
 @tailwind utilities; 
