@@ -45,6 +45,9 @@ if (ogImagesExist) {
     console.log('⚠️ Imagens OG não encontradas. Criando imagens de fallback...');
 
     try {
+        // Define outputDir for image generation
+        const outputDir = fallbackDir;
+
         // Try to copy from default images if they exist (for example from a default-images folder)
         // If not available, just output a note
         console.log('Note: OG images not found and could not be generated in this environment.');
