@@ -11,10 +11,12 @@
     "lint": "next lint",
     "generate-og-images": "node scripts/fallback-og-images.js",
     "prepare-images": "echo 'Using fallback OG images strategy'",
-    "postinstall": "node -e \"console.log('Dependencies installed successfully')\"",
+    "postinstall": "node scripts/fix-tailwind.js",
     "deploy": "node scripts/deploy-vercel.js",
     "deploy:prod": "vercel --prod",
-    "fix:rollup": "node scripts/rollup-vercel-fix.js"
+    "fix:rollup": "node scripts/rollup-vercel-fix.js",
+    "fix:tailwind": "node scripts/fix-tailwind.js",
+    "fix:imports": "node scripts/fix-imports.js"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.10",
@@ -55,13 +57,13 @@
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.14.0",
     "@rollup/rollup-linux-x64-musl": "4.14.0",
+    "canvas": "^2.11.2",
     "lightningcss-linux-x64-gnu": "1.25.1",
-    "lightningcss-linux-x64-musl": "1.25.1",
-    "canvas": "^2.11.2"
-  },  "devDependencies": {
-    "@next/bundle-analyzer": "^15.2.4",
-    "tailwindcss": "^4.1.6", 
+    "lightningcss-linux-x64-musl": "1.25.1"
+  },
+  "devDependencies": {
     "@fontsource/montserrat": "^5.0.7",
+    "@next/bundle-analyzer": "^15.2.4",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -73,6 +75,7 @@
     "eslint-config-next": "15.2.4",
     "postcss": "^8.5.3",
     "prettier": "^2.8.8",
+    "tailwindcss": "^3.3.5",
     "typescript": "^5"
   },
   "overrides": {
