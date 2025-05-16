@@ -30,7 +30,7 @@ import BlocoCTAConversao from '../components/client/BlocoCTAConversao';
 import DestaquesSanityCarousel from '../components/DestaquesSanityCarousel';
 import ValorAprimorado from '../sections/ValorAprimorado';
 import FormularioContato from '../components/FormularioContato';
-import { DestaquesEstrategicos } from '../sections/Destaques';
+import DestaquesEstrategicos from '../sections/Destaques';
 import { ExclusiveAnalysisOffer } from '../sections/ExclusiveAnalysisOffer';
 
 // Configuração da fonte Montserrat

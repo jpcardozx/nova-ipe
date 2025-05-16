@@ -7,6 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "generate-og-images": "node scripts/generate-og-images.js",
+    "prepare-images": "npm run generate-og-images",
+    "build:production": "npm run prepare-images && next build",
     "postinstall": "node -e \"console.log('Dependencies installed successfully')\""
   },
   "dependencies": {
@@ -53,12 +56,14 @@
   "devDependencies": {
     "@next/bundle-analyzer": "^15.2.4",
     "@tailwindcss/postcss": "^4.1.6",
+    "@fontsource/montserrat": "^5.0.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@typescript-eslint/eslint-plugin": "^8.32.0",
     "@typescript-eslint/parser": "^8.32.0",
     "autoprefixer": "^10.4.21",
+    "canvas": "^2.11.2",
     "embla-carousel-autoplay": "^8.6.0",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",

@@ -23,7 +23,9 @@ export async function generateStaticParams() {
   return slugs.map(({ slug }) => ({ slug: slug.current }));
 }
 
-// SSR Metadata com fallback inteligente
+// SSR Metadata com gerador otimizado para redes sociais
+import { generatePropertyMetadata } from '@/lib/metadata-generators';
+
 export async function generateMetadata({
   params,
 }: {
@@ -39,36 +41,34 @@ export async function generateMetadata({
 
   if (!imovel) return {};
 
-  const title = imovel.metaTitle || `${imovel.titulo} | Ipê Imóveis`;
-  const description =
-    imovel.metaDescription ||
-    `Veja os detalhes deste imóvel em ${imovel.cidade}. Curadoria exclusiva da Ipê Imóveis.`;
-
-  const imageUrl =
-    imovel.imagemOpenGraph?.imagemUrl || imovel.imagem?.imagemUrl || undefined;
-
-  return {
-    title,
-    description,
-    metadataBase: new URL('https://ipeimoveis.com'),
-    alternates: {
-      canonical: `https://ipeimoveis.com/imovel/${slug}`,
+  // Mapear para o formato esperado pelo gerador de metadata
+  const clientImovel = mapImovelToClient(imovel);
+  // Extrair dados específicos para a função de metadados
+  const propertyData = {
+    id: clientImovel._id || '',
+    title: clientImovel.titulo || 'Imóvel Nova Ipê', // Valor padrão para evitar undefined
+    location: (clientImovel.bairro || clientImovel.cidade || 'Guararema'), // Valor padrão
+    city: clientImovel.cidade || 'Guararema', // Valor padrão
+    price: typeof clientImovel.preco === 'number' ? clientImovel.preco :
+      parseFloat(String(clientImovel.preco || '0')),
+    propertyType: (clientImovel.finalidade?.toLowerCase() === 'venda' ? 'sale' : 'rent') as 'sale' | 'rent',
+    area: typeof clientImovel.areaUtil === 'number' ? clientImovel.areaUtil :
+      clientImovel.areaUtil ? parseFloat(String(clientImovel.areaUtil)) : undefined,
+    bedrooms: clientImovel.dormitorios ? Number(clientImovel.dormitorios) : undefined,
+    bathrooms: clientImovel.banheiros ? Number(clientImovel.banheiros) : undefined,
+    parkingSpots: clientImovel.vagas ? Number(clientImovel.vagas) : undefined,
+    description: clientImovel.descricao || clientImovel.metaDescription,
+    mainImage: {
+      url: clientImovel.imagem?.imagemUrl ||
+        clientImovel.imagemOpenGraph?.imagemUrl ||
+        '/images/og-image-2025.jpg',
+      alt: clientImovel.imagem?.alt || clientImovel.titulo || 'Imóvel Nova Ipê'
     },
-    openGraph: {
-      title,
-      description,
-      images: imageUrl ? [{ url: imageUrl }] : [],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-    },
-    robots: {
-      index: true,
-      follow: true,
-    },
+    slug
   };
+
+  // Usar nosso gerador avançado de metadata
+  return generatePropertyMetadata(propertyData);
 }
 
 // Componente principal da página (streaming)

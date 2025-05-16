@@ -57,6 +57,12 @@ export interface ImovelClient {
     aceitaFinanciamento?: boolean
     documentacaoOk?: boolean
 
+    // Características e recursos do imóvel
+    caracteristicas?: string[]
+
+    // Galeria de imagens
+    galeria?: ImagemClient[]
+
     // Categoria
     categoria?: CategoriaFull
 
