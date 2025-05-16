@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useState, useCallback, useRef, useEffect, memo } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 // Import only what's needed from framer-motion
-import { motion } from 'framer-motion';
-import { AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import useEmblaCarousel, { type UseEmblaCarouselType } from 'embla-carousel-react';
 import { Button } from '@/src/components/ui/button';
 
