@@ -1,5 +1,7 @@
 import type { Config } from 'tailwindcss';
-import defaultTheme from 'tailwindcss/defaultTheme';
+// Fix for importing defaultTheme
+// @ts-ignore - Ignoring the missing types for tailwindcss/defaultTheme
+const defaultTheme = require('tailwindcss/defaultTheme');
 
 // Importação do design system
 import { colors } from './lib/design-system';

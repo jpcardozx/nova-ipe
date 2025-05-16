@@ -1,7 +1,7 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
- * Script unificado para preparação de build na Vercel
- * Este script executa todas as correções necessárias em um único processo
+ * Script unificado para preparaÃ§Ã£o de build na Vercel
+ * Este script executa todas as correÃ§Ãµes necessÃ¡rias em um Ãºnico processo
  * para resolver o problema do limite de caracteres no buildCommand do vercel.json
  */
 
@@ -9,11 +9,12 @@ const { execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
-console.log('🚀 Iniciando processo de preparação para build na Vercel...');
-console.log('📅 Data de execução:', new Date().toLocaleString());
+console.log('ðŸš€ Iniciando processo de preparaÃ§Ã£o para build na Vercel...');
+console.log('ðŸ“… Data de execuÃ§Ã£o:', new Date().toLocaleString());
 
-// Lista de scripts de correção para executar em sequência
+// Lista de scripts de correÃ§Ã£o para executar em sequÃªncia
 const fixScripts = [
+    'setup-ts-config.js',
     'verify-next-config.js',
     'diagnose-and-fix-paths.js',
     'fix-module-imports.js',
@@ -23,40 +24,41 @@ const fixScripts = [
     'create-tailwind-stubs.js'
 ];
 
-// Executar cada script em sequência
+// Executar cada script em sequÃªncia
 let allSuccessful = true;
 for (const scriptName of fixScripts) {
     const scriptPath = path.join(process.cwd(), 'scripts', scriptName);
 
     // Verificar se o script existe
     if (!fs.existsSync(scriptPath)) {
-        console.log(`⚠️ Script ${scriptName} não encontrado, pulando...`);
+        console.log(`âš ï¸ Script ${scriptName} nÃ£o encontrado, pulando...`);
         continue;
     }
 
-    console.log(`\n📌 Executando script: ${scriptName}...`); try {
-        // Executar o script como um processo separado para capturar saída e erros
-        // Usando execSync com aspas ao redor do caminho para lidar com espaços
+    console.log(`\nðŸ“Œ Executando script: ${scriptName}...`); try {
+        // Executar o script como um processo separado para capturar saÃ­da e erros
+        // Usando execSync com aspas ao redor do caminho para lidar com espaÃ§os
         console.log(`Executando: node "${scriptPath}"`);
         execSync(`node "${scriptPath}"`, {
             stdio: 'inherit',
             shell: true
         });
 
-        console.log(`✅ ${scriptName} concluído com sucesso`);
+        console.log(`âœ… ${scriptName} concluÃ­do com sucesso`);
     } catch (error) {
-        console.error(`❌ Erro ao executar ${scriptName}:`, error);
+        console.error(`âŒ Erro ao executar ${scriptName}:`, error);
         allSuccessful = false;
     }
 }
 
-// Relatório final
-console.log('\n📊 Relatório de execução:');
+// RelatÃ³rio final
+console.log('\nðŸ“Š RelatÃ³rio de execuÃ§Ã£o:');
 if (allSuccessful) {
-    console.log('✅ Todos os scripts de preparação foram executados com sucesso!');
-    console.log('🚀 Pronto para executar o build do Next.js');
+    console.log('âœ… Todos os scripts de preparaÃ§Ã£o foram executados com sucesso!');
+    console.log('ðŸš€ Pronto para executar o build do Next.js');
     process.exit(0);
 } else {
-    console.error('⚠️ Alguns scripts encontraram erros. O build pode falhar.');
+    console.error('âš ï¸ Alguns scripts encontraram erros. O build pode falhar.');
     process.exit(1);
 }
+
