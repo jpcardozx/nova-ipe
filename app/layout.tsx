@@ -1,6 +1,8 @@
+'use client';
+
 // app/layout.tsx
 import './layout-styles'; // Consolidated CSS imports
-import { Suspense } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { Montserrat } from 'next/font/google';
 import { ClientOnly } from './components/ClientComponents';
 import Script from 'next/script';
@@ -27,8 +29,47 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    // Executar imediatamente para garantir visibilidade rápida
+    function removeLoadingState() {
+      setIsLoaded(true);
+    }
+
+    if (document.readyState === 'interactive' || document.readyState === 'complete') {
+      removeLoadingState();
+    } else {
+      document.addEventListener('DOMContentLoaded', removeLoadingState);
+    }
+
+    // Fallbacks progressivos
+    window.addEventListener('load', removeLoadingState);
+    const timer1 = setTimeout(removeLoadingState, 800);
+    const timer2 = setTimeout(removeLoadingState, 2000);
+
+    // Último recurso - força visibilidade após 3 segundos
+    const timer3 = setTimeout(function () {
+      removeLoadingState();
+      document.body.classList.add('force-visible');
+    }, 3000);
+
+    return () => {
+      document.removeEventListener('DOMContentLoaded', removeLoadingState);
+      window.removeEventListener('load', removeLoadingState);
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
+  }, []);
+
   return (
-    <html lang="pt-BR" className={montserrat.variable} data-loading-state="loading">
+    <html
+      lang="pt-BR"
+      className={montserrat.variable}
+      data-loading-state={isLoaded ? null : "loading"}
+      data-loaded={isLoaded ? "true" : null}
+    >
       <head>
         {/* Script crítico executado usando o componente Script do Next.js */}
         <Script src="/js/critical-preload.js" strategy="beforeInteractive" />
@@ -36,41 +77,6 @@ export default function RootLayout({
         {/* Preload de recursos críticos */}
         <link rel="preload" href="/critical-speed.css" as="style" />
         <link rel="preload" href="/critical.css" as="style" />
-
-        {/* Script para detectar quando a página está totalmente carregada - versão otimizada */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                // Função de remoção do estado de carregamento
-                function removeLoadingState() {
-                  document.documentElement.removeAttribute('data-loading-state');
-                  document.documentElement.setAttribute('data-loaded', 'true');
-                  document.body.style.visibility = 'visible';
-                  document.body.style.opacity = '1';
-                }
-                
-                // Executar imediatamente para garantir visibilidade rápida
-                if (document.readyState === 'interactive' || document.readyState === 'complete') {
-                  removeLoadingState();
-                } else {
-                  document.addEventListener('DOMContentLoaded', removeLoadingState);
-                }
-                
-                // Fallbacks progressivos
-                window.addEventListener('load', removeLoadingState);
-                setTimeout(removeLoadingState, 800);
-                setTimeout(removeLoadingState, 2000);
-                
-                // Último recurso - força visibilidade após 3 segundos
-                setTimeout(function() {
-                  removeLoadingState();
-                  document.body.classList.add('force-visible');
-                }, 3000);
-              })();
-            `
-          }}
-        />
 
         {/* Favicon e dispositivos móveis */}
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
@@ -106,10 +112,9 @@ export default function RootLayout({
         <Script src="/js/whatsapp-optimizer.js" strategy="lazyOnload" />
 
         {/* Script de timeout para garantir visibilidade mesmo em caso de falha */}
-        <Script src="/js/loading-timeout.js" strategy="lazyOnload" />
-      </head>
+        <Script src="/js/loading-timeout.js" strategy="lazyOnload" />      </head>
 
-      <body>
+      <body style={isLoaded ? { visibility: "visible", opacity: "1" } : {}}>
         {/* Structured Data for SEO and Social Sharing */}
         <ClientOnly>
           <Suspense fallback={null}>
@@ -129,9 +134,7 @@ export default function RootLayout({
         </Suspense>
 
         {/* Gerenciador de estado de carregamento */}
-        <LoadingStateManager />
-
-        {/* Script otimizado para WhatsApp via Next.js Script */}
+        <LoadingStateManager />        {/* Script otimizado para WhatsApp via Next.js Script */}
         <Script
           id="whatsapp-optimizer"
           strategy="afterInteractive"
@@ -140,8 +143,6 @@ export default function RootLayout({
               (function() {
                 if(/WhatsApp/.test(navigator.userAgent) || document.referrer.includes('whatsapp')) {
                   document.body.classList.add('from-whatsapp');
-                  document.documentElement.removeAttribute('data-loading-state');
-                  document.documentElement.setAttribute('data-loaded', 'true');
                 }
               })();
             `
