@@ -16,11 +16,11 @@ const nextConfig = {
         hostname: 'images.unsplash.com',
       },
     ],
-  },
-  experimental: {
+  }, experimental: {
     optimizeCss: true,
     largePageDataBytes: 512 * 1000,
-  }, webpack: (config, { isServer }) => {
+  },
+  webpack: (config, { isServer }) => {
     // Ensure basic configuration objects exist
     if (!config.resolve) config.resolve = {};
     if (!config.resolve.alias) config.resolve.alias = {};
@@ -29,10 +29,10 @@ const nextConfig = {
     config.resolve.alias = Object.assign({}, config.resolve.alias, {
       '@': path.join(__dirname, './'),
       '@app': path.join(__dirname, './app'),
-      '@components': path.join(__dirname, './app/components'),
-      '@lib': path.join(__dirname, './lib'),
+      '@components': path.join(__dirname, './app/components'), '@lib': path.join(__dirname, './lib'),
       '@src': path.join(__dirname, './src'),
-      '@public': path.join(__dirname, './public'), '@sections': path.join(__dirname, './sections'),
+      '@public': path.join(__dirname, './public'),
+      '@sections': path.join(__dirname, './sections'),
       'app/sections': path.join(__dirname, './app/sections'),
       '@core': path.join(__dirname, './lib/core'),
       // Critical tailwind CSS paths
