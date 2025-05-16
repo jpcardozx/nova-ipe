@@ -103,7 +103,8 @@ const nextConfig = {
   experimental: {
     optimizeCss: true,
     largePageDataBytes: 512 * 1000,
-  },  // Configuração dos módulos de resolução de caminho
+  },
+  // Configuração dos módulos de resolução de caminho
   webpack: (config, { isServer }) => {
     // Inicialização das estruturas de configuração
     if (!config.resolve) config.resolve = {};
