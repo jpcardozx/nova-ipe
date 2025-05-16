@@ -106,7 +106,7 @@ const nextConfig = {
 };
 
 // Only add Sentry in production
-const withSentryConfig = process.env.NODE_ENV === 'production' 
+const withSentryConfig = process.env.NODE_ENV === 'production'
   ? require('@sentry/nextjs').withSentryConfig
   : (config) => config;
 
