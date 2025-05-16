@@ -1,6 +1,6 @@
 // app/api/destaques/route.ts
 import { NextResponse } from 'next/server'
-import { getImovelEmDestaque } from '@lib/sanity/fetchImoveis'
+import { getImovelEmDestaque } from '../../../lib/sanity/fetchImoveis'
 
 // Função para normalizar a estrutura da imagem
 function normalizarImageAPI(imovel: any) {

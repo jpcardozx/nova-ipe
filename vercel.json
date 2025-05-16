@@ -1,5 +1,7 @@
 {
     "buildCommand": "npm run build",
     "installCommand": "npm install --force",
-    "framework": "nextjs"
+    "framework": "nextjs",
+    "ignoreCommand": "node -e \"process.exit(process.env.VERCEL_ENV === 'preview' || process.env.VERCEL_ENV === 'production' ? 0 : 1)\"",
+    "outputDirectory": ".next"
 }

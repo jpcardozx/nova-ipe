@@ -1,6 +1,6 @@
 // app/api/login/route.ts
 import { NextResponse } from "next/server"
-import { getAdminSecret, signToken } from "@lib/auth"
+import { getAdminSecret, signToken } from "../../../lib/auth"
 
 export async function POST(req: Request) {
     const { senha } = await req.json()

@@ -1,7 +1,7 @@
 // app/alugar/page.tsx
-import type { ImovelClient } from "@/types/imovel-client"
-import { sanityClient } from "@/lib/sanity"
-import { queryImoveisParaAlugar } from "@lib/queries"
+import type { ImovelClient } from "../../src/types/imovel-client"
+import { sanityClient } from "../../lib/sanity"
+import { queryImoveisParaAlugar } from "../../lib/queries"
 import AlugarPage from "./AlugarPage"
 
 export const revalidate = 0

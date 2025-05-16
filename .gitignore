@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 
+# Make sure OG images are committed
+!/public/images/og-*
+
 # debug
 npm-debug.log*
 yarn-debug.log*
