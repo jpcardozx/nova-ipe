@@ -153,17 +153,31 @@ export function DestaquesSanityCarousel({
     subtitle?: string;
 }) {
     // Estado para filtro de propriedades
-    const [activeFilter, setActiveFilter] = useState<PropertyType | 'all'>('all');
-
-    // Processamento e memorização de propriedades para evitar re-renderizações
+    const [activeFilter, setActiveFilter] = useState<PropertyType | 'all'>('all');    // Better error handling during property processing
     const processedProperties = useMemo(() => {
-        return processProperties(rawProperties);
+        try {
+            // Handle empty or invalid properties gracefully
+            if (!rawProperties || !Array.isArray(rawProperties) || rawProperties.length === 0) {
+                console.log('No properties available to process');
+                return [];
+            }
+
+            return processProperties(rawProperties);
+        } catch (error) {
+            console.error('Error processing properties:', error);
+            return [];
+        }
     }, [rawProperties]);
 
-    // Filtragem de propriedades baseada no filtro ativo
+    // Filtragem de propriedades baseada no filtro ativo with error handling
     const filteredProperties = useMemo(() => {
-        if (activeFilter === 'all') return processedProperties;
-        return processedProperties.filter(prop => prop.propertyType === activeFilter);
+        try {
+            if (activeFilter === 'all') return processedProperties;
+            return processedProperties.filter(prop => prop && prop.propertyType === activeFilter);
+        } catch (error) {
+            console.error('Error filtering properties:', error);
+            return [];
+        }
     }, [processedProperties, activeFilter]);
 
     return (
