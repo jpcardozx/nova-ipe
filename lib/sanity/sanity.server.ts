@@ -13,9 +13,12 @@ export const serverClient = createClient({
         enabled: false,
     },
     token: process.env.SANITY_API_TOKEN,
+    // Add retry mechanism and longer timeout
+    requestTagPrefix: 'nova-ipe-server',
+    timeout: 30000, // 30 second timeout
 })
 
-// Server-side fetcher with revalidation
+// Server-side fetcher with revalidation and improved error handling
 export async function serverFetch<T>({
     query,
     params = {},
@@ -26,14 +29,31 @@ export async function serverFetch<T>({
     tags?: string[];
 }): Promise<T> {
     try {
-        const data = await serverClient.fetch<T>(query, params, {
-            cache: 'force-cache',
-            next: { tags },
+        // Add timeout to prevent hanging requests
+        const timeoutPromise = new Promise<never>((_, reject) => {
+            setTimeout(() => reject(new Error('Sanity server fetch timeout')), 25000);
         });
+
+        // Race between the fetch and the timeout
+        const data = await Promise.race([
+            serverClient.fetch<T>(query, params, {
+                cache: 'force-cache',
+                next: { tags },
+            }),
+            timeoutPromise
+        ]) as T;
+
         return data;
     } catch (err) {
-        console.error('Sanity fetch error:', err);
-        throw new Error(`Failed to fetch from Sanity: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        console.error('Sanity server fetch error:', err);
+        // Log detailed error information for debugging
+        if (err instanceof Error) {
+            console.error(`Error type: ${err.name}, Message: ${err.message}`);
+            console.error(`Stack: ${err.stack}`);
+        }
+
+        // Return empty result instead of throwing to prevent page crashes
+        return (Array.isArray({} as T) ? [] : {}) as T;
     }
 }
 

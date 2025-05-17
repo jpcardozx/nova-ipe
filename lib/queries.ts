@@ -231,7 +231,7 @@ export const queryImoveisAluguelDestaque = /* groq */ `
   *[
     _type == "imovel" &&
     status == "disponivel" &&
-    finalidade == "aluguel" &&
+    finalidade == "Aluguel" &&
     destaque == true
   ] | order(_createdAt desc)[0...6] {
     _id,
@@ -294,7 +294,7 @@ export const queryImoveisParaAlugar = /* groq */ `
   *[
     _type == "imovel" &&
     status == "disponivel" &&
-    finalidade == "aluguel"
+    finalidade == "Aluguel"
   ] | order(_createdAt desc)[0...30] {
     _id,
     titulo,

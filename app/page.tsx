@@ -166,21 +166,41 @@ async function fetchPropertiesData() {
   try {
     console.log('Iniciando busca de propriedades do Sanity');
 
-    // Buscar dados com tratamento de erro para cada chamada
+    // Buscar dados com tratamento de erro aprimorado para cada chamada
     let imoveisDestaque = [];
     let imoveisAluguel = [];
 
     try {
-      imoveisDestaque = await getImoveisDestaque();
-      console.log(`Obtidos ${imoveisDestaque.length} imóveis em destaque`);
+      // Set timeout to prevent hanging
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Fetch destaques timeout')), 15000);
+      });
+
+      // Race against timeout
+      imoveisDestaque = await Promise.race([
+        getImoveisDestaque(),
+        timeoutPromise
+      ]);
+
+      console.log(`Obtidos ${imoveisDestaque?.length || 0} imóveis em destaque`);
     } catch (error) {
       console.error('Erro ao buscar imóveis em destaque:', error);
       imoveisDestaque = [];
     }
 
     try {
-      imoveisAluguel = await getImoveisAluguel();
-      console.log(`Obtidos ${imoveisAluguel.length} imóveis para aluguel`);
+      // Set timeout to prevent hanging
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Fetch aluguel timeout')), 15000);
+      });
+
+      // Race against timeout
+      imoveisAluguel = await Promise.race([
+        getImoveisAluguel(),
+        timeoutPromise
+      ]);
+
+      console.log(`Obtidos ${imoveisAluguel?.length || 0} imóveis para aluguel`);
     } catch (error) {
       console.error('Erro ao buscar imóveis para aluguel:', error);
       imoveisAluguel = [];
