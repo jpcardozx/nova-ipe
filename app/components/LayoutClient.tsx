@@ -7,6 +7,7 @@ import ClientWebVitals from './ClientWebVitals';
 import dynamic from 'next/dynamic';
 import { OrganizationSchema, WebsiteSchema, LocalBusinessSchema } from './StructuredData';
 import HydrationLoadingFix from './HydrationLoadingFix';
+import HydrationGuard from './HydrationGuard';
 
 // Importações dinâmicas para reduzir bundle inicial
 const WebVitalsMonitor = dynamic(() => import('./WebVitalsMonitor'), { ssr: false });
@@ -32,12 +33,8 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
         // Executa imediatamente para garantir visibilidade rápida e melhorar LCP
         function optimizeInitialRender() {
             // Marca a página como carregada para estilos apropriados
-            setIsLoaded(true);
-
-            // Remove atributos de estado de carregamento
-            document.documentElement.removeAttribute('data-loading-state');
-
-            // Adiciona classe para visibilidade do conteúdo
+            setIsLoaded(true);            // Adiciona classe para visibilidade do conteúdo - não manipulamos o
+            // data-loading-state aqui para evitar erros de hydration
             document.body.classList.add('body-visible');
 
             // Atualiza atributo para sincronizar com estilos de carregamento
@@ -95,6 +92,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
         <>
             {/* Fix hydration issues with visibility */}
             <HydrationLoadingFix />
+            <HydrationGuard />
             {/* Script otimizado para WhatsApp via Next.js Script */}
             <Script
                 id="whatsapp-optimizer"

@@ -1,7 +1,6 @@
 'use client';
 
 import TailwindDiagnosticPanel from '../components/TailwindDiagnosticPanel';
-import TailwindV4Test from '../components/TailwindV4Test';
 
 /**
  * Página de Diagnóstico do Tailwind
