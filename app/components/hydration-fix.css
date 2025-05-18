@@ -1,0 +1,41 @@
+/**
+ * hydration-fix.css
+ * 
+ * Este arquivo contém estilos específicos para evitar problemas de
+ * flash de conteúdo não estilizado (FOUC) e garantir uma transição
+ * suave durante a hidratação da página.
+ */
+
+/* Classe aplicada pelo cliente após hidratação */
+html[data-hydrated="true"] body {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Garante que o corpo é visível após a hidratação */
+.body-visible {
+  visibility: visible !important;
+  opacity: 1 !important;
+  transition: opacity 0.2s ease-out;
+}
+
+/* Força visibilidade quando necessário (fallback) */
+.force-visible {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Estilos para o estado de carregamento */
+html:not([data-hydrated="true"]) .client-only {
+  opacity: 0;
+}
+
+/* Previne flash durante hidratação */
+.hydrate-hidden {
+  opacity: 0;
+}
+
+.hydrate-visible {
+  opacity: 1;
+  transition: opacity 0.2s ease-out;
+}

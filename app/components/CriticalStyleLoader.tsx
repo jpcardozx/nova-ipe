@@ -18,6 +18,11 @@ interface StyleLoaderProps {
 
 export default function CriticalStyleLoader({ href }: StyleLoaderProps) {
     useEffect(() => {
+        // Garantir que isso só execute no cliente após a hydration
+        if (typeof window === 'undefined') {
+            return;
+        }
+
         // Função para aplicar o estilo quando for carregado
         const applyStyle = () => {
             const styleSheet = document.querySelector(`link[href="${href}"]`);
@@ -26,27 +31,32 @@ export default function CriticalStyleLoader({ href }: StyleLoaderProps) {
             }
         };
 
-        // Verifica se o link já existe
-        const existingLink = document.querySelector(`link[href="${href}"]`);
+        // Pequeno atraso para garantir que a hydration seja concluída primeiro
+        const timer = setTimeout(() => {
+            // Verifica se o link já existe
+            const existingLink = document.querySelector(`link[href="${href}"]`);
 
-        if (existingLink) {
-            // Se já existe, apenas aplica o estilo
-            applyStyle();
-        } else {
-            // Se não existe, cria o link e configura o evento onload
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = href;
-            link.media = 'print'; // Começa como print para não bloquear renderização
+            if (existingLink) {
+                // Se já existe, apenas aplica o estilo
+                applyStyle();
+            } else {
+                // Se não existe, cria o link e configura o evento onload
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = href;
+                link.media = 'print'; // Começa como print para não bloquear renderização
 
-            link.onload = applyStyle;
+                link.onload = applyStyle;
 
-            // Adiciona ao head
-            document.head.appendChild(link);
-        }
+                // Adiciona ao head
+                document.head.appendChild(link);
+            }
 
-        // Fallback para garantir que o estilo seja aplicado em todos os casos
-        setTimeout(applyStyle, 2000);
+            // Fallback para garantir que o estilo seja aplicado em todos os casos
+            setTimeout(applyStyle, 2000);
+        }, 0);
+
+        return () => clearTimeout(timer);
     }, [href]);
 
     return null; // Componente não renderiza nada

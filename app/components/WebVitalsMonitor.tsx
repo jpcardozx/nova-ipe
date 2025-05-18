@@ -19,8 +19,12 @@ type MetricReport = { name: string; value: number; path: string };
 
 const WebVitalsMonitor = () => {
     useEffect(() => {
+        // Garantir que apenas execute no cliente 
+        if (typeof window === 'undefined') return;
+
         // Handler para métricas coletadas
-        const reportWebVital = ({ name, value, id }: Metric) => {            // Define limites para métricas
+        const reportWebVital = ({ name, value, id }: Metric) => {
+            // Define limites para métricas
             const thresholds = {
                 CLS: { good: 0.1, needsImprovement: 0.25 },
                 LCP: { good: 2500, needsImprovement: 4000 },

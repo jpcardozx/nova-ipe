@@ -11,25 +11,29 @@ import { useEffect, useState } from 'react';
  * only after hydration is complete.
  */
 export default function HydrationLoadingFix() {
-    const [mounted, setMounted] = useState(false);
+    const [mounted, setMounted] = useState(false); useEffect(() => {
+        // Prevenir execução durante SSR
+        if (typeof window === 'undefined') {
+            return;
+        }
 
-    useEffect(() => {
         // This runs after hydration is complete
         setMounted(true);
 
-        // Since we're already including body-visible class server-side,
-        // we don't need to add it client-side (which would cause a hydration mismatch)
+        // Usar um único setTimeout para evitar múltiplos eventos
         const timer = setTimeout(() => {
             try {
-                // Only do debugging, don't modify any attributes that would
-                // cause hydration mismatches
+                // Esperar até que o evento de hidratação termine
+                document.documentElement.setAttribute('data-hydrated', 'true');
+
+                // Log apenas em desenvolvimento
                 if (process.env.NODE_ENV !== 'production') {
-                    console.debug('Hydration complete - styles maintained from server');
+                    console.debug('Hydration complete - visibility handling active');
                 }
             } catch (error) {
                 console.error('Error in hydration fix:', error);
             }
-        }, 50);
+        }, 0); // Executado no próximo tick após hidratação
 
         return () => clearTimeout(timer);
     }, []);

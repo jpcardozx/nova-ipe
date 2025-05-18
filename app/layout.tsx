@@ -13,11 +13,13 @@ import { Montserrat } from 'next/font/google';
 import Script from 'next/script';
 import LayoutClient from './components/LayoutClient';
 import CriticalStyleLoader from './components/CriticalStyleLoader';
+import LoadingStateController from './components/LoadingStateController';
 import fs from 'fs';
 import path from 'path';
 
 // Importação do CSS principal - carregado depois do critical CSS
 import './globals.css';
+import './components/hydration-fix.css'; // CSS específico para corrigir problemas de hidratação
 
 // Configuração otimizada da fonte Montserrat
 const montserrat = Montserrat({
@@ -28,14 +30,13 @@ const montserrat = Montserrat({
   preload: true,
 });
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode; }) {
+  // Em vez de atribuir data-loading-state diretamente no HTML, usamos o
+  // HydrationGuard para gerenciá-lo após a hidratação
   return (
-    <html lang="pt-BR" className={montserrat.variable} data-loading-state="loading">
-      <head>        {/* Inlined Critical CSS */}
+    <html lang="pt-BR" className={montserrat.variable}>
+      <head>
+        {/* Inlined Critical CSS */}
         <style id="critical-css" dangerouslySetInnerHTML={{
           __html: `
             /* Critical CSS inline */
@@ -68,15 +69,13 @@ export default function RootLayout({
             h1 {
               font-size: 2.25rem;
               font-weight: 700;
-              line-height: 1.1;
-              margin-top: 0;
+              line-height: 1.1;            margin-top: 0;
             }
           `
-        }} />        {/* Carregamento otimizado de CSS não-crítico */}
+        }} />
+        {/* Carregamento otimizado de CSS não-crítico */}
         <link rel="preload" href="/critical-bundle.css" as="style" />
-        {/* O CriticalStyleLoader é um Client Component que gerencia o CSS não-crítico */}
         <link rel="stylesheet" href="/critical-bundle.css" media="print" />
-        {/* Importe o CriticalStyleLoader no topo do arquivo */}
 
         {/* Script crítico com carregamento otimizado */}
         <Script src="/js/critical-preload.js" strategy="beforeInteractive" />
@@ -103,39 +102,28 @@ export default function RootLayout({
         <meta property="whatsapp:card" content="summary_large_image" />
         {/* Facebook */}
         <meta property="fb:app_id" content="123456789" />
-        <meta name="format-detection" content="telephone=no" />        {/* Performance optimization - resource hints */}
+        <meta name="format-detection" content="telephone=no" />
+        {/* Performance optimization - resource hints */}
         <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://cdn.sanity.io" />
 
-        {/* Preloads para recursos críticos */}
-        <link rel="preload" href="/fonts/Montserrat-Bold.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-
+        {/* Preloads para recursos críticos */}        <link rel="preload" href="/fonts/Montserrat-Bold.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         {/* Scripts não críticos carregados de forma otimizada */}
-        <Script src="/js/critical-preload.js" strategy="beforeInteractive" />
         <Script src="/js/whatsapp-optimizer.js" strategy="lazyOnload" />
-        <Script src="/js/loading-timeout.js" strategy="lazyOnload" />
-
-        {/* Prefetch de rotas principais */}
+        <Script src="/js/loading-timeout.js" strategy="lazyOnload" />        {/* Prefetch de rotas principais */}
         <link rel="prefetch" href="/comprar" />
         <link rel="prefetch" href="/alugar" />
       </head>
-      {/* 
-        Including initial styles inline to match what critical-preload.js will set
-        This prevents hydration mismatches
-      */}      <body className="body-initial-state">
+      <body className="body-initial-state">
         <LayoutClient>
-          {/* Componente cliente para gerenciar estilos críticos */}
+          {/* Componentes cliente para gerenciar carregamento otimizado */}
           <CriticalStyleLoader href="/critical-bundle.css" />
+          <LoadingStateController />
 
           {/* Renderização pré-otimizada para conteúdo principal */}
           <main data-optimize-lcp="true">
             {children}
           </main>
-
-          {/* Carregador de JavaScript progressivo */}
-          <Script id="progressive-hydration" strategy="afterInteractive">
-            {`document.documentElement.removeAttribute('data-loading-state');`}
-          </Script>
         </LayoutClient>
       </body>
     </html>
