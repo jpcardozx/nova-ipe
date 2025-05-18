@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Montserrat } from 'next/font/google';
 import PropertyImage from './PropertyImage';
+import ResponsiveSanityImage from './ResponsiveSanityImage';
 import {
     BedDouble, Bath, Car, AreaChart,
     Clock, ArrowUpRight, Home, TrendingUp,
@@ -125,15 +126,12 @@ export const OptimizedPropertyCard: React.FC<OptimizedPropertyCardProps> = ({
                                 Venda
                             </span>
                         )}
-                    </div>                    {/* Imagem principal com tratamento de erro */}
-                    <PropertyImage
-                        src={mainImage.url}
+                    </div>                    {/* Imagem principal com componente otimizado */}
+                    <ResponsiveSanityImage
+                        image={mainImage}
                         alt={mainImage.alt || title}
-                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-                        width={640}
-                        height={480}
-                        title={title}
-                        propertyId={id}
+                        fill
+                        className="object-cover transform group-hover:scale-110 transition-transform duration-700"
                         quality={isPremium ? 90 : 80}
                         priority={isHighlight}
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

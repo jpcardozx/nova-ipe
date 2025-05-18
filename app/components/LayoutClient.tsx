@@ -4,12 +4,23 @@ import React, { useState, useEffect, Suspense } from 'react';
 import Script from 'next/script';
 import { ClientOnly } from './ClientComponents';
 import ClientWebVitals from './ClientWebVitals';
-import ClientPerformanceMonitor from './ClientPerformanceMonitor';
-import WebVitalsDebuggerWrapper from './WebVitalsDebuggerWrapper';
+import dynamic from 'next/dynamic';
 import { OrganizationSchema, WebsiteSchema, LocalBusinessSchema } from './StructuredData';
-import PerformanceDiagnostics from './PerformanceDiagnostics';
-import LoadingStateManager from './LoadingStateManager';
 import HydrationLoadingFix from './HydrationLoadingFix';
+
+// Importações dinâmicas para reduzir bundle inicial
+const WebVitalsMonitor = dynamic(() => import('./WebVitalsMonitor'), { ssr: false });
+const JavaScriptOptimizer = dynamic(() => import('./JavaScriptOptimizer'), { ssr: false });
+
+// Componentes não-críticos com carregamento dinâmico
+const ClientPerformanceMonitor = dynamic(() => import('./ClientPerformanceMonitor'), {
+    ssr: false,
+    loading: () => <div className="perf-monitor-placeholder" />
+});
+
+const WebVitalsDebuggerWrapper = dynamic(() => import('./WebVitalsDebuggerWrapper'), { ssr: false });
+const PerformanceDiagnostics = dynamic(() => import('./PerformanceDiagnostics'), { ssr: false });
+const LoadingStateManager = dynamic(() => import('./LoadingStateManager'), { ssr: false });
 
 export default function LayoutClient({ children }: { children: React.ReactNode }) {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -18,46 +29,67 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
         // Don't run this effect during server-side rendering
         if (typeof window === 'undefined') return;
 
-        // Executar imediatamente para garantir visibilidade rápida
-        function removeLoadingState() {
+        // Executa imediatamente para garantir visibilidade rápida e melhorar LCP
+        function optimizeInitialRender() {
+            // Marca a página como carregada para estilos apropriados
             setIsLoaded(true);
 
-            // Instead of modifying attributes that would cause hydration mismatches,
-            // we'll only apply styles after hydration is complete
-            try {
-                // Short timeout to ensure hydration is complete before applying styles
-                setTimeout(() => {
-                    if (document.body) {
-                        document.body.style.visibility = 'visible';
-                        document.body.style.opacity = '1';
+            // Remove atributos de estado de carregamento
+            document.documentElement.removeAttribute('data-loading-state');
+
+            // Adiciona classe para visibilidade do conteúdo
+            document.body.classList.add('body-visible');
+
+            // Atualiza atributo para sincronizar com estilos de carregamento
+            document.documentElement.setAttribute('data-loaded', 'true');
+
+            // Ativa o carregamento progressivo de recursos
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(() => {
+                    // Registra performance observer para LCP
+                    if ('PerformanceObserver' in window) {
+                        const lcpObserver = new PerformanceObserver((entryList) => {
+                            const entries = entryList.getEntries();
+                            const lastEntry = entries[entries.length - 1];
+
+                            // Marca elemento LCP para otimização
+                            const lcpElement = lastEntry &&
+                                document.querySelector(`[data-optimize-lcp="true"]`) as HTMLElement;
+
+                            if (lcpElement) {
+                                lcpElement.setAttribute('data-lcp-loaded', 'true');
+                            }
+                        });
+
+                        // Observa LCP
+                        lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
                     }
-                }, 50); // Increased timeout for better hydration
-            } catch (err) {
-                console.error('Error updating body visibility:', err);
+                }, { timeout: 1000 });
             }
         }
 
+        // Executa a função otimizadora conforme a prontidão do documento
         if (document.readyState === 'interactive' || document.readyState === 'complete') {
-            removeLoadingState();
+            optimizeInitialRender();
         } else {
-            document.addEventListener('DOMContentLoaded', removeLoadingState);
+            document.addEventListener('DOMContentLoaded', optimizeInitialRender);
         }
 
         // Fallbacks progressivos
-        window.addEventListener('load', removeLoadingState);
-        const timer1 = setTimeout(removeLoadingState, 800);
-        const timer2 = setTimeout(removeLoadingState, 2000);
+        window.addEventListener('load', optimizeInitialRender);
+        const timer1 = setTimeout(optimizeInitialRender, 800);
+        const timer2 = setTimeout(optimizeInitialRender, 2000);
 
         // Último recurso - força visibilidade após 3 segundos
-        const timer3 = setTimeout(removeLoadingState, 3000);
+        const timer3 = setTimeout(optimizeInitialRender, 3000);
 
         // Cleanup
         return () => {
             clearTimeout(timer1);
             clearTimeout(timer2);
             clearTimeout(timer3);
-            document.removeEventListener('DOMContentLoaded', removeLoadingState);
-            window.removeEventListener('load', removeLoadingState);
+            document.removeEventListener('DOMContentLoaded', optimizeInitialRender);
+            window.removeEventListener('load', optimizeInitialRender);
         };
     }, []); return (
         <>
@@ -103,18 +135,24 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
             {/* Delay WebVitals loading */}
             <Suspense fallback={null}>
                 <ClientWebVitals />
-            </Suspense>
-
-            {/* Only load monitoring tools in development */}
-            {process.env.NODE_ENV !== 'production' ? (
+            </Suspense>            {/* Web Vitals Monitor in Production */}
+            {process.env.NODE_ENV === 'production' ? (
+                <>
+                    <Suspense fallback={null}>
+                        <WebVitalsMonitor />
+                    </Suspense>
+                    <JavaScriptOptimizer priority={true} />
+                </>
+            ) : (
                 <>
                     {/* Performance Debugging Tools - Development Only */}
                     <WebVitalsDebuggerWrapper />
                     <Suspense fallback={null}>
                         <ClientPerformanceMonitor />
                     </Suspense>
+                    <PerformanceDiagnostics />
                 </>
-            ) : null}
+            )}
 
             {/* Ferramenta de diagnóstico que pode ser habilitada via URL com ?debug=performance */}
             <Suspense fallback={null}>

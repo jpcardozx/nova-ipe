@@ -20,6 +20,14 @@ import {
 import { formatarMoeda, formatarArea, cn } from '@/lib/utils';
 import type { ImovelClient } from '@/types/imovel-client';
 import SanityImage from './SanityImage';
+import { DynamicComponentLoader } from '@/app/components/DynamicComponentLoader';
+
+// Carrega o OptimizedImageGallery dinamicamente para reduzir o bundle inicial
+const OptimizedImageGallery = React.lazy(() =>
+  import('@/app/components/OptimizedImageGallery').then(mod => ({
+    default: mod.default
+  }))
+);
 
 export type FinalidadeType = 'Venda' | 'Aluguel' | 'Temporada';
 export type VariantType = 'default' | 'grid' | 'list' | 'featured' | 'compact';

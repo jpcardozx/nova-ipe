@@ -142,6 +142,9 @@ const FilterBadge = memo(({ children, isActive, onClick }: FilterBadgeProps) => 
 
 FilterBadge.displayName = 'FilterBadge';
 
+// Importar nosso hook personalizado
+import { useSanityProperties } from '../hooks/useSanityProperties';
+
 // Componente principal de Destaques com imóveis do Sanity CMS
 export function DestaquesSanityCarousel({
     rawProperties,
@@ -153,32 +156,18 @@ export function DestaquesSanityCarousel({
     subtitle?: string;
 }) {
     // Estado para filtro de propriedades
-    const [activeFilter, setActiveFilter] = useState<PropertyType | 'all'>('all');    // Better error handling during property processing
-    const processedProperties = useMemo(() => {
-        try {
-            // Handle empty or invalid properties gracefully
-            if (!rawProperties || !Array.isArray(rawProperties) || rawProperties.length === 0) {
-                console.log('No properties available to process');
-                return [];
-            }
+    const [activeFilter, setActiveFilter] = useState<PropertyType | 'all'>('all');
 
-            return processProperties(rawProperties);
-        } catch (error) {
-            console.error('Error processing properties:', error);
-            return [];
-        }
-    }, [rawProperties]);
-
-    // Filtragem de propriedades baseada no filtro ativo with error handling
-    const filteredProperties = useMemo(() => {
-        try {
-            if (activeFilter === 'all') return processedProperties;
-            return processedProperties.filter(prop => prop && prop.propertyType === activeFilter);
-        } catch (error) {
-            console.error('Error filtering properties:', error);
-            return [];
-        }
-    }, [processedProperties, activeFilter]);
+    // Usar nosso hook personalizado para processar propriedades de forma eficiente
+    const {
+        properties: filteredProperties,
+        isLoading,
+        isEmpty
+    } = useSanityProperties(rawProperties, {
+        filterType: activeFilter === 'all' ? 'all' : activeFilter,
+        sortBy: 'date',
+        sortDirection: 'desc'
+    });
 
     return (
         <motion.section
@@ -206,7 +195,9 @@ export function DestaquesSanityCarousel({
                 <PropertyFilter activeFilter={activeFilter} onChange={setActiveFilter} />
             </div>
 
-            {filteredProperties.length > 0 ? (
+            {isLoading ? (
+                <PropertiesLoadingSkeleton />
+            ) : !isEmpty ? (
                 <OptimizedPropertyCarousel
                     properties={filteredProperties}
                     variant="featured"

@@ -2,13 +2,34 @@
 
 import React from 'react';
 import { Suspense } from 'react';
-import { Montserrat } from 'next/font/google';
 import Link from 'next/link';
 import Image from 'next/image';
 import OptimizationProvider from './components/OptimizationProvider';
-import { motion } from 'framer-motion';
-import { ArrowRight, Award, Building2, Check, Home as HomeIcon, MapPin, Shield, Star, Zap } from 'lucide-react';
-import HomepageLoadingOptimizer from './components/HomepageLoadingOptimizer';
+// Dynamic imports for better performance
+import dynamic from 'next/dynamic';
+import { ArrowRight, Check, Home as HomeIcon, MapPin } from 'lucide-react';
+
+// Lazy load heavier components with proper type handling
+const MotionComponentWrapper = dynamic(
+  () => import('framer-motion').then((mod) => ({
+    default: mod.motion.div
+  })),
+  { ssr: false }
+);
+
+// Create a typed wrapper for motion components
+const motion = {
+  div: MotionComponentWrapper,
+  section: dynamic(() => import('framer-motion').then((mod) => ({ default: mod.motion.section })), { ssr: false }),
+  button: dynamic(() => import('framer-motion').then((mod) => ({ default: mod.motion.button })), { ssr: false }),
+};
+const HomepageLoadingOptimizer = dynamic(() => import('./components/HomepageLoadingOptimizer'), { ssr: true });
+// Lazy load less frequently used icons
+const Award = dynamic(() => import('lucide-react').then(mod => mod.Award));
+const Building2 = dynamic(() => import('lucide-react').then(mod => mod.Building2));
+const Shield = dynamic(() => import('lucide-react').then(mod => mod.Shield));
+const Star = dynamic(() => import('lucide-react').then(mod => mod.Star));
+const Zap = dynamic(() => import('lucide-react').then(mod => mod.Zap));
 
 // Importações para dados dinâmicos do Sanity
 import { getImoveisDestaque, getImoveisAluguel } from '@/lib/queries';
@@ -17,8 +38,8 @@ import { extractImageUrl, extractAltText } from '@/lib/image-sanity';
 import { ensureValidImageUrl } from '@/lib/sanity-image-utils';
 import type { ImovelClient } from '@/src/types/imovel-client';
 
-// UI Components
-import SectionHeader from './components/ui/SectionHeader';
+// UI Components - lazy load non-critical components
+const SectionHeader = dynamic(() => import('./components/ui/SectionHeader'), { ssr: true });
 
 // Componentes otimizados
 import EnhancedHero from "./components/EnhancedHero";
@@ -36,13 +57,7 @@ import { ImovelHero } from './components/ImoveisDestaqueComponents';
 import ClientCarouselWrapper from './components/ClientCarouselWrapper';
 import DestaquesSanityCarousel from './components/DestaquesSanityCarousel';
 
-// Configuração da fonte
-const montSerrat = Montserrat({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
-  display: 'swap',
-  variable: '--font-montserrat',
-});
+// A configuração da fonte foi movida para layout.tsx para evitar duplicação
 
 // Importando tipos e componentes
 import type { PropertyType } from './components/OptimizedPropertyCard';
@@ -158,9 +173,13 @@ function transformPropertyData(imovel: ImovelClient, propertyType: PropertyType)
   }
 }
 
+// Import the development proxy utility
+import { fetchSanityWithProxy } from '@/lib/sanity/development-proxy';
+import { queryImoveisDestaque, queryImoveisAluguel } from '@/lib/queries';
+
 /**
  * Busca e processa dados de propriedades do Sanity com validação robusta
- * e tratamento de erros aprimorado
+ * e tratamento de erros aprimorado usando proxy em ambiente de desenvolvimento
  */
 async function fetchPropertiesData() {
   try {
@@ -176,9 +195,14 @@ async function fetchPropertiesData() {
         setTimeout(() => reject(new Error('Fetch destaques timeout')), 15000);
       });
 
+      // Use the proxy utility in development to avoid CORS issues
+      const fetchDestaques = process.env.NODE_ENV === 'development'
+        ? fetchSanityWithProxy(queryImoveisDestaque)
+        : getImoveisDestaque();
+
       // Race against timeout
       imoveisDestaque = await Promise.race([
-        getImoveisDestaque(),
+        fetchDestaques,
         timeoutPromise
       ]);
 
@@ -194,9 +218,14 @@ async function fetchPropertiesData() {
         setTimeout(() => reject(new Error('Fetch aluguel timeout')), 15000);
       });
 
+      // Use the proxy utility in development to avoid CORS issues
+      const fetchAluguel = process.env.NODE_ENV === 'development'
+        ? fetchSanityWithProxy(queryImoveisAluguel)
+        : getImoveisAluguel();
+
       // Race against timeout
       imoveisAluguel = await Promise.race([
-        getImoveisAluguel(),
+        fetchAluguel,
         timeoutPromise
       ]);
 
@@ -278,7 +307,7 @@ export default function Home() {
 
   const { destaques, aluguel } = properties;
   return (
-    <div className={`${montSerrat.className} flex flex-col min-h-screen bg-[#fafaf9]`}>
+    <div className="flex flex-col min-h-screen bg-[#fafaf9]">
       {/* Otimizador de carregamento específico para a página inicial */}
       <Suspense fallback={null}>
         <HomepageLoadingOptimizer />
