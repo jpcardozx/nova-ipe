@@ -1,6 +1,12 @@
 /**
- * Estilos críticos para otimizar o LCP e evitar CLS
- * Versão melhorada com otimizações adicionais
+ * critical.css - Estilos críticos para renderização inicial
+ * 
+ * Contém estilos essenciais para o carregamento inicial da página,
+ * otimizações de CLS e configurações de performance.
+ * Esse arquivo é carregado antes dos outros estilos.
+ * 
+ * @version 2.0.0
+ * @date 18/05/2025
  */
 
 /* Configurações de carregamento para fontes */
@@ -16,7 +22,7 @@ html[data-loading-state="loading"]:before {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #C36B09, #e9ae52);
+  background: linear-gradient(90deg, #1a6f5c, #3a8f7c);
   z-index: 9999;
   animation: loading 1.5s infinite ease-in-out;
 }

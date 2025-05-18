@@ -1,0 +1,28 @@
+/* Styles for layout components */
+
+/* 
+   Initial body state - now matching server/client rendering
+   We keep visibility and opacity as visible to match the server rendering
+   but still use the class for potential transitions
+*/
+.body-initial-state {
+  transition: opacity 0.3s ease-out;
+  /* Removed visibility: hidden and opacity: 0 to match server rendering */
+}
+
+/* This class will be added by client-side JS after hydration */
+.body-visible {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Additional layout styles */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Improved focus outlines for accessibility */
+:focus-visible {
+  outline: 2px solid #007aff;
+  outline-offset: 2px;
+}

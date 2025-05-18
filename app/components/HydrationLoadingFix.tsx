@@ -11,27 +11,25 @@ import { useEffect, useState } from 'react';
  * only after hydration is complete.
  */
 export default function HydrationLoadingFix() {
-    const [mounted, setMounted] = useState(false); useEffect(() => {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
         // This runs after hydration is complete
         setMounted(true);
 
-        // Make page visible with a slightly longer delay to ensure hydration is fully complete
+        // Since we're already including body-visible class server-side,
+        // we don't need to add it client-side (which would cause a hydration mismatch)
         const timer = setTimeout(() => {
             try {
-                if (document.body) {
-                    // Update styles directly without adding data attributes that could cause hydration mismatches
-                    document.body.style.visibility = 'visible';
-                    document.body.style.opacity = '1';
-
-                    // For debugging - use a less intrusive log
-                    if (process.env.NODE_ENV !== 'production') {
-                        console.debug('Page visibility restored after hydration');
-                    }
+                // Only do debugging, don't modify any attributes that would
+                // cause hydration mismatches
+                if (process.env.NODE_ENV !== 'production') {
+                    console.debug('Hydration complete - styles maintained from server');
                 }
             } catch (error) {
-                console.error('Error restoring visibility:', error);
+                console.error('Error in hydration fix:', error);
             }
-        }, 50); // Slightly longer delay to ensure hydration completes
+        }, 50);
 
         return () => clearTimeout(timer);
     }, []);

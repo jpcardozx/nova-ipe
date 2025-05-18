@@ -2,6 +2,30 @@
 // Evita travamentos mesmo em conexões lentas
 
 (function () {
+    // Executa imediatamente para otimizar o FCP e LCP
+    function optimizeInitialRender() {
+        // Remove o estado de loading depois de carregar críticos
+        document.documentElement.removeAttribute('data-loading-state');
+
+        // Ativa os CSS não críticos após carregar o essencial
+        const activateDeferredStyles = function () {
+            const deferredStyles = document.querySelectorAll('link[rel="stylesheet"][media="print"]');
+            deferredStyles.forEach(function (link) {
+                link.media = 'all';
+            });
+        };
+
+        // Executa na primeira oportunidade de renderização
+        if (window.requestIdleCallback) {
+            requestIdleCallback(activateDeferredStyles, { timeout: 2000 });
+        } else {
+            setTimeout(activateDeferredStyles, 100);
+        }
+    }
+
+    // Executa otimizações imediatamente 
+    optimizeInitialRender();
+
     // Função auxiliar para detectar o tipo de dispositivo/navegador
     function detectEnvironment() {
         return {
@@ -20,20 +44,19 @@
     // Define atributos HTML baseados no ambiente
     if (env.isMobile) document.documentElement.setAttribute('data-mobile', 'true');
     if (env.isWhatsApp) document.documentElement.setAttribute('data-whatsapp', 'true');
-    if (env.isSlowConnection) document.documentElement.setAttribute('data-slow-connection', 'true');
-
-    // Função para garantir visibilidade mesmo em casos de falha
+    if (env.isSlowConnection) document.documentElement.setAttribute('data-slow-connection', 'true');    // Função para garantir visibilidade mesmo em casos de falha
     function ensureVisibility() {
-        // Remove estado de loading
-        document.documentElement.removeAttribute('data-loading-state');
-        document.documentElement.setAttribute('data-loaded', 'true');
+        // Não modificamos atributos data-loaded que já devem existir no HTML
+        // para evitar problemas de hidratação
 
-        // Força visibilidade do body
+        // Não modificamos visibility e opacity (inline styles)
+        // já são definidos corretamente no SSR
+
+        // Não adicionamos a classe body-visible aqui, pois já está definida no SSR
+        // Adicionar causaria um mismatch durante hidratação
+
         if (document.body) {
-            document.body.style.visibility = 'visible';
-            document.body.style.opacity = '1';
-
-            // Adiciona classe específica
+            // Apenas adicionamos classes ambientais que não são críticas para hidratação
             if (env.isWhatsApp) document.body.classList.add('from-whatsapp');
             if (env.isSlowConnection) document.body.classList.add('slow-connection');
         }

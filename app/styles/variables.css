@@ -1,0 +1,119 @@
+/**
+ * Variáveis CSS globais
+ * 
+ * Define o sistema de design através de variáveis CSS
+ * para garantir consistência visual em toda a aplicação
+ * 
+ * @version 1.0.0
+ * @date 17/05/2025
+ */
+
+:root {
+  /* Base Colors */
+  --color-primary-rgb: 26, 111, 92;         /* #1a6f5c - Verde principal */
+  --color-primary-foreground-rgb: 255, 255, 255; /* branco */
+  
+  --color-secondary-rgb: 14, 31, 45;        /* #0E1F2D - Azul escuro */
+  --color-secondary-foreground-rgb: 255, 255, 255; /* branco */
+  
+  --color-accent-rgb: 255, 204, 0;          /* #ffcc00 - Amarelo */
+  --color-accent-foreground-rgb: 14, 31, 45; /* #0E1F2D */
+  
+  /* UI Colors */
+  --color-background-rgb: 255, 255, 255;    /* #ffffff */
+  --color-foreground-rgb: 51, 51, 51;       /* #333333 */
+  
+  --color-card-rgb: 255, 255, 255;          /* #ffffff */
+  --color-card-foreground-rgb: 51, 51, 51;  /* #333333 */
+  
+  --color-popover-rgb: 255, 255, 255;       /* #ffffff */
+  --color-popover-foreground-rgb: 51, 51, 51; /* #333333 */
+  
+  --color-muted-rgb: 245, 245, 245;         /* #f5f5f5 */
+  --color-muted-foreground-rgb: 115, 115, 115; /* #737373 */
+  
+  /* Borders & Inputs */
+  --color-border-rgb: 229, 229, 229;        /* #e5e5e5 */
+  --color-input-rgb: 229, 229, 229;         /* #e5e5e5 */
+  --color-ring-rgb: 26, 111, 92;            /* #1a6f5c */
+  
+  /* Status Colors */
+  --color-success-rgb: 34, 197, 94;         /* #22c55e */
+  --color-warning-rgb: 245, 158, 11;        /* #f59e0b */
+  --color-error-rgb: 239, 68, 68;           /* #ef4444 */
+  --color-info-rgb: 59, 130, 246;           /* #3b82f6 */
+  
+  /* Alias para facilitar uso direto */
+  --color-primary: var(--color-primary-rgb);
+  --color-primary-foreground: var(--color-primary-foreground-rgb);
+  --color-secondary: var(--color-secondary-rgb);
+  --color-secondary-foreground: var(--color-secondary-foreground-rgb);
+  --color-accent: var(--color-accent-rgb);
+  --color-accent-foreground: var(--color-accent-foreground-rgb);
+  --color-background: var(--color-background-rgb);
+  --color-foreground: var(--color-foreground-rgb);
+  --color-card: var(--color-card-rgb);
+  --color-card-foreground: var(--color-card-foreground-rgb);
+  --color-popover: var(--color-popover-rgb);
+  --color-popover-foreground: var(--color-popover-foreground-rgb);
+  --color-muted: var(--color-muted-rgb);
+  --color-muted-foreground: var(--color-muted-foreground-rgb);
+  --color-border: var(--color-border-rgb);
+  --color-input: var(--color-input-rgb);
+  --color-ring: var(--color-ring-rgb);
+
+  /* Typography */
+  --font-sans: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  
+  /* Spacing */
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+  --spacing-10: 2.5rem;
+  --spacing-12: 3rem;
+  --spacing-16: 4rem;
+  
+  /* Radius */
+  --radius: 0.5rem;
+  --radius-sm: 0.25rem;
+  --radius-lg: 0.75rem;
+  --radius-full: 9999px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  
+  /* Animation */
+  --transition-all: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-colors: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+                      border-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+                      color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+                      fill 150ms cubic-bezier(0.4, 0, 0.2, 1),
+                      stroke 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-transform: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Tema escuro - usar com a classe .dark no <html> */
+.dark {
+  --color-background-rgb: 14, 31, 45;      /* #0E1F2D */
+  --color-foreground-rgb: 245, 245, 245;   /* #f5f5f5 */
+  
+  --color-card-rgb: 22, 40, 54;            /* #162836 */
+  --color-card-foreground-rgb: 245, 245, 245; /* #f5f5f5 */
+  
+  --color-popover-rgb: 22, 40, 54;         /* #162836 */
+  --color-popover-foreground-rgb: 245, 245, 245; /* #f5f5f5 */
+  
+  --color-muted-rgb: 30, 48, 62;           /* #1e303e */
+  --color-muted-foreground-rgb: 176, 176, 176; /* #b0b0b0 */
+  
+  --color-border-rgb: 57, 75, 89;          /* #394b59 */
+  --color-input-rgb: 57, 75, 89;           /* #394b59 */
+}

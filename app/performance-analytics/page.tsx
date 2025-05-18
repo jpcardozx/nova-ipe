@@ -1,0 +1,418 @@
+'use client';
+
+/**
+ * PerformanceAnalytics.tsx
+ * 
+ * Dashboard de análise de performance para desenvolvedores
+ * Mostra métricas de Web Vitals e carregamento de componentes
+ * 
+ * @version 1.0.0
+ * @date 18/05/2025
+ */
+
+import React, { useState, useEffect } from 'react';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+    ArcElement
+} from 'chart.js';
+import { Bar, Line, Pie } from 'react-chartjs-2'; // Correção: usando react-chartjs-2 ao invés de react-chartjs-js
+
+// Registre os componentes do Chart.js
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+    ArcElement
+);
+
+interface MetricRecord {
+    name: string;
+    value: number;
+    timestamp: number;
+    path?: string;
+    rating?: string;
+}
+
+interface ComponentMetricRecord {
+    component: string;
+    loadTime: number;
+    timestamp: number;
+    page?: string;
+}
+
+interface PerformanceAnalyticsProps {
+    showWebVitals?: boolean;
+    showComponentMetrics?: boolean;
+    showResourceMetrics?: boolean;
+    refreshInterval?: number; // in seconds
+}
+
+/**
+ * Painel de análise de performance para desenvolvedores
+ */
+export default function PerformanceAnalytics({
+    showWebVitals = true,
+    showComponentMetrics = true,
+    showResourceMetrics = true,
+    refreshInterval = 30
+}: PerformanceAnalyticsProps) {
+    const [webVitals, setWebVitals] = useState<MetricRecord[]>([]);
+    const [componentMetrics, setComponentMetrics] = useState<ComponentMetricRecord[]>([]);
+    const [resourceMetrics, setResourceMetrics] = useState<any[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+    // Busca métricas periodicamente
+    useEffect(() => {
+        const fetchMetrics = async () => {
+            setLoading(true);
+            setError(null);
+
+            try {
+                // Buscar métricas de Web Vitals
+                if (showWebVitals) {
+                    const vitalsResponse = await fetch('/api/vitals', {
+                        method: 'GET',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    if (vitalsResponse.ok) {
+                        const vitalsData = await vitalsResponse.json();
+                        setWebVitals(vitalsData.metrics || []);
+                    } else {
+                        console.error('Failed to fetch Web Vitals metrics');
+                    }
+                }
+
+                // Buscar métricas de componentes
+                if (showComponentMetrics) {
+                    const componentResponse = await fetch('/api/component-metrics', {
+                        method: 'GET',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    if (componentResponse.ok) {
+                        const componentData = await componentResponse.json();
+                        setComponentMetrics(componentData.metrics || []);
+                    } else {
+                        console.error('Failed to fetch component metrics');
+                    }
+                }
+
+                // Buscar métricas de recursos (se disponível e apenas em desenvolvimento)
+                if (showResourceMetrics && process.env.NODE_ENV === 'development') {
+                    try {
+                        // Usar a API de Performance do navegador
+                        const resources = performance.getEntriesByType('resource');
+
+                        // Filtrar e organizar recursos por tipo
+                        const resourceStats = resources.reduce((acc: any, resource: any) => {
+                            const type = resource.initiatorType || 'other';
+                            if (!acc[type]) acc[type] = [];
+
+                            acc[type].push({
+                                name: resource.name.split('/').pop() || resource.name,
+                                duration: resource.duration,
+                                size: resource.transferSize || 0,
+                                startTime: resource.startTime
+                            });
+
+                            return acc;
+                        }, {});
+
+                        setResourceMetrics(resourceStats);
+                    } catch (err) {
+                        console.warn('Resource metrics not available', err);
+                    }
+                }
+
+            } catch (err) {
+                setError('Failed to fetch performance metrics');
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        // Busca inicial
+        fetchMetrics();
+
+        // Configurar atualização periódica
+        const interval = setInterval(fetchMetrics, refreshInterval * 1000);
+
+        return () => clearInterval(interval);
+    }, [showWebVitals, showComponentMetrics, showResourceMetrics, refreshInterval]);
+
+    // Preparar dados para gráficos
+    const webVitalsChartData = {
+        labels: webVitals.map(metric => metric.name),
+        datasets: [
+            {
+                label: 'Web Vitals',
+                data: webVitals.map(metric => metric.value),
+                backgroundColor: webVitals.map(metric => {
+                    switch (metric.rating) {
+                        case 'good': return '#4ade80';
+                        case 'needs-improvement': return '#facc15';
+                        case 'poor': return '#ef4444';
+                        default: return '#94a3b8';
+                    }
+                }),
+                borderColor: webVitals.map(metric => {
+                    switch (metric.rating) {
+                        case 'good': return '#16a34a';
+                        case 'needs-improvement': return '#eab308';
+                        case 'poor': return '#dc2626';
+                        default: return '#64748b';
+                    }
+                }),
+                borderWidth: 1
+            }
+        ]
+    };
+
+    // Agrupar métricas de componentes por nome
+    const componentsByName = componentMetrics.reduce((acc: any, metric) => {
+        if (!acc[metric.component]) {
+            acc[metric.component] = {
+                total: 0,
+                count: 0,
+                min: Infinity,
+                max: 0
+            };
+        }
+
+        acc[metric.component].total += metric.loadTime;
+        acc[metric.component].count += 1;
+        acc[metric.component].min = Math.min(acc[metric.component].min, metric.loadTime);
+        acc[metric.component].max = Math.max(acc[metric.component].max, metric.loadTime);
+
+        return acc;
+    }, {});
+
+    // Calcular médias
+    const componentNames = Object.keys(componentsByName);
+    const componentAvgTimes = componentNames.map(name =>
+        componentsByName[name].total / componentsByName[name].count
+    );
+
+    const componentChartData = {
+        labels: componentNames,
+        datasets: [
+            {
+                label: 'Tempo médio de carregamento (ms)',
+                data: componentAvgTimes,
+                backgroundColor: '#60a5fa',
+                borderColor: '#3b82f6',
+                borderWidth: 1
+            }
+        ]
+    };
+
+    return (
+        <div className="p-6 max-w-7xl mx-auto">
+            <h1 className="text-3xl font-bold mb-8">Performance Analytics Dashboard</h1>
+
+            {loading && (
+                <div className="flex justify-center my-8">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                </div>
+            )}
+
+            {error && (
+                <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
+                    <p>{error}</p>
+                </div>
+            )}
+
+            {/* Web Vitals Section */}
+            {showWebVitals && (
+                <section className="mb-10">
+                    <h2 className="text-2xl font-semibold mb-4">Web Vitals</h2>
+
+                    {webVitals.length === 0 ? (
+                        <p className="text-gray-500 italic">Nenhuma métrica de Web Vitals registrada ainda.</p>
+                    ) : (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div className="bg-white p-6 rounded-lg shadow-md">
+                                <h3 className="text-xl mb-4">Valores de Web Vitals</h3>
+                                <Bar data={webVitalsChartData} options={{
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true
+                                        }
+                                    }
+                                }} />
+                            </div>
+
+                            <div className="bg-white p-6 rounded-lg shadow-md">
+                                <h3 className="text-xl mb-4">Distribuição por Classificação</h3>
+                                <Pie
+                                    data={{
+                                        labels: ['Bom', 'Precisa Melhorar', 'Ruim', 'Sem classificação'],
+                                        datasets: [{
+                                            data: [
+                                                webVitals.filter(m => m.rating === 'good').length,
+                                                webVitals.filter(m => m.rating === 'needs-improvement').length,
+                                                webVitals.filter(m => m.rating === 'poor').length,
+                                                webVitals.filter(m => !m.rating).length,
+                                            ],
+                                            backgroundColor: ['#4ade80', '#facc15', '#ef4444', '#94a3b8'],
+                                            borderColor: ['#16a34a', '#eab308', '#dc2626', '#64748b'],
+                                        }]
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    )}
+                </section>
+            )}
+
+            {/* Component Metrics Section */}
+            {showComponentMetrics && (
+                <section className="mb-10">
+                    <h2 className="text-2xl font-semibold mb-4">Métricas de Componentes</h2>
+
+                    {componentMetrics.length === 0 ? (
+                        <p className="text-gray-500 italic">Nenhuma métrica de componente registrada ainda.</p>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-6">
+                            <div className="bg-white p-6 rounded-lg shadow-md">
+                                <h3 className="text-xl mb-4">Tempo de Carregamento de Componentes</h3>
+                                <Bar data={componentChartData} options={{
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            title: {
+                                                display: true,
+                                                text: 'Tempo (ms)'
+                                            }
+                                        }
+                                    }
+                                }} />
+                            </div>
+
+                            <div className="bg-white p-6 rounded-lg shadow-md overflow-x-auto">
+                                <h3 className="text-xl mb-4">Estatísticas Detalhadas de Componentes</h3>
+                                <table className="min-w-full divide-y divide-gray-200">
+                                    <thead className="bg-gray-50">
+                                        <tr>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Componente
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Carregamentos
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Média (ms)
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Min (ms)
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Max (ms)
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                        {componentNames.map(name => (
+                                            <tr key={name}>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                    {name}
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    {componentsByName[name].count}
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    {Math.round(componentsByName[name].total / componentsByName[name].count)}
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    {Math.round(componentsByName[name].min)}
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    {Math.round(componentsByName[name].max)}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+                </section>
+            )}
+
+            {/* Resource Metrics Section */}
+            {showResourceMetrics && (
+                <section className="mb-10">
+                    <h2 className="text-2xl font-semibold mb-4">Métricas de Recursos</h2>
+
+                    {Object.keys(resourceMetrics).length === 0 ? (
+                        <p className="text-gray-500 italic">Nenhuma métrica de recursos disponível.</p>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-6">
+                            {Object.entries(resourceMetrics).map(([type, resources]: [string, any[]]) => (
+                                <div key={type} className="bg-white p-6 rounded-lg shadow-md overflow-x-auto">
+                                    <h3 className="text-xl mb-4 capitalize">{type}</h3>
+                                    <table className="min-w-full divide-y divide-gray-200">
+                                        <thead className="bg-gray-50">
+                                            <tr>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Recurso
+                                                </th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Tempo (ms)
+                                                </th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Tamanho (KB)
+                                                </th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Início (ms)
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="bg-white divide-y divide-gray-200">
+                                            {resources.map((resource: any, idx: number) => (
+                                                <tr key={idx}>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                        {resource.name}
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        {Math.round(resource.duration)}
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        {(resource.size / 1024).toFixed(2)}
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        {Math.round(resource.startTime)}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </section>
+            )}
+
+            <div className="text-gray-500 text-sm mt-8 text-center">
+                Dados atualizados a cada {refreshInterval} segundos. Último: {new Date().toLocaleTimeString()}
+            </div>
+        </div>
+    );
+}

@@ -34,6 +34,31 @@ export interface SanityImage {
 export type ImageType = string | SanityImage | null | undefined;
 
 /**
+ * Cache local para evitar reprocessamento repetido de URLs de imagem
+ * Melhora significativamente o desempenho em componentes que renderizam
+ * múltiplas vezes com as mesmas imagens
+ */
+const imageUrlCache = new Map<string, string>();
+const CACHE_SIZE_LIMIT = 100;
+
+/**
+ * Gera uma chave de cache única para uma imagem
+ */
+function generateCacheKey(image: ImageType): string {
+    if (!image) return 'undefined';
+    if (typeof image === 'string') return `str:${image.substring(0, 50)}`;
+
+    const ref = image.asset?._ref;
+    const url = image.url || image.imagemUrl || image.asset?.url;
+
+    if (ref) return `ref:${ref}`;
+    if (url) return `url:${String(url)}`;
+
+    // Fallback para caso extremo
+    return `obj:${JSON.stringify(image).substring(0, 50)}`;
+}
+
+/**
  * Extrai URL de imagem usando uma abordagem segura e robusta
  * Lida com todos os formatos possíveis do Sanity
  * 
@@ -43,62 +68,55 @@ export type ImageType = string | SanityImage | null | undefined;
  */
 export function getImageUrl(image: ImageType, fallbackUrl: string = '/images/property-placeholder.jpg'): string {
     try {
-        // Log detalhado para ajudar no diagnóstico
-        console.log('[getImageUrl] Processando imagem:', {
-            tipo: image ? typeof image : 'undefined/null',
-            isString: typeof image === 'string',
-            hasUrl: typeof image === 'object' && image && 'url' in image,
-            hasImagemUrl: typeof image === 'object' && image && 'imagemUrl' in image,
-            hasAsset: typeof image === 'object' && image && 'asset' in image,
-            assetHasRef: typeof image === 'object' && image?.asset && '_ref' in (image.asset || {})
-        });
+        // Verificar cache primeiro para melhorar performance
+        const cacheKey = generateCacheKey(image);
+        if (imageUrlCache.has(cacheKey)) {
+            return imageUrlCache.get(cacheKey)!;
+        }
 
         // Caso 1: Imagem não definida
         if (!image) {
-            console.log('[getImageUrl] Imagem não definida, usando fallback');
             return fallbackUrl;
         }
 
         // Caso 2: String direta (URL)
         if (typeof image === 'string') {
-            console.log('[getImageUrl] Imagem é uma string URL');
+            cacheAndReturn(cacheKey, image);
             return image;
         }
 
         // Caso 3: Objeto com URL direta
         if ('url' in image && image.url) {
-            console.log('[getImageUrl] Usando URL direta do objeto');
+            cacheAndReturn(cacheKey, image.url);
             return image.url;
         }
 
         // Caso 4: Objeto com imagemUrl (comum em nosso projeto)
         if ('imagemUrl' in image && image.imagemUrl) {
-            console.log('[getImageUrl] Usando imagemUrl do objeto');
+            cacheAndReturn(cacheKey, image.imagemUrl);
             return image.imagemUrl;
         }
 
         // Caso 5: Tem um asset com URL
         if (image.asset?.url) {
-            console.log('[getImageUrl] Usando URL do asset');
+            cacheAndReturn(cacheKey, image.asset.url);
             return image.asset.url;
-        }        // Caso 6: Tem referência do Sanity para construção de URL
+        }
+
+        // Caso 6: Tem referência do Sanity para construção de URL
         if (image.asset?._ref) {
             const refString = image.asset._ref;
-            console.log('[getImageUrl] Processando referência Sanity:', refString);
 
             // Validar referência
             if (!refString || typeof refString !== 'string') {
-                console.warn('[getImageUrl] Referência inválida');
                 return fallbackUrl;
             }
 
             // Construir URL do Sanity baseada na referência
             const refParts = refString.split('-');
-            console.log('[getImageUrl] Partes da referência:', refParts);
 
             // Validar formato básico (deve começar com 'image')
             if (refParts[0] !== 'image' || refParts.length < 2) {
-                console.warn('[getImageUrl] Formato de referência inválido');
                 return fallbackUrl;
             }
 
@@ -107,11 +125,10 @@ export function getImageUrl(image: ImageType, fallbackUrl: string = '/images/pro
             const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
 
             try {
-                // Novo método de extração mais robusto
                 // Padrão de referência: image-{id}-{dimensions}-{format}
                 let id, dimensions, extension;
 
-                // Caso especial: formato mais longo (hash extenso)
+                // Identificar formato com base no padrão da referência
                 if (refParts.length > 4) {
                     // Identificar a parte que contém dimensões (formato: NxM)
                     const dimIndex = refParts.findIndex(part => /^\d+x\d+$/.test(part));
@@ -120,25 +137,21 @@ export function getImageUrl(image: ImageType, fallbackUrl: string = '/images/pro
                         dimensions = refParts[dimIndex];
                         extension = refParts[dimIndex + 1].split('?')[0];
                     } else {
-                        // Formato não reconhecido, usar primeiras partes
                         id = refParts[1];
                         dimensions = '';
                         extension = 'jpg';
                     }
                 }
-                // Formato padrão: image-abc123-800x600-jpg
                 else if (refParts.length >= 4 && refParts[2].includes('x')) {
                     id = refParts[1];
                     dimensions = refParts[2];
                     extension = refParts[3].split('?')[0];
                 }
-                // Formato simplificado: image-abc123-jpg
                 else if (refParts.length === 3) {
                     id = refParts[1];
                     dimensions = '';
                     extension = refParts[2].split('?')[0];
                 }
-                // Fallback
                 else {
                     id = refParts[1];
                     dimensions = '';
@@ -150,14 +163,13 @@ export function getImageUrl(image: ImageType, fallbackUrl: string = '/images/pro
                     ? `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}-${dimensions}.${extension}`
                     : `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}.${extension}`;
 
-                console.log('[getImageUrl] URL gerada:', url);
+                cacheAndReturn(cacheKey, url);
                 return url;
             } catch (err) {
-                console.error('[getImageUrl] Erro ao processar referência:', err);
                 // Fallback para formato simples com extensão jpg
                 const id = refParts[1];
                 const url = `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}.jpg`;
-                console.log('[getImageUrl] URL gerada (fallback):', url);
+                cacheAndReturn(cacheKey, url);
                 return url;
             }
         }
@@ -168,6 +180,22 @@ export function getImageUrl(image: ImageType, fallbackUrl: string = '/images/pro
         console.error('[getImageUrl] Erro ao processar imagem:', error);
         return fallbackUrl;
     }
+}
+
+/**
+ * Armazena URL no cache e controla o tamanho do cache
+ */
+function cacheAndReturn(key: string, url: string): string {
+    // Limitar o tamanho do cache
+    if (imageUrlCache.size >= CACHE_SIZE_LIMIT) {
+        const firstKey = imageUrlCache.keys().next().value;
+        if (firstKey !== undefined) {
+            imageUrlCache.delete(firstKey);
+        }
+    }
+
+    imageUrlCache.set(key, url);
+    return url;
 }
 
 /**
