@@ -51,7 +51,7 @@ export default async function Page() {
              */}
             <Suspense fallback={<PropertyPageSkeleton />}>
                 <TurboComprarPage preloadedProperties={
-                    isFreshData(preloadedData.timestamp) ? preloadedData.data : undefined
+                    await isFreshData(preloadedData.timestamp) ? preloadedData.data : undefined
                 } />
             </Suspense>
         </>

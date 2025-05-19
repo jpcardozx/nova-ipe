@@ -75,7 +75,7 @@ export const getPreloadedPropertiesForSale = cache(async (): Promise<{
  * @param timestamp Timestamp do último carregamento
  * @param maxAge Idade máxima do cache em segundos (padrão: 5 min)
  */
-export function isCacheValid(timestamp: number, maxAge = 300): boolean {
+export async function isCacheValid(timestamp: number, maxAge = 300): Promise<boolean> {
     if (!timestamp) return false;
 
     const now = Date.now();
@@ -96,9 +96,9 @@ export const isFreshData = isCacheValid;
  * 
  * @param properties Array de imóveis para otimizar
  */
-export function optimizeProperties(properties: ImovelClient[]) {
+export async function optimizeProperties(properties: ImovelClient[]): Promise<ImovelClient[]> {
     return properties.map(p => ({
-        id: p._id,
+        _id: p._id, // Ensure _id is included as required by ImovelClient
         titulo: p.titulo,
         slug: p.slug,
         preco: p.preco,

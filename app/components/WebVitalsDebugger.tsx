@@ -19,10 +19,31 @@ interface WebVitalsDebuggerProps {
 export default function WebVitalsDebugger({ enabled = true }: WebVitalsDebuggerProps) {
     const [metrics, setMetrics] = useState<WebVitalMetric[]>([]);
     const [isVisible, setIsVisible] = useState(false);
+    const [isInitialized, setIsInitialized] = useState(false);
 
     useEffect(() => {
+        // Marcar componente como inicializado
+        setIsInitialized(true);
+        console.log('[WebVitalsDebugger] Inicializado');
+
+        // Tornar visível após um curto período para garantir que a interface se estabilize
+        const visibilityTimer = setTimeout(() => {
+            setIsVisible(true);
+            console.log('[WebVitalsDebugger] Visível');
+        }, 500);
+
+        return () => clearTimeout(visibilityTimer);
+    }, []);
+
+    useEffect(() => {
+        if (!enabled || !isInitialized) return;
+
+        console.log('[WebVitalsDebugger] Registrando métricas...');
+
         const handleMetric = (metric: any) => {
             const { name, value, rating, delta, id } = metric;
+
+            console.log(`[WebVitalsDebugger] Métrica coletada: ${name} = ${value}`);
 
             const newMetric: WebVitalMetric = {
                 name,
@@ -33,14 +54,18 @@ export default function WebVitalsDebugger({ enabled = true }: WebVitalsDebuggerP
                 timestamp: Date.now()
             };
 
-            setMetrics(prev => [...prev, newMetric]);            // Enviar para API
+            setMetrics(prev => [...prev, newMetric]);
+
+            // Enviar para API
             if ('sendBeacon' in navigator) {
                 const body = JSON.stringify({
                     name,
                     value,
                     delta,
                     id,
-                    page: window.location.pathname
+                    page: window.location.pathname,
+                    environment: 'development',
+                    debug: true
                 });
 
                 navigator.sendBeacon('/api/vitals', body);

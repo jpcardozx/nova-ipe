@@ -5,7 +5,7 @@ import { Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import OptimizationProvider from './components/OptimizationProvider';
-// Dynamic imports for better performance
+// Dynamic imports for better performance and Web Vitals during development
 import dynamic from 'next/dynamic';
 import { ArrowRight, Check, Home as HomeIcon, MapPin } from 'lucide-react';
 
@@ -149,47 +149,91 @@ async function fetchPropertiesData() {
 
     // Buscar dados com tratamento de erro aprimorado para cada chamada
     let imoveisDestaque = [];
-    let imoveisAluguel = [];
-
-    try {
-      // Set timeout to prevent hanging
+    let imoveisAluguel = []; try {
+      // Aumentado timeout para 30 segundos para dar mais tempo em ambientes lentos
       const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('Fetch destaques timeout')), 15000);
+        setTimeout(() => reject(new Error('Fetch destaques timeout')), 30000);
       });
 
-      // Use the proxy utility in development to avoid CORS issues
-      const fetchDestaques = process.env.NODE_ENV === 'development'
-        ? fetchSanityWithProxy(queryImoveisDestaque)
-        : getImoveisDestaque();
+      // Retry mechanism for fetchDestaques
+      const fetchWithRetry = async (fetchFunction: () => Promise<any>, retries = 3, delay = 5000): Promise<any> => {
+        for (let attempt = 1; attempt <= retries; attempt++) {
+          try {
+            return await fetchFunction();
+          } catch (error) {
+            if (attempt < retries) {
+              console.warn(`Retrying fetch (attempt ${attempt} of ${retries})...`);
+              await new Promise(resolve => setTimeout(resolve, delay));
+            } else {
+              throw error;
+            }
+          }
+        }
+      };
 
-      // Race against timeout
-      imoveisDestaque = await Promise.race([
-        fetchDestaques,
-        timeoutPromise
-      ]);
+      // Updated fetchDestaques with retry mechanism
+      const fetchDestaques = async () => {
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          setTimeout(() => reject(new Error('Fetch destaques timeout')), 30000);
+        });
+
+        const fetchFunction = process.env.NODE_ENV === 'development'
+          ? () => fetchSanityWithProxy(queryImoveisDestaque)
+          : () => getImoveisDestaque();
+
+        return await Promise.race([
+          fetchWithRetry(fetchFunction),
+          timeoutPromise
+        ]);
+      };
+
+      // Replace the original fetchDestaques call
+      imoveisDestaque = await fetchDestaques();
 
       console.log(`Obtidos ${imoveisDestaque?.length || 0} imóveis em destaque`);
     } catch (error) {
       console.error('Erro ao buscar imóveis em destaque:', error);
       imoveisDestaque = [];
-    }
-
-    try {
-      // Set timeout to prevent hanging
+    } try {
+      // Aumentado timeout para 30 segundos para dar mais tempo em ambientes lentos
       const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('Fetch aluguel timeout')), 15000);
+        setTimeout(() => reject(new Error('Fetch aluguel timeout')), 30000);
       });
 
-      // Use the proxy utility in development to avoid CORS issues
-      const fetchAluguel = process.env.NODE_ENV === 'development'
-        ? fetchSanityWithProxy(queryImoveisAluguel)
-        : getImoveisAluguel();
+      // Retry mechanism for fetchAluguel
+      const fetchWithRetry = async (fetchFunction: () => Promise<any>, retries = 3, delay = 5000): Promise<any> => {
+        for (let attempt = 1; attempt <= retries; attempt++) {
+          try {
+            return await fetchFunction();
+          } catch (error) {
+            if (attempt < retries) {
+              console.warn(`Retrying fetch (attempt ${attempt} of ${retries})...`);
+              await new Promise(resolve => setTimeout(resolve, delay));
+            } else {
+              throw error;
+            }
+          }
+        }
+      };
 
-      // Race against timeout
-      imoveisAluguel = await Promise.race([
-        fetchAluguel,
-        timeoutPromise
-      ]);
+      // Updated fetchAluguel with retry mechanism
+      const fetchAluguel = async () => {
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          setTimeout(() => reject(new Error('Fetch aluguel timeout')), 30000);
+        });
+
+        const fetchFunction = process.env.NODE_ENV === 'development'
+          ? () => fetchSanityWithProxy(queryImoveisAluguel)
+          : () => getImoveisAluguel();
+
+        return await Promise.race([
+          fetchWithRetry(fetchFunction),
+          timeoutPromise
+        ]);
+      };
+
+      // Replace the original fetchAluguel call
+      imoveisAluguel = await fetchAluguel();
 
       console.log(`Obtidos ${imoveisAluguel?.length || 0} imóveis para aluguel`);
     } catch (error) {
@@ -197,11 +241,11 @@ async function fetchPropertiesData() {
       imoveisAluguel = [];
     }
 
-    // Normalização com validação
+    // Normalização com validação após retry
     const destaques = normalizeDocuments<ImovelClient>(imoveisDestaque);
     const aluguel = normalizeDocuments<ImovelClient>(imoveisAluguel);
 
-    // Transformação com filtragem de valores nulos usando função especializada
+    // Processamento com validação de valores nulos
     const destaquesProcessados = ensureNonNullProperties(
       destaques.map(imovel => transformPropertyData(
         imovel,
@@ -340,14 +384,22 @@ export default function Home() {
               <ClientProgressSteps />
             </div>
           </div>
-        </section>
-
-        <section className="relative py-24 overflow-hidden bg-gradient-to-b from-[#F8FAFC] to-white">
+        </section>        <section className="relative py-24 overflow-hidden bg-gradient-to-b from-[#F8FAFC] to-white">
           <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
           <FormularioContatoAprimorado />
         </section>
 
         <Footer />
+
+        {/* Renderização dos componentes de Web Vitals no modo de desenvolvimento */}
+        {process.env.NODE_ENV !== 'production' && (
+          <Suspense fallback={null}>
+            <WebVitalsDebuggerWrapper />
+          </Suspense>
+        )}
+        <Suspense fallback={null}>
+          <ClientWebVitals />
+        </Suspense>
       </OptimizationProvider>
     </div>
   );
@@ -363,4 +415,16 @@ const PropertiesLoadingSkeleton = () => (
       ))}
     </div>
   </div>
+);
+
+// Carregamento dinâmico do WebVitalsDebugger apenas em desenvolvimento
+const WebVitalsDebuggerWrapper = dynamic(
+  () => import('./components/WebVitalsDebuggerWrapper'),
+  { ssr: false }
+);
+
+// Carregamento dinâmico do ClientWebVitals para qualquer ambiente
+const ClientWebVitals = dynamic(
+  () => import('./components/ClientWebVitals'),
+  { ssr: false }
 );

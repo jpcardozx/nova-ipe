@@ -138,12 +138,14 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
             </ClientOnly>
 
             {/* Font optimization */}
-            <FontOptimizer />
-
-            {/* Delay WebVitals loading */}
+            <FontOptimizer />            {/* Componente Web Vitals com flag experimental de debug */}
             <Suspense fallback={null}>
                 <ClientWebVitals />
-            </Suspense>{/* Web Vitals Monitor in Production */}
+                {/* Adicionamos uma div vazia para auxiliar no debugging */}
+                <div id="web-vitals-mount-point" style={{ display: 'none' }} data-debug="true" />
+            </Suspense>
+
+            {/* Web Vitals Monitor e ferramentas de otimização/diagnóstico */}
             {process.env.NODE_ENV === 'production' ? (
                 <>
                     <Suspense fallback={null}>
@@ -160,7 +162,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                     </Suspense>
                     <PerformanceDiagnostics />
                 </>
-            )}            {/* Ferramentas de diagnóstico que podem ser habilitadas via URL com ?debug=performance */}
+            )}{/* Ferramentas de diagnóstico que podem ser habilitadas via URL com ?debug=performance */}
             <Suspense fallback={null}>
                 <PerformanceDiagnostics />
             </Suspense>

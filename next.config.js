@@ -3,9 +3,16 @@
  * Configuração profissional para Next.js 15 com Tailwind CSS v3
  *
  * @version 2.2.0
- * @date 18/05/2025
+ * @date 19/05/2025 (Atualizado)
  * @type {import('next').NextConfig}
  */
+
+// Importação da configuração auxiliar para source maps
+const { applySourceMapIgnore } = require('./webpack.sourcemap.config');
+
+// Verificar se estamos em ambiente de produção/Vercel
+const isProduction = process.env.NODE_ENV === 'production';
+const isVercel = process.env.VERCEL === '1';
 
 const nextConfig = {
   reactStrictMode: true,
@@ -40,10 +47,11 @@ const nextConfig = {
     },
     // ppr: true, // Removido pois requer versão canary do Next.js
     taint: true,
-  },
-
-  // Configuração do webpack otimizada
+  },  // Configuração do webpack otimizada
   webpack: (config, { dev, isServer }) => {
+    // Aplica configuração de source map da configuração auxiliar
+    config = applySourceMapIgnore(config);
+
     // Resolve o problema do EventSource para o Sanity
     if (!isServer) {
       config.resolve.fallback = {
@@ -55,6 +63,12 @@ const nextConfig = {
       };
     }    // Otimizações para produção
     if (!dev) {
+      // Medida de segurança para ambiente de produção: evita problemas com source maps
+      if (isProduction || isVercel) {
+        // Ignora completamente os source maps em produção
+        config.devtool = false;
+      }
+
       config.optimization = {
         ...config.optimization,
         moduleIds: 'deterministic',
