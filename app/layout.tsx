@@ -77,7 +77,6 @@ export default function RootLayout({ children }: { children: React.ReactNode; })
         {/* Carregamento otimizado de CSS não-crítico */}
         <link rel="preload" href="/critical-bundle.css" as="style" />
         <link rel="stylesheet" href="/critical-bundle.css" media="print" />
-
         {/* Script crítico com carregamento otimizado */}
         <Script src="/js/critical-preload.js" strategy="beforeInteractive" />
         {/* Favicon */}
@@ -107,20 +106,22 @@ export default function RootLayout({ children }: { children: React.ReactNode; })
         {/* Performance optimization - resource hints */}
         <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://cdn.sanity.io" />
-
-        {/* Preloads para recursos críticos */}        <link rel="preload" href="/fonts/Montserrat-Bold.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        {/* Preloads para recursos críticos */}
+        <link rel="preload" href="/fonts/Montserrat-Bold.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         {/* Scripts não críticos carregados de forma otimizada */}
         <Script src="/js/whatsapp-optimizer.js" strategy="lazyOnload" />
-        <Script src="/js/loading-timeout.js" strategy="lazyOnload" />        {/* Prefetch de rotas principais */}
+        <Script src="/js/loading-timeout.js" strategy="lazyOnload" />
+        {/* Prefetch de rotas principais */}
         <link rel="prefetch" href="/comprar" />
         <link rel="prefetch" href="/alugar" />
-      </head>      <body className="body-initial-state">
+      </head>
+      <body className="body-initial-state">
         <LayoutClient>
           {/* Componentes cliente para gerenciar carregamento otimizado */}
           <CriticalStyleLoader href="/critical-bundle.css" />
-          <LoadingStateController />          {/* Performance optimizer aplica otimizações específicas da página */}
+          <LoadingStateController />
+          {/* Performance optimizer aplica otimizações específicas da página */}
           <PerformanceOptimizer />
-
           {/* Renderização pré-otimizada para conteúdo principal */}
           <main data-optimize-lcp="true">
             {children}

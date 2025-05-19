@@ -12,16 +12,24 @@ const WebVitalsDebugger = dynamic(() => import('./WebVitalsDebugger'), {
 export default function WebVitalsDebuggerWrapper() {
     // Só renderizamos em desenvolvimento e após carregamento da página
     const [shouldRender, setShouldRender] = useState(false);
+    const [isDev, setIsDev] = useState(false);
 
     useEffect(() => {
-        // Delay loading debugger until after critical rendering is complete
+        // Verificar explicitamente se estamos em modo de desenvolvimento
+        setIsDev(process.env.NODE_ENV !== 'production');
+
+        // Reduzimos o tempo de espera para 1500ms para garantir que carregue mais rápido
         const timer = setTimeout(() => {
             setShouldRender(true);
-        }, 3000);
+            console.log('WebVitals debugger enabled');
+        }, 1500);
 
         return () => clearTimeout(timer);
-    }, []);    // Use ternary operator instead of && for conditional rendering
-    return (process.env.NODE_ENV !== 'production' && shouldRender)
-        ? <WebVitalsDebugger enabled={true} />
-        : null;
+    }, []);
+
+    // Verificação mais robusta para ambiente de desenvolvimento
+    if (!isDev) return null;
+
+    // Renderização condicional com log para debug
+    return shouldRender ? <WebVitalsDebugger enabled={true} /> : null;
 }
