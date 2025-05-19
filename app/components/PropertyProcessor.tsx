@@ -69,9 +69,7 @@ export function processProperty(imovel: any): ProcessedPropertyData | null {
         }
 
         // Processamento da imagem com tratamento robusto
-        const imageObject = imovel.imagem || imovel.imagemPrincipal || imovel.imagemCapa;
-
-        // Processamento básico para retrocompatibilidade
+        const imageObject = imovel.imagem || imovel.imagemPrincipal || imovel.imagemCapa;        // Processamento básico para retrocompatibilidade
         const processedImageData = processImage(imageObject, imovel.titulo || 'Imóvel');
 
         // Processamento avançado para imagens responsivas
@@ -97,8 +95,8 @@ export function processProperty(imovel: any): ProcessedPropertyData | null {
         let hotspot;
         if (imageObject && typeof imageObject === 'object' && imageObject.hotspot) {
             hotspot = {
-                x: imageObject.hotspot.x,
-                y: imageObject.hotspot.y
+                x: imageObject.hotspot.x || 0.5,
+                y: imageObject.hotspot.y || 0.5
             };
         }
 
@@ -114,9 +112,9 @@ export function processProperty(imovel: any): ProcessedPropertyData | null {
             area,
             bedrooms,
             bathrooms,
-            parkingSpots,
-            mainImage: {
-                ...processedImageData,
+            parkingSpots, mainImage: {
+                url: processedImageData.url || '/images/property-placeholder.jpg',
+                alt: processedImageData.alt || imovel.titulo || 'Imóvel',
                 responsive: responsiveImages,
                 hotspot
             },

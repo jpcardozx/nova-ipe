@@ -27,16 +27,17 @@ export default function HomepageLoadingOptimizer() {
             // 2. Carregamento progressivo de imagens
             const loadImagesProgressively = () => {
                 // Seletor para imagens que não são críticas para o LCP
-                const nonCriticalImages = document.querySelectorAll('img:not([loading="eager"])');
+                const nonCriticalImages = Array.from(document.querySelectorAll('img:not([loading="eager"])')) as HTMLImageElement[];
 
                 let delay = 100;
-                nonCriticalImages.forEach(img => {
+                nonCriticalImages.forEach((img: HTMLImageElement) => {
                     setTimeout(() => {
                         // Garantir que a imagem seja carregada com prioridade baixa
-                        img.setAttribute('loading', 'lazy');                        // Se originalmente tinha opacity 0, revela gradualmente
+                        img.setAttribute('loading', 'lazy');
+                        // Se originalmente tinha opacity 0, revela gradualmente
                         if (getComputedStyle(img).opacity === '0') {
-                            (img as HTMLImageElement).style.transition = 'opacity 0.3s ease-in';
-                            (img as HTMLImageElement).style.opacity = '1';
+                            img.style.transition = 'opacity 0.3s ease-in';
+                            img.style.opacity = '1';
                         }
                     }, delay);
 
@@ -52,11 +53,9 @@ export default function HomepageLoadingOptimizer() {
                         console.warn('Detectado problema de carregamento - forçando visibilidade');
 
                         // Força visibilidade
-                        forceVisibility();
-
-                        // Adiciona mensagem para o usuário se necessário
-                        const mainContent = document.querySelector('main');
-                        if (mainContent && mainContent.children.length === 0) {
+                        forceVisibility();                        // Adiciona mensagem para o usuário se necessário
+                        const mainContent = document.querySelector('main') as HTMLElement;
+                        if (mainContent && (mainContent as HTMLElement).children.length === 0) {
                             const message = document.createElement('div');
                             message.style.padding = '20px';
                             message.style.textAlign = 'center';
@@ -64,11 +63,12 @@ export default function HomepageLoadingOptimizer() {
                 <h2>Carregando conteúdo...</h2>
                 <p>O site está sendo carregado. Por favor, aguarde um momento.</p>
               `;
-                            mainContent.appendChild(message);
+                            (mainContent as HTMLElement).appendChild(message);
                         }
 
                         // Tenta recarregar recursos críticos
-                        document.querySelectorAll('img[loading="eager"]').forEach(img => {
+                        const eagerImages = Array.from(document.querySelectorAll('img[loading="eager"]')) as HTMLImageElement[];
+                        eagerImages.forEach((img: HTMLImageElement) => {
                             const src = img.getAttribute('src');
                             if (src) {
                                 img.setAttribute('src', src + '?reload=' + Date.now());

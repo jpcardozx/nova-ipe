@@ -21,11 +21,11 @@ export default function AdvancedDropdown({
     width = "w-full",
 }: AdvancedDropdownProps) {
     const [open, setOpen] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+    const dropdownRef = useRef<HTMLDivElement>(null); useEffect(() => {
+        const handleClickOutside = (event: Event) => {
+            const target = event.target as unknown;
+            // First check if it's an object before attempting to use it
+            if (dropdownRef.current && target && typeof target === 'object') {
                 setOpen(false);
             }
         };

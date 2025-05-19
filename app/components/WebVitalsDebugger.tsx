@@ -33,10 +33,8 @@ export default function WebVitalsDebugger({ enabled = true }: WebVitalsDebuggerP
                 timestamp: Date.now()
             };
 
-            setMetrics(prev => [...prev, newMetric]);
-
-            // Enviar para API
-            if (navigator.sendBeacon) {
+            setMetrics(prev => [...prev, newMetric]);            // Enviar para API
+            if ('sendBeacon' in navigator) {
                 const body = JSON.stringify({
                     name,
                     value,

@@ -1,13 +1,13 @@
 'use client';
 
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { ImageOff } from 'lucide-react';
 import { getImageUrl, ImageType } from '@/lib/optimized-sanity-image';
 
-// Usamos o tipo ImageType da nossa lib para garantir consistência
-// entre todos os componentes que trabalham com imagens
+// Versão otimizada para performance - redução do LCP
+// Foco em carregamento prioritário e tratamento robusto de erros
 
 interface Props {
     src: ImageType;
@@ -42,21 +42,46 @@ export default function OptimizedImage({
     fallbackUrl = '/images/property-placeholder.jpg'
 }: Props) {
     const [isLoading, setIsLoading] = useState(true);
-    const [hasError, setHasError] = useState(false);    // Utilizamos a função otimizada de @/lib/optimized-sanity-image
-    // que já trata todos os casos possíveis e tem cache implementado
+    const [hasError, setHasError] = useState(false);
 
-    // Extrair URL e informações de posicionamento
-    const imageUrl = getImageUrl(src);
-    const hotspot = typeof src !== 'string' ? src?.hotspot : undefined;
-    const altText = typeof src !== 'string' ? src?.alt || alt : alt;
+    // Memoize processamento da imagem para evitar recálculos desnecessários
+    const { imageUrl, hotspot, altText } = useMemo(() => {
+        // Extrair URL e informações de posicionamento com melhor performance
+        const url = getImageUrl(src) || fallbackUrl;
+        const imgHotspot = typeof src !== 'string' ? src?.hotspot : undefined;
+        const text = typeof src !== 'string' ? src?.alt || alt : alt;
+
+        // Aplicar cache em development para debugging
+        if (process.env.NODE_ENV === 'development') {
+            const key = typeof src === 'string' ? src : ((src as any)?._ref || JSON.stringify(src));
+            (window as any).__imageCache = (window as any).__imageCache || {};
+            (window as any).__imageCache[key] = url;
+        }
+
+        return { imageUrl: url, hotspot: imgHotspot, altText: text };
+    }, [src, alt, fallbackUrl]);
+
     const objectPosition = hotspot ? `${hotspot.x * 100}% ${hotspot.y * 100}%` : '50% 50%';
 
-    // Notificar o carregamento bem-sucedido
-    useEffect(() => {
-        if (!isLoading && !hasError && onLoad) {
-            onLoad();
+    // Handler de carregamento otimizado
+    const handleLoad = useCallback(() => {
+        setIsLoading(false);
+        if (onLoad) onLoad();
+    }, [onLoad]);
+
+    // Handler de erro otimizado
+    const handleError = useCallback(() => {
+        setIsLoading(false);
+        setHasError(true);
+
+        // Log em development para diagnóstico
+        if (process.env.NODE_ENV === 'development') {
+            console.warn('OptimizedImage: Failed to load image', {
+                src,
+                processedUrl: imageUrl
+            });
         }
-    }, [isLoading, hasError, onLoad]);
+    }, [src, imageUrl]);
 
     // Renderizar placeholder em caso de erro
     if (hasError) {

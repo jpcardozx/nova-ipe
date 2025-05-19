@@ -170,7 +170,9 @@ function OptimizedImovelCard({
                     timestamp: Date.now(),
                 };
 
-                navigator.sendBeacon('/api/component-metrics', JSON.stringify(payload));
+                if ('sendBeacon' in navigator) {
+                    navigator.sendBeacon('/api/component-metrics', JSON.stringify(payload));
+                }
             }
         }
     }, [inView, renderTime]);

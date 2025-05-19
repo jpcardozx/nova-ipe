@@ -128,7 +128,7 @@ const companyMetrics: CompanyMetric[] = [
     },
     {
         id: "equipe",
-        value: "Esquipe Especializada",
+        value: "Equipe Especializada",
         label: "Atendimento rápido e personalizado",
         description: "Corretores com conhecimento do mercado local",
         icon: <Users className="w-5 h-5" />

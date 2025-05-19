@@ -8,6 +8,9 @@ import dynamic from 'next/dynamic';
 import { OrganizationSchema, WebsiteSchema, LocalBusinessSchema } from './StructuredData';
 import HydrationLoadingFix from './HydrationLoadingFix';
 import HydrationGuard from './HydrationGuard';
+import DataPrefetcher from './DataPrefetcher';
+import FontOptimizer from './FontOptimizer';
+import OfflineSupportProvider from '../providers/OfflineSupportProvider';
 
 // Importações dinâmicas para reduzir bundle inicial
 const WebVitalsMonitor = dynamic(() => import('./WebVitalsMonitor'), { ssr: false });
@@ -22,6 +25,7 @@ const ClientPerformanceMonitor = dynamic(() => import('./ClientPerformanceMonito
 const WebVitalsDebuggerWrapper = dynamic(() => import('./WebVitalsDebuggerWrapper'), { ssr: false });
 const PerformanceDiagnostics = dynamic(() => import('./PerformanceDiagnostics'), { ssr: false });
 const LoadingStateManager = dynamic(() => import('./LoadingStateManager'), { ssr: false });
+const PerformanceAnalytics = dynamic(() => import('./PerformanceAnalytics'), { ssr: false });
 
 export default function LayoutClient({ children }: { children: React.ReactNode }) {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -89,7 +93,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
             window.removeEventListener('load', optimizeInitialRender);
         };
     }, []); return (
-        <>
+        <OfflineSupportProvider>
             {/* Fix hydration issues with visibility */}
             <HydrationLoadingFix />
             <HydrationGuard />
@@ -125,15 +129,21 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                 </div>
             }>
                 {children}
-            </Suspense>
-
-            {/* Gerenciador de estado de carregamento */}
+            </Suspense>            {/* Gerenciador de estado de carregamento */}
             <LoadingStateManager />
+
+            {/* Data prefetcher para otimização de performance */}
+            <ClientOnly>
+                <DataPrefetcher prefetchHome={true} prefetchListings={true} />
+            </ClientOnly>
+
+            {/* Font optimization */}
+            <FontOptimizer />
 
             {/* Delay WebVitals loading */}
             <Suspense fallback={null}>
                 <ClientWebVitals />
-            </Suspense>            {/* Web Vitals Monitor in Production */}
+            </Suspense>{/* Web Vitals Monitor in Production */}
             {process.env.NODE_ENV === 'production' ? (
                 <>
                     <Suspense fallback={null}>
@@ -150,12 +160,15 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                     </Suspense>
                     <PerformanceDiagnostics />
                 </>
-            )}
-
-            {/* Ferramenta de diagnóstico que pode ser habilitada via URL com ?debug=performance */}
+            )}            {/* Ferramentas de diagnóstico que podem ser habilitadas via URL com ?debug=performance */}
             <Suspense fallback={null}>
                 <PerformanceDiagnostics />
             </Suspense>
-        </>
+
+            {/* Performance analytics tool - accessible via Ctrl+Alt+P or ?debug=performance */}
+            <Suspense fallback={null}>
+                <PerformanceAnalytics />
+            </Suspense>
+        </OfflineSupportProvider>
     );
 }

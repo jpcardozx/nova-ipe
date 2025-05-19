@@ -1,33 +1,18 @@
 /**
- * Next.js Configuration
- * Configuração otimizada para Next.js 15 com Tailwind CSS v3
+ * Next.js Configuration - Otimizada para Deploy
+ * Configuração profissional para Next.js 15 com Tailwind CSS v3
  *
- * Este arquivo configura o Next.js para integração profissional com
- * o ecossistema de ferramentas e otimizações de performance.
- *
- * @version 2.1.0
+ * @version 2.2.0
  * @date 18/05/2025
  * @type {import('next').NextConfig}
  */
 
-const path = require('path');
-
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   poweredByHeader: false,
   compress: true,
 
-  // Habilitar instrumentation para métricas de performance
-  experimental: {
-    optimizeCss: true, // Ativa a otimização de CSS
-    optimizePackageImports: ['lucide-react'], // Otimiza importações de pacotes grandes
-    serverMinification: true, // Minimiza o código do servidor
-    serverSourceMaps: false, // Desabilita source maps no servidor em produção
-    webVitalsAttribution: ['CLS', 'LCP', 'FCP'], // Melhora atribuição de Web Vitals
-  },
-
-  // Configuração de imagem otimizada para CDN e formatos modernos
+  // Configuração de imagem otimizada
   images: {
     domains: ['cdn.sanity.io'],
     formats: ['image/avif', 'image/webp'],
@@ -42,8 +27,22 @@ const nextConfig = {
         pathname: '**',
       },
     ],
+  },  // Configurações experimentais compatíveis com Next.js 15
+  experimental: {
+    optimizeCss: true,
+    scrollRestoration: true,
+    optimizePackageImports: ['lucide-react'],
+    serverMinification: true,
+    webVitalsAttribution: ['CLS', 'LCP', 'FCP'],
+    workerThreads: true,
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
+    // ppr: true, // Removido pois requer versão canary do Next.js
+    taint: true,
   },
-  // Configuração do webpack otimizada para Tailwind v3 e Sanity
+
+  // Configuração do webpack otimizada
   webpack: (config, { dev, isServer }) => {
     // Resolve o problema do EventSource para o Sanity
     if (!isServer) {
@@ -54,11 +53,8 @@ const nextConfig = {
         tls: false,
         eventsource: false,
       };
-    }
-
-    // Otimizações para melhorar o LCP e First Input Delay
+    }    // Otimizações para produção
     if (!dev) {
-      // Ativa otimizações avançadas em produção
       config.optimization = {
         ...config.optimization,
         moduleIds: 'deterministic',
@@ -68,10 +64,26 @@ const nextConfig = {
         splitChunks: {
           chunks: 'all',
           cacheGroups: {
-            // Separa o lucide-react em um chunk próprio para reduzir o tamanho do bundle principal
+            // Chunk separado para lucide-react (problema performance principal)
             lucide: {
               test: /[\\/]node_modules[\\/]lucide-react[\\/]/,
               name: 'vendor-lucide',
+              priority: 40,
+              enforce: true,
+              chunks: 'all',
+            },
+            // Chunk separado para sanity
+            sanity: {
+              test: /[\\/]node_modules[\\/]@sanity|sanity|next-sanity[\\/]/,
+              name: 'vendor-sanity',
+              priority: 30,
+              enforce: true,
+              chunks: 'all',
+            },
+            // Chunk separado para React
+            react: {
+              test: /[\\/]node_modules[\\/]react|react-dom|scheduler[\\/]/,
+              name: 'vendor-react',
               priority: 20,
               enforce: true,
               chunks: 'all',
@@ -82,69 +94,24 @@ const nextConfig = {
               name: 'vendor-commons',
               chunks: 'all',
               priority: 10,
+              minChunks: 2,
+              reuseExistingChunk: true,
             },
           },
         },
       };
     }
 
-    // Configuração aprimorada para processamento CSS
-    const cssRule = config.module.rules.find(
-      (rule) => rule.test && rule.test instanceof RegExp && rule.test.toString().includes('css')
-    );
-
-    if (cssRule && Array.isArray(cssRule.use)) {
-      // Garantir que o CSS seja processado corretamente com PostCSS
-      cssRule.use = cssRule.use.map(loader => {
-        if (
-          typeof loader === 'object' &&
-          loader.loader &&
-          loader.loader.includes('css-loader')
-        ) {
-          return {
-            ...loader,
-            options: {
-              ...loader.options,
-              importLoaders: 3,
-            },
-          };
-        }
-        return loader;
-      });
-    }
-
-    // Otimização para pacotes grandes
-    config.optimization.moduleIds = 'deterministic';
-
-    // Aprimorar as configurações de produção
-    if (!dev) {
-      // Minimizar seletivamente em produção
-      config.optimization.minimize = true;
-    }
-
     return config;
   },
 
-  // Configurações de transpilação para módulos específicos
-  transpilePackages: [
-    '@sanity',
-    'next-sanity',
-    'embla-carousel-react',
-    'react-intersection-observer',
-  ],
+  // Transpilação para módulos específicos
+  transpilePackages: ['@sanity', 'next-sanity', 'embla-carousel-react'],
 
-  // Configurações experimentais seguras para compatibilidade
-  experimental: {
-    optimizeCss: true,
-    scrollRestoration: true,
-    legacyBrowsers: false,
-    browserSourceMap: !process.env.NODE_ENV.includes('production'),
-  },
-
+  // Variáveis de ambiente como strings (formato exigido pela Vercel)
   env: {
-    // Configuração para evitar problemas com refresh no Sanity
-    NEXT_PUBLIC_SANITY_USE_CDN: true,
-    NEXT_PUBLIC_SANITY_USE_STEGA: false,
+    NEXT_PUBLIC_SANITY_USE_CDN: "true",
+    NEXT_PUBLIC_SANITY_USE_STEGA: "false",
   },
 };
 

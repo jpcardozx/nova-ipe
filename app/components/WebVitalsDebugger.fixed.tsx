@@ -2,48 +2,51 @@
 
 import React, { useEffect } from 'react';
 
-// Interfaces para as entradas específicas de Performance
+// Type declaration for Performance Entries
 interface LCPEntry extends PerformanceEntry {
-    element: HTMLElement | null;
+    element: any;
     size: number;
     renderTime?: number;
     loadTime?: number;
-    url?: string;
+    startTime: number;
 }
 
 interface CLSEntry extends PerformanceEntry {
     value: number;
-    hadRecentInput: boolean;
     sources: Array<{
-        node: HTMLElement | null;
-        previousRect?: DOMRectReadOnly;
-        currentRect?: DOMRectReadOnly;
+        node: any;
+        previousRect: DOMRectReadOnly;
+        currentRect: DOMRectReadOnly;
     }>;
 }
 
 interface INPEntry extends PerformanceEntry {
-    target?: HTMLElement | null;
+    target: any;
     duration: number;
-    processingStart?: number;
-    processingEnd?: number;
-    interactionId?: number;
+    processingStart: number;
+    processingEnd: number;
+    startTime: number;
 }
 
-export function LCPDetector() {
+// Web Vitals Debugger Components
+function LCPDebugger() {
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
+        // Observe Largest Contentful Paint events
         const observer = new PerformanceObserver((entryList) => {
-            for (const entry of entryList.getEntries()) {
-                // Type assertion para usar as propriedades específicas de LCP
-                const lcpEntry = entry as unknown as LCPEntry;
-                if (entry.entryType === 'largest-contentful-paint') {
+            const entries = entryList.getEntries();
+
+            // Get the latest LCP
+            if (entries.length > 0) {
+                const lcpEntry = entries[entries.length - 1] as unknown as LCPEntry;
+                if (lcpEntry.element) {
                     console.log('[LCP] Elemento detectado:', lcpEntry.element);
                     console.log('[LCP] Tempo:', lcpEntry.startTime.toFixed(1) + 'ms');
                     console.log('[LCP] Tamanho:', lcpEntry.size);
 
                     // Destacar visualmente
-                    if (lcpEntry.element && lcpEntry.element instanceof HTMLElement) {
+                    if (lcpEntry.element && 'style' in lcpEntry.element && 'setAttribute' in lcpEntry.element) {
                         try {
                             lcpEntry.element.style.outline = '5px solid red';
                             lcpEntry.element.setAttribute('title', `LCP: ${lcpEntry.startTime.toFixed(1)}ms`);
@@ -65,26 +68,26 @@ export function LCPDetector() {
     return null;
 }
 
-export function CLSDetector() {
+function CLSDebugger() {
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
+        // Track cumulative layout shift score
         let cumulativeScore = 0;
 
         const observer = new PerformanceObserver((entryList) => {
-            for (const entry of entryList.getEntries()) {
-                // Type assertion para usar as propriedades específicas de CLS
-                const clsEntry = entry as unknown as CLSEntry;
-                if (!clsEntry.hadRecentInput) {
-                    const currentShift = clsEntry.value;
-                    cumulativeScore += currentShift;
+            const entries = entryList.getEntries() as unknown as CLSEntry[];
 
-                    console.log('[CLS] Shift detectado:', currentShift.toFixed(4));
+            for (const clsEntry of entries) {
+                cumulativeScore += clsEntry.value;
+
+                if (clsEntry.value > 0.01) {
+                    console.log('[CLS] Shift detectado:', clsEntry.value.toFixed(4));
                     console.log('[CLS] Acumulado:', cumulativeScore.toFixed(4));
 
                     if (clsEntry.sources && clsEntry.sources.length) {
                         clsEntry.sources.forEach(source => {
-                            if (source.node && source.node instanceof HTMLElement) {
+                            if (source.node && 'style' in source.node) {
                                 console.log('[CLS] Elemento causador:', source.node);
                                 try {
                                     source.node.style.outline = '3px dashed orange';
@@ -108,7 +111,7 @@ export function CLSDetector() {
     return null;
 }
 
-export function INPDetector() {
+function INPDebugger() {
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
@@ -124,7 +127,7 @@ export function INPDetector() {
                     console.log(`[INP] Duração: ${inpEntry.duration.toFixed(1)}ms`);
                     console.log('[INP] Elemento:', inpEntry.target);
 
-                    if (inpEntry.target && inpEntry.target instanceof HTMLElement) {
+                    if (inpEntry.target && 'style' in inpEntry.target && 'setAttribute' in inpEntry.target) {
                         try {
                             const severity = Math.min(1, (inpEntry.duration - 200) / 800);
                             const color = `rgba(255, ${Math.floor(255 - (severity * 255))}, 0, 0.3)`;
@@ -136,7 +139,7 @@ export function INPDetector() {
 
                             setTimeout(() => {
                                 // Garantir que target ainda existe antes de tentar usá-lo
-                                if (inpEntry.target && inpEntry.target instanceof HTMLElement) {
+                                if (inpEntry.target && 'style' in inpEntry.target) {
                                     inpEntry.target.style.backgroundColor = originalBg;
                                 }
                             }, 2000);
@@ -172,9 +175,9 @@ export function WebVitalsDebugger({ enabled = true }: WebVitalsDebuggerProps) {
     // Evita impacto no desempenho
     return (
         <React.Fragment>
-            <LCPDetector />
-            <CLSDetector />
-            <INPDetector />
+            <LCPDebugger />
+            <CLSDebugger />
+            <INPDebugger />
             <div
                 style={{
                     position: 'fixed',

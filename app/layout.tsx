@@ -14,6 +14,7 @@ import Script from 'next/script';
 import LayoutClient from './components/LayoutClient';
 import CriticalStyleLoader from './components/CriticalStyleLoader';
 import LoadingStateController from './components/LoadingStateController';
+import PerformanceOptimizer from './components/PerformanceOptimizer';
 import fs from 'fs';
 import path from 'path';
 
@@ -113,12 +114,12 @@ export default function RootLayout({ children }: { children: React.ReactNode; })
         <Script src="/js/loading-timeout.js" strategy="lazyOnload" />        {/* Prefetch de rotas principais */}
         <link rel="prefetch" href="/comprar" />
         <link rel="prefetch" href="/alugar" />
-      </head>
-      <body className="body-initial-state">
+      </head>      <body className="body-initial-state">
         <LayoutClient>
           {/* Componentes cliente para gerenciar carregamento otimizado */}
           <CriticalStyleLoader href="/critical-bundle.css" />
-          <LoadingStateController />
+          <LoadingStateController />          {/* Performance optimizer aplica otimizações específicas da página */}
+          <PerformanceOptimizer />
 
           {/* Renderização pré-otimizada para conteúdo principal */}
           <main data-optimize-lcp="true">

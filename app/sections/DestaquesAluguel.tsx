@@ -227,7 +227,11 @@ const DestaquesAluguelSection: FC = () => {
 
     const next = useCallback(() => setActiveIndex(i => (i + 1) % imoveis.length), [imoveis]);
     const prev = useCallback(() => setActiveIndex(i => (i - 1 + imoveis.length) % imoveis.length), [imoveis]);
-    const share = useCallback((imovel: ImovelClient) => navigator.clipboard.writeText(window.location.href), []);
+    const share = useCallback((imovel: ImovelClient) => {
+        if ('clipboard' in navigator) {
+            (navigator as any).clipboard.writeText(window.location.href);
+        }
+    }, []);
 
     if (loading) return <div ref={ref} className="py-20 text-center">Loading...</div>;
     if (error) return <div ref={ref} className="py-20 text-center text-red-500">Error: {error}</div>;

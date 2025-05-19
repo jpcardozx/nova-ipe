@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -34,7 +34,7 @@ const Zap = dynamic(() => import('lucide-react').then(mod => mod.Zap));
 // Importações para dados dinâmicos do Sanity
 import { getImoveisDestaque, getImoveisAluguel } from '@/lib/queries';
 import { normalizeDocuments } from '@/lib/sanity-utils';
-import { extractImageUrl, extractAltText } from '@/lib/image-sanity';
+import { processEnhancedSanityImage } from '@/lib/enhanced-sanity-image';
 import { ensureValidImageUrl } from '@/lib/sanity-image-utils';
 import type { ImovelClient } from '@/src/types/imovel-client';
 
@@ -53,17 +53,17 @@ import BlocoCTAConversao from './components/client/BlocoCTAConversao';
 import Destaques from './sections/Destaques';
 import { ImovelHero } from './components/ImoveisDestaqueComponents';
 
+// Componentes de imóveis otimizados e com informações aprimoradas
+import ImprovedPropertiesDisplay from './components/ImprovedPropertiesDisplay';
+
 // Componentes Client otimizados
 import ClientCarouselWrapper from './components/ClientCarouselWrapper';
-import DestaquesSanityCarousel from './components/DestaquesSanityCarousel';
-
-// A configuração da fonte foi movida para layout.tsx para evitar duplicação
+import ClientSidePropertiesProvider from './components/ClientComponents';
 
 // Importando tipos e componentes
 import type { PropertyType } from './components/OptimizedPropertyCard';
 import Valor from './sections/Valor';
 import FormularioContatoAprimorado from './components/FormularioContato';
-import { default as ClientSidePropertiesProvider } from './components/ClientComponents';
 import Testimonials from './sections/Testimonials';
 import { ensureNonNullProperties, extractSlugString } from './PropertyTypeFix';
 
@@ -82,56 +82,11 @@ function transformPropertyData(imovel: ImovelClient, propertyType: PropertyType)
       return null;
     }
 
-    // Debug da estrutura da imagem para entender melhor o problema
-    console.log(`Transformando imóvel ${imovel._id || 'sem ID'}:`, {
-      temImagem: !!imovel.imagem,
-      tipoImagem: imovel.imagem ? typeof imovel.imagem : 'undefined',
-      temAsset: imovel.imagem?.asset ? true : false,
-      assetTemUrl: imovel.imagem?.asset?.url ? true : false,
-      assetTemRef: imovel.imagem?.asset?._ref ? true : false,
-      refValue: imovel.imagem?.asset?._ref || 'não disponível',
-    });    // Validar estruturas de dados essenciais
-    if (!imovel._id) {
-      console.warn('Imóvel sem ID encontrado, gerando ID temporário');
-      imovel._id = `temp-${Date.now()}`;
-    }    // Extrair e normalizar a imagem usando nossas funções aprimoradas
-    console.log(`\n📷 Processando imagem para imóvel ${imovel._id} (${imovel.titulo || 'sem título'})`);
-
-    // Primeiro verificar o formato da imagem para depuração
-    if (imovel.imagem) {
-      console.log(`- Tipo de imagem: ${typeof imovel.imagem}`);
-      if (typeof imovel.imagem === 'object') {
-        console.log(`- Propriedades disponíveis: ${Object.keys(imovel.imagem).join(', ')}`);
-        if (imovel.imagem.asset) {
-          console.log(`- Possui referência Sanity: ${!!imovel.imagem.asset._ref}`);
-        }
-      }
-    } else {
-      console.warn(`- ⚠️ Imóvel ${imovel._id} não possui imagem definida`);
-    }
-
-    // Agora extrair com tratamento de erro aprimorado
-    let processedImage;
-    try {
-      // Usar a função robusta para normalização de imagem
-      processedImage = ensureValidImageUrl(
-        imovel.imagem,
-        '/images/property-placeholder.jpg',
-        imovel.titulo || 'Imóvel'
-      );
-
-      if (processedImage.url && !processedImage.url.includes('placeholder')) {
-        console.log(`✅ URL extraída com sucesso: ${processedImage.url.substring(0, 60)}...`);
-      } else {
-        console.warn(`⚠️ Usando imagem placeholder para ${imovel._id}`);
-      }
-    } catch (error) {
-      console.error(`❌ Erro crítico ao processar imagem para imóvel ${imovel._id}:`, error);
-      processedImage = {
-        url: '/images/property-placeholder.jpg',
-        alt: imovel.titulo || 'Imóvel'
-      };
-    }
+    // Processar a imagem usando nosso utilitário aprimorado
+    const processedImage = processEnhancedSanityImage(
+      imovel.imagem,
+      imovel.titulo || 'Imóvel'
+    );
 
     // Validação e conversão de tipos para todos os campos numéricos
     const price = typeof imovel.preco === 'number' ? imovel.preco :
@@ -147,7 +102,9 @@ function transformPropertyData(imovel: ImovelClient, propertyType: PropertyType)
       typeof imovel.banheiros === 'string' ? parseInt(imovel.banheiros, 10) : undefined;
 
     const parkingSpots = typeof imovel.vagas === 'number' ? imovel.vagas :
-      typeof imovel.vagas === 'string' ? parseInt(imovel.vagas, 10) : undefined;    // Extrair slug usando a função utilitária que lida com diferentes formatos
+      typeof imovel.vagas === 'string' ? parseInt(imovel.vagas, 10) : undefined;
+
+    // Extrair slug usando a função utilitária que lida com diferentes formatos
     const slug = extractSlugString(imovel.slug, imovel._id);
 
     return {
@@ -161,7 +118,12 @@ function transformPropertyData(imovel: ImovelClient, propertyType: PropertyType)
       area,
       bedrooms,
       bathrooms,
-      parkingSpots, mainImage: processedImage, // Keep the entire processed image object
+      parkingSpots,
+      mainImage: {
+        url: processedImage.url,
+        alt: processedImage.alt,
+        responsive: processedImage.responsiveUrls
+      },
       isHighlight: true,
       isPremium: Boolean(imovel.destaque),
       isNew: propertyType === 'rent' && Math.random() > 0.7,
@@ -235,35 +197,11 @@ async function fetchPropertiesData() {
       imoveisAluguel = [];
     }
 
-    console.log('Imóveis recebidos:',
-      `Destaques: ${imoveisDestaque.length},`,
-      `Aluguel: ${imoveisAluguel.length}`
-    );
-
-    // Diagnóstico detalhado do formato recebido
-    if (imoveisDestaque.length > 0) {
-      const sample = imoveisDestaque[0];
-      console.log('Exemplo de estrutura de imóvel recebido:', {
-        id: sample._id,
-        temImagem: !!sample?.imagem,
-        tipoImagem: typeof sample?.imagem,
-        estruturaImagemResumo: sample?.imagem ?
-          `asset: ${!!sample.imagem.asset}, ref: ${!!sample.imagem.asset?._ref}` :
-          'sem imagem',
-        amostraRef: sample?.imagem?.asset?._ref ?
-          sample.imagem.asset._ref.substring(0, 30) + '...' :
-          'N/A'
-      });
-    }
-
     // Normalização com validação
     const destaques = normalizeDocuments<ImovelClient>(imoveisDestaque);
     const aluguel = normalizeDocuments<ImovelClient>(imoveisAluguel);
 
-    console.log('Imóveis normalizados:',
-      `Destaques: ${destaques.length},`,
-      `Aluguel: ${aluguel.length}`
-    );    // Transformação com filtragem de valores nulos usando função especializada
+    // Transformação com filtragem de valores nulos usando função especializada
     const destaquesProcessados = ensureNonNullProperties(
       destaques.map(imovel => transformPropertyData(
         imovel,
@@ -290,22 +228,32 @@ async function fetchPropertiesData() {
   }
 }
 
-// Remove async from client component - use a state hook instead
+// Componente da página inicial otimizado para exibição de propriedades
 export default function Home() {
   // Using React state to handle async data
-  const [properties, setProperties] = React.useState<{ destaques: any[], aluguel: any[] }>({ destaques: [], aluguel: [] });
+  const [properties, setProperties] = useState<{ destaques: any[], aluguel: any[] }>({ destaques: [], aluguel: [] });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   // Fetch data on mount
-  React.useEffect(() => {
+  useEffect(() => {
     const loadData = async () => {
-      const data = await fetchPropertiesData();
-      setProperties(data);
+      try {
+        setLoading(true);
+        const data = await fetchPropertiesData();
+        setProperties(data);
+        setLoading(false);
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error("Erro ao carregar imóveis"));
+        setLoading(false);
+      }
     };
 
     loadData();
   }, []);
 
   const { destaques, aluguel } = properties;
+
   return (
     <div className="flex flex-col min-h-screen bg-[#fafaf9]">
       {/* Otimizador de carregamento específico para a página inicial */}
@@ -314,52 +262,51 @@ export default function Home() {
       </Suspense>
 
       <OptimizationProvider>
-
         <NavbarResponsive />
-
         <EnhancedHero />
 
         {/* Provider de dados para componentes client-side */}
-        <ClientSidePropertiesProvider destaques={destaques} aluguel={aluguel} />        <BlocoExploracaoSimbolica />
+        <ClientSidePropertiesProvider destaques={destaques} aluguel={aluguel} />
+
+        <BlocoExploracaoSimbolica />
 
         {/* Seção de Imóveis em Destaque - Versão Aprimorada */}
-        <Suspense fallback={<section className="py-24 bg-white"><div className="container mx-auto px-4 max-w-7xl"><PropertiesLoadingSkeleton /></div></section>}>          <DestaquesSanityCarousel
-          rawProperties={destaques}
-          title="Imóveis Cuidadosamente Selecionados"
-          subtitle="Descubra propriedades que se destacam pela arquitetura impecável, localização estratégica e potencial de valorização excepcional em Guararema."
-        />
+        <Suspense fallback={<section className="py-24 bg-white"><div className="container mx-auto px-4 max-w-7xl"><div className="animate-pulse space-y-4"><div className="h-8 w-56 bg-neutral-200 rounded-lg mb-8"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-6">{[1, 2, 3].map(i => (<div key={i} className="h-80 bg-neutral-100 rounded-lg shadow-md"></div>))}</div></div></div></section>}>
+          <ImprovedPropertiesDisplay
+            rawProperties={destaques}
+            title={
+              <div className="flex items-center gap-2">
+                <Star className="w-6 h-6 text-amber-500" />
+                <span>Imóveis Cuidadosamente Selecionados</span>
+              </div>
+            }
+            subtitle="Descubra propriedades que se destacam pela arquitetura impecável, localização estratégica e potencial de valorização excepcional em Guararema."
+            viewAllLink="/comprar"
+            maxCards={6}
+          />
         </Suspense>
 
-        {/* Componente legacy escondido (temporário) */}
-        <div className="hidden">
-          <ClientCarouselWrapper
-            properties={destaques}
-            config={{
-              title: "",
-              subtitle: "",
-              slidesToShow: 3,
-              showControls: true,
-              autoplay: true,
-              autoplayInterval: 5000,
-              viewAllLink: "/comprar",
-              viewAllLabel: "Explorar todo o portfólio",
-              className: "mb-16",
-              hasAccentBackground: false,
-              showEmptyState: destaques.length === 0,
-              emptyStateMessage: "Carregando imóveis em destaque...",
-              mobileLayout: "stack",
-            }}
-          />
-        </div>        <section className="relative py-24 overflow-hidden bg-gradient-to-b from-white to-[#F8FAFC]" style={{ position: 'relative' }}>
+        <section className="relative py-24 overflow-hidden bg-gradient-to-b from-white to-[#F8FAFC]" style={{ position: 'relative' }}>
           <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
-          <Destaques />        </section>        {/* Seção de Imóveis para Alugar - Versão Aprimorada */}
+          <Destaques />
+        </section>
+
+        {/* Seção de Imóveis para Alugar - Versão Aprimorada */}
         <section className="py-24 bg-[#F8FAFC]" style={{ position: 'relative' }}>
           <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent"></div>
-          <Suspense fallback={<div className="container mx-auto px-4 max-w-7xl relative z-10"><PropertiesLoadingSkeleton /></div>}>            <DestaquesSanityCarousel
-            rawProperties={aluguel}
-            title="Seu Próximo Lar Está Aqui"
-            subtitle="Uma seleção de imóveis para alugar que prioriza qualidade de vida, ótima localização e custo-benefício real. Experimente morar com qualidade em Guararema."
-          />
+          <Suspense fallback={<div className="container mx-auto px-4 max-w-7xl relative z-10"><div className="animate-pulse space-y-4"><div className="h-8 w-56 bg-neutral-200 rounded-lg mb-8"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-6">{[1, 2, 3].map(i => (<div key={i} className="h-80 bg-neutral-100 rounded-lg shadow-md"></div>))}</div></div></div>}>
+            <ImprovedPropertiesDisplay
+              rawProperties={aluguel}
+              title={
+                <div className="flex items-center gap-2">
+                  <HomeIcon className="w-6 h-6 text-blue-500" />
+                  <span>Seu Próximo Lar Está Aqui</span>
+                </div>
+              }
+              subtitle="Uma seleção de imóveis para alugar que prioriza qualidade de vida, ótima localização e custo-benefício real. Experimente morar com qualidade em Guararema."
+              viewAllLink="/alugar"
+              maxCards={6}
+            />
           </Suspense>
         </section>
 

@@ -4,12 +4,11 @@ import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Montserrat } from 'next/font/google';
-import PropertyImage from './PropertyImage';
 import ResponsiveSanityImage from './ResponsiveSanityImage';
 import {
     BedDouble, Bath, Car, AreaChart,
     Clock, ArrowUpRight, Home, TrendingUp,
-    Star
+    Star, MapPin, Heart
 } from 'lucide-react';
 import { cn, formatarMoeda } from '@/lib/utils';
 
@@ -73,6 +72,8 @@ export const OptimizedPropertyCard: React.FC<OptimizedPropertyCardProps> = ({
     isPremium = false,
     isNew = false,
     className = '',
+    isFavorite = false,
+    onFavoriteToggle
 }) => {
     return (
         <motion.div
@@ -94,7 +95,7 @@ export const OptimizedPropertyCard: React.FC<OptimizedPropertyCardProps> = ({
                 aria-label={`Ver detalhes de ${title}`}
             >
                 {/* Imagem com otimização de carregamento */}
-                <div className="relative h-52 w-full overflow-hidden bg-gray-100">
+                <div className="relative h-56 w-full overflow-hidden bg-gray-100">
                     {/* Overlay gradiente mais suave */}
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/30 z-10" />
 
@@ -126,7 +127,9 @@ export const OptimizedPropertyCard: React.FC<OptimizedPropertyCardProps> = ({
                                 Venda
                             </span>
                         )}
-                    </div>                    {/* Imagem principal com componente otimizado */}
+                    </div>
+
+                    {/* Imagem principal com componente otimizado */}
                     <ResponsiveSanityImage
                         image={mainImage}
                         alt={mainImage.alt || title}
@@ -136,40 +139,34 @@ export const OptimizedPropertyCard: React.FC<OptimizedPropertyCardProps> = ({
                         priority={isHighlight}
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
-
-                    {/* Localização */}
-                    {location && (
-                        <div className="absolute bottom-3 left-3 z-20 text-white text-xs bg-black/40 backdrop-blur-sm px-2 py-1 rounded-md">
-                            {city ? `${location}, ${city}` : location}
-                        </div>
-                    )}
                 </div>
 
                 {/* Conteúdo */}
-                <div className="p-5">
-                    {/* Preço */}
-                    <div className="flex items-center justify-between mb-3">
-                        <p className="text-lg font-bold text-gray-900">
+                <div className="p-4">
+                    {/* Preço destacado */}
+                    <div className="mb-3 bg-amber-50 rounded-lg px-3 py-2 border border-amber-100">
+                        <p className="text-xl font-bold text-amber-700">
                             {formatPropertyPrice(price, propertyType)}
                         </p>
-
-                        <motion.div
-                            whileHover={{ rotate: 45 }}
-                            className="h-7 w-7 bg-amber-50 rounded-full flex items-center justify-center text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                            <ArrowUpRight className="w-4 h-4" />
-                        </motion.div>
                     </div>
 
+                    {/* Localização */}
+                    {location && (
+                        <div className="flex items-center gap-1 text-sm text-gray-500 mb-2">
+                            <MapPin className="w-3.5 h-3.5 text-amber-500" />
+                            <span className="truncate">{city ? `${location}, ${city}` : location}</span>
+                        </div>
+                    )}
+
                     {/* Título */}
-                    <h3 className="text-gray-800 font-semibold line-clamp-2 min-h-[48px] mb-3">
+                    <h3 className="text-gray-800 font-semibold line-clamp-2 min-h-[48px] mb-4 text-base">
                         {title}
                     </h3>
 
-                    {/* Características */}
-                    <div className="grid grid-cols-2 gap-3">
+                    {/* Características em grid para melhor organização */}
+                    <div className="grid grid-cols-2 gap-2">
                         {bedrooms !== undefined && (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-md">
                                 <div className="p-1.5 bg-amber-50 rounded-md text-amber-600">
                                     <BedDouble className="w-3.5 h-3.5" />
                                 </div>
@@ -178,7 +175,7 @@ export const OptimizedPropertyCard: React.FC<OptimizedPropertyCardProps> = ({
                         )}
 
                         {bathrooms !== undefined && (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-md">
                                 <div className="p-1.5 bg-blue-50 rounded-md text-blue-600">
                                     <Bath className="w-3.5 h-3.5" />
                                 </div>
@@ -187,7 +184,7 @@ export const OptimizedPropertyCard: React.FC<OptimizedPropertyCardProps> = ({
                         )}
 
                         {parkingSpots !== undefined && (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-md">
                                 <div className="p-1.5 bg-gray-100 rounded-md text-gray-600">
                                     <Car className="w-3.5 h-3.5" />
                                 </div>
@@ -196,7 +193,7 @@ export const OptimizedPropertyCard: React.FC<OptimizedPropertyCardProps> = ({
                         )}
 
                         {area !== undefined && (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-md">
                                 <div className="p-1.5 bg-green-50 rounded-md text-green-600">
                                     <AreaChart className="w-3.5 h-3.5" />
                                 </div>
@@ -204,8 +201,31 @@ export const OptimizedPropertyCard: React.FC<OptimizedPropertyCardProps> = ({
                             </div>
                         )}
                     </div>
+
+                    {/* CTA para ver detalhes */}
+                    <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center justify-center gap-1 text-amber-600 font-medium text-sm">
+                            Ver detalhes
+                            <ArrowUpRight className="w-4 h-4" />
+                        </div>
+                    </div>
                 </div>
             </Link>
+
+            {/* Botão de favorito (se habilitado) */}
+            {onFavoriteToggle && (
+                <button
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        onFavoriteToggle(id);
+                    }}
+                    className="absolute top-14 right-3 z-30 bg-white/80 backdrop-blur-sm p-1.5 rounded-full shadow-md hover:bg-white transition-colors"
+                    aria-label={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+                >
+                    <Heart className={cn("w-4 h-4", isFavorite ? "fill-red-500 text-red-500" : "text-gray-400")} />
+                </button>
+            )}
 
             {/* Contorno premium para imóveis em destaque */}
             {isPremium && (
