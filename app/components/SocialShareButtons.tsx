@@ -30,19 +30,22 @@ export default function SocialShareButtons({
     // Get current URL with origin for absolute URL
     const getFullUrl = () => {
         return typeof window !== 'undefined'
-            ? `${window.location.origin}${pathname}`
-            : `https://www.novaipe.com.br${pathname}`;
+            ? `${window.location.origin}${pathname || ''}`
+            : `https://www.novaipe.com.br${pathname || ''}`;
     };
 
     // Track share events
     const trackShare = (platform: string) => {
         if (analytics && typeof window !== 'undefined' && 'gtag' in window) {
-            // @ts-ignore - Google Analytics tracking
-            window.gtag('event', 'share', {
-                method: platform,
-                content_type: pathname.includes('/imovel/') ? 'property' : 'page',
-                item_id: pathname,
-            });
+            // Properly typed gtag
+            const gtag = (window as any).gtag;
+            if (typeof gtag === 'function') {
+                gtag('event', 'share', {
+                    method: platform,
+                    content_type: pathname?.includes('/imovel/') ? 'property' : 'page',
+                    item_id: pathname || '',
+                });
+            }
         }
     };
 
@@ -169,8 +172,7 @@ export default function SocialShareButtons({
                     aria-label="Compartilhar por Email"
                 >
                     <FaEnvelope className={`text-lg ${showLabel ? 'mr-2' : ''}`} />
-                    {showLabel && <span>Email</span>}
-                </a>
+                    {showLabel && <span>Email</span>}            </a>
             )}
         </div>
     );

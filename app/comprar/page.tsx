@@ -1,57 +1,86 @@
 // app/comprar/page.tsx
-'use client';
+import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
+import { getPreloadedPropertiesForSale, isFreshData } from '../utils/data-prefetcher';
+import { PerformanceMonitorInitializer } from '../utils/performance-monitor-advanced';
+import { CriticalCssLoader } from '../components/CriticalCssLoader';
 
-import { useState, useEffect } from 'react';
-import Navbar from '../sections/NavBar';
-import Footer from '../sections/Footer';
-import Valor from '../sections/Valor';
-import ImovelCard from '../components/ImovelCard';
-import { getImoveisParaVenda } from '../../lib/sanity/fetchImoveis';
-import type { ImovelClient } from '../../src/types/imovel-client';
+// VERSÃO TURBO: Usa o componente super otimizado para correção dos problemas de performance 
+// - LCP (Largest Contentful Paint): 78056ms (ideal <2500ms)
+// - Bloqueio da thread principal: 57778ms
+// - Tempo de carregamento da página: ~6860ms
+const TurboComprarPage = dynamic(() => import('./TurboComprarPage'), {
+    ssr: true,
+});
 
-export default function Page() {
-    const [imoveis, setImoveis] = useState<ImovelClient[]>([]);
+// Export metadata for better SEO
+export const metadata = {
+    title: "Comprar | Ipê Imóveis",
+    description: "Encontre imóveis para compra em Guararema e região. Casas, apartamentos e terrenos com excelente valorização.",
+    // Additional metadata for better SEO
+    openGraph: {
+        title: "Imóveis à Venda | Ipê Imóveis",
+        description: "Encontre o imóvel dos seus sonhos para comprar em Guararema e região. Casas, apartamentos e terrenos com excelente valorização e localização.",
+        type: "website",
+    },
+};
 
-    useEffect(() => {
-        getImoveisParaVenda()
-            .then((data) => setImoveis(data))
-            .catch((err) => console.error('Erro ao buscar imóveis para venda:', err));
-    }, []);
+// Increase revalidation time to reduce Sanity API calls
+export const revalidate = 3600; // 1 hour
+
+/**
+ * Componente de página com otimizações RSC (React Server Components)
+ * 
+ * Implementa:
+ * 1. Precarregamento de dados no servidor (Server-side data prefetching)
+ * 2. Suspense boundaries para carregamento progressivo
+ * 3. Streaming SSR para primeiros bytes rápidos
+ */
+export default async function Page() {
+    // Pré-carregar os dados no servidor antes de renderizar o cliente
+    const preloadedData = await getPreloadedPropertiesForSale();
 
     return (
         <>
-            <Navbar />
+            {/* Inicializar monitoramento de performance */}
+            <PerformanceMonitorInitializer />
 
-            <main className="bg-gradient-to-b from-white to-neutral-50 text-neutral-900 pt-24 pb-32">
-                {/* Hero da seção */}
-                <section className="max-w-4xl mx-auto px-6 text-center mb-20">
-                    <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-tight">
-                        Imóveis para <span className="text-amber-500">compra</span> com curadoria simbólica
-                    </h1>
-                    <p className="mt-4 text-lg text-neutral-600">
-                        Selecionados por sua <strong>potencial valorização</strong>, localização estratégica
-                        e <span className="italic">significado institucional</span> em Guararema e região.
-                    </p>
-                </section>
-
-                {/* Listagem de imóveis */}
-                <section className="max-w-7xl mx-auto px-6">
-                    {imoveis.length === 0 ? (
-                        <p className="text-center text-neutral-500 text-lg">
-                            Nenhum imóvel disponível para compra no momento.
-                        </p>
-                    ) : (
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
-                            {imoveis.map((imovel) => (
-                                <ImovelCard key={imovel._id} imovel={imovel} finalidade="Venda" />
-                            ))}
-                        </div>
-                    )}
-                </section>
-            </main>
-
-            <Valor />
-            <Footer />
+            {/* 
+             * Renderizar versão otimizada da página
+             * Passando dados pré-carregados do servidor quando disponíveis e válidos
+             */}
+            <Suspense fallback={<PropertyPageSkeleton />}>
+                <TurboComprarPage preloadedProperties={
+                    isFreshData(preloadedData.timestamp) ? preloadedData.data : undefined
+                } />
+            </Suspense>
         </>
+    );
+}
+
+// Esqueleto otimizado para ser exibido durante o carregamento
+function PropertyPageSkeleton() {
+    return (
+        <div className="pt-28 pb-20 bg-neutral-50 min-h-screen">
+            <div className="max-w-7xl mx-auto px-6">
+                <div className="animate-pulse">
+                    <div className="h-10 bg-gray-200 rounded w-3/4 mx-auto mb-4" />
+                    <div className="h-6 bg-gray-200 rounded w-2/3 mx-auto mb-10" />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {Array(6).fill(0).map((_, i) => (
+                            <div key={i} className="bg-white rounded-xl shadow overflow-hidden">
+                                <div className="h-48 bg-gray-200" />
+                                <div className="p-4">
+                                    <div className="h-6 bg-gray-200 rounded mb-4" />
+                                    <div className="h-4 bg-gray-100 rounded w-2/3 mb-3" />
+                                    <div className="h-8 bg-gray-100 rounded mt-4" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }

@@ -15,6 +15,10 @@ const ChevronRight = dynamic(() => import('lucide-react').then(mod => ({ default
 const ChevronLeft = dynamic(() => import('lucide-react').then(mod => ({ default: mod.ChevronLeft })), { ssr: true });
 const Star = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Star })), { ssr: true });
 const FilterIcon = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Filter })), { ssr: true });
+const Home = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Home })), { ssr: true });
+const TrendingUp = dynamic(() => import('lucide-react').then(mod => ({ default: mod.TrendingUp })), { ssr: true });
+const BedDouble = dynamic(() => import('lucide-react').then(mod => ({ default: mod.BedDouble })), { ssr: true });
+const AreaChart = dynamic(() => import('lucide-react').then(mod => ({ default: mod.AreaChart })), { ssr: true });
 
 // Componente principal otimizado com carregamento dinâmico
 const OptimizedPropertyCarousel = dynamic(() => import('@/app/components/OptimizedPropertyCarousel').then(mod => ({ default: mod.OptimizedPropertyCarousel })),
@@ -85,62 +89,112 @@ const CarouselControl = memo(({ direction, onClick, disabled }: CarouselControlP
 
 CarouselControl.displayName = 'CarouselControl';
 
-// Filtro de tipos de propriedade
-interface PropertyFilterProps {
-    activeFilter: PropertyType | 'all';
-    onChange: (filter: PropertyType | 'all') => void;
+// Interface para os filtros melhorados
+interface FilterState {
+    type: PropertyType | 'all';
+    bedrooms: number | null;
+    priceRange: [number, number] | null;
+    area: [number, number] | null;
 }
 
-const PropertyFilter = memo(({ activeFilter, onChange }: PropertyFilterProps) => (
-    <div className="flex flex-wrap gap-2 mb-6">
-        <FilterBadge
-            isActive={activeFilter === 'all'}
-            onClick={() => onChange('all')}
-        >
-            <FilterIcon className="w-3.5 h-3.5 mr-1.5" />
-            Todos
-        </FilterBadge>
-        <FilterBadge
-            isActive={activeFilter === 'sale'}
-            onClick={() => onChange('sale')}
-        >
-            Venda
-        </FilterBadge>
-        <FilterBadge
-            isActive={activeFilter === 'rent'}
-            onClick={() => onChange('rent')}
-        >
-            Aluguel
-        </FilterBadge>
-    </div>
-));
-
-PropertyFilter.displayName = 'PropertyFilter';
-
-// Badge do filtro
+// Badge do filtro - componente melhorado
 interface FilterBadgeProps {
     children: React.ReactNode;
     isActive: boolean;
     onClick: () => void;
+    icon?: React.ReactNode;
 }
 
-const FilterBadge = memo(({ children, isActive, onClick }: FilterBadgeProps) => (
+const FilterBadge = memo(({ children, isActive, onClick, icon }: FilterBadgeProps) => (
     <motion.button
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
         onClick={onClick}
         className={cn(
-            "px-4 py-2 text-sm font-medium rounded-full transition-all flex items-center",
+            "px-4 py-2 text-sm font-medium rounded-full transition-all flex items-center gap-1.5",
             isActive
                 ? "bg-amber-500 text-white shadow-md"
-                : "bg-white text-gray-700 border border-gray-200 hover:border-amber-300"
+                : "bg-white text-gray-700 border border-gray-200 hover:border-amber-300 hover:bg-amber-50"
         )}
     >
+        {icon}
         {children}
     </motion.button>
 ));
 
 FilterBadge.displayName = 'FilterBadge';
+
+// Filtro de tipos de propriedade melhorado
+interface PropertyFilterProps {
+    filters: FilterState;
+    onChange: (newFilters: Partial<FilterState>) => void;
+    propertyData: ProcessedPropertyData[];
+}
+
+const PropertyFilter = memo(({ filters, onChange, propertyData }: PropertyFilterProps) => {
+    // Calcular os filtros disponíveis com base nos dados
+    const availableBedrooms = useMemo(() => {
+        const bedroomsSet = new Set<number>();
+        propertyData.forEach(property => {
+            if (property.bedrooms !== undefined) {
+                bedroomsSet.add(property.bedrooms);
+            }
+        });
+        return Array.from(bedroomsSet).sort((a, b) => a - b);
+    }, [propertyData]);
+
+    return (
+        <div className="flex flex-wrap gap-y-3 gap-x-2 mb-8">
+            <div className="flex flex-wrap gap-2 mr-4">
+                <FilterBadge
+                    isActive={filters.type === 'all'}
+                    onClick={() => onChange({ type: 'all' })}
+                    icon={<FilterIcon className="w-3.5 h-3.5" />}
+                >
+                    Todos
+                </FilterBadge>
+                <FilterBadge
+                    isActive={filters.type === 'sale'}
+                    onClick={() => onChange({ type: 'sale' })}
+                    icon={<TrendingUp className="w-3.5 h-3.5" />}
+                >
+                    Venda
+                </FilterBadge>
+                <FilterBadge
+                    isActive={filters.type === 'rent'}
+                    onClick={() => onChange({ type: 'rent' })}
+                    icon={<Home className="w-3.5 h-3.5" />}
+                >
+                    Aluguel
+                </FilterBadge>
+            </div>
+
+            {availableBedrooms.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                    <FilterBadge
+                        isActive={filters.bedrooms === null}
+                        onClick={() => onChange({ bedrooms: null })}
+                        icon={<BedDouble className="w-3.5 h-3.5" />}
+                    >
+                        Qualquer
+                    </FilterBadge>
+                    {availableBedrooms.map(num => (
+                        <FilterBadge
+                            key={`bedroom-${num}`}
+                            isActive={filters.bedrooms === num}
+                            onClick={() => onChange({ bedrooms: num })}
+                            icon={<BedDouble className="w-3.5 h-3.5" />}
+                        >
+                            {num} {num === 1 ? 'quarto' : 'quartos'}
+                        </FilterBadge>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+});
+
+PropertyFilter.displayName = 'PropertyFilter';
 
 // Importar nosso hook personalizado
 import { useSanityProperties } from '../hooks/useSanityProperties';
@@ -155,19 +209,57 @@ export function DestaquesSanityCarousel({
     title?: string;
     subtitle?: string;
 }) {
-    // Estado para filtro de propriedades
-    const [activeFilter, setActiveFilter] = useState<PropertyType | 'all'>('all');
+    // Estado para filtros melhorados
+    const [filters, setFilters] = useState<FilterState>({
+        type: 'all',
+        bedrooms: null,
+        priceRange: null,
+        area: null
+    });
 
-    // Usar nosso hook personalizado para processar propriedades de forma eficiente
+    // Atualizar filtros
+    const updateFilters = useCallback((newFilters: Partial<FilterState>) => {
+        setFilters(prev => ({ ...prev, ...newFilters }));
+    }, []);
+
+    // Processar propriedades usando nosso hook otimizado
     const {
-        properties: filteredProperties,
+        properties: processedProperties,
         isLoading,
         isEmpty
     } = useSanityProperties(rawProperties, {
-        filterType: activeFilter === 'all' ? 'all' : activeFilter,
+        filterType: filters.type === 'all' ? 'all' : filters.type,
         sortBy: 'date',
         sortDirection: 'desc'
     });
+
+    // Filtrar propriedades localmente para filtros adicionais
+    const filteredProperties = useMemo(() => {
+        return processedProperties.filter(property => {
+            // Filtrar por número de quartos se o filtro estiver ativo
+            if (filters.bedrooms !== null && property.bedrooms !== filters.bedrooms) {
+                return false;
+            }
+
+            // Filtrar por preço se o filtro estiver ativo
+            if (filters.priceRange !== null) {
+                const [min, max] = filters.priceRange;
+                if (property.price < min || property.price > max) {
+                    return false;
+                }
+            }
+
+            // Filtrar por área se o filtro estiver ativo
+            if (filters.area !== null && property.area !== undefined) {
+                const [min, max] = filters.area;
+                if (property.area < min || property.area > max) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+    }, [processedProperties, filters]);
 
     return (
         <motion.section
@@ -177,7 +269,7 @@ export function DestaquesSanityCarousel({
             transition={{ duration: 0.6 }}
             className="container mx-auto py-16 px-4 md:px-6"
         >
-            <div className="mb-10">
+            <div className="mb-8">
                 <SectionHeader
                     title={
                         <div className="flex items-center gap-2">
@@ -192,12 +284,16 @@ export function DestaquesSanityCarousel({
                     subtitleClassName="text-gray-600 mt-2 text-lg"
                 />
 
-                <PropertyFilter activeFilter={activeFilter} onChange={setActiveFilter} />
+                <PropertyFilter
+                    filters={filters}
+                    onChange={updateFilters}
+                    propertyData={processedProperties}
+                />
             </div>
 
             {isLoading ? (
                 <PropertiesLoadingSkeleton />
-            ) : !isEmpty ? (
+            ) : filteredProperties.length > 0 ? (
                 <OptimizedPropertyCarousel
                     properties={filteredProperties}
                     variant="featured"
@@ -210,12 +306,12 @@ export function DestaquesSanityCarousel({
             ) : (
                 <div className="bg-amber-50 border border-amber-200 rounded-xl p-8 text-center">
                     <h3 className="text-xl font-semibold text-amber-700 mb-2">Nenhum imóvel encontrado</h3>
-                    <p className="text-amber-600">Não encontramos imóveis com os critérios de filtro selecionados.</p>
+                    <p className="text-amber-600 mb-4">Não encontramos imóveis com os critérios de filtro selecionados.</p>
                     <button
-                        onClick={() => setActiveFilter('all')}
-                        className="mt-4 inline-flex items-center px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition-colors"
+                        onClick={() => setFilters({ type: 'all', bedrooms: null, priceRange: null, area: null })}
+                        className="inline-flex items-center px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition-colors"
                     >
-                        Ver todos os imóveis
+                        Limpar todos os filtros
                     </button>
                 </div>
             )}

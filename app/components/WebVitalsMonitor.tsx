@@ -11,72 +11,79 @@
 'use client';
 
 import { useEffect } from 'react';
-import { onCLS, onINP, onLCP, onFCP, onTTFB, Metric } from 'web-vitals';
+import { onCLS, onFCP, onLCP, onTTFB, onINP } from 'web-vitals';
+import { usePathname } from 'next/navigation';
 
-// Tipos para as métricas
-type WebVitalName = 'CLS' | 'INP' | 'LCP' | 'FCP' | 'TTFB';
-type MetricReport = { name: string; value: number; path: string };
+// Define interface to represent web vitals metric
+interface WebVitalMetric {
+    name: string;
+    value: number;
+    delta: number;
+    id: string;
+    entries: any[];
+}
 
-const WebVitalsMonitor = () => {
+/**
+ * WebVitalsMonitor - Componente para monitorar e reportar métricas Web Vitals
+ * 
+ * Este componente coleta e envia métricas de Core Web Vitals para uma API
+ * de análise sem bloquear o thread principal. Importante para monitorar
+ * o desempenho real da aplicação em produção.
+ */
+export default function WebVitalsMonitor() {
+    const pathname = usePathname();
+
     useEffect(() => {
-        // Garantir que apenas execute no cliente 
-        if (typeof window === 'undefined') return;
+        // Não monitore em desenvolvimento para evitar dados distorcidos
+        if (process.env.NODE_ENV === 'development') {
+            return;
+        }
 
-        // Handler para métricas coletadas
-        const reportWebVital = ({ name, value, id }: Metric) => {
-            // Define limites para métricas
-            const thresholds = {
-                CLS: { good: 0.1, needsImprovement: 0.25 },
-                LCP: { good: 2500, needsImprovement: 4000 },
-                INP: { good: 200, needsImprovement: 500 }, // INP substituiu FID nas métricas Core Web Vitals
-                FCP: { good: 1800, needsImprovement: 3000 },
-                TTFB: { good: 800, needsImprovement: 1800 },
-            };
+        // Handler para processar e reportar métricas
+        const reportWebVital = (metric: WebVitalMetric) => {
+            const { name, value, delta, id } = metric;
 
-            const metric = name as WebVitalName;
-            const threshold = thresholds[metric];
+            // Categoriza a métrica
+            let status: 'good' | 'needs-improvement' | 'poor' = 'good';
 
-            // Determina status da métrica
-            let status = 'good';
-            if (threshold) {
-                if (value > threshold.needsImprovement) {
-                    status = 'poor';
-                } else if (value > threshold.good) {
-                    status = 'needs-improvement';
-                }
+            // Aplica os limites do Core Web Vitals para categorização
+            if (name === 'CLS') {
+                status = value > 0.25 ? 'poor' : value > 0.1 ? 'needs-improvement' : 'good';
+            } else if (name === 'LCP') {
+                status = value > 4000 ? 'poor' : value > 2500 ? 'needs-improvement' : 'good';
+            } else if (name === 'FID' || name === 'INP') {
+                status = value > 300 ? 'poor' : value > 100 ? 'needs-improvement' : 'good';
+            } else if (name === 'FCP') {
+                status = value > 3000 ? 'poor' : value > 1800 ? 'needs-improvement' : 'good';
+            } else if (name === 'TTFB') {
+                status = value > 1800 ? 'poor' : value > 800 ? 'needs-improvement' : 'good';
             }
-
-            // Constrói relatório da métrica
-            const report: MetricReport = {
-                name: name,
-                value: Math.round(value),
-                path: window.location.pathname,
-            };
 
             // Envia para análise e console para debug
             console.log(`[WebVital] ${name}: ${Math.round(value)} (${status})`);
 
             // Analytics usando sendBeacon para não bloquear
-            if (navigator.sendBeacon) {
+            if ('sendBeacon' in navigator) {
                 const blob = new Blob([JSON.stringify({
                     metricName: name,
                     metricValue: value,
                     status: status,
-                    path: window.location.pathname
+                    path: pathname || window.location.pathname
                 })], { type: 'application/json' });
 
-                navigator.sendBeacon('/api/vitals', blob);
+                (navigator as any).sendBeacon('/api/vitals', blob);
             }
-        };        // Registra as métricas principais
+        };
+
+        // Registra as métricas principais
         onFCP(reportWebVital);
         onLCP(reportWebVital);
         onCLS(reportWebVital);
         onINP(reportWebVital);
         onTTFB(reportWebVital);
 
-    }, []);
+    }, [pathname]);
 
-    return null; // Componente não renderiza visualmente
-};
-
-export default WebVitalsMonitor;
+    // Este componente não renderiza nada visível
+    return null;
+}

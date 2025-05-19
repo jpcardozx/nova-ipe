@@ -101,11 +101,9 @@ export function PropertyHero({
         if (onAddToFavorites) {
             onAddToFavorites();
         }
-    };
-
-    const handleShareClick = () => {
-        if (navigator.share) {
-            navigator.share({
+    }; const handleShareClick = () => {
+        if ('share' in navigator) {
+            (navigator as any).share({
                 title: title,
                 text: `Confira este imóvel: ${title}`,
                 url: window.location.href,
@@ -117,13 +115,13 @@ export function PropertyHero({
         if (onShare) {
             onShare();
         }
-    };
-
-    const copyLinkToClipboard = () => {
-        navigator.clipboard.writeText(window.location.href);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-        setShowShareMenu(false);
+    }; const copyLinkToClipboard = () => {
+        if ('clipboard' in navigator) {
+            (navigator as any).clipboard.writeText(window.location.href);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+            setShowShareMenu(false);
+        }
     };
 
     const shareViaEmail = () => {
@@ -561,4 +559,4 @@ export function PropertyHero({
     );
 }
 
-export default PropertyHero; 
+export default PropertyHero;

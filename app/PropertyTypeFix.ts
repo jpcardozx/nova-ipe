@@ -47,10 +47,17 @@ export interface SanityImage {
         bottom: number;
         left: number;
         right: number;
-    };
-    alt?: string;
+    }; alt?: string;
     url?: string;
+    responsive?: Record<string, string>;
+    responsiveUrls?: {
+        small?: string;
+        medium?: string;
+        large?: string;
+        original?: string;
+    };
     imagemUrl?: string;
+    mainImage?: any;
 }
 
 // Define possíveis tipos de slug que podem vir do CMS

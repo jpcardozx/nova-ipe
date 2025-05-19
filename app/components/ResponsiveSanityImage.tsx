@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { ImageOff } from 'lucide-react';
 import { getImageUrl, getImageAlt, SanityImage, ImageType } from '@/lib/sanity-image-helper';
+import { processEnhancedSanityImage, EnhancedSanityImage } from '@/lib/enhanced-sanity-image';
 import { cn } from '@/lib/utils';
 
 export type ImageFit = 'cover' | 'contain' | 'fill' | 'none';
@@ -55,21 +56,54 @@ export default function ResponsiveSanityImage({
     fallbackUrl = '/images/property-placeholder.jpg'
 }: ResponsiveSanityImageProps) {
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+    const [error, setError] = useState(false);    // Processamento simplificado para garantir o funcionamento
+    const enhancedImage = useMemo(() => {
+        try {
+            // Caso seja uma string, criar um objeto simples
+            if (typeof image === 'string') {
+                return {
+                    url: image,
+                    alt: alt || 'Imagem',
+                    hotspot: undefined,
+                    blurDataUrl: undefined
+                };
+            }
 
-    // Processa imagem com memoização para evitar re-renderizações
-    const processedImage = useMemo(() => {
-        // Extrair URL e texto alternativo
-        const url = getImageUrl(image, fallbackUrl);
-        const altText = alt || getImageAlt(image, 'Imóvel');
+            // Se for um objeto, extrair informações de maneira mais robusta
+            if (typeof image === 'object' && image !== null) {
+                // Tenta extrair a URL de diversas possíveis propriedades
+                const url = image.url as string ||
+                    (image as any).imagemUrl ||
+                    (image as any).src ||
+                    fallbackUrl;
 
-        // Extrair hotspot se disponível para melhor foco
-        const hotspot = typeof image === 'object' && image?.hotspot ? {
-            x: image.hotspot.x,
-            y: image.hotspot.y
-        } : undefined;
+                // Tenta extrair o texto alt
+                const altText = (image as any).alt || alt || 'Imagem';
 
-        return { url, altText, hotspot };
+                return {
+                    url,
+                    alt: altText,
+                    hotspot: (image as any).hotspot,
+                    blurDataUrl: undefined
+                };
+            }
+
+            // Fallback para casos de erro
+            return {
+                url: fallbackUrl,
+                alt: alt || 'Imagem',
+                hotspot: undefined,
+                blurDataUrl: undefined
+            };
+        } catch (error) {
+            console.error('Erro ao processar imagem:', error);
+            return {
+                url: fallbackUrl,
+                alt: alt || 'Imagem',
+                hotspot: undefined,
+                blurDataUrl: undefined
+            };
+        }
     }, [image, alt, fallbackUrl]);
 
     // Classes CSS dinâmicas
@@ -89,11 +123,11 @@ export default function ResponsiveSanityImage({
 
     // Calcular posição baseada no hotspot se disponível
     const imageObjectPosition = useMemo(() => {
-        if (processedImage.hotspot) {
-            return `${processedImage.hotspot.x * 100}% ${processedImage.hotspot.y * 100}%`;
+        if (enhancedImage.hotspot) {
+            return `${enhancedImage.hotspot.x * 100}% ${enhancedImage.hotspot.y * 100}%`;
         }
         return objectPosition;
-    }, [processedImage.hotspot, objectPosition]);
+    }, [enhancedImage.hotspot, objectPosition]);
 
     // Função de tratamento de carregamento
     const handleLoad = () => {
@@ -107,7 +141,19 @@ export default function ResponsiveSanityImage({
         setError(true);
         setLoading(false);
         if (onError) onError();
-    };
+    };    // Determinar qual URL usar com base nos dados disponíveis
+    const imageUrl = typeof image === 'string'
+        ? image
+        : typeof image === 'object' && image !== null
+            ? (image.url ||
+                // Use casting para acessar propriedades que podem não estar na interface
+                ((image as any).mainImage && typeof (image as any).mainImage === 'object' ? (image as any).mainImage.url : undefined) ||
+                image.imagemUrl ||
+                (typeof image.asset === 'object' ? image.asset.url : undefined))
+            : undefined;
+
+    // Garantir que temos uma URL válida
+    const srcForImage = imageUrl || enhancedImage.url || fallbackUrl;
 
     return (
         <div
@@ -118,8 +164,8 @@ export default function ResponsiveSanityImage({
         >
             {/* Imagem principal */}
             <Image
-                src={processedImage.url}
-                alt={processedImage.altText}
+                src={srcForImage}
+                alt={enhancedImage.alt}
                 fill={fill}
                 width={!fill ? width : undefined}
                 height={!fill ? height : undefined}
@@ -134,6 +180,8 @@ export default function ResponsiveSanityImage({
                 }}
                 onLoad={handleLoad}
                 onError={handleError}
+                placeholder={enhancedImage.blurDataUrl ? "blur" : undefined}
+                blurDataURL={enhancedImage.blurDataUrl}
             />
 
             {/* Estado de carregamento */}

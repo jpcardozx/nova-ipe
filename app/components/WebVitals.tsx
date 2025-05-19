@@ -16,10 +16,8 @@ const sendToAnalytics = ({ name, delta, value, id }: Metric) => {
         value,
         id,
         page: window.location.pathname,
-    };
-
-    // Use `navigator.sendBeacon()` se disponível, senão use `fetch()`
-    if (navigator.sendBeacon) {
+    };    // Use `navigator.sendBeacon()` se disponível, senão use `fetch()`
+    if ('sendBeacon' in navigator) {
         navigator.sendBeacon(vitalsUrl, JSON.stringify(body));
     } else {
         fetch(vitalsUrl, {

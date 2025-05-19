@@ -41,12 +41,11 @@ export default function PropertyContactModal({
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     // Referência para o elemento modal para fechamento com ESC
-    const modalRef = useRef<HTMLDivElement>(null);
-
-    // Efeito para detectar ESC para fechar o modal
+    const modalRef = useRef<HTMLDivElement>(null);    // Efeito para detectar ESC para fechar o modal
     useEffect(() => {
-        const handleEscape = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') {
+        const handleEscape = (e: Event) => {
+            // Type assertion to access key property
+            if ((e as KeyboardEvent).key === 'Escape') {
                 onClose();
             }
         };

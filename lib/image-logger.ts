@@ -121,11 +121,12 @@ export class ImageLogger {
                     message,
                     ...data
                 });
-
                 // Usar sendBeacon para não bloquear navegação ou desmonte do componente
-                navigator.sendBeacon('/api/log/image-error', payload);
+                if ('sendBeacon' in navigator) {
+                    (navigator as any).sendBeacon('/api/log/image-error', payload);
+                }
             }
-        } catch (e) {
+        } catch (e: unknown) {
             // Não fazer nada se falhar
         }
     }

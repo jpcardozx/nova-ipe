@@ -15,13 +15,11 @@ const montSerrat = Montserrat({
 
 export default function Footer() {
     const [mapLoaded, setMapLoaded] = useState(false);
-    const [year] = useState(new Date().getFullYear());
-
-    useEffect(() => {
+    const [year] = useState(new Date().getFullYear()); useEffect(() => {
         const elements = document.querySelectorAll(".footer-animate");
         const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
+            (entries: IntersectionObserverEntry[]) => {
+                entries.forEach((entry: IntersectionObserverEntry) => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add("footer-visible");
                     }
@@ -30,8 +28,8 @@ export default function Footer() {
             { threshold: 0.1 }
         );
 
-        elements.forEach((el) => observer.observe(el));
-        return () => elements.forEach((el) => observer.unobserve(el));
+        elements.forEach((el: Element) => observer.observe(el));
+        return () => elements.forEach((el: Element) => observer.unobserve(el));
     }, []);
 
     return (

@@ -53,9 +53,7 @@ export default function WhatsAppShare({
         url.searchParams.append('utm_campaign', utmCampaign);
 
         return url.toString();
-    }, [pathname, utmSource, utmMedium, utmCampaign]);
-
-    // Build the WhatsApp message
+    }, [pathname, utmSource, utmMedium, utmCampaign]);    // Build the WhatsApp message
     const buildShareUrl = useCallback(() => {
         const fullUrl = getFullUrl();
         const pageTitle = title || (typeof document !== 'undefined' ? document.title : 'Nova Ipê Imobiliária');
@@ -87,16 +85,15 @@ export default function WhatsAppShare({
                 item_id: pathname,
             });
         }
-
         // Use Web Share API if available
-        if (navigator.share && imageUrl) {
+        if ('share' in navigator && imageUrl && typeof navigator.share === 'function') {
             navigator.share({
                 title: title || 'Nova Ipê Imobiliária',
                 text: message || 'Confira este imóvel',
                 url: getFullUrl(),
             })
                 .then(() => setShared(true))
-                .catch((error) => {
+                .catch((error: Error) => {
                     console.log('Error sharing:', error);
                     // Fallback to regular WhatsApp link
                     window.open(buildShareUrl(), '_blank');

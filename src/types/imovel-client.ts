@@ -34,6 +34,7 @@ export interface ImagemClient {
  */
 export interface ImovelClient {
     _id: string
+    id?: string // Added for TurboComprarPage compatibility
     _type?: string
     titulo?: string
     slug: string
@@ -46,6 +47,7 @@ export interface ImovelClient {
     estado?: string
     descricao?: string
     mapaLink?: string
+    dataPublicacao?: string // Added for date-related functionality
 
     // Características principais
     dormitorios?: number
@@ -59,6 +61,8 @@ export interface ImovelClient {
 
     // Características e recursos do imóvel
     caracteristicas?: string[]
+    possuiJardim?: boolean // Added for feature filtering
+    possuiPiscina?: boolean // Added for feature filtering
 
     // Galeria de imagens
     galeria?: ImagemClient[]

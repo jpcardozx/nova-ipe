@@ -7,6 +7,10 @@
  * @version 1.0.0
  * @date 18/05/2025
  */
+type IntersectionObserverEntry = {
+    isIntersecting: boolean;
+    target: Element;
+};
 
 /**
  * Calcula dimensões otimizadas para imagens com base no viewport
@@ -70,11 +74,9 @@ export function calculateOptimalSrcSet(baseUrl: string, widths = [640, 750, 828,
 export function prioritizeVisibleImages(): void {
     if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
         return;
-    }
-
-    // Configura observador de interseção
-    const imageObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
+    }    // Configura observador de interseção
+    const imageObserver = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
+        entries.forEach((entry: IntersectionObserverEntry) => {
             if (entry.isIntersecting) {
                 const img = entry.target as HTMLImageElement;
 
@@ -100,10 +102,8 @@ export function prioritizeVisibleImages(): void {
     }, {
         rootMargin: '200px 0px', // Pré-carrega imagens 200px antes de entrarem na viewport
         threshold: 0.01 // Dispara quando pelo menos 1% da imagem fica visível
-    });
-
-    // Observa todas as imagens com atributo data-optimize
-    document.querySelectorAll('img[data-optimize]').forEach(img => {
+    });    // Observa todas as imagens com atributo data-optimize
+    document.querySelectorAll('img[data-optimize]').forEach((img: Element) => {
         imageObserver.observe(img);
     });
 }
