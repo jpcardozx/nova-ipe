@@ -272,6 +272,22 @@ async function fetchPropertiesData() {
   }
 }
 
+// Adicionando fallback para requisições de fetch
+async function fetchWithFallback(url: string, fallbackData: any) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Erro na requisição');
+    return await response.json();
+  } catch (error) {
+    console.error('Erro ao buscar dados:', error);
+    return fallbackData;
+  }
+}
+
+// Exemplo de uso
+const destaques = await fetchWithFallback('/api/destaques', { destaques: [] });
+const aluguel = await fetchWithFallback('/api/aluguel', { aluguel: [] });
+
 // Componente da página inicial otimizado para exibição de propriedades
 export default function Home() {
   // Using React state to handle async data
