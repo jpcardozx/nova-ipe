@@ -1,16 +1,16 @@
 /**
  * Next.js Configuration - Otimizada para Deploy
- * Configuração profissional para Next.js 15 com Tailwind CSS v3
+ * Configura��o profissional para Next.js 15 com Tailwind CSS v3
  *
  * @version 2.2.0
  * @date 19/05/2025 (Atualizado)
  * @type {import('next').NextConfig}
  */
 
-// Importação da configuração auxiliar para source maps
+// Importa��o da configura��o auxiliar para source maps
 const { applySourceMapIgnore } = require('./webpack.sourcemap.config');
 
-// Verificar se estamos em ambiente de produção/Vercel
+// Verificar se estamos em ambiente de produ��o/Vercel
 const isProduction = process.env.NODE_ENV === 'production';
 const isVercel = process.env.VERCEL === '1';
 
@@ -19,7 +19,7 @@ const nextConfig = {
   poweredByHeader: false,
   compress: true,
 
-  // Configuração de imagem otimizada
+  // Configura��o de imagem otimizada
   images: {
     domains: ['cdn.sanity.io'],
     formats: ['image/avif', 'image/webp'],
@@ -34,7 +34,9 @@ const nextConfig = {
         pathname: '**',
       },
     ],
-  },  // Configurações experimentais compatíveis com Next.js 15
+  },
+
+  // Configura��es experimentais compat�veis com Next.js 15
   experimental: {
     optimizeCss: true,
     scrollRestoration: true,
@@ -45,11 +47,12 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '2mb',
     },
-    // ppr: true, // Removido pois requer versão canary do Next.js
+    // ppr: true, // Removido pois requer vers�o canary do Next.js
     taint: true,
-  },  // Configuração do webpack otimizada
+    optimizeFonts: true, // Ativa otimiza��o autom�tica de fontes
+  },    // Configura��o do webpack otimizada
   webpack: (config, { dev, isServer }) => {
-    // Aplica configuração de source map da configuração auxiliar
+    // Aplica configura��o de source map da configura��o auxiliar
     config = applySourceMapIgnore(config);
 
     // Resolve o problema do EventSource para o Sanity
@@ -60,12 +63,21 @@ const nextConfig = {
         net: false,
         tls: false,
         eventsource: false,
+        module: false,
+        perf_hooks: false,
+        v8: false,
       };
-    }    // Otimizações para produção
+
+      // Configura��o para evitar ChunkLoadError
+      config.output.chunkLoadTimeout = 60000; // Aumenta o timeout de carregamento de chunks para 60s
+      config.output.crossOriginLoading = 'anonymous'; // Garante carregamento correto cross-origin
+    }
+
+    // Otimiza��es para produ��o
     if (!dev) {
-      // Medida de segurança para ambiente de produção: evita problemas com source maps
+      // Medida de seguran�a para ambiente de produ��o: evita problemas com source maps
       if (isProduction || isVercel) {
-        // Ignora completamente os source maps em produção
+        // Ignora completamente os source maps em produ��o
         config.devtool = false;
       }
 
@@ -102,7 +114,7 @@ const nextConfig = {
               enforce: true,
               chunks: 'all',
             },
-            // Agrupamento de dependências comuns
+            // Agrupamento de depend�ncias comuns
             commons: {
               test: /[\\/]node_modules[\\/]/,
               name: 'vendor-commons',
@@ -119,13 +131,27 @@ const nextConfig = {
     return config;
   },
 
-  // Transpilação para módulos específicos
+  // Transpila��o para m�dulos espec�ficos
   transpilePackages: ['@sanity', 'next-sanity', 'embla-carousel-react'],
 
-  // Variáveis de ambiente como strings (formato exigido pela Vercel)
+  // Vari�veis de ambiente como strings (formato exigido pela Vercel)
   env: {
     NEXT_PUBLIC_SANITY_USE_CDN: "true",
     NEXT_PUBLIC_SANITY_USE_STEGA: "false",
+  },
+
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Link',
+            value: '</Montserrat-Bold.ttf>; rel=preload; as=font; type=font/ttf; crossorigin=anonymous, </Montserrat-Medium.ttf>; rel=preload; as=font; type=font/ttf; crossorigin=anonymous',
+          },
+        ],
+      },
+    ];
   },
 };
 

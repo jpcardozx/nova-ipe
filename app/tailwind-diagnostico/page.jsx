@@ -1,6 +1,6 @@
 'use client';
 
-import TailwindDiagnosticPanel from '../components/TailwindDiagnosticPanel';
+import ClientSafeTailwindDiagnostic from '../components/ClientSafeTailwindDiagnostic';
 
 /**
  * Página de Diagnóstico do Tailwind
@@ -22,7 +22,7 @@ export default function TailwindDiagnosticPage() {
         <div className="lg:col-span-8">
           <div className="space-y-8">
             <section>
-              <TailwindDiagnosticPanel />
+              <ClientSafeTailwindDiagnostic />
             </section>
             
             <section>
@@ -35,7 +35,22 @@ export default function TailwindDiagnosticPage() {
                 </div>
                 
                 <div className="p-4">
-                  <TailwindV4Test />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-4 border border-gray-200 rounded-lg">
+                      <h3 className="font-medium mb-2">Cores e Espaçamento</h3>
+                      <div className="flex space-x-2">
+                        <div className="w-8 h-8 bg-blue-500 rounded"></div>
+                        <div className="w-8 h-8 bg-green-500 rounded"></div>
+                        <div className="w-8 h-8 bg-red-500 rounded"></div>
+                      </div>
+                    </div>
+                    <div className="p-4 border border-gray-200 rounded-lg">
+                      <h3 className="font-medium mb-2">Tipografia</h3>
+                      <p className="text-sm font-light">Text Small Light</p>
+                      <p className="text-base font-normal">Text Base Normal</p>
+                      <p className="text-lg font-bold">Text Large Bold</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>

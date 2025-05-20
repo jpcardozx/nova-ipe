@@ -5,27 +5,56 @@ import Script from 'next/script';
 import { ClientOnly } from './ClientComponents';
 import ClientWebVitals from './ClientWebVitals';
 import dynamic from 'next/dynamic';
+import { safeDynamic } from './DynamicImportWrapper';
 import { OrganizationSchema, WebsiteSchema, LocalBusinessSchema } from './StructuredData';
 import HydrationLoadingFix from './HydrationLoadingFix';
 import HydrationGuard from './HydrationGuard';
 import DataPrefetcher from './DataPrefetcher';
 import FontOptimizer from './FontOptimizer';
 import OfflineSupportProvider from '../providers/OfflineSupportProvider';
+import ChunkErrorBoundary from './ChunkErrorBoundary';
+import LucidePreloader from './LucidePreloader';
+import ChunkRecoveryService from './ChunkRecoveryService';
 
-// Importações dinâmicas para reduzir bundle inicial
-const WebVitalsMonitor = dynamic(() => import('./WebVitalsMonitor'), { ssr: false });
-const JavaScriptOptimizer = dynamic(() => import('./JavaScriptOptimizer'), { ssr: false });
-
-// Componentes não-críticos com carregamento dinâmico
-const ClientPerformanceMonitor = dynamic(() => import('./ClientPerformanceMonitor'), {
-    ssr: false,
-    loading: () => <div className="perf-monitor-placeholder" />
+// Importações dinâmicas para reduzir bundle inicial com tratamento de erros aprimorado
+const WebVitalsMonitor = safeDynamic(() => import('./WebVitalsMonitor'), {
+    componentName: 'WebVitalsMonitor',
+    retries: 2
 });
 
-const WebVitalsDebuggerWrapper = dynamic(() => import('./WebVitalsDebuggerWrapper'), { ssr: false });
-const PerformanceDiagnostics = dynamic(() => import('./PerformanceDiagnostics'), { ssr: false });
-const LoadingStateManager = dynamic(() => import('./LoadingStateManager'), { ssr: false });
-const PerformanceAnalytics = dynamic(() => import('./PerformanceAnalytics'), { ssr: false });
+const JavaScriptOptimizer = safeDynamic(() => import('./JavaScriptOptimizer'), {
+    componentName: 'JavaScriptOptimizer',
+    retries: 2
+});
+
+// Componentes não-críticos com carregamento dinâmico
+const ClientPerformanceMonitor = safeDynamic(() => import('./ClientPerformanceMonitor'), {
+    componentName: 'ClientPerformanceMonitor',
+    loading: () => <div className="perf-monitor-placeholder" />,
+    retries: 2
+});
+
+const WebVitalsDebuggerWrapper = safeDynamic(() => import('./WebVitalsDebuggerWrapper'), {
+    componentName: 'WebVitalsDebuggerWrapper',
+    retries: 2
+});
+
+const PerformanceDiagnostics = safeDynamic(() => import('./PerformanceDiagnostics'), {
+    componentName: 'PerformanceDiagnostics',
+    retries: 2
+});
+
+// O LoadingStateManager foi identificado como causador de ChunkLoadError
+// Utilizamos configuração extra de retentativas
+const LoadingStateManager = safeDynamic(() => import('./LoadingStateManager'), {
+    componentName: 'LoadingStateManager',
+    retries: 3 // Mais retentativas para este componente problemático
+});
+
+const PerformanceAnalytics = safeDynamic(() => import('./PerformanceAnalytics'), {
+    componentName: 'PerformanceAnalytics',
+    retries: 2
+});
 
 export default function LayoutClient({ children }: { children: React.ReactNode }) {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -92,8 +121,14 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
             document.removeEventListener('DOMContentLoaded', optimizeInitialRender);
             window.removeEventListener('load', optimizeInitialRender);
         };
-    }, []); return (
+    }, []); return (<ChunkErrorBoundary>
         <OfflineSupportProvider>
+            {/* Serviço de recuperação para ChunkLoadError */}
+            <ChunkRecoveryService />
+
+            {/* Precarrega ícones lucide-react para evitar ChunkLoadError */}
+            <LucidePreloader />
+
             {/* Fix hydration issues with visibility */}
             <HydrationLoadingFix />
             <HydrationGuard />
@@ -129,8 +164,26 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                 </div>
             }>
                 {children}
-            </Suspense>            {/* Gerenciador de estado de carregamento */}
-            <LoadingStateManager />
+            </Suspense>            {/* Gerenciador de estado de carregamento com boundary específico para evitar ChunkLoadError */}
+            <ChunkErrorBoundary
+                fallback={
+                    <script
+                        dangerouslySetInnerHTML={{
+                            __html: `
+                                // Script de fallback para garantir página visível em caso de erro
+                                (function() {
+                                    document.documentElement.removeAttribute('data-loading-state');
+                                    document.documentElement.setAttribute('data-loaded', 'true');
+                                    document.body.style.opacity = '1';
+                                    document.body.style.visibility = 'visible';
+                                })();
+                            `
+                        }}
+                    />
+                }
+            >
+                <LoadingStateManager />
+            </ChunkErrorBoundary>
 
             {/* Data prefetcher para otimização de performance */}
             <ClientOnly>
@@ -170,7 +223,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
             {/* Performance analytics tool - accessible via Ctrl+Alt+P or ?debug=performance */}
             <Suspense fallback={null}>
                 <PerformanceAnalytics />
-            </Suspense>
-        </OfflineSupportProvider>
+            </Suspense>        </OfflineSupportProvider>
+    </ChunkErrorBoundary>
     );
 }

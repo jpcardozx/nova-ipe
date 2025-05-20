@@ -627,3 +627,18 @@
     break-inside: avoid;
   }
 }
+
+/* Adicionando font-display: swap para melhorar o carregamento de fontes */
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/Montserrat-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/Montserrat-Medium.ttf') format('truetype');
+  font-weight: medium;
+  font-display: swap;
+}

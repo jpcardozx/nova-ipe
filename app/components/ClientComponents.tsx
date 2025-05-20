@@ -5,20 +5,63 @@ import React, { createContext, useContext, ReactNode, memo } from 'react';
 import { Search } from 'lucide-react';
 import Link from 'next/link';
 
-// Lazy load do componente SentryInit
-const SentryInitClient = dynamic(() => import('../../instrumentation-client').then(mod => ({ default: mod.SentryInit })), { ssr: false });
+// Lazy load do componente SentryInit com tratamento de erro
+const SentryInitClient = dynamic(
+    () => import('../../instrumentation-client')
+        .then(mod => ({ default: mod.SentryInit }))
+        .catch(err => {
+            console.warn('Failed to load Sentry initialization:', err);
+            return { default: () => null };
+        }),
+    { ssr: false, loading: () => null }
+);
 
-// Dynamic import for debug tools
-const DebugPanelClient = dynamic(() => import('./debug-tools').then(mod => ({ default: mod.DebugPanel })), { ssr: false });
+// Dynamic import for debug tools com tratamento de erro
+const DebugPanelClient = dynamic(
+    () => import('./debug-tools')
+        .then(mod => ({ default: mod.DebugPanel }))
+        .catch(err => {
+            console.warn('Failed to load debug panel:', err);
+            return { default: () => null };
+        }),
+    { ssr: false, loading: () => null }
+);
 
 export function ClientOnly({ children }: { children: React.ReactNode }) {
+    // Usando React.ErrorBoundary para capturar erros em componentes filhos
     return (
-        <>
-            <SentryInitClient />
-            {process.env.NODE_ENV === 'development' ? <DebugPanelClient /> : null}
-            {children}
-        </>
+        <React.Suspense fallback={null}>
+            <ErrorBoundary>
+                <SentryInitClient />
+                {process.env.NODE_ENV === 'development' ? <DebugPanelClient /> : null}
+                {children}
+            </ErrorBoundary>
+        </React.Suspense>
     );
+}
+
+// Componente de boundary de erro para garantir que falhas não quebrem toda a UI
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+    constructor(props: { children: React.ReactNode }) {
+        super(props);
+        this.state = { hasError: false };
+    }
+
+    static getDerivedStateFromError() {
+        return { hasError: true };
+    }
+
+    componentDidCatch(error: Error) {
+        console.error('Client component error:', error);
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return null; // Falhar silenciosamente para não travar a UI
+        }
+
+        return this.props.children;
+    }
 }
 
 // Tipo básico para propriedades no formato esperado pelos componentes de UI

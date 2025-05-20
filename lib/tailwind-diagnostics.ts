@@ -159,7 +159,7 @@ export async function checkTailwindConfig(): Promise<{
             results: configResults,
             environment
         };
-    } catch (error) {
+    } catch (_error) {
         return {
             success: false,
             results: {},
@@ -201,7 +201,7 @@ export async function testTailwindClasses(): Promise<TailwindTestResult> {
                 { class: 'p-4', applied: true }
             ]
         };
-    } catch (error) {
+    } catch (_error) {
         return {
             success: false,
             classesFound: 0,

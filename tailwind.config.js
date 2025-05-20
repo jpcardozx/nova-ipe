@@ -149,7 +149,7 @@ module.exports = {
         },
     },
     plugins: [
-        require('@tailwindcss/forms'),
-        require('@tailwindcss/typography'),
+        // line-clamp já está integrado ao Tailwind CSS v3.3+ como recurso nativo
+        // Não é mais necessário o plugin @tailwindcss/line-clamp
     ],
 }
