@@ -24,6 +24,7 @@
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
     "baseUrl": ".",
+    "jsxImportSource": "react",
     "paths": {
       "@/*": [
         "./*"

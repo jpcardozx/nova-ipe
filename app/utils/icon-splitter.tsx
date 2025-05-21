@@ -11,7 +11,7 @@
  */
 
 import React, { lazy, Suspense } from 'react';
-import { LucideProps } from 'lucide-react';
+import type { LucideProps } from '../../types/lucide-react';
 
 // Objeto para armazenar ícones em cache
 const iconCache = new Map();
@@ -64,7 +64,7 @@ export function LazyIcon({ name, ...props }: { name: string } & LucideProps) {
 export const OptimizedIcons = COMMON_ICONS.reduce((acc, name) => {
     acc[name] = (props: LucideProps) => <LazyIcon name={name} {...props} />;
     return acc;
-}, {} as Record<string, (props: LucideProps) => JSX.Element>);
+}, {} as Record<string, (props: LucideProps) => React.ReactElement>);
 
 /**
  * Função para carregar ícones dinamicamente

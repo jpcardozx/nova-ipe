@@ -84,7 +84,17 @@ export function safeDynamic<T>(
         return {
             default: (props: T) => <ErrorFallback componentName={componentName} />
         };
-    }; const loadingFn = (_props: DynamicOptionsLoadingProps): React.ReactNode => null;
+    };
+
+    interface DynamicLoadingProps {
+        error?: Error | null;
+        isLoading?: boolean;
+        pastDelay?: boolean;
+        retry?: () => void;
+        timedOut?: boolean;
+    }
+
+    const loadingFn = (_props: DynamicLoadingProps): React.ReactNode => null;
 
     return dynamic(() => importWithRetry(), {
         ssr: false,

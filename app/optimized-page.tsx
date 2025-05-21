@@ -1,19 +1,30 @@
 'use client';
 
-import { Suspense, lazy, useState, useEffect } from 'react';
-import { Montserrat } from 'next/font/google';
+import { Suspense, useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
+import { Cormorant_Garamond, Inter } from 'next/font/google';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import OptimizationProvider from './components/OptimizationProvider';
 
-// Core UI components - importados diretamente para carregamento inicial rápido
-import { Button } from '@/src/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/src/components/ui/card';
+// Componentes pré-carregados essenciais
+import NavbarResponsive from "./components/NavbarResponsive";
+import Destaques from "./sections/Destaques";
+import { ImovelHero } from "./components/ImoveisDestaqueComponents";
 
-// Importações lazy-loaded para componentes pesados
-const OptimizedHero = lazy(() => import('@/app/components/OptimizedHero'));
-const OptimizedPropertyCarousel = lazy(() => import('@/app/components/OptimizedPropertyCarousel'));
-const Footer = lazy(() => import('@/app/sections/Footer'));
+// Componentes com carregamento dinâmico otimizado
+const WhatsAppButton = dynamic(() => import('./components/WhatsAppButton'), { ssr: false });
+const Footer = dynamic(() => import('./sections/Footer'), { ssr: true });
+const BlocoExploracaoSimbolica = dynamic(() => import('./components/BlocoExploracaoSimbolica'));
+const BlocoCTAConversao = dynamic(() => import('./components/client/BlocoCTAConversao'), { ssr: false });
+const ClientSidePropertiesProvider = dynamic(() => import('./components/ClientComponents'));
+const OptimizedHero = dynamic(() => import('./components/OptimizedHero'), { ssr: false });
+const OptimizedPropertyCarousel = dynamic(() => import('./components/OptimizedPropertyCarousel'), {
+    ssr: false,
+    loading: () => <div className="h-96 bg-neutral-100 animate-pulse rounded-lg" />
+});
 
 // Import carregado apenas quando o componente fica visível na tela
 const ClientProgressSteps = dynamic(() => import('@/app/components/ClientProgressSteps'), {
@@ -31,12 +42,21 @@ const ContactSection = dynamic(() => import('@/app/components/ContactSection'), 
     loading: () => <div className="h-96 bg-neutral-100 animate-pulse rounded-lg" />
 });
 
-// Configuração da fonte
-const montserrat = Montserrat({
+// Configuração das fontes com Next.js Font System
+const cormorant = Cormorant_Garamond({
     subsets: ['latin'],
-    weight: ['400', '500', '600', '700'],
     display: 'swap',
-    variable: '--font-montserrat',
+    variable: '--font-cormorant',
+    weight: ['300', '400', '500', '600', '700'],
+    fallback: ['Georgia', 'serif'],
+});
+
+const inter = Inter({
+    subsets: ['latin'],
+    display: 'swap',
+    variable: '--font-inter',
+    weight: ['400', '500', '600'],
+    fallback: ['system-ui', 'arial'],
 });
 
 // Serviços de dados - criar versão mock para resolver problema de importação
@@ -192,7 +212,7 @@ export default function OptimizedHomePage() {
     }, []);
 
     return (
-        <div className={`${montserrat.variable} font-sans flex flex-col min-h-screen`}>
+        <div className={`${cormorant.variable} ${inter.variable} font-sans flex flex-col min-h-screen`}>
             {/* Hero principal com lazy-loading e code-splitting */}
             <Suspense fallback={<div className="h-[90vh] bg-neutral-800 animate-pulse" />}>
                 <OptimizedHero />

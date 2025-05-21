@@ -103,8 +103,7 @@ const TestimonialCard = ({
                         alt={testimonial.name}
                         fill
                         className="object-cover"
-                        sizes="(max-width: 768px) 64px, 64px"
-                        onError={(e) => {
+                        sizes="(max-width: 768px) 64px, 64px" onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
                             // Fallback para avatar padrão em caso de erro
                             e.currentTarget.src = '/images/avatars/placeholder.jpg';
                         }}

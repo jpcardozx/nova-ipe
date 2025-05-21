@@ -1,43 +1,95 @@
-import React from 'react';
-import Link from 'next/link';
+// Server Component: Only data fetching, transformation, and font config
+import { Montserrat } from 'next/font/google';
+import { getImoveisDestaque, getImoveisAluguel } from '@/lib/queries';
+import { normalizeDocuments } from '@/lib/sanity-utils';
+import { ensureValidImageUrl } from '@/lib/sanity-image-utils';
+import type { ImovelClient } from '@/src/types/imovel-client';
+import type { PropertyType } from './components/OptimizedPropertyCard';
+import { ensureNonNullProperties, extractSlugString } from './PropertyTypeFix';
+import HomeClient from './page-client';
 
-/**
- * Página temporária otimizada para desenvolvimento
- * Remova o sufixo .dev dos arquivos para restaurar a funcionalidade normal
- */
-export default function DevModePage() {
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 space-y-6">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900">Modo de Desenvolvimento Rápido</h1>
-          <p className="mt-2 text-gray-600">
-            Esta é uma versão simplificada do site para permitir desenvolvimento mais rápido.
-          </p>
-        </div>
-        
-        <div className="space-y-4">
-          <p className="text-sm text-amber-700 bg-amber-50 p-3 rounded-md">
-            O modo de desenvolvimento rápido está ativo para melhorar o tempo de compilação.
-            Os arquivos originais foram renomeados com o sufixo <code>.prod</code>.
-          </p>
-          
-          <div className="border-t border-gray-200 pt-4 text-sm">
-            <h2 className="font-medium text-gray-900 mb-3">Navegação:</h2>
-            <ul className="space-y-2 text-blue-600">
-              <li><Link href="/comprar" className="hover:underline">Imóveis à Venda</Link></li>
-              <li><Link href="/alugar" className="hover:underline">Imóveis para Alugar</Link></li>
-              <li><Link href="/contato" className="hover:underline">Contato</Link></li>
-            </ul>
-          </div>
-          
-          <div className="bg-blue-50 p-3 rounded-md text-sm text-blue-800">
-            <p>
-              Para restaurar a versão completa do site, renomeie os arquivos removendo o sufixo <code>.dev</code> e restaurando os arquivos originais de <code>.prod</code>.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+// Font config
+const montSerrat = Montserrat({
+    subsets: ['latin'],
+    weight: ['300', '400', '500', '600', '700', '800'],
+    display: 'swap',
+    variable: '--font-montserrat',
+});
+
+// Data transformation (no console logs, no browser-only code)
+function transformPropertyData(imovel: ImovelClient, propertyType: PropertyType) {
+    try {
+        if (!imovel) return null;
+        if (!imovel._id) imovel._id = `temp-${Date.now()}`;
+        let processedImage;
+        try {
+            processedImage = ensureValidImageUrl(
+                imovel.imagem,
+                '/images/property-placeholder.jpg',
+                imovel.titulo || 'Imóvel'
+            );
+        } catch {
+            processedImage = { url: '/images/property-placeholder.jpg', alt: imovel.titulo || 'Imóvel' };
+        }
+        const price = typeof imovel.preco === 'number' ? imovel.preco : typeof imovel.preco === 'string' ? parseFloat(imovel.preco) || 0 : 0;
+        const area = typeof imovel.areaUtil === 'number' ? imovel.areaUtil : typeof imovel.areaUtil === 'string' ? parseFloat(imovel.areaUtil) : undefined;
+        const bedrooms = typeof imovel.dormitorios === 'number' ? imovel.dormitorios : typeof imovel.dormitorios === 'string' ? parseInt(imovel.dormitorios, 10) : undefined;
+        const bathrooms = typeof imovel.banheiros === 'number' ? imovel.banheiros : typeof imovel.banheiros === 'string' ? parseInt(imovel.banheiros, 10) : undefined;
+        const parkingSpots = typeof imovel.vagas === 'number' ? imovel.vagas : typeof imovel.vagas === 'string' ? parseInt(imovel.vagas, 10) : undefined;
+        const slug = extractSlugString(imovel.slug, imovel._id);
+        return {
+            id: imovel._id,
+            title: imovel.titulo || 'Imóvel em destaque',
+            slug,
+            location: imovel.bairro || '',
+            city: imovel.cidade || 'Guararema',
+            price,
+            propertyType,
+            area,
+            bedrooms,
+            bathrooms,
+            parkingSpots,
+            mainImage: processedImage,
+            isHighlight: true,
+            isPremium: Boolean(imovel.destaque),
+            isNew: propertyType === 'rent' && Math.random() > 0.7,
+        };
+    } catch {
+        return null;
+    }
+}
+
+// Fetch and process property data (server only)
+async function fetchPropertiesData() {
+    let imoveisDestaque = [];
+    let imoveisAluguel = [];
+    try {
+        imoveisDestaque = await getImoveisDestaque();
+    } catch { imoveisDestaque = []; }
+    try {
+        imoveisAluguel = await getImoveisAluguel();
+    } catch { imoveisAluguel = []; }
+    const destaques = normalizeDocuments<ImovelClient>(imoveisDestaque);
+    const aluguel = normalizeDocuments<ImovelClient>(imoveisAluguel);
+    const destaquesProcessados = ensureNonNullProperties(
+        destaques.map(imovel => transformPropertyData(
+            imovel,
+            imovel.finalidade === 'Venda' ? 'sale' : 'rent' as PropertyType
+        ))
+    );
+    const aluguelProcessados = ensureNonNullProperties(
+        aluguel.map(imovel => transformPropertyData(imovel, 'rent' as PropertyType))
+    );
+    return {
+        destaques: destaquesProcessados,
+        aluguel: aluguelProcessados,
+    };
+}
+
+// Server component: fetch data and pass to client
+export default async function Home() {
+    const { destaques, aluguel } = await fetchPropertiesData();
+    return (
+        <HomeClient destaques={destaques} aluguel={aluguel} montSerratClass={montSerrat.className} />
+    );
 }

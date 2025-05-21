@@ -9,7 +9,7 @@
 
 import React from 'react';
 import dynamic from 'next/dynamic';
-import type { LucideProps } from 'lucide-react';
+import type { LucideProps } from '../../types/lucide-react';
 
 /**
  * Tipo para nome de ícone do lucide-react

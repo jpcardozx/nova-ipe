@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { LucideProps } from 'lucide-react';
+import type { LucideProps } from '../../types/lucide-react';
 
 // Type to ensure correct icon name
 type IconName =
@@ -53,8 +53,8 @@ export const loadIcon = async (name: IconName): Promise<React.ComponentType<Luci
  * @returns A dynamically loaded React component
  */
 export const createDynamicIcon = (name: IconName) => {
-    return dynamic<LucideProps>(
-        () => import('lucide-react').then((mod) => mod[name]),
+    return dynamic(
+        () => import('lucide-react').then((mod) => mod[name] as React.ComponentType<LucideProps>),
         { ssr: true, loading: () => <div className="w-4 h-4" /> }
     );
 };

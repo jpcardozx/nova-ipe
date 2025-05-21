@@ -2,7 +2,7 @@
  * Utilitário para otimização e gerenciamento de imagens
  */
 
-import { ImageProps } from "next/image";
+import type { ImageProps } from "../types/next-image";
 
 /**
  * Tipo para imagem com tratamento de fallback
@@ -23,9 +23,9 @@ export interface SafeImageSource {
 export function getSafeImageProps(
     source: SafeImageSource,
     useFill: boolean = false
-): Partial<ImageProps> {
+): Partial<import('../types/next-image').ImageProps> {
     // Props básicas comuns a todas as imagens
-    const commonProps: Partial<ImageProps> = {
+    const commonProps: Partial<import('../types/next-image').ImageProps> = {
         src: source.url,
         alt: source.alt,
         loading: "lazy",
@@ -60,7 +60,7 @@ export function getSafeImageProps(
 export function getPlaceholderImageProps(
     alt: string = "Imagem temporariamente indisponível",
     useFill: boolean = false
-): Partial<ImageProps> {
+): Partial<import('../types/next-image').ImageProps> {
     return getSafeImageProps(
         {
             url: "/images/property-placeholder.jpg",
@@ -131,23 +131,21 @@ export function generateResponsiveImageUrls(
     if (!src) {
         console.warn("generateResponsiveImageUrls: No source URL provided");
         return Array.isArray(sizes) ? [] : {};
-    }
-
-    // Caso receba um array de tamanhos
+    }    // Caso receba um array de tamanhos
     if (Array.isArray(sizes) || !sizes) {
-        const defaultSizes = sizes || [640, 750, 828, 1080, 1200, 1920, 2048];
+        const defaultSizes: number[] = Array.isArray(sizes) ? sizes : [640, 750, 828, 1080, 1200, 1920, 2048];
         console.log("Using array sizes:", defaultSizes);
 
         // Para imagens do Sanity
         if (src.includes('cdn.sanity.io')) {
-            const result = defaultSizes.map(size => `${src}?w=${size}&fit=max&auto=format`);
+            const result = defaultSizes.map((size: number) => `${src}?w=${size}&fit=max&auto=format`);
             console.log("Generated Sanity responsive URLs (first few):", result.slice(0, 2));
             return result;
         }
 
         // Para imagens locais
         if (src.startsWith('/')) {
-            const result = defaultSizes.map(size => `/_next/image?url=${encodeURIComponent(src)}&w=${size}&q=75`);
+            const result = defaultSizes.map((size: number) => `/_next/image?url=${encodeURIComponent(src)}&w=${size}&q=75`);
             console.log("Generated local responsive URLs (first few):", result.slice(0, 2));
             return result;
         }

@@ -1,5 +1,5 @@
 /**
- * Estilos Globais da Aplicação - Nova Ipê
+ * Estilos Globais da Aplicação - Ipê
  * 
  * Sistema de design unificado para garantir consistência visual em toda a aplicação,
  * otimizado para performance e Core Web Vitals.
@@ -14,9 +14,9 @@
 @tailwind utilities;
 
 /* Importações críticas para evitar CLS e garantir LCP otimizado */
-@import "./critical.css";
-@import "./cls-optimizations.css";
-@import "./tailwind-compat.css";
+@import "./styles/critical/critical.css";
+@import "./styles/cls-optimizations.css";
+@import "./styles/tailwind-compat.css";
 
 /* Configurações de variáveis e fundamentos */
 :root {

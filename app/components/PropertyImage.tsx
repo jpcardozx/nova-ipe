@@ -123,10 +123,9 @@ export default function PropertyImage({
                 priority={priority}
                 quality={quality}
                 unoptimized={unoptimized}
-                sizes={fill ? sizes : undefined}
-                onLoadStart={() => setIsLoading(true)}
+                sizes={fill ? sizes : undefined} onLoadStart={() => setIsLoading(true)}
                 onLoadingComplete={() => setIsLoading(false)}
-                onError={(e) => {
+                onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
                     setHasError(true);
                     setIsLoading(false);
 
