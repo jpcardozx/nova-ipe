@@ -17,8 +17,8 @@ import type { ImovelClient as Imovel } from '@/types/imovel-client';
 import type { OptimizedCarouselProps } from '@/app/components/ui/OptimizedCarousel';
 import { cn } from '@/lib/utils';
 
-const OptimizedCarousel = dynamic<OptimizedCarouselProps<Imovel>>(
-    () => import('@/app/components/ui/OptimizedCarousel').then((mod) => mod.OptimizedCarousel),
+const OptimizedCarousel = dynamic(
+    () => import('@/app/components/ui/OptimizedCarousel').then((mod) => mod.OptimizedCarousel as React.ComponentType<OptimizedCarouselProps<Imovel>>),
     { ssr: false, loading: () => <CarouselSkeleton /> }
 );
 

@@ -1,28 +1,105 @@
 'use client';
 
+/**
+ * PerformanceAnalytics.tsx
+ * 
+ * Componente para análise de performance em tempo real
+ *
+ * @version 1.0.0
+ * @date 21/05/2025
+ */
+
 import { useState, useEffect } from 'react';
-import { getPerformanceData } from '../utils/performance-monitor';
+
+// Interface simples para métricas de performance
+interface PerformanceData {
+    pageLoad: {
+        total: number | null;
+        fcp: number | null;
+        lcp: number | null;
+        ttfb: number | null;
+        cls: number | null;
+    };
+    resources: {
+        name: string;
+        duration: number;
+        size: number;
+    }[];
+}
 
 /**
- * Performance Diagnostics Tool
- * Provides a UI for monitoring performance in development and production
+ * Obter dados básicos de performance
+ */
+function getBasicPerformanceData(): PerformanceData {
+    // Valores padrão
+    const data: PerformanceData = {
+        pageLoad: {
+            total: null,
+            fcp: null,
+            lcp: null,
+            ttfb: null,
+            cls: null
+        },
+        resources: []
+    };
+
+    // Se estamos no navegador, colete as métricas
+    if (typeof window !== 'undefined' && window.performance) {
+        try {
+            const perf = window.performance;
+
+            // Navegação e timing
+            if (perf.timing) {
+                data.pageLoad.total = perf.timing.loadEventEnd - perf.timing.navigationStart;
+                data.pageLoad.ttfb = perf.timing.responseStart - perf.timing.navigationStart;
+            }
+
+            // Recursos carregados
+            if (perf.getEntriesByType) {
+                // Métricas paint
+                const paintEntries = perf.getEntriesByType('paint');
+                const fcpEntry = paintEntries.find(entry => entry.name === 'first-contentful-paint');
+                if (fcpEntry) {
+                    data.pageLoad.fcp = fcpEntry.startTime;
+                }
+
+                // Recursos (JavaScript, CSS, imagens, etc.)
+                const resourceEntries = perf.getEntriesByType('resource');
+                data.resources = resourceEntries
+                    .filter(r => r.duration > 100) // Apenas recursos que levaram algum tempo para carregar
+                    .slice(0, 5) // Limite para os 5 primeiros
+                    .map(r => ({
+                        name: r.name.split('/').pop() || r.name,
+                        duration: Math.round(r.duration),
+                        size: r.encodedBodySize || 0
+                    }));
+            }
+        } catch (e) {
+            console.error('Erro ao coletar métricas de performance:', e);
+        }
+    }
+
+    return data;
+}
+
+/**
+ * PerformanceAnalytics - Componente para análise de performance em tempo real
  */
 export default function PerformanceAnalytics() {
     const [isVisible, setIsVisible] = useState(false);
-    const [performanceData, setPerformanceData] = useState<any>(null);
-    const [refreshCounter, setRefreshCounter] = useState(0);
+    const [data, setData] = useState<PerformanceData>({
+        pageLoad: { total: null, fcp: null, lcp: null, ttfb: null, cls: null },
+        resources: []
+    });
 
-    // Check URL for debug parameter
     useEffect(() => {
-        if (typeof window === 'undefined') return;
-
-        // Show diagnostics if debug=performance in URL
+        // Verificar se devemos mostrar o painel
         const params = new URLSearchParams(window.location.search);
         if (params.get('debug') === 'performance') {
             setIsVisible(true);
         }
 
-        // Keyboard shortcut (Ctrl+Alt+P) to toggle diagnostics
+        // Atalho de teclado para alternar visibilidade (Ctrl+Alt+P)
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.ctrlKey && e.altKey && e.key === 'p') {
                 e.preventDefault();
@@ -31,27 +108,26 @@ export default function PerformanceAnalytics() {
         };
 
         window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, []);
 
-    // Fetch performance data
-    useEffect(() => {
-        if (!isVisible) return;
+        // Atualizar dados a cada 3 segundos se o painel estiver visível
+        let intervalId: NodeJS.Timeout;
+        if (isVisible) {
+            const updateData = () => {
+                setData(getBasicPerformanceData());
+            };
 
-        // Get performance data
-        const data = getPerformanceData();
-        setPerformanceData(data);
+            updateData(); // Atualização inicial
+            intervalId = setInterval(updateData, 3000);
+        }
 
-        // Refresh periodically
-        const intervalId = setInterval(() => {
-            setRefreshCounter(prev => prev + 1);
-        }, 2000);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+            if (intervalId) clearInterval(intervalId);
+        };
+    }, [isVisible]);
 
-        return () => clearInterval(intervalId);
-    }, [isVisible, refreshCounter]);
-
-    // Not visible, return null
-    if (!isVisible || !performanceData) return null;
+    // Não mostrar nada se não estiver visível
+    if (!isVisible) return null;
 
     return (
         <div
@@ -60,28 +136,26 @@ export default function PerformanceAnalytics() {
                 bottom: '20px',
                 right: '20px',
                 zIndex: 9999,
-                backgroundColor: 'rgba(0, 0, 0, 0.85)',
-                color: '#fff',
-                fontFamily: 'monospace',
-                fontSize: '12px',
+                backgroundColor: 'rgba(0,0,0,0.8)',
+                color: 'white',
                 padding: '10px',
-                borderRadius: '4px',
-                maxWidth: '400px',
+                borderRadius: '5px',
+                fontSize: '12px',
+                maxWidth: '300px',
                 maxHeight: '400px',
-                overflow: 'auto',
-                boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
+                overflow: 'auto'
             }}
         >
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <h4 style={{ margin: '0', color: '#4ade80' }}>Performance Analytics</h4>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                <h4 style={{ margin: '0', fontSize: '14px' }}>Performance Analytics</h4>
                 <button
                     onClick={() => setIsVisible(false)}
                     style={{
                         background: 'none',
                         border: 'none',
-                        color: '#fff',
+                        color: 'white',
                         cursor: 'pointer',
-                        fontSize: '16px',
+                        fontSize: '14px',
                         padding: '0',
                     }}
                 >
@@ -90,64 +164,31 @@ export default function PerformanceAnalytics() {
             </div>
 
             <div style={{ marginBottom: '10px' }}>
-                <h5 style={{ margin: '5px 0', color: '#60a5fa' }}>Core Web Vitals</h5>
+                <h5 style={{ margin: '5px 0', color: '#60a5fa' }}>Page Load</h5>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5px' }}>
-                    <div>LCP:</div>
-                    <div style={{ color: performanceData.pageLoad.lcp && performanceData.pageLoad.lcp < 2500 ? '#4ade80' : '#ef4444' }}>
-                        {performanceData.pageLoad.lcp ? `${Math.round(performanceData.pageLoad.lcp)}ms` : 'N/A'}
-                    </div>
+                    <div>Total:</div>
+                    <div>{data.pageLoad.total ? `${data.pageLoad.total}ms` : 'N/A'}</div>
+
                     <div>FCP:</div>
-                    <div style={{ color: performanceData.pageLoad.fcp && performanceData.pageLoad.fcp < 1800 ? '#4ade80' : '#ef4444' }}>
-                        {performanceData.pageLoad.fcp ? `${Math.round(performanceData.pageLoad.fcp)}ms` : 'N/A'}
-                    </div>
+                    <div>{data.pageLoad.fcp ? `${Math.round(data.pageLoad.fcp)}ms` : 'N/A'}</div>
+
                     <div>TTFB:</div>
-                    <div style={{ color: performanceData.pageLoad.ttfb && performanceData.pageLoad.ttfb < 800 ? '#4ade80' : '#ef4444' }}>
-                        {performanceData.pageLoad.ttfb ? `${Math.round(performanceData.pageLoad.ttfb)}ms` : 'N/A'}
-                    </div>
-                    <div>CLS:</div>
-                    <div style={{ color: performanceData.pageLoad.cls && performanceData.pageLoad.cls < 0.1 ? '#4ade80' : '#ef4444' }}>
-                        {performanceData.pageLoad.cls !== null ? performanceData.pageLoad.cls.toFixed(3) : 'N/A'}
-                    </div>
+                    <div>{data.pageLoad.ttfb ? `${data.pageLoad.ttfb}ms` : 'N/A'}</div>
                 </div>
             </div>
 
-            <div style={{ marginBottom: '10px' }}>
-                <h5 style={{ margin: '5px 0', color: '#60a5fa' }}>Slow Resources</h5>
-                <ul style={{ margin: '5px 0', padding: '0 0 0 20px' }}>
-                    {Object.entries(performanceData.slowestResources).map(([resource, time]: [string, any]) => (
-                        <li key={resource}>
-                            {resource}: <span style={{ color: time < 1000 ? '#4ade80' : '#ef4444' }}>{Math.round(time)}ms</span>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-
-            <div>
-                <h5 style={{ margin: '5px 0', color: '#60a5fa' }}>Custom Metrics</h5>
-                <ul style={{ margin: '5px 0', padding: '0 0 0 20px' }}>
-                    {performanceData.metrics.slice(-5).map((metric: any, index: number) => (
-                        <li key={index}>
-                            {metric.name}: <span style={{ color: metric.value < 1000 ? '#4ade80' : '#ef4444' }}>{Math.round(metric.value)}ms</span>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-
-            <button
-                onClick={() => setRefreshCounter(prev => prev + 1)}
-                style={{
-                    backgroundColor: '#60a5fa',
-                    border: 'none',
-                    borderRadius: '3px',
-                    color: '#fff',
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                    padding: '5px 10px',
-                    marginTop: '10px',
-                }}
-            >
-                Refresh Data
-            </button>
+            {data.resources.length > 0 && (
+                <div>
+                    <h5 style={{ margin: '5px 0', color: '#60a5fa' }}>Slow Resources</h5>
+                    <ul style={{ margin: '5px 0', padding: '0 0 0 15px' }}>
+                        {data.resources.map((resource, i) => (
+                            <li key={i} style={{ marginBottom: '3px' }}>
+                                {resource.name} - {resource.duration}ms
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
         </div>
     );
 }

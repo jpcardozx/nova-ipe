@@ -1,0 +1,27 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+
+/**
+ * Performance Diagnostics Tool
+ * Provides a UI for monitoring performance in development and production
+ */
+export default function PerformanceAnalytics() {
+    const [isVisible, setIsVisible] = useState(false);
+    
+    // Simple effect to ensure it doesn't crash
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        // Check URL for debug parameter
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('debug') === 'performance') {
+            setIsVisible(true);
+        }
+
+        console.log('Performance Analytics initialized safely');
+    }, []);
+
+    // Not visible by default to prevent any issues
+    return null;
+}

@@ -90,7 +90,7 @@ const CardCTAImovel: FC<CardCTAImovelProps> = ({
                         : 'bg-[#0D1F2D] hover:bg-[#162B42]'
                 )}
                 aria-label={labelCTA}
-                onClick={(e) => tipoCTA === 'agendar' && onAgendar && (e.preventDefault(), onAgendar())}
+                onClick={(e: React.MouseEvent) => tipoCTA === 'agendar' && onAgendar && (e.preventDefault(), onAgendar())}
             >
                 {iconCTA}
                 <span>{labelCTA}</span>

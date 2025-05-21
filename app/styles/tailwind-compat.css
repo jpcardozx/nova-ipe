@@ -12,8 +12,8 @@
  */
 
 /* Importação dos novos arquivos de estilos estruturados */
-@import "./styles/variables.css";
-@import "./styles/components.css";
+@import "./variables.css";
+@import "./components.css";
 
 /* Componentes customizados compatíveis com Tailwind v4 */
 .btn {

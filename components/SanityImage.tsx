@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { generateLowQualityPlaceholder } from '../lib/image-performance-optimizer';
 
 export interface SanityImageProps {
   image: { url?: string; width?: number; height?: number; alt?: string }; // Adjusted type to match usage in the component
@@ -70,6 +71,9 @@ export default function SanityImage({
     );
   }
 
+  // Generate a blur placeholder using our utility
+  const blurDataURL = generateLowQualityPlaceholder(imageWidth, imageHeight);
+
   return (
     <div
       className={`relative overflow-hidden ${className}`}
@@ -92,6 +96,7 @@ export default function SanityImage({
         }
         onLoad={handleImageLoad}
         placeholder="blur"
+        blurDataURL={blurDataURL}
         {...props}
       />
     </div>

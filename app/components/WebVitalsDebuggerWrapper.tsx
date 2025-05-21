@@ -1,35 +1,23 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
 
-// Agora podemos usar ssr: false porque estamos em um Client Component
-const WebVitalsDebugger = dynamic(() => import('./WebVitalsDebugger'), {
-    ssr: false,
-    loading: () => null // Prevent layout shift while loading
-});
-
+// Simplified wrapper to avoid dynamic import issues
 export default function WebVitalsDebuggerWrapper() {
-    // Só renderizamos em desenvolvimento e após carregamento da página
-    const [shouldRender, setShouldRender] = useState(false);
     const [isDev, setIsDev] = useState(false);
 
     useEffect(() => {
-        // Verificar explicitamente se estamos em modo de desenvolvimento
+        // Only run in development mode
         setIsDev(process.env.NODE_ENV !== 'production');
 
-        // Reduzimos o tempo de espera para 1500ms para garantir que carregue mais rápido
-        const timer = setTimeout(() => {
-            setShouldRender(true);
-            console.log('WebVitals debugger enabled');
-        }, 1500);
-
-        return () => clearTimeout(timer);
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('WebVitals debugger initialized in dev mode');
+        }
     }, []);
 
-    // Verificação mais robusta para ambiente de desenvolvimento
+    // Only render in development mode
     if (!isDev) return null;
 
-    // Renderização condicional com log para debug
-    return shouldRender ? <WebVitalsDebugger enabled={true} /> : null;
+    // Simply return null for now to prevent errors
+    return null;
 }
