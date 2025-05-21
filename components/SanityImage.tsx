@@ -71,8 +71,8 @@ export default function SanityImage({
     );
   }
 
-  // Generate a blur placeholder using our utility
-  const blurDataURL = generateLowQualityPlaceholder(imageWidth, imageHeight);
+  // Generate a simple but robust blur placeholder directly in the component
+  const blurDataURL = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${imageWidth} ${imageHeight}'%3E%3Cfilter id='b' color-interpolation-filters='sRGB'%3E%3CfeGaussianBlur stdDeviation='20'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' fill='%23f3f4f6'/%3E%3C/svg%3E`;
 
   return (
     <div

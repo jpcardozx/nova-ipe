@@ -48,14 +48,8 @@ export function getOptimalImageDimensions(viewport: number): {
  */
 export function generateLowQualityPlaceholder(width: number, height: number, color = "rgba(231, 229, 228, 0.5)"): string {
     // Cria SVG simples que serve como placeholder até a imagem carregar
-    const svg = `
-    <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-      <rect width="${width}" height="${height}" fill="${color}" />
-    </svg>
-  `;
-
-    // Converte para base64 para uso como URI de dados
-    return `data:image/svg+xml;base64,${btoa(svg)}`;
+    // Usa URL encoding para uma solução mais robusta que funciona em todos os ambientes
+    return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${width} ${height}'%3E%3Cfilter id='b' color-interpolation-filters='sRGB'%3E%3CfeGaussianBlur stdDeviation='20'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' fill='%23f3f4f6'/%3E%3C/svg%3E`;
 }
 
 /**
