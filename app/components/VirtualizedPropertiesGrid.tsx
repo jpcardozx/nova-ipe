@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { VariableSizeGrid as Grid } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import OptimizedPropertyCard from './OptimizedPropertyCard';
@@ -107,6 +107,57 @@ export default function VirtualizedPropertiesGrid({
     onFavoriteToggle,
     className
 }: VirtualizedPropertiesGridProps) {
+    // Grid cell renderer memoized with properties that affect it
+    const renderCell = useCallback(({ columnIndex, rowIndex, style, properties, onFavoriteToggle }: {
+        columnIndex: number;
+        rowIndex: number;
+        style: React.CSSProperties;
+        properties: PropertyItem[];
+        onFavoriteToggle?: (id: string) => void;
+    }) => {
+        const index = rowIndex * 3 + columnIndex;
+        if (index >= properties.length) return null;
+
+        const property = properties[index];
+        const cellStyle = {
+            ...style,
+            paddingRight: columnIndex < 2 ? GAP : 0,
+            paddingBottom: GAP,
+            height: ROW_HEIGHT,
+        };
+
+        return (
+            <div style={cellStyle}>
+                <OptimizedPropertyCard
+                    id={property.id}
+                    title={property.title}
+                    slug={property.slug}
+                    location={property.location}
+                    city={property.city}
+                    price={property.price}
+                    propertyType={property.propertyType}
+                    area={property.area}
+                    bedrooms={property.bedrooms}
+                    bathrooms={property.bathrooms}
+                    parkingSpots={property.parkingSpots}
+                    mainImage={property.mainImage}
+                    isHighlight={property.isHighlight}
+                    isPremium={property.isPremium}
+                    isNew={property.isNew}
+                    isFavorite={property.isFavorite}
+                    onFavoriteToggle={onFavoriteToggle ? () => onFavoriteToggle(property.id) : undefined}
+                />
+            </div>
+        );
+    }, []);    // Memoize the cell renderer with current properties and callback
+    const Cell = useCallback(({ columnIndex, rowIndex, style }: {
+        columnIndex: number;
+        rowIndex: number;
+        style: React.CSSProperties
+    }) => {
+        return renderCell({ columnIndex, rowIndex, style, properties, onFavoriteToggle });
+    }, [renderCell, properties, onFavoriteToggle]);
+
     // Show loading state while properties are being fetched
     if (isLoading) {
         return <PropertiesLoadingSkeleton />;
@@ -116,51 +167,6 @@ export default function VirtualizedPropertiesGrid({
     if (properties.length === 0) {
         return <EmptyState resetFilters={resetFilters} />;
     }
-
-    // Calculate optimal column count based on window width
-    const Cell = useCallback(
-        ({ columnIndex, rowIndex, style }: { columnIndex: number; rowIndex: number; style: React.CSSProperties }) => {
-            const index = rowIndex * 3 + columnIndex;
-
-            // Don't render if index is out of bounds
-            if (index >= properties.length) return null;
-
-            const property = properties[index];
-
-            // Add padding to the cell
-            const cellStyle = {
-                ...style,
-                paddingRight: columnIndex < 2 ? GAP : 0,
-                paddingBottom: GAP,
-                height: ROW_HEIGHT,
-            };
-
-            return (
-                <div style={cellStyle}>
-                    <OptimizedPropertyCard
-                        id={property.id}
-                        title={property.title}
-                        slug={property.slug}
-                        location={property.location}
-                        city={property.city}
-                        price={property.price}
-                        propertyType={property.propertyType}
-                        area={property.area}
-                        bedrooms={property.bedrooms}
-                        bathrooms={property.bathrooms}
-                        parkingSpots={property.parkingSpots}
-                        mainImage={property.mainImage}
-                        isHighlight={property.isHighlight}
-                        isPremium={property.isPremium}
-                        isNew={property.isNew}
-                        isFavorite={property.isFavorite}
-                        onFavoriteToggle={onFavoriteToggle ? () => onFavoriteToggle(property.id) : undefined}
-                    />
-                </div>
-            );
-        },
-        [properties, onFavoriteToggle]
-    );
 
     return (
         <div className={cn("w-full h-screen max-h-[1200px]", className)}>

@@ -12,8 +12,8 @@ import {
 } from '@lib/queries'
 
 import { mapImovelToClient } from '@core/mapImovelToClient'
-import type { ImovelClient } from '@/types/imovel-client'
-import type { ImovelProjetado } from '@/types/imovel-client'
+import type { ImovelClient , ImovelProjetado } from '@/types/imovel-client'
+
 
 // Server-side fetcher with caching
 async function fetchWithCache<T>(

@@ -15,8 +15,8 @@ import {
     Tag
 } from 'lucide-react';
 import { Card, CardContent, CardFooter } from '@/src/components/ui/card';
-import { cn } from '@/lib/utils';
-import { formatarMoeda, formatarArea } from '@/lib/utils';
+import { cn , formatarMoeda, formatarArea } from '@/lib/utils';
+
 import { Button } from '@/lib/ui/core/Button';
 import PropertyImage from '@/app/components/PropertyImage';
 

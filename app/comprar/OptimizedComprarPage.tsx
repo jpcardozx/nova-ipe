@@ -15,8 +15,6 @@ declare global {
     interface HTMLElement {
         setAttribute(name: string, value: string): void;
     }
-
-    var document: Document;
 }
 
 // Dynamic imports for performance optimization
@@ -122,7 +120,7 @@ export default function OptimizedComprarPage() {
             location: imovel.bairro,
             city: imovel.cidade,
             price: imovel.preco || 0,
-            propertyType: 'sale' as 'sale', // For sales properties
+            propertyType: 'sale' as const, // For sales properties
             area: imovel.areaUtil,
             bedrooms: imovel.dormitorios,
             bathrooms: imovel.banheiros,

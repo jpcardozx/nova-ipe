@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { logger } from '../../lib/logger';
 
 /**
  * Componente de feedback para o usuário
@@ -27,7 +28,7 @@ export function FeedbackBanner() {
             // });
 
             // Simulando envio bem-sucedido
-            console.log('Feedback enviado:', feedback);
+            logger.log('Feedback enviado:', feedback);
             setSubmitted(true);
 
             // Limpar formulário
@@ -41,7 +42,7 @@ export function FeedbackBanner() {
                 setTimeout(() => setSubmitted(false), 300);
             }, 3000);
         } catch (error) {
-            console.error('Erro ao enviar feedback:', error);
+            logger.error('Erro ao enviar feedback:', error);
             alert('Houve um erro ao enviar seu feedback. Tente novamente mais tarde.');
         }
     };
@@ -96,8 +97,8 @@ export function FeedbackBanner() {
                                         type="button"
                                         onClick={() => setFeedback({ ...feedback, rating })}
                                         className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${feedback.rating >= rating
-                                                ? 'bg-amber-500 text-white'
-                                                : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                                            ? 'bg-amber-500 text-white'
+                                            : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
                                             }`}
                                     >
                                         {rating}

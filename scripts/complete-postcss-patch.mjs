@@ -3,9 +3,9 @@
  * This script replaces ALL instances of PostCSS plugins that might use class inheritance
  */
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+import fs from 'node:fs';
+import path from 'node:path';
+import { execSync } from 'node:child_process';
 
 console.log('🛠️ Starting complete Tailwind + PostCSS fixup for Vercel...');
 
@@ -52,7 +52,7 @@ function createPluginReplacement(modulePath, pluginName) {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
-  
+
   // Create index.js that uses our factory
   const pluginCode = `
 // Patched version that avoids class inheritance
@@ -63,19 +63,19 @@ module.exports = createSimplePlugin('${pluginName}');
 `;
 
   fs.writeFileSync(path.join(modulePath, 'index.js'), pluginCode);
-  
+
   // Create package.json
   const packageJson = {
     name: pluginName,
     version: '1.0.0',
     main: 'index.js'
   };
-  
+
   fs.writeFileSync(
     path.join(modulePath, 'package.json'),
     JSON.stringify(packageJson, null, 2)
   );
-  
+
   console.log(`✅ Patched ${pluginName}`);
 }
 
@@ -96,7 +96,7 @@ if (fs.existsSync(pluginUtilsPath)) {
     const content = fs.readFileSync(pluginUtilsPath, 'utf8');
     // Replace any class extending code with simple functions
     const patchedContent = content.replace(
-      /class\s+\w+\s+extends\s+[\w\.]+/g, 
+      /class\s+\w+\s+extends\s+[\w\.]+/g,
       'function createPlugin()'
     );
     fs.writeFileSync(pluginUtilsPath, patchedContent);

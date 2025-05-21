@@ -1,0 +1,8 @@
+'use client';
+// Este arquivo substitui temporariamente o instrumentation.ts
+// para evitar o bloqueio do servidor de desenvolvimento
+
+export function register() {
+  // Função vazia para desenvolvimento
+  console.log('⚡ Desenvolvimento: Instrumentação desativada para melhorar performance');
+}

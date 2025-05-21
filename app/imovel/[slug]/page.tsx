@@ -7,8 +7,8 @@ import { queryImovelPorSlug, queryImoveisRelacionados } from '@lib/queries';
 import { getImovelPorSlug } from '@lib/sanity/fetchImoveis';
 
 import type { Metadata } from 'next';
-import type { ImovelProjetado } from '@/types/imovel-client';
-import type { ImovelClient as ImovelDataType } from '@/types/imovel-client';
+import type { ImovelProjetado , ImovelClient as ImovelDataType } from '@/types/imovel-client';
+
 import { mapImovelToClient } from '@lib/mapImovelToClient';
 
 // Importa o componente de página

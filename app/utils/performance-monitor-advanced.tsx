@@ -46,7 +46,7 @@ export function usePerformanceMonitor() {
 
         const observers: PerformanceObserver[] = [];
         let longTasks: { duration: number; startTime: number }[] = [];
-        let resourceTiming: Record<string, number> = {};
+        const resourceTiming: Record<string, number> = {};
 
         try {
             // 1. Observe LCP

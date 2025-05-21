@@ -183,6 +183,7 @@ export default function ApresentacaoInstitucional() {
                                 alt="Sede Nova Ipê Imobiliária"
                                 fill
                                 className="object-cover"
+                                sizes="(min-width: 1024px) 50vw, 100vw" // Added sizes prop
                                 priority
                             />
                             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">

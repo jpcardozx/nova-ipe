@@ -52,7 +52,7 @@ export default function CoreWebVitalsTracker() {
         if (typeof window === 'undefined') return;
 
         try {
-            const savedHistory = localStorage.getItem(STORAGE_KEY);
+            const savedHistory = window.localStorage.getItem(STORAGE_KEY);
             if (savedHistory) {
                 setHistory(JSON.parse(savedHistory));
             }
@@ -101,7 +101,9 @@ export default function CoreWebVitalsTracker() {
 
         // Salvar no localStorage
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedHistory));
+            if (typeof window !== 'undefined') {
+                window.localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedHistory));
+            }
         } catch (error) {
             console.error('Erro ao salvar histórico de métricas:', error);
         }
@@ -269,7 +271,9 @@ export default function CoreWebVitalsTracker() {
             <div className="text-center mt-6">
                 <button
                     onClick={() => {
-                        localStorage.removeItem(STORAGE_KEY);
+                        if (typeof window !== 'undefined') {
+                            window.localStorage.removeItem(STORAGE_KEY);
+                        }
                         setHistory({
                             lcp: [],
                             fcp: [],

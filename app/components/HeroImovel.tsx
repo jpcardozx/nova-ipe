@@ -70,7 +70,7 @@ export default function HeroImovel({ imagem, titulo, cidade, tipo, metros, desta
                 </motion.div>
             </motion.div>
 
-            <style jsx>{`
+            <style>{`
         .clip-path-hero-mask {
           clip-path: polygon(0% 100%, 0% 0%, 100% 0%, 100% 65%, 0% 100%);
         }

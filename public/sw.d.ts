@@ -14,4 +14,4 @@ declare interface WorkerGlobalScope {
 }
 
 // Make TypeScript recognize 'self' as WorkerGlobalScope in service worker files
-declare var self: WorkerGlobalScope;
+declare let self: WorkerGlobalScope;

@@ -9,7 +9,7 @@ import { serverClient } from '@/lib/sanity/sanity.server';
 export async function POST(request: NextRequest) {
     try {
         // Parse the request body containing the query and params
-        const body = await request.json();
+        const body = await request.json().catch(() => ({}));
         const { query, params = {} } = body;
 
         if (!query) {

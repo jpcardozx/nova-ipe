@@ -165,28 +165,18 @@ export const queryImovelEmDestaque = /* groq */ `
     preco,
     finalidade,
     tipoImovel,
-    bairro,
     cidade,
-    descricao,
     dormitorios,
     banheiros,
     areaUtil,
     vagas,
-    aceitaFinanciamento,
-    destaque,
-    categoria->{
-      _id,
-      "categoriaTitulo": titulo,
-      "categoriaSlug": slug
-    },
     imagem {
-      "asset": asset->,
-      "_type": "image",
-      "imagemUrl": asset->url,
-      "alt": alt
+      "imagemUrl": asset->url
     }
   }
 `;
+
+// Suggestion: Add indexes in Sanity for `status`, `destaque`, and `_createdAt` to improve query performance.
 
 export const queryImovelPorSlug = /* groq */ `
   *[_type == "imovel" && slug.current == $slug][0] {

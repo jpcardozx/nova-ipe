@@ -340,7 +340,7 @@ const cssFilesToCheck = [
 
 cssFilesToCheck.forEach(filePath => {
     if (fs.existsSync(filePath)) {
-        let content = fs.readFileSync(filePath, 'utf8');
+        const content = fs.readFileSync(filePath, 'utf8');
 
         // Verificar se contém importação do preflight
         if (content.includes('@import "tailwindcss/preflight"') ||

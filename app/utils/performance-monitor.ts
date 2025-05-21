@@ -25,7 +25,7 @@ const metrics: PerformanceMetric[] = [];
 const resourceTimes: Record<string, number> = {};
 
 // Page load information
-let pageLoadInfo: PageLoadInfo = {
+const pageLoadInfo: PageLoadInfo = {
     lcp: null,
     fcp: null,
     fid: null,

@@ -84,7 +84,7 @@ function transformPropertyData(imovel: ImovelClient, propertyType: PropertyType)
             console.warn('Imóvel sem ID encontrado, gerando ID temporário');
             imovel._id = `temp-${Date.now()}`;
         }        // Processar imagem com nossa solução aprimorada
-        let processedImage = loadImage(
+        const processedImage = loadImage(
             imovel.imagem,
             '/images/property-placeholder.jpg',
             imovel.titulo || 'Imóvel'

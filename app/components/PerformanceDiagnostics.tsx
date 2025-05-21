@@ -111,7 +111,7 @@ export default function PerformanceDiagnostics() {
         // Coleta métricas de layout shift
         const collectLayoutShift = () => {
             let clsValue = 0;
-            let clsEntries: any[] = [];
+            const clsEntries: any[] = [];
 
             // Registra CLS
             const observer = new PerformanceObserver(entryList => {

@@ -217,7 +217,7 @@ export default function SecaoImoveisParaAlugar() {
                 )}
             </div>
 
-            <style jsx>{`
+            <style>{`
         .bg-gradient-aluguel {
           background: linear-gradient(180deg, #F8FAFC 0%, #EFF4F9 100%);
         }

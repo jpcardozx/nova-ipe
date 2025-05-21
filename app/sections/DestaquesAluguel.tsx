@@ -91,14 +91,16 @@ const NavButton: FC<NavButtonProps> = ({ direction, onClick, disabled }) => (
 function useFavorites() {
     const [favIds, setFavIds] = useState<string[]>([]);
     useEffect(() => {
+        if (typeof window === 'undefined') return;
         try {
-            const stored = localStorage.getItem('imoveis-fav');
+            const stored = window.localStorage.getItem('imoveis-fav');
             if (stored) setFavIds(JSON.parse(stored));
         } catch { }
     }, []);
     useEffect(() => {
+        if (typeof window === 'undefined') return;
         try {
-            localStorage.setItem('imoveis-fav', JSON.stringify(favIds));
+            window.localStorage.setItem('imoveis-fav', JSON.stringify(favIds));
         } catch { }
     }, [favIds]);
     const isFav = useCallback((id: string) => favIds.includes(id), [favIds]);
@@ -219,11 +221,11 @@ const DestaquesAluguelSection: FC = () => {
         if (inView && loading) {
             fetch('/api/destaques?finalidade=Aluguel')
                 .then(res => res.json())
-                .then(data => setImoveis(data))
-                .catch(err => setError(err.message))
+                .then((data: ImovelClient[]) => setImoveis(data))
+                .catch((err: Error) => setError(err.message))
                 .finally(() => setLoading(false));
         }
-    }, [inView]);
+    }, [inView, loading]);
 
     const next = useCallback(() => setActiveIndex(i => (i + 1) % imoveis.length), [imoveis]);
     const prev = useCallback(() => setActiveIndex(i => (i - 1 + imoveis.length) % imoveis.length), [imoveis]);

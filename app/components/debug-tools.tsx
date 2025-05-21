@@ -83,10 +83,10 @@ export function DebugPanel() {
  */
 export function LayoutDebug() {
     return (
-        <style jsx global>{`
+        <style>{`
       .debug-layout * {
         outline: 1px solid rgba(255, 0, 0, 0.2);
       }
     `}</style>
     );
-} 
+}

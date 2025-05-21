@@ -55,7 +55,7 @@ export function initImageAnalytics(options: ImageAnalyticsProps = {}): void {
     // Carregar eventos anteriores do localStorage se habilitado
     if (config.enableLocalStorage && typeof window !== 'undefined' && window.localStorage) {
         try {
-            const storedEvents = localStorage.getItem('ipe_image_analytics');
+            const storedEvents = window.localStorage.getItem('ipe_image_analytics');
             if (storedEvents) {
                 loadEvents = JSON.parse(storedEvents);
             }
@@ -174,7 +174,7 @@ export function trackImageLoadComplete(
 function persistEvents(): void {
     if (config.enableLocalStorage && typeof window !== 'undefined' && window.localStorage) {
         try {
-            localStorage.setItem('ipe_image_analytics', JSON.stringify(loadEvents));
+            window.localStorage.setItem('ipe_image_analytics', JSON.stringify(loadEvents));
         } catch (e) {
             // Silenciar erros de localStorage (pode estar cheio)
         }
@@ -253,7 +253,7 @@ export function getImageLoadStats() {
 export function clearImageAnalytics(): void {
     loadEvents = [];
     if (config.enableLocalStorage && typeof window !== 'undefined' && window.localStorage) {
-        localStorage.removeItem('ipe_image_analytics');
+        window.localStorage.removeItem('ipe_image_analytics');
     }
 }
 

@@ -4,7 +4,8 @@
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext"
+      "esnext",
+      "webworker"
     ],
     "typeRoots": [
       "./node_modules/@types",
@@ -73,7 +74,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "sanity.config.ts",
-    "sanity-codegen.config.ts"
+    "sanity-codegen.config.ts",
+    "app/workers/service-worker.ts"
   ],
   "exclude": [
     "node_modules",

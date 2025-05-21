@@ -2,9 +2,9 @@
  * Script para garantir que a configuração TypeScript é usada
  */
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+import fs from 'node:fs';
+import path from 'node:path';
+import { execSync } from 'node:child_process';
 
 console.log(' Configurando Next.js para usar TypeScript config...');
 
@@ -20,7 +20,7 @@ try {
 
   // Verificar se o arquivo next.config.ts existe
   const tsConfigPath = path.join(process.cwd(), 'next.config.ts');
-  
+
   if (!fs.existsSync(tsConfigPath)) {
     console.error(' Arquivo next.config.ts não encontrado');
     process.exit(1);
@@ -31,10 +31,10 @@ try {
   execSync('npx tsc next.config.ts', { stdio: 'inherit' });
 
   console.log(' Configuração TypeScript compilada com sucesso');
-  
+
   // Verificar se o next.config.js foi criado
   const jsConfigPath = path.join(process.cwd(), 'next.config.js');
-  
+
   if (!fs.existsSync(jsConfigPath)) {
     console.error(' Falha ao compilar next.config.ts para next.config.js');
     process.exit(1);

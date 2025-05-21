@@ -12,7 +12,7 @@ export async function fetchSanityWithProxy<T = any>(
 ): Promise<T> {
     try {
         const isDevelopment = process.env.NODE_ENV === 'development';
-        const useMockData = isDevelopment && process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true';
+        const useMockData = isDevelopment && (process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true' || sessionStorage.getItem('use-mock-data') === 'true');
 
         // Em modo de desenvolvimento, verificar se devemos usar dados mockados
         if (useMockData) {
@@ -38,7 +38,7 @@ export async function fetchSanityWithProxy<T = any>(
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ query, params }),
-                    signal: AbortSignal.timeout(8000), // Timeout de 8 segundos
+                    signal: AbortSignal.timeout(15000), // Increased timeout to 15 seconds
                 });
 
                 if (!response.ok) {
@@ -54,6 +54,14 @@ export async function fetchSanityWithProxy<T = any>(
                 return result.data;
             } catch (error) {
                 console.warn('Falha no proxy, usando dados mockados:', error);
+
+                // Save this failure to sessionStorage so future requests use mock data automatically
+                try {
+                    sessionStorage.setItem('use-mock-data', 'true');
+                } catch (e) {
+                    // Ignore if sessionStorage isn't available
+                }
+
                 const { mockImoveisDestaque, mockImoveisAluguel } = await import('../mock-data');
 
                 // Fallback para dados mockados em caso de erro

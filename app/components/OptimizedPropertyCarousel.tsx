@@ -129,9 +129,9 @@ export const OptimizedPropertyCarousel = memo(function OptimizedPropertyCarousel
 }: OptimizedPropertyCarouselProps) {
     // Gerenciar favoritos localmente com localStorage persistente
     const [favorites, setFavorites] = useState<Record<string, boolean>>(() => {
-        if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined' && window.localStorage) {
             try {
-                const saved = localStorage.getItem('property-favorites');
+                const saved = window.localStorage.getItem('property-favorites');
                 return saved ? JSON.parse(saved) : {};
             } catch (e) {
                 console.error('Erro ao carregar favoritos:', e);
@@ -145,8 +145,8 @@ export const OptimizedPropertyCarousel = memo(function OptimizedPropertyCarousel
     const handleFavoriteToggle = useCallback((id: string) => {
         setFavorites(prev => {
             const updated = { ...prev, [id]: !prev[id] };
-            if (typeof window !== 'undefined') {
-                localStorage.setItem('property-favorites', JSON.stringify(updated));
+            if (typeof window !== 'undefined' && window.localStorage) {
+                window.localStorage.setItem('property-favorites', JSON.stringify(updated));
             }
             return updated;
         });
@@ -209,7 +209,7 @@ export const OptimizedPropertyCarousel = memo(function OptimizedPropertyCarousel
 
     // Para layouts mobile do tipo stack, adapter a aparência em telas pequenas
     // Check for mobile stack layout using ternary pattern instead of &&
-    if (mobileLayout === 'stack' ? (typeof window !== 'undefined' ? window.innerWidth < 640 : false) : false) {
+    if (mobileLayout === 'stack' && typeof window !== 'undefined' && window.innerWidth < 640) {
         return (
             <div className={cn('w-full', className)}>
                 <CarouselHeader

@@ -3,8 +3,8 @@
  * especially with PostCSS processing
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
 
 console.log('🔧 Patching Next.js PostCSS processing...');
 
@@ -22,13 +22,13 @@ function findAndPatchFiles(dir, patchFn) {
     console.log(`⚠️ Directory does not exist: ${dir}`);
     return;
   }
-  
+
   const items = fs.readdirSync(dir);
-  
+
   items.forEach(item => {
     const itemPath = path.join(dir, item);
     const stats = fs.statSync(itemPath);
-    
+
     if (stats.isDirectory()) {
       findAndPatchFiles(itemPath, patchFn);
     } else if (stats.isFile() && itemPath.endsWith('.js')) {
@@ -41,22 +41,22 @@ function findAndPatchFiles(dir, patchFn) {
 function patchFile(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    
+
     // Check if file contains any class inheritance
-    if (content.includes('class ') && 
-        (content.includes(' extends ') || content.includes('class extends'))) {
-      
+    if (content.includes('class ') &&
+      (content.includes(' extends ') || content.includes('class extends'))) {
+
       console.log(`🔍 Found class inheritance in: ${filePath}`);
-      
+
       // Replace class inheritance with function factories
-      let patchedContent = content
+      const patchedContent = content
         // Fix class extension
         .replace(/class\s+(\w+)\s+extends\s+([\w\.]+)/g, 'function $1_factory()')
         // Fix super calls
         .replace(/super\((.*?)\)/g, '{}')
         // Fix this references in constructors
         .replace(/this\.(\w+)\s*=/g, 'var $1 =');
-      
+
       fs.writeFileSync(filePath, patchedContent);
       console.log(`✅ Patched: ${filePath}`);
     }
@@ -123,7 +123,7 @@ console.log(`✅ Created module resolution patch: ${patchPath}`);
 const nextConfigPath = path.join(process.cwd(), 'next.config.js');
 if (fs.existsSync(nextConfigPath)) {
   let nextConfig = fs.readFileSync(nextConfigPath, 'utf8');
-  
+
   // Only add if not already present
   if (!nextConfig.includes('module-resolution-patch')) {
     const patchRequire = `
@@ -135,7 +135,7 @@ try {
   console.error('❌ Failed to load module resolution patch:', error.message);
 }
 `;
-    
+
     // Insert at the top of the file
     nextConfig = patchRequire + nextConfig;
     fs.writeFileSync(nextConfigPath, nextConfig);

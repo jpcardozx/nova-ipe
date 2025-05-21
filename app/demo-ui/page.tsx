@@ -15,8 +15,8 @@ export default function DemoUIPage() {
                 <Image
                     src="/images/bg-outlines-fill.png"
                     alt="Background Hero"
-                    layout="fill"
-                    objectFit="cover"
+                    fill
+                    style={{ objectFit: 'cover' }}
                     className="opacity-20"
                 />
             </section>

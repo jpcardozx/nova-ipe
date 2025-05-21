@@ -14,8 +14,9 @@ export function useFavoriteProperties() {
 
     // Carregar favoritos do localStorage na inicialização
     useEffect(() => {
+        if (typeof window === 'undefined') return;
         try {
-            const storedFavorites = localStorage.getItem(STORAGE_KEY);
+            const storedFavorites = typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEY) : null;
             if (storedFavorites) {
                 setFavorites(JSON.parse(storedFavorites));
             }
@@ -28,9 +29,12 @@ export function useFavoriteProperties() {
 
     // Salvar favoritos no localStorage quando mudarem
     useEffect(() => {
+        if (typeof window === 'undefined') return;
         if (isLoaded) {
             try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
+                if (typeof window !== 'undefined') {
+                    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
+                }
             } catch (error) {
                 console.error('Erro ao salvar favoritos:', error);
             }

@@ -7,6 +7,8 @@ import {
     Phone, Mail, User, Trees, Car
 } from 'lucide-react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
+import Image from 'next/image';
+import { logger } from '../../lib/logger';
 
 // Types
 interface MarketMetric {
@@ -192,7 +194,7 @@ const GuararemaHero: React.FC = () => {
         setIsSubmitting(true);
         await new Promise(resolve => setTimeout(resolve, 1500));
 
-        console.log('Form submitted:', { ...formData, intent: selectedIntent });
+        logger.log('Form submitted:', { ...formData, intent: selectedIntent });
         setIsSubmitting(false);
         setShowContactForm(false);
 
@@ -208,9 +210,11 @@ const GuararemaHero: React.FC = () => {
     return (<section ref={heroRef} className="relative min-h-screen bg-white overflow-hidden">
         {/* Background com efeito visual aprimorado */}
         <div className="absolute inset-0">
-            <img
+            <Image
                 src="/images/hero-bg.png"
                 alt="Vista aérea de Guararema"
+                fill
+                style={{ objectFit: 'cover' }}
                 className="absolute inset-0 w-full h-full object-cover opacity-10"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white/80"></div>

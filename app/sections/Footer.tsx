@@ -161,7 +161,7 @@ export default function Footer() {
                 </a>
             </div>
 
-            <style jsx global>{`
+            <style>{`
         .footer-animate {
           transition-property: opacity, transform;
         }

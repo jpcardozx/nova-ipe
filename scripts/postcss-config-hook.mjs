@@ -1,7 +1,7 @@
 // This hook ensures PostCSS configuration stays valid during build
+import fs from 'node:fs';
+import path from 'node:path';
 const originalRequire = module.constructor.prototype.require;
-const path = require('path');
-const fs = require('fs');
 
 // Standard valid PostCSS config for Next.js
 const validConfig = {

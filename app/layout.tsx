@@ -9,7 +9,7 @@
  */
 
 // Importações essenciais
-import { Montserrat } from 'next/font/google';
+import { Playfair_Display } from 'next/font/google';
 import Script from 'next/script';
 import LayoutClient from './components/LayoutClient';
 import CriticalStyleLoader from './components/CriticalStyleLoader';
@@ -18,25 +18,26 @@ import PerformanceOptimizer from './components/PerformanceOptimizer';
 import fs from 'fs';
 import path from 'path';
 
+// Atualizado para usar o novo caminho dos estilos críticos
+
 // Importação do CSS principal - carregado depois do critical CSS
 import './globals.css';
 import './components/hydration-fix.css'; // CSS específico para corrigir problemas de hidratação
 
-// Configuração otimizada da fonte Montserrat
-const montserrat = Montserrat({
+// Configuração otimizada da fonte Playfair Display
+const playfairDisplay = Playfair_Display({
   subsets: ['latin'],
-  variable: '--font-montserrat',
+  variable: '--font-playfair',
   display: 'swap',
   weight: ['400', '500', '600', '700'],
-  preload: true,
+  preload: false, // Desativando preload para evitar warnings
 });
 
 export default function RootLayout({ children }: { children: React.ReactNode; }) {
-  // Em vez de atribuir data-loading-state diretamente no HTML, usamos o
-  // HydrationGuard para gerenciá-lo após a hidratação
   return (
-    <html lang="pt-BR" className={montserrat.variable}>
+    <html lang="pt-BR" className={`${playfairDisplay.variable} scroll-smooth`}>
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         {/* Inlined Critical CSS */}
         <style id="critical-css" dangerouslySetInnerHTML={{
           __html: `
@@ -77,8 +78,10 @@ export default function RootLayout({ children }: { children: React.ReactNode; })
         {/* Carregamento otimizado de CSS não-crítico */}
         <link rel="preload" href="/critical-bundle.css" as="style" />
         <link rel="stylesheet" href="/critical-bundle.css" media="print" />
+
         {/* Script crítico com carregamento otimizado */}
         <Script src="/js/critical-preload.js" strategy="beforeInteractive" />
+
         {/* Favicon */}
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -88,34 +91,77 @@ export default function RootLayout({ children }: { children: React.ReactNode; })
         <meta name="msapplication-TileColor" content="#122D42" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
         <meta name="theme-color" content="#ffffff" />
-        {/* OG tags */}
+
+        {/* Performance optimization - resource hints */}
+        <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://cdn.sanity.io" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+
+        {/* Critical image preloading */}
+        <link rel="preload" href="/images/hero-bg.png" as="image" />
+
+        {/* Route prefetching */}
+        <link rel="prefetch" href="/comprar" />
+        <link rel="prefetch" href="/alugar" />
+
+        {/* Meta tags */}
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <meta name="theme-color" content="#ffffff" />
+
+        {/* Cache control */}
+        <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta httpEquiv="Pragma" content="no-cache" />
+        <meta httpEquiv="Expires" content="0" />
+
+        {/* Performance headers */}
+        <meta httpEquiv="x-dns-prefetch-control" content="on" />
+
+        {/* SEO and Social Media */}
+        <meta property="og:type" content="website" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:locale" content="pt_BR" />
         <meta property="og:site_name" content="Nova Ipê Imobiliária" />
         <meta property="og:image:type" content="image/jpeg" />
         <meta property="og:image:alt" content="Nova Ipê Imobiliária - Imóveis Premium em Guararema" />
+
         {/* WhatsApp */}
         <meta property="whatsapp:title" content="Nova Ipê Imobiliária - Imóveis em Guararema" />
         <meta property="whatsapp:description" content="Propriedades exclusivas em Guararema com atendimento personalizado" />
         <meta property="whatsapp:image" content="https://www.novaipe.com.br/images/og-image-whatsapp.jpg" />
         <meta property="whatsapp:card" content="summary_large_image" />
+
         {/* Facebook */}
         <meta property="fb:app_id" content="123456789" />
         <meta name="format-detection" content="telephone=no" />
-        {/* Performance optimization - resource hints */}
-        <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://cdn.sanity.io" />
-        {/* Preloads para recursos críticos */}
-        <link rel="preload" href="/fonts/Montserrat-Bold.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        {/* Scripts não críticos carregados de forma otimizada */}
+
+        {/* Critical scripts */}
+        <Script src="/js/critical-preload.js" strategy="beforeInteractive" />
         <Script src="/js/whatsapp-optimizer.js" strategy="lazyOnload" />
-        <Script src="/js/loading-timeout.js" strategy="lazyOnload" />
-        {/* Prefetch de rotas principais */}
-        <link rel="prefetch" href="/comprar" />
-        <link rel="prefetch" href="/alugar" />
+
+        {/* Service Worker */}
+        <Script
+          id="service-worker-registrar"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                  navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                      console.log('SW registered:', registration);
+                    })
+                    .catch(error => {
+                      console.log('SW registration failed:', error);
+                    });
+                });
+              }
+            `
+          }}
+        />
       </head>
-      <body className="body-initial-state">
+      <body className="bg-white text-gray-900 antialiased">
         <LayoutClient>
           {/* Componentes cliente para gerenciar carregamento otimizado */}
           <CriticalStyleLoader href="/critical-bundle.css" />

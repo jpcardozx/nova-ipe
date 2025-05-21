@@ -59,7 +59,7 @@ export function ensureValidImageUrl(
                 alt: defaultAlt
             };
         }        // Extrair texto alternativo se disponível
-        let alt = image.alt || defaultAlt;
+        const alt = image.alt || defaultAlt;
         let url: string | undefined;        // Criar a estrutura base mantendo a asset
         const result: NormalizedImage = {
             url: fallbackUrl, // Inicializa com fallback, será substituído se encontrarmos uma URL válida

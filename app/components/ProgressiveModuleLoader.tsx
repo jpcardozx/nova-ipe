@@ -67,9 +67,8 @@ export default function ProgressiveModuleLoader<T extends React.JSX.IntrinsicAtt
         if (Module) return;
 
         try {
-            startTime.current = performance.now();
-            const module = await factory();
-            setModule(() => module.default);
+            startTime.current = performance.now(); const componentModule = await factory();
+            setModule(() => componentModule.default);
             logLoadTime();
         } catch (err) {
             setError(err instanceof Error ? err : new Error('Erro ao carregar módulo'));
