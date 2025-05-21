@@ -1,13 +1,16 @@
 {
-  "buildCommand": "npm run vercel-build",
-  "installCommand": "npm install",
+  "buildCommand": "pnpm run vercel-build",
+  "installCommand": "pnpm install",
   "framework": "nextjs",
-  "devCommand": "npm run dev",
+  "devCommand": "pnpm run dev",
   "outputDirectory": ".next",
-  "regions": ["gru1"],
+  "regions": [
+    "gru1"
+  ],
   "build": {
     "env": {
-      "NEXT_PUBLIC_APP_ENV": "production"
+      "NEXT_PUBLIC_APP_ENV": "production",
+      "NPM_CONFIG_USER_AGENT": "pnpm"
     }
   },
   "headers": [
