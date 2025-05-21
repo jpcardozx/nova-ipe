@@ -154,6 +154,25 @@ export default function Example() {
 - **Framer Motion**: Biblioteca de animações
 - **Lucide Icons**: Ícones modernos e consistentes
 
+## Testes e Build
+
+Para garantir que o projeto está saudável, execute:
+
+```bash
+pnpm lint
+pnpm typecheck   # roda tsc --noEmit
+pnpm build
+pnpm start
+```
+
+## Test Script
+
+To run tests, use the following command:
+
+```bash
+pnpm test
+```
+
 ## Contribuição
 
 Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests.
@@ -161,3 +180,18 @@ Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar
 ## Licença
 
 Este projeto está licenciado sob a licença MIT.
+
+## Peer Dependency Warnings
+
+Após a atualização das dependências, foram identificados os seguintes problemas de compatibilidade de pares:
+
+1. **React e React-DOM**:
+   - Algumas bibliotecas esperam versões anteriores de `react` e `react-dom` (como `18.x`), mas o projeto está usando `19.x`.
+
+2. **@opentelemetry**:
+   - Algumas dependências esperam versões específicas de `@opentelemetry/api`.
+
+3. **ESLint**:
+   - Algumas dependências esperam versões mais antigas de `eslint`.
+
+Esses problemas não impedem o funcionamento do projeto, mas podem causar warnings ou comportamentos inesperados. Certifique-se de testar o projeto completamente antes de implantar em produção.

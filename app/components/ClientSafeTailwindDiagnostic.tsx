@@ -195,11 +195,10 @@ export default function ClientSafeTailwindDiagnostic() {
                                             <h4 className="font-medium">{file}.config.js</h4>
                                             <p className="text-sm text-gray-500">
                                                 {info.exists ? 'Arquivo encontrado' : 'Arquivo não encontrado'}
-                                            </p>
-                                            {info.issues && info.issues.length > 0 && (
+                                            </p>                                            {info.issues && info.issues.length > 0 && (
                                                 <ul className="mt-2 text-sm text-amber-600">
-                                                    {info.issues.map((issue) => (
-                                                        <li key={`issue-${issue}`}>• {issue}</li>
+                                                    {info.issues.map((issue, issueIndex) => (
+                                                        <li key={`issue-${file}-${issueIndex}`}>• {issue}</li>
                                                     ))}
                                                 </ul>
                                             )}

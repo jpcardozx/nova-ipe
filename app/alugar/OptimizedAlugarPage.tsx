@@ -11,13 +11,9 @@ import { OptimizedIcons } from '@/app/utils/optimized-icons';
 declare global {
     interface Document {
         documentElement: HTMLElement;
-    }
-
-    interface HTMLElement {
+    }    interface HTMLElement {
         setAttribute(name: string, value: string): void;
     }
-
-    var document: Document;
 }
 
 // Dynamic imports for performance optimization
@@ -98,7 +94,7 @@ export default function OptimizedAlugarPage() {
                     console.log(`[Performance] Fetch time: ${Math.round(fetchTime)}ms`);
                 }
 
-                // Process data
+                // Process data with optimized memory usage
                 setImoveis(data);
             } catch (err) {
                 console.error('Erro ao buscar imóveis:', err);
@@ -114,30 +110,42 @@ export default function OptimizedAlugarPage() {
         };
 
         fetchImoveis();
-    }, [initialLoadTime]);    // Format properties for virtualized grid
+    }, [initialLoadTime]);
+
+    // Format properties for virtualized grid with type safety
     const formattedProperties = React.useMemo(() => {
-        return imoveis.map(imovel => ({
-            id: imovel._id,
-            title: imovel.titulo || '',
-            slug: imovel.slug || imovel._id,
-            location: imovel.bairro,
-            city: imovel.cidade,
-            price: imovel.preco || 0,
-            propertyType: 'rent' as 'rent', // For rental properties
-            area: imovel.areaUtil,
-            bedrooms: imovel.dormitorios,
-            bathrooms: imovel.banheiros,
-            parkingSpots: imovel.vagas,
-            mainImage: {
-                url: imovel.imagem?.url || '/images/property-placeholder.jpg',
-                alt: imovel.imagem?.alt || imovel.titulo || ''
-            },
-            isHighlight: Boolean(imovel.destaque),
-            isPremium: Boolean(imovel.destaque),
-            isNew: typeof imovel.dataPublicacao === 'string' && imovel.dataPublicacao ?
-                (new Date().getTime() - new Date(imovel.dataPublicacao).getTime() < 7 * 24 * 60 * 60 * 1000) :
-                false
-        }));
+        if (!imoveis.length) return [];
+
+        return imoveis
+            .filter(imovel => imovel && imovel._id)
+            .map(imovel => {
+                // Check if dataPublicacao is a valid string representing a date
+                const isNew = typeof imovel.dataPublicacao === 'string' && imovel.dataPublicacao ?
+                    (new Date().getTime() - new Date(imovel.dataPublicacao).getTime() < 7 * 24 * 60 * 60 * 1000) :
+                    false;
+
+                // Create the formatted property object
+                return {
+                    id: imovel._id,
+                    title: imovel.titulo || '',
+                    slug: imovel.slug || imovel._id,
+                    location: imovel.bairro,
+                    city: imovel.cidade,
+                    price: imovel.preco || 0,
+                    propertyType: 'rent' as const, // For rental properties
+                    area: imovel.areaUtil,
+                    bedrooms: imovel.dormitorios,
+                    bathrooms: imovel.banheiros,
+                    parkingSpots: imovel.vagas,
+                    mainImage: {
+                        url: imovel.imagem?.url || '/images/property-placeholder.jpg',
+                        alt: imovel.imagem?.alt || imovel.titulo || ''
+                    },
+                    isHighlight: Boolean(imovel.destaque),
+                    isPremium: Boolean(imovel.destaque),
+                    isNew
+                };
+            });
     }, [imoveis]);
 
     return (

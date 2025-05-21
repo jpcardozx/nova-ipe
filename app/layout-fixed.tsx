@@ -19,7 +19,7 @@ const montserrat = Montserrat({
     variable: '--font-montserrat',
     display: 'swap',
     weight: ['400', '500', '600', '700'],
-    preload: true, // Garante preload da fonte
+    preload: false, // Desativando preload para evitar warnings e melhorar performance
 });
 
 export default function RootLayout({

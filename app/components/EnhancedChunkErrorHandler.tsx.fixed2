@@ -1,0 +1,142 @@
+'use client';
+
+import { useEffect } from 'react';
+import ChunkErrorBoundary from './ChunkErrorBoundary';
+
+/**
+ * Enhanced Chunk Error Handler with advanced recovery capabilities
+ * Wraps and enhances the existing ChunkErrorBoundary component
+ */
+export default function EnhancedChunkErrorHandler({ children }: { children: React.ReactNode }) {
+    useEffect(() => {
+        // Register global handler for network errors and chunk load failures
+        if (typeof window !== 'undefined') {
+            // Keep track of errors
+            let errorCount = 0;
+            const errors: Record<string, number> = {};
+
+            // Store original error handlers as any type to avoid TypeScript complications
+            const origOnError = window.onerror;
+            const origUnhandledRejection = window.onunhandledrejection;
+
+            // Create a handler function that correctly handles TypeScript types
+            function errorHandler(
+                message: string | Event,
+                source?: string, 
+                lineno?: number, 
+                colno?: number, 
+                error?: Error
+            ): boolean | void {
+                // Check if it's a chunk loading error
+                const errorMessage = message instanceof Event ? message.type : String(message);
+                if (errorMessage &&
+                    (errorMessage.includes('ChunkLoadError') ||
+                     errorMessage.includes('Loading chunk') ||
+                     errorMessage.includes('connection reset') ||
+                     errorMessage.includes('net::ERR_CONNECTION_RESET') ||
+                     errorMessage.includes('Failed to load resource'))
+                ) {
+                    errorCount++;
+                    errors[errorMessage] = (errors[errorMessage] || 0) + 1;
+
+                    console.error('Detected chunk loading error:', errorMessage);
+
+                    // If errors are frequent, try to recover
+                    if (errorCount >= 3 || Object.keys(errors).some(key => errors[key] >= 2)) {
+                        console.warn('Multiple chunk errors detected, attempting recovery...');
+
+                        // Try to clear chunk cache via service worker
+                        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                            navigator.serviceWorker.controller.postMessage({
+                                type: 'CLEAR_CHUNK_CACHE'
+                            });
+                        }
+
+                        // Enable fallback mock data in development mode
+                        if (process.env.NODE_ENV === 'development') {
+                            try {
+                                sessionStorage.setItem('use-mock-data', 'true');
+                            } catch (e) {
+                                // Ignore if sessionStorage isn't available
+                            }
+                        }
+
+                        // If error persists, reload the page
+                        if (errorCount >= 5) {
+                            console.warn('Critical error level reached, reloading page in 2 seconds...');
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 2000);
+                        }
+                    }
+                }
+
+                // Call original handler without this binding to avoid TypeScript errors
+                if (origOnError) {
+                    try {
+                        const handler = origOnError as any;
+                        if (message instanceof Event) {
+                            return handler(message);
+                        } else {
+                            return handler(message, source, lineno, colno, error);
+                        }
+                    } catch (e) {
+                        console.error('Error calling original error handler:', e);
+                    }
+                }
+                return false;
+            }
+
+            // Create a handler for promise rejections that avoids TypeScript errors
+            function rejectionHandler(event: PromiseRejectionEvent): boolean | void {
+                if (event.reason && typeof event.reason.message === 'string' && (
+                    event.reason.message.includes('Loading chunk') ||
+                    event.reason.message.includes('Failed to fetch') ||
+                    event.reason.message.includes('NetworkError') ||
+                    event.reason.message.includes('connection reset') ||
+                    event.reason.message.includes('net::ERR_CONNECTION_RESET')
+                )) {
+                    errorCount++;
+                    console.error('Network error in promise:', event.reason.message);
+
+                    // Same recovery logic as above
+                    if (errorCount >= 3) {
+                        console.warn('Multiple network errors detected, attempting recovery...');
+
+                        // Try to use local mock data in development
+                        if (process.env.NODE_ENV === 'development') {
+                            try {
+                                sessionStorage.setItem('use-mock-data', 'true');
+                            } catch (e) {
+                                // Ignore if sessionStorage isn't available
+                            }
+                        }
+                    }
+                }
+
+                // Call original handler without this binding
+                if (origUnhandledRejection) {
+                    try {
+                        const handler = origUnhandledRejection as any;
+                        return handler(event);
+                    } catch (e) {
+                        console.error('Error calling original rejection handler:', e);
+                    }
+                }
+                return false;
+            }
+
+            // Assign our handler functions directly to window properties
+            window.onerror = errorHandler;
+            window.onunhandledrejection = rejectionHandler;
+
+            console.log('Enhanced chunk error handler registered');
+        }
+    }, []);
+
+    return (
+        <ChunkErrorBoundary>
+            {children}
+        </ChunkErrorBoundary>
+    );
+}

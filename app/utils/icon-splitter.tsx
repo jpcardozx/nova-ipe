@@ -25,8 +25,9 @@ const COMMON_ICONS = [
 
 // Pré-carregamento de ícones comuns
 COMMON_ICONS.forEach(iconName => {
-    import(`lucide-react/dist/esm/icons/${iconName.toLowerCase()}`).then(module => {
-        iconCache.set(iconName, module.default);
+    import('lucide-react').then(mod => {
+        if (!mod[iconName]) throw new Error(`Icon ${iconName} not found in lucide-react`);
+        iconCache.set(iconName, mod[iconName]);
     }).catch(err => {
         console.error(`Erro ao pré-carregar ícone: ${iconName}`, err);
     });
@@ -41,31 +42,19 @@ const IconFallback = () => (
  * Componente LazyIcon que carrega ícones sob demanda
  */
 export function LazyIcon({ name, ...props }: { name: string } & LucideProps) {
-    // Verifica se o ícone já está em cache
-    if (iconCache.has(name)) {
-        const IconComponent = iconCache.get(name);
-        return <IconComponent {...props} />;
-    }
-
-    // Lazy load do ícone
-    const IconComponent = lazy(() =>
-        import(`lucide-react/dist/esm/icons/${name.toLowerCase()}`)
-            .then(module => {
-                // Armazena em cache para uso futuro
-                iconCache.set(name, module.default);
-                return module;
-            })
-            .catch(err => {
-                console.error(`Erro ao carregar ícone: ${name}`, err);
-                return { default: () => <IconFallback /> };
-            })
-    );
-
-    return (
-        <Suspense fallback={<IconFallback />}>
-            <IconComponent {...props} />
-        </Suspense>
-    );
+    const [IconComponent, setIconComponent] = React.useState<React.ComponentType<LucideProps> | null>(null);
+    React.useEffect(() => {
+        let mounted = true;
+        import('lucide-react').then(mod => {
+            if (mounted) {
+                const Icon = mod[name as keyof typeof mod] as React.ComponentType<LucideProps> | undefined;
+                setIconComponent(() => Icon || null);
+            }
+        });
+        return () => { mounted = false; };
+    }, [name]);
+    if (!IconComponent) return <IconFallback />;
+    return <IconComponent {...props} />;
 }
 
 /**

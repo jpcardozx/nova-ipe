@@ -53,13 +53,11 @@ export function RenderProfiler({ id, children, onRender }: RenderProfilerProps) 
 export function useRenderTracking(componentName: string) {
     const renderCount = useRef(0);
     const lastRenderTime = useRef(performance.now());
-
-    // Skip in production unless explicitly enabled
-    if (process.env.NODE_ENV === 'production' && !process.env.ENABLE_PROFILER) {
-        return;
-    }
+    const enabled = process.env.NODE_ENV !== 'production' || process.env.ENABLE_PROFILER;
 
     useEffect(() => {
+        if (!enabled) return;
+
         const now = performance.now();
         const timeSinceLastRender = now - lastRenderTime.current;
         renderCount.current += 1;
@@ -73,5 +71,5 @@ export function useRenderTracking(componentName: string) {
         }
 
         lastRenderTime.current = now;
-    });
+    }, [componentName, enabled]); // Add componentName and enabled as dependencies since they're used in the effect
 }

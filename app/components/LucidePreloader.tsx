@@ -50,8 +50,11 @@ export default function LucidePreloader() {
                 // não impeçam o carregamento dos outros ícones
                 const preloadPromises = commonIcons.map(async (iconName) => {
                     try {
-                        // Simulamos a mesma importação dinâmica que ocorre nos componentes
-                        await import(`lucide-react/dist/esm/icons/${iconName.toLowerCase()}`);
+                        // Use correct PascalCase import from lucide-react
+                        await import('lucide-react').then(mod => {
+                            if (!mod[iconName]) throw new Error(`Icon ${iconName} not found in lucide-react`);
+                            return mod[iconName];
+                        });
                         return { icon: iconName, status: 'loaded' };
                     } catch (err: unknown) {
                         const errorMessage = err instanceof Error ? err.message : String(err);

@@ -1,11 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
-import { useInView } from 'react-intersection-observer';
-import { generateLowQualityPlaceholder } from '@/lib/image-performance-optimizer';
-import { cn } from '@/lib/utils';
 
 export interface SanityImageProps {
-  image: any; // Sanity image reference
+  image: { url?: string; width?: number; height?: number; alt?: string }; // Adjusted type to match usage in the component
   alt?: string;
   width?: number;
   height?: number;
@@ -47,18 +44,9 @@ export default function SanityImage({
   ...props
 }: SanityImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
-  const { ref, inView } = useInView({
-    triggerOnce: true,
-    rootMargin: '200px 0px',
-  });
 
   // Determina o modo de carregamento
   const loading = priority || eager ? 'eager' : loadingProp || 'lazy';
-
-  // Gera placeholder SVG para evitar CLS
-  const placeholderWidth = width || 400;
-  const placeholderHeight = height || 300;
-  const placeholder = generateLowQualityPlaceholder(placeholderWidth, placeholderHeight);
 
   // Extrai URL da imagem do Sanity
   const imageUrl = image?.url || (typeof image === 'string' ? image : '');
@@ -84,7 +72,6 @@ export default function SanityImage({
 
   return (
     <div
-      ref={ref}
       className={`relative overflow-hidden ${className}`}
       data-component="sanity-image"
     >
@@ -97,15 +84,14 @@ export default function SanityImage({
         priority={priority}
         quality={quality}
         sizes={sizes}
-        className={cn(
-          'transition-opacity duration-500',
-          isLoaded ? 'opacity-100' : 'opacity-0',
-          objectFit === 'cover' && 'object-cover',
-          objectFit === 'contain' && 'object-contain'
-        )}
+        className={
+          'transition-opacity duration-500' +
+          (isLoaded ? ' opacity-100' : ' opacity-0') +
+          (objectFit === 'cover' ? ' object-cover' : '') +
+          (objectFit === 'contain' ? ' object-contain' : '')
+        }
         onLoad={handleImageLoad}
         placeholder="blur"
-        blurDataURL={placeholder}
         {...props}
       />
     </div>

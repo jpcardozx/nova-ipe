@@ -1,9 +1,9 @@
 // Performance Analysis Script for Nova Ipê
 // This script helps identify performance issues in the project
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+import fs from 'node:fs';
+import path from 'node:path';
+import { execSync } from 'node:child_process';
 
 console.log('📊 Starting Nova Ipê Performance Analysis...');
 

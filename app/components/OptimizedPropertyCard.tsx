@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Montserrat } from 'next/font/google';
 import ResponsiveSanityImage from './ResponsiveSanityImage';
+import OptimizedImageGallery from './OptimizedImageGallery';
 import {
     BedDouble, Bath, Car, AreaChart,
     Clock, ArrowUpRight, Home, TrendingUp,
@@ -75,6 +76,14 @@ export const OptimizedPropertyCard: React.FC<OptimizedPropertyCardProps> = ({
     isFavorite = false,
     onFavoriteToggle
 }) => {
+    // Formatação de preço com memorização para evitar recálculos desnecessários
+    const formattedPrice = React.useMemo(() => {
+        return formatarMoeda(price);
+    }, [price]);
+
+    // Calcula tamanhos apropriados para carregamento responsivo de imagens
+    const imageSizes = '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw';
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -127,17 +136,16 @@ export const OptimizedPropertyCard: React.FC<OptimizedPropertyCardProps> = ({
                                 Venda
                             </span>
                         )}
-                    </div>
-
-                    {/* Imagem principal com componente otimizado */}
-                    <ResponsiveSanityImage
+                    </div>                    {/* Imagem principal com componente otimizado */}
+                    <OptimizedImageGallery
+                        images={[mainImage]}
                         image={mainImage}
                         alt={mainImage.alt || title}
-                        fill
                         className="object-cover transform group-hover:scale-110 transition-transform duration-700"
-                        quality={isPremium ? 90 : 80}
                         priority={isHighlight}
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        sizes={imageSizes}
+                        height={280}
+                        width={420}
                     />
                 </div>
 

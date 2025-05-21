@@ -68,20 +68,26 @@ function useFavorite(id: string, onToggle?: (id: string) => void) {
   // Inicializar estado de favorito após renderização
   useEffect(() => {
     try {
-      const savedFavorites = localStorage.getItem('favorites') || '[]';
-      const isFavorite = JSON.parse(savedFavorites).includes(id);
-      setFav(isFavorite);
-    } catch {
+      if (typeof window !== 'undefined') {
+        const savedFavorites = window.localStorage.getItem('favorites') || '[]';
+        const parsedFavorites: string[] = JSON.parse(savedFavorites);
+        const isFavorite = parsedFavorites.includes(id);
+        setFav(isFavorite);
+      }
+    } catch (error) {
+      console.error('Error parsing favorites from localStorage:', error);
       setFav(false);
     }
   }, [id]);
 
   useEffect(() => {
     try {
-      const list: string[] = JSON.parse(localStorage.getItem('favorites') || '[]');
-      const updated = fav ? Array.from(new Set([...list, id])) : list.filter(x => x !== id);
-      localStorage.setItem('favorites', JSON.stringify(updated));
-      onToggle?.(id);
+      if (typeof window !== 'undefined') {
+        const list: string[] = JSON.parse(window.localStorage.getItem('favorites') || '[]');
+        const updated = fav ? Array.from(new Set([...list, id])) : list.filter(x => x !== id);
+        window.localStorage.setItem('favorites', JSON.stringify(updated));
+        onToggle?.(id);
+      }
     } catch (error) {
       console.error("Error updating favorites:", error);
     }

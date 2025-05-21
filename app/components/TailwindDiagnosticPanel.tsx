@@ -6,7 +6,7 @@ import {
   checkTailwindConfig,
   testTailwindClasses,
   TailwindVersionsResult,
-  TailwindConfigResult,
+  // TailwindConfigResult, // Removed unused import
   TailwindTestResult,
   TailwindEnvironmentInfo,
   TailwindConfigInfo
@@ -100,18 +100,12 @@ export default function TailwindDiagnosticPanel() {
         <p className="text-sm text-gray-600">
           Ferramenta para identificar e resolver problemas na integração Tailwind + Next.js
         </p>
-      </div>
-
-      {/* Status geral */}
-      <div className="p-4 border-b border-gray-200 flex items-center gap-2">
+      </div>      <div className="p-4 border-b border-gray-200 flex items-center gap-2">
         <div className={`w-3 h-3 rounded-full ${overallStatus.status === 'loading' ? 'bg-blue-500 animate-pulse' :
           overallStatus.status === 'success' ? 'bg-green-500' : 'bg-red-500'
           }`}></div>
         <span className="font-medium">Status:</span> {overallStatus.label}
-      </div>
-
-      {/* Navegação em abas */}
-      <div className="flex border-b border-gray-200">
+      </div>      <div className="flex border-b border-gray-200">
         <button
           onClick={() => switchTab('versions')}
           className={`px-4 py-2 font-medium text-sm ${diagnosticState.activeTab === 'versions'
@@ -148,10 +142,7 @@ export default function TailwindDiagnosticPanel() {
         >
           Solução
         </button>
-      </div>
-
-      {/* Conteúdo da aba */}
-      <div className="p-4">
+      </div>      <div className="p-4">
         {diagnosticState.loading ? (
           <div className="flex items-center justify-center py-8">
             <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
@@ -159,7 +150,7 @@ export default function TailwindDiagnosticPanel() {
           </div>
         ) : (
           <>
-            {/* Aba de versões */}            {diagnosticState.activeTab === 'versions' && (
+            {diagnosticState.activeTab === 'versions' && (
               <div>
                 <h3 className="text-md font-semibold mb-3">Versões instaladas</h3>
                 {diagnosticState.versions && diagnosticState.versions.success ? (
@@ -199,8 +190,7 @@ export default function TailwindDiagnosticPanel() {
                     Erro ao verificar versões: {diagnosticState.versions?.error || "Erro desconhecido"}
                   </div>
                 )}
-              </div>
-            )}{/* Aba de configuração */}
+              </div>)}
             {diagnosticState.activeTab === 'config' && (
               <div>
                 <h3 className="text-md font-semibold mb-3">Configuração dos arquivos</h3>
@@ -222,14 +212,12 @@ export default function TailwindDiagnosticPanel() {
                           <div className="mt-1 text-xs text-gray-500">
                             Tamanho: {(info.size / 1024).toFixed(2)} KB
                           </div>
-                        )}
-
-                        {info.issues && info.issues.length > 0 && (
+                        )}                        {info.issues && info.issues.length > 0 && (
                           <div className="mt-2 text-sm text-red-700">
                             <div className="font-medium">Problemas encontrados:</div>
                             <ul className="list-disc pl-5 mt-1 text-xs">
-                              {info.issues.map((issue: string, i: number) => (
-                                <li key={i}>{issue}</li>
+                              {info.issues.map((issue: string) => (
+                                <li key={`issue-${file}-${issue.substring(0, 10)}`}>{issue}</li>
                               ))}
                             </ul>
                           </div>
@@ -248,10 +236,7 @@ export default function TailwindDiagnosticPanel() {
                 </div>
                 )}
               </div>
-            )}
-
-            {/* Aba de testes */}
-            {diagnosticState.activeTab === 'tests' && diagnosticState.tests && (
+            )}            {diagnosticState.activeTab === 'tests' && diagnosticState.tests && (
               <div>
                 <h3 className="text-md font-semibold mb-3">Teste de classes do Tailwind</h3>
 
@@ -303,26 +288,21 @@ export default function TailwindDiagnosticPanel() {
               <div className="bg-red-50 text-red-700 p-3 rounded">
                 Erro ao executar testes de classes do Tailwind.
               </div>
-            )}
-
-            {/* Aba de solução */}
-            {diagnosticState.activeTab === 'solution' && (
+            )}            {diagnosticState.activeTab === 'solution' && (
               <div className="space-y-4">
                 <h3 className="text-md font-semibold">Soluções recomendadas</h3>
 
                 <div className="p-3 bg-blue-50 rounded border border-blue-200">
-                  <h4 className="font-medium">1. Garantir importações corretas para Tailwind v4:</h4>
-                  <div className="mt-2 bg-gray-800 text-gray-200 p-3 rounded text-sm font-mono">
-                    <div>/* globals.css */</div>
+                  <h4 className="font-medium">1. Garantir importações corretas para Tailwind v4:</h4>                  <div className="mt-2 bg-gray-800 text-gray-200 p-3 rounded text-sm font-mono">
+                    <div>{`/* globals.css */`}</div>
                     <div className="text-blue-400">@import "tailwindcss/preflight";</div>
                     <div className="text-blue-400">@tailwind utilities;</div>
                   </div>
                 </div>
 
                 <div className="p-3 bg-blue-50 rounded border border-blue-200">
-                  <h4 className="font-medium">2. Configuração adequada do PostCSS:</h4>
-                  <div className="mt-2 bg-gray-800 text-gray-200 p-3 rounded text-sm font-mono">
-                    <div>/* postcss.config.js */</div>
+                  <h4 className="font-medium">2. Configuração adequada do PostCSS:</h4>                  <div className="mt-2 bg-gray-800 text-gray-200 p-3 rounded text-sm font-mono">
+                    <div>{`/* postcss.config.js */`}</div>
                     <div>module.exports = {'{'}</div>
                     <div>&nbsp;&nbsp;plugins: {'{'}</div>
                     <div>&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-green-400">'postcss-import'</span>: { },</div>
@@ -335,9 +315,8 @@ export default function TailwindDiagnosticPanel() {
                 </div>
 
                 <div className="p-3 bg-blue-50 rounded border border-blue-200">
-                  <h4 className="font-medium">3. Execute o script de correção:</h4>
-                  <div className="mt-2 bg-gray-800 text-gray-200 p-3 rounded text-sm font-mono">
-                    <div># No PowerShell:</div>
+                  <h4 className="font-medium">3. Execute o script de correção:</h4>                  <div className="mt-2 bg-gray-800 text-gray-200 p-3 rounded text-sm font-mono">
+                    <div>{`# No PowerShell:`}</div>
                     <div>.\fix-tailwind-v4.ps1</div>
                   </div>
                   <p className="mt-2 text-sm text-blue-700">

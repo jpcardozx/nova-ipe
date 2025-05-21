@@ -82,7 +82,7 @@ export default function AdvancedDropdown({
                 </div>
             )}
 
-            <style jsx>{`
+            <style>{`
         @keyframes dropdown {
           from {
             opacity: 0;

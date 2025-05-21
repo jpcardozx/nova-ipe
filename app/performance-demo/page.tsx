@@ -32,8 +32,8 @@ const DEMO_PROPERTY: ImovelClient = {
     banheiros: 3,
     vagas: 2,
     areaUtil: 280,
-    finalidade: 'Venda' as 'Venda',
-    status: 'disponivel' as 'disponivel',
+    finalidade: 'Venda' as const,
+    status: 'disponivel' as const,
     imagem: {
         url: 'https://cdn.sanity.io/images/jgnu3lns/production/eb1b274eeb5c379a880af885c0ff1f0d535e2228-1200x800.jpg',
         alt: 'Vista frontal da casa com jardim',

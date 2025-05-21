@@ -42,7 +42,23 @@ export default function SanityImagesShowcase({ properties }: { properties: any[]
         lazyLoad: false
     } : null;
 
-    const imageProps = imageOptions ? useSanityImage(imageOptions) : null;
+    // Hook deve ser chamado incondicionalmente para seguir as regras do React
+    const imageProps = useSanityImage(imageOptions || {
+        image: null,
+        fallbackUrl: '/images/property-placeholder.jpg',
+        alt: 'Imagem não disponível',
+        responsiveSizes: {
+            'xs': { width: 320, height: 240, quality: 70 },
+            'md': { width: 640, height: 480, quality: 80 },
+            'lg': { width: 1200, height: 800, quality: 85 }
+        },
+        sizesAttribute: {
+            'xs': '100vw',
+            'md': '75vw',
+            'lg': '50vw'
+        },
+        lazyLoad: false
+    });
 
     if (isLoading) {
         return <div className="flex items-center justify-center h-64 bg-gray-100">Carregando...</div>;

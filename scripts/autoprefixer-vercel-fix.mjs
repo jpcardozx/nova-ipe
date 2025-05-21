@@ -3,9 +3,9 @@
  * Este script deve ser executado no início do processo de build
  */
 
-const fs = require('fs');
-const path = require('path');
-const { spawnSync } = require('child_process');
+import fs from 'node:fs';
+import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 
 console.log('🚀 Iniciando solução definitiva para o autoprefixer...');
 

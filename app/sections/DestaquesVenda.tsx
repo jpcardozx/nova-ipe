@@ -46,13 +46,15 @@ function useFavorites() {
 
     // Carrega favoritos do localStorage apenas após montagem do componente
     useEffect(() => {
-        const saved = localStorage.getItem('imoveis-favoritos');
+        if (typeof window === 'undefined') return;
+        const saved = window.localStorage.getItem('imoveis-favoritos');
         if (saved) setFavorites(JSON.parse(saved));
     }, []);
 
     // Salva favoritos no localStorage quando a lista é atualizada
     useEffect(() => {
-        localStorage.setItem('imoveis-favoritos', JSON.stringify(favorites));
+        if (typeof window === 'undefined') return;
+        window.localStorage.setItem('imoveis-favoritos', JSON.stringify(favorites));
     }, [favorites]);
 
     const isFavorite = (id: string) => favorites.includes(id);

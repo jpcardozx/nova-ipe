@@ -6,12 +6,12 @@
  */
 module.exports = {
     darkMode: 'class',
+    mode: 'jit',
     content: [
-        './pages/**/*.{js,ts,jsx,tsx,mdx}',
-        './components/**/*.{js,ts,jsx,tsx,mdx}',
-        './app/**/*.{js,ts,jsx,tsx,mdx}',
-        './src/**/*.{js,ts,jsx,tsx,mdx}',
+        './app/**/*.{js,ts,jsx,tsx}',
+        './components/**/*.{js,ts,jsx,tsx}',
     ],
+    safelist: ['bg-red-500', 'text-center'],
     theme: {
         container: {
             center: true,
@@ -21,6 +21,10 @@ module.exports = {
             },
         },
         extend: {
+            fontFamily: {
+                sans: ['var(--font-playfair)', 'ui-serif', 'Georgia', 'Cambria', '"Times New Roman"', 'Times', 'serif'],
+                display: ['var(--font-playfair)', 'ui-serif', 'Georgia', 'serif'],
+            },
             colors: {
                 // Cores primárias da Nova Ipê
                 brand: {
@@ -101,10 +105,6 @@ module.exports = {
                 md: '0.5rem',
                 sm: '0.375rem',
             },
-            fontFamily: {
-                sans: ['var(--font-sans)'],
-                montserrat: ['var(--font-montserrat)'],
-            },
             keyframes: {
                 "accordion-down": {
                     from: { height: '0' },
@@ -149,7 +149,8 @@ module.exports = {
         },
     },
     plugins: [
-        // line-clamp já está integrado ao Tailwind CSS v3.3+ como recurso nativo
-        // Não é mais necessário o plugin @tailwindcss/line-clamp
+        // require('@tailwindcss/line-clamp'), // Comentado ou removido
+        // Embora o line-clamp seja nativamente integrado ao Tailwind CSS v3.3+,
+        // estamos incluindo o plugin para compatibilidade com o build atual
     ],
 }

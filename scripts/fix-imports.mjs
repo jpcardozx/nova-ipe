@@ -4,9 +4,9 @@
  * usando aliases que podem não estar funcionando corretamente no ambiente de build.
  */
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+import fs from 'node:fs';
+import path from 'node:path';
+import { execSync } from 'node:child_process';
 
 console.log('🔄 Corrigindo problemas de importação para o build da Vercel...');
 

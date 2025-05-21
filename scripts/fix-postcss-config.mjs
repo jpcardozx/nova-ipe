@@ -3,8 +3,8 @@
  * It fixes the "Malformed PostCSS Configuration" error
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
 
 console.log('🔧 Fixing PostCSS configuration for Next.js 15+...');
 console.log('');
@@ -70,20 +70,20 @@ console.log('🛡️ PostCSS configuration protection hook created');
 // Update next.config.js to require this hook
 const nextConfigPath = path.join(process.cwd(), 'next.config.js');
 if (fs.existsSync(nextConfigPath)) {
-    let nextConfig = fs.readFileSync(nextConfigPath, 'utf8');
+  let nextConfig = fs.readFileSync(nextConfigPath, 'utf8');
 
-    if (!nextConfig.includes('postcss-config-hook')) {
-        // Add the hook at the top of the file
-        nextConfig = `// Require PostCSS configuration protection
+  if (!nextConfig.includes('postcss-config-hook')) {
+    // Add the hook at the top of the file
+    nextConfig = `// Require PostCSS configuration protection
 require('./scripts/postcss-config-hook.js');\n\n${nextConfig}`;
 
-        fs.writeFileSync(nextConfigPath, nextConfig);
-        console.log('✅ next.config.js updated to use PostCSS protection hook');
-    } else {
-        console.log('ℹ️ PostCSS protection hook already included in next.config.js');
-    }
+    fs.writeFileSync(nextConfigPath, nextConfig);
+    console.log('✅ next.config.js updated to use PostCSS protection hook');
+  } else {
+    console.log('ℹ️ PostCSS protection hook already included in next.config.js');
+  }
 } else {
-    console.log('⚠️ next.config.js not found');
+  console.log('⚠️ next.config.js not found');
 }
 
 // Important: Always exit with success code to ensure build continues

@@ -58,7 +58,7 @@ export function extractImageUrl(image: any): string | undefined {
                     if (refParts.length >= 4) {
                         // Formato completo: image-abc123-800x600-jpg
                         // Capturar as dimensões corretamente
-                        let dimensions = refParts[2];
+                        const dimensions = refParts[2];
 
                         // Processar a extensão do arquivo
                         let extension = refParts[3];

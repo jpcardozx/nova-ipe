@@ -188,7 +188,7 @@ if (fileExists(postcssConfigPath)) {
     }
 
     // Verificar a configuração atual para garantir que ela está simplificada
-    let content = fs.readFileSync(postcssConfigPath, 'utf8');
+    const content = fs.readFileSync(postcssConfigPath, 'utf8');
 
     // Verificar se a configuração já está simplificada
     if (!content.includes('postcssPlugin: \'autoprefixer\'')) {

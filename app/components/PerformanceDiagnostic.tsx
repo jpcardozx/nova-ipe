@@ -73,7 +73,7 @@ export default function PerformanceDiagnostic() {
         // Array para armazenar observadores de performance
         const observers: PerformanceObserver[] = [];
         let longTasks: { duration: number; startTime: number }[] = [];
-        let resourceLoads: Record<string, number> = {};
+        const resourceLoads: Record<string, number> = {};
 
         try {
             // Observe LCP (Largest Contentful Paint)

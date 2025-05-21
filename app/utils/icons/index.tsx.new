@@ -1,0 +1,185 @@
+/**
+ * app/utils/icons/index.tsx
+ * Sistema resiliente para importação de ícones com fallback
+ */
+
+import React, { Suspense } from 'react';
+import dynamic from 'next/dynamic';
+import * as Fallbacks from '../icon-fallbacks';
+import { safeDynamic } from '../../components/DynamicImportWrapper';
+import type { LucideProps } from 'lucide-react';
+
+// Direct imports to avoid dynamic loading issues
+import {
+    Home as HomeIconBase,
+    ChevronRight as ChevronRightIconBase,
+    ChevronLeft as ChevronLeftIconBase,
+    ChevronDown as ChevronDownIconBase,
+    Search as SearchIconBase,
+    Menu as MenuIconBase,
+    User as UserIconBase,
+    X as XIconBase,
+    MapPin as MapPinIconBase,
+    Phone as PhoneIconBase,
+    Mail as MailIconBase,
+    Calendar as CalendarIconBase
+} from 'lucide-react';
+
+// Types
+type IconName = string;
+type LucideIcon = React.ComponentType<Omit<LucideProps, 'ref'>>;
+interface IconProps extends Omit<LucideProps, 'ref'> {
+    name: IconName;
+}
+
+// Simple fallback component
+const IconFallback = ({ size = 24, ...props }: LucideProps) => {
+    // Try to use specific fallback if available
+    const iconName = props.name || '';
+    const FallbackIcon = (Fallbacks as any)[iconName];
+
+    if (FallbackIcon) {
+        return <FallbackIcon size={size} {...props} />;
+    }
+
+    // Generic fallback with fixed TypeScript issues
+    return (
+        <span
+            style={{
+                width: size,
+                height: size,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }}
+        >
+            <svg
+                width={size}
+                height={size}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                {...props}
+            >
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+            </svg>
+        </span>
+    );
+};
+
+// Icon component factory with enhanced error handling
+const createIconComponent = (iconName: string): React.FC<Omit<LucideProps, 'ref'>> => {
+    const IconComponent = (props: Omit<LucideProps, 'ref'>) => {
+        try {
+            const DynamicIcon = safeDynamic<LucideProps>(
+                () => {
+                    return import('lucide-react').then((mod) => {
+                        const Icon = mod[iconName as keyof typeof mod];
+                        if (!Icon) {
+                            throw new Error(`Icon ${iconName} not found in lucide-react`);
+                        }
+                        return { default: Icon as React.ComponentType<LucideProps> };
+                    });
+                },
+                {
+                    componentName: `lucide-icon-${iconName}`,
+                    retries: 2,
+                }
+            );
+
+            return (
+                <Suspense fallback={<IconFallback size={props.size} {...props} name={iconName} />}>
+                    <DynamicIcon {...props} />
+                </Suspense>
+            );
+        } catch (error) {
+            console.warn(`Failed to load icon: ${iconName}`, error);
+            return <IconFallback size={props.size} {...props} name={iconName} />;
+        }
+    };
+    
+    return IconComponent;
+};
+
+// Base icon exports
+export const Home = HomeIconBase;
+export const ChevronRight = ChevronRightIconBase;
+export const ChevronLeft = ChevronLeftIconBase;
+export const ChevronDown = ChevronDownIconBase;
+export const User = UserIconBase;
+export const MapPin = MapPinIconBase;
+export const Phone = PhoneIconBase;
+export const Calendar = CalendarIconBase;
+
+// Dynamic icon exports
+export const Bell = createIconComponent('Bell');
+export const Info = createIconComponent('Info');
+export const AlertCircle = createIconComponent('AlertCircle');
+export const Building2 = createIconComponent('Building2');
+export const Heart = createIconComponent('Heart');
+export const Star = createIconComponent('Star');
+export const Clock = createIconComponent('Clock');
+export const Plus = createIconComponent('Plus');
+export const Minus = createIconComponent('Minus');
+
+// Named exports with explicit types to avoid redeclaration
+export const MenuIcon: React.FC<Omit<LucideProps, 'ref'>> = MenuIconBase;
+export const XIcon: React.FC<Omit<LucideProps, 'ref'>> = XIconBase;
+export const CheckIcon: React.FC<Omit<LucideProps, 'ref'>> = createIconComponent('Check');
+export const SettingsIcon: React.FC<Omit<LucideProps, 'ref'>> = createIconComponent('Settings');
+export const SearchIcon: React.FC<Omit<LucideProps, 'ref'>> = SearchIconBase;
+export const MailIcon: React.FC<Omit<LucideProps, 'ref'>> = MailIconBase;
+
+// Main icon component
+const IconComponent: React.FC<IconProps> = ({ name, ...props }) => {
+    try {
+        // Check for direct imports first
+        const directIcons: Record<string, React.ComponentType<LucideProps>> = {
+            Home: HomeIconBase,
+            ChevronRight: ChevronRightIconBase,
+            ChevronLeft: ChevronLeftIconBase,
+            ChevronDown: ChevronDownIconBase,
+            Search: SearchIconBase,
+            Menu: MenuIconBase,
+            User: UserIconBase,
+            X: XIconBase,
+            MapPin: MapPinIconBase,
+            Phone: PhoneIconBase,
+            Mail: MailIconBase,
+            Calendar: CalendarIconBase
+        };
+
+        const DirectIcon = directIcons[name];
+        if (DirectIcon) {
+            return <DirectIcon {...props} />;
+        }
+
+        // Fallback to dynamic loading
+        const DynamicIconComponent = createIconComponent(name);
+        return <DynamicIconComponent {...props} />;
+    } catch (error) {
+        console.warn(`Failed to load icon: ${name}`, error);
+        return <IconFallback {...props} name={name} />;
+    }
+};
+
+export { IconComponent as Icon };
+
+// Helper for dynamic icon loading
+export const getDynamicIcon = (name: string) => {
+    return dynamic<LucideProps>(() => {
+        return import('lucide-react').then((mod) => {
+            const Icon = mod[name as keyof typeof mod];
+            if (!Icon) {
+                throw new Error(`Icon ${name} not found`);
+            }
+            return Icon;
+        });
+    }, {
+        loading: () => <IconFallback name={name} />,
+        ssr: false,
+    });
+};

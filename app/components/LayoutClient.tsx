@@ -10,11 +10,11 @@ import { OrganizationSchema, WebsiteSchema, LocalBusinessSchema } from './Struct
 import HydrationLoadingFix from './HydrationLoadingFix';
 import HydrationGuard from './HydrationGuard';
 import DataPrefetcher from './DataPrefetcher';
-import FontOptimizer from './FontOptimizer';
 import OfflineSupportProvider from '../providers/OfflineSupportProvider';
 import ChunkErrorBoundary from './ChunkErrorBoundary';
 import LucidePreloader from './LucidePreloader';
 import ChunkRecoveryService from './ChunkRecoveryService';
+import ChunkErrorRecovery from './ChunkErrorRecovery';
 
 // Importações dinâmicas para reduzir bundle inicial com tratamento de erros aprimorado
 const WebVitalsMonitor = safeDynamic(() => import('./WebVitalsMonitor'), {
@@ -121,55 +121,59 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
             document.removeEventListener('DOMContentLoaded', optimizeInitialRender);
             window.removeEventListener('load', optimizeInitialRender);
         };
-    }, []); return (<ChunkErrorBoundary>
-        <OfflineSupportProvider>
-            {/* Serviço de recuperação para ChunkLoadError */}
-            <ChunkRecoveryService />
+    }, []);
 
-            {/* Precarrega ícones lucide-react para evitar ChunkLoadError */}
-            <LucidePreloader />
+    return (
+        <ChunkErrorBoundary>
+            <ChunkErrorRecovery>
+                <OfflineSupportProvider>
+                    {/* Serviço de recuperação para ChunkLoadError */}
+                    <ChunkRecoveryService />
 
-            {/* Fix hydration issues with visibility */}
-            <HydrationLoadingFix />
-            <HydrationGuard />
-            {/* Script otimizado para WhatsApp via Next.js Script */}
-            <Script
-                id="whatsapp-optimizer"
-                strategy="afterInteractive"
-                dangerouslySetInnerHTML={{
-                    __html: `
+                    {/* Precarrega ícones lucide-react para evitar ChunkLoadError */}
+                    <LucidePreloader />
+
+                    {/* Fix hydration issues with visibility */}
+                    <HydrationLoadingFix />
+                    <HydrationGuard />
+                    {/* Script otimizado para WhatsApp via Next.js Script */}
+                    <Script
+                        id="whatsapp-optimizer"
+                        strategy="afterInteractive"
+                        dangerouslySetInnerHTML={{
+                            __html: `
             (function() {
               if(/WhatsApp/.test(navigator.userAgent) || document.referrer.includes('whatsapp')) {
                 document.body.classList.add('from-whatsapp');
               }
             })();
           `
-                }}
-            />
+                        }}
+                    />
 
-            {/* Structured Data for SEO and Social Sharing */}
-            <ClientOnly>
-                <Suspense fallback={null}>
-                    {/* Individual structured data components for better SEO */}
-                    <OrganizationSchema />
-                    <WebsiteSchema />
-                    <LocalBusinessSchema />
-                </Suspense>
-            </ClientOnly>
+                    {/* Structured Data for SEO and Social Sharing */}
+                    <ClientOnly>
+                        <Suspense fallback={null}>
+                            {/* Individual structured data components for better SEO */}
+                            <OrganizationSchema />
+                            <WebsiteSchema />
+                            <LocalBusinessSchema />
+                        </Suspense>
+                    </ClientOnly>
 
-            {/* Main content */}
-            <Suspense fallback={
-                <div className="flex items-center justify-center min-h-screen">
-                    <div className="w-12 h-12 rounded-full border-4 border-primary-200 border-t-primary-600 animate-spin"></div>
-                </div>
-            }>
-                {children}
-            </Suspense>            {/* Gerenciador de estado de carregamento com boundary específico para evitar ChunkLoadError */}
-            <ChunkErrorBoundary
-                fallback={
-                    <script
-                        dangerouslySetInnerHTML={{
-                            __html: `
+                    {/* Main content */}
+                    <Suspense fallback={
+                        <div className="flex items-center justify-center min-h-screen">
+                            <div className="w-12 h-12 rounded-full border-4 border-primary-200 border-t-primary-600 animate-spin"></div>
+                        </div>
+                    }>
+                        {children}
+                    </Suspense>            {/* Gerenciador de estado de carregamento com boundary específico para evitar ChunkLoadError */}
+                    <ChunkErrorBoundary
+                        fallback={
+                            <script
+                                dangerouslySetInnerHTML={{
+                                    __html: `
                                 // Script de fallback para garantir página visível em caso de erro
                                 (function() {
                                     document.documentElement.removeAttribute('data-loading-state');
@@ -178,52 +182,51 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                                     document.body.style.visibility = 'visible';
                                 })();
                             `
-                        }}
-                    />
-                }
-            >
-                <LoadingStateManager />
-            </ChunkErrorBoundary>
+                                }}
+                            />
+                        }
+                    >
+                        <LoadingStateManager />
+                    </ChunkErrorBoundary>
 
-            {/* Data prefetcher para otimização de performance */}
-            <ClientOnly>
-                <DataPrefetcher prefetchHome={true} prefetchListings={true} />
-            </ClientOnly>
+                    {/* Data prefetcher para otimização de performance */}
+                    <ClientOnly>
+                        <DataPrefetcher prefetchHome={true} prefetchListings={true} />
+                    </ClientOnly>
 
-            {/* Font optimization */}
-            <FontOptimizer />            {/* Componente Web Vitals com flag experimental de debug */}
-            <Suspense fallback={null}>
-                <ClientWebVitals />
-                {/* Adicionamos uma div vazia para auxiliar no debugging */}
-                <div id="web-vitals-mount-point" style={{ display: 'none' }} data-debug="true" />
-            </Suspense>
-
-            {/* Web Vitals Monitor e ferramentas de otimização/diagnóstico */}
-            {process.env.NODE_ENV === 'production' ? (
-                <>
                     <Suspense fallback={null}>
-                        <WebVitalsMonitor />
+                        <ClientWebVitals />
+                        {/* Adicionamos uma div vazia para auxiliar no debugging */}
+                        <div id="web-vitals-mount-point" style={{ display: 'none' }} data-debug="true" />
                     </Suspense>
-                    <JavaScriptOptimizer priority={true} />
-                </>
-            ) : (
-                <>
-                    {/* Performance Debugging Tools - Development Only */}
-                    <WebVitalsDebuggerWrapper />
-                    <Suspense fallback={null}>
-                        <ClientPerformanceMonitor />
-                    </Suspense>
-                    <PerformanceDiagnostics />
-                </>
-            )}{/* Ferramentas de diagnóstico que podem ser habilitadas via URL com ?debug=performance */}
-            <Suspense fallback={null}>
-                <PerformanceDiagnostics />
-            </Suspense>
 
-            {/* Performance analytics tool - accessible via Ctrl+Alt+P or ?debug=performance */}
-            <Suspense fallback={null}>
-                <PerformanceAnalytics />
-            </Suspense>        </OfflineSupportProvider>
-    </ChunkErrorBoundary>
+                    {/* Web Vitals Monitor e ferramentas de otimização/diagnóstico */}
+                    {process.env.NODE_ENV === 'production' ? (
+                        <>
+                            <Suspense fallback={null}>
+                                <WebVitalsMonitor />
+                            </Suspense>
+                            <JavaScriptOptimizer priority={true} />
+                        </>
+                    ) : (
+                        <>
+                            {/* Performance Debugging Tools - Development Only */}
+                            <WebVitalsDebuggerWrapper />
+                            <Suspense fallback={null}>
+                                <ClientPerformanceMonitor />
+                            </Suspense>
+                            <PerformanceDiagnostics />
+                        </>
+                    )}{/* Ferramentas de diagnóstico que podem ser habilitadas via URL com ?debug=performance */}
+                    <Suspense fallback={null}>
+                        <PerformanceDiagnostics />
+                    </Suspense>
+
+                    {/* Performance analytics tool - accessible via Ctrl+Alt+P or ?debug=performance */}
+                    <Suspense fallback={null}>
+                        <PerformanceAnalytics />                </Suspense>
+                </OfflineSupportProvider>
+            </ChunkErrorRecovery>
+        </ChunkErrorBoundary>
     );
 }

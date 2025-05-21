@@ -2,9 +2,9 @@
  * Script para garantir compatibilidade do PostCSS e Tailwind CSS no build de produção do Vercel
  */
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+import fs from 'node:fs';
+import path from 'node:path';
+import { execSync } from 'node:child_process';
 
 console.log('🔧 Verificando e corrigindo instalações do PostCSS e Tailwind CSS...');
 

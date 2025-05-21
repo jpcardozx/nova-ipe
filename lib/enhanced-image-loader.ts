@@ -57,7 +57,7 @@ function createSanityImageUrl(reference: string): string {
         const imageId = parts[1];
 
         // Determinar formato e dimensões
-        let dimensions = parts[2] || '1200x800';
+        const dimensions = parts[2] || '1200x800';
         let format = parts[3] || 'jpg';
 
         // Limpar parâmetros extras

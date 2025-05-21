@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import { redirect, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 
 /**
  * Componente de redirecionamento para a nova versão do site
@@ -12,8 +13,10 @@ import Link from 'next/link';
  */
 export default function RedirectPage() {
     const router = useRouter(); useEffect(() => {
-        // Registra a visita no localStorage para controle
-        localStorage.setItem('saw_redirect_page', 'true');
+        // Verifica se estamos no ambiente do cliente
+        if (typeof window !== 'undefined' && window.localStorage) {
+            window.localStorage.setItem('saw_redirect_page', 'true');
+        }
 
         // Redireciona automaticamente depois de um curto período
         const timer = setTimeout(() => {
@@ -27,9 +30,11 @@ export default function RedirectPage() {
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-white">
             <div className="max-w-lg w-full p-8 bg-white rounded-xl shadow-lg text-center">
                 <div className="mb-6">
-                    <img
+                    <Image
                         src="/images/logo-ipe.png"
                         alt="Ipê Imobiliária"
+                        width={64}
+                        height={64}
                         className="h-16 mx-auto"
                     />
                 </div>

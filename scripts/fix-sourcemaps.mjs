@@ -9,9 +9,9 @@
  * @date 19/05/2025
  */
 
-const fs = require('fs');
-const path = require('path');
-const glob = require('glob');
+import fs from 'node:fs';
+import path from 'node:path';
+import { glob } from 'glob';
 
 // Detectar ambiente de execução
 const isCI = process.env.CI === 'true' || process.env.VERCEL === '1';

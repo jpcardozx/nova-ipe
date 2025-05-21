@@ -1,0 +1,41 @@
+// instrumentation.server.ts - Server-only tracing setup
+import * as Sentry from '@sentry/nextjs';
+import { NodeSDK } from '@opentelemetry/sdk-node';
+import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
+import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
+import { Resource } from '@opentelemetry/resources';
+
+export const onRequestError = Sentry.captureRequestError;
+
+export async function register() {
+    if (process.env.NEXT_RUNTIME === 'nodejs' && process.env.NODE_ENV === 'production') {
+        try {
+            Sentry.init({
+                dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+                tracesSampleRate: 0.1,
+                environment: process.env.NODE_ENV,
+                enabled: true,
+            });
+            console.log('Sentry server instrumentation initialized');
+
+            const sdk = new NodeSDK({
+                resource: new Resource({
+                    [SemanticResourceAttributes.SERVICE_NAME]: 'nova-ipe',
+                }),
+                traceExporter: new OTLPTraceExporter(),
+                instrumentations: [getNodeAutoInstrumentations()],
+            });
+            sdk.start();
+
+            process.on('SIGTERM', () => {
+                sdk.shutdown()
+                    .then(() => console.log('OpenTelemetry SDK shut down successfully'))
+                    .catch(console.error)
+                    .finally(() => process.exit(0));
+            });
+        } catch (error) {
+            console.error('Instrumentation initialization failed:', error);
+        }
+    }
+}

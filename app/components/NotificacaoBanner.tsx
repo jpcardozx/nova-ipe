@@ -25,11 +25,18 @@ export default function NotificacaoBanner({
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
+        // Wrap localStorage usage with browser environment checks
+        if (typeof window === 'undefined') return;
+
         // Verificar se o banner já foi fechado anteriormente
         if (storageKey) {
-            const wasDismissed = localStorage.getItem(storageKey) === 'dismissed';
-            if (wasDismissed) {
-                return;
+            try {
+                const wasDismissed = window.localStorage.getItem(storageKey) === 'dismissed';
+                if (wasDismissed) {
+                    return;
+                }
+            } catch (error) {
+                console.error('Error accessing localStorage:', error);
             }
         }
 
@@ -57,7 +64,13 @@ export default function NotificacaoBanner({
 
         // Persistir a decisão se necessário
         if (storageKey) {
-            localStorage.setItem(storageKey, 'dismissed');
+            try {
+                if (typeof window !== 'undefined') {
+                    window.localStorage.setItem(storageKey, 'dismissed');
+                }
+            } catch (error) {
+                console.error('Error saving to localStorage:', error);
+            }
         }
     };
 

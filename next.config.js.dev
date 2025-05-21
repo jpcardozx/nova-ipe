@@ -1,0 +1,39 @@
+/**
+ * @type {import('next').NextConfig}
+ * Configuração otimizada para desenvolvimento rápido
+ */
+
+const nextConfig = {
+  reactStrictMode: true,
+  poweredByHeader: false,
+  
+  experimental: {
+    // Remove features experimentais para acelerar o build
+    optimizeCss: false,
+  },
+  
+  transpilePackages: [],
+  
+  images: {
+    domains: ['cdn.sanity.io', 'images.unsplash.com'],
+    formats: ['image/webp'],
+  },
+  
+  webpack: (config, { dev }) => {
+    if (dev) {
+      // Configurações para dev - manter mínimo
+      config.infrastructureLogging = { level: 'error' };
+      
+      // Ignorar imports problemáticos em desenvolvimento
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@sentry/nextjs': false,
+        '@opentelemetry/instrumentation': false,
+        '@opentelemetry/api': false,
+      };
+    }
+    return config;
+  },
+};
+
+module.exports = nextConfig;

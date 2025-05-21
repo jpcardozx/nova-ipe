@@ -68,17 +68,16 @@ declare global {
         variationSettings: string;
         display: string;
         load(): Promise<FontFace>;
-    }    // Global variable declarations
-    var localStorage: Storage;
-    var sessionStorage: Storage;
-    var window: Window & typeof globalThis;
-    var document: Document;
-    var navigator: Navigator;
-    var requestIdleCallback: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
-    var cancelIdleCallback: (handle: number) => void;
-    var getComputedStyle: (elt: Element, pseudoElt?: string | null) => CSSStyleDeclaration;
+    }    // Global variable declarations    declare const localStorage: Storage;
+    declare const sessionStorage: Storage;
+    declare const window: Window & typeof globalThis;
+    declare const document: Document;
+    declare const navigator: Navigator;
+    declare const requestIdleCallback: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
+    declare const cancelIdleCallback: (handle: number) => void;
+    declare const getComputedStyle: (elt: Element, pseudoElt?: string | null) => CSSStyleDeclaration;
 
-    var FontFace: {
+    declare const FontFace: {
         prototype: FontFace;
         new(family: string, source: string, descriptors?: FontFaceDescriptors): FontFace;
     }; interface Document extends Node, EventTarget {
@@ -348,20 +347,16 @@ declare global {
         domContentLoadedEventEnd: number;
         fetchStart: number;
         loadEventEnd: number;
-    }
-
-    // IntersectionObserver
-    var IntersectionObserver: {
+    }    // IntersectionObserver
+    declare const IntersectionObserver: {
         prototype: IntersectionObserver;
         new(callback: IntersectionObserverCallback, options?: IntersectionObserverInit): IntersectionObserver;
     };
 
     interface IntersectionObserverCallback {
         (entries: IntersectionObserverEntry[], observer: IntersectionObserver): void;
-    }
-
-    // Image constructor
-    var Image: {
+    }    // Image constructor
+    declare const Image: {
         new(width?: number, height?: number): HTMLImageElement;
         prototype: HTMLImageElement;
     };

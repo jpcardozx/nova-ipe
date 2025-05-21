@@ -10,18 +10,22 @@ export default function AnuncioNovaVersao() {
 
     useEffect(() => {
         // Check if the user has previously closed the announcement
-        const announcementClosed = localStorage.getItem('novaVersaoAnnouncementClosed');
+        if (typeof window !== 'undefined') {
+            const announcementClosed = window.localStorage?.getItem('novaVersaoAnnouncementClosed');
 
-        // If they haven't closed it before, show it
-        if (announcementClosed !== 'true') {
-            setIsClosed(false);
+            // If they haven't closed it before, show it
+            if (announcementClosed !== 'true') {
+                setIsClosed(false);
+            }
         }
     }, []);
 
     const handleClose = () => {
         setIsClosed(true);
         // Save the preference in localStorage
-        localStorage.setItem('novaVersaoAnnouncementClosed', 'true');
+        if (typeof window !== 'undefined') {
+            window.localStorage?.setItem('novaVersaoAnnouncementClosed', 'true');
+        }
     };
 
     if (isClosed) return null;

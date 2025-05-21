@@ -124,9 +124,9 @@ export default function ClientSidePropertiesProvider({
 }: ClientSidePropertiesProviderProps) {
     // Estado para favoritos (persistido no localStorage)
     const [favoritos, setFavoritos] = React.useState<string[]>(() => {
-        if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined' && window.localStorage) {
             try {
-                const saved = localStorage.getItem('favoritos-imoveis');
+                const saved = window.localStorage.getItem('favoritos-imoveis');
                 return saved ? JSON.parse(saved) : [];
             } catch (e) {
                 console.error('Erro ao carregar favoritos:', e);
@@ -140,8 +140,8 @@ export default function ClientSidePropertiesProvider({
     const addFavorito = React.useCallback((id: string) => {
         setFavoritos((prev) => {
             const updated = [...prev, id];
-            if (typeof window !== 'undefined') {
-                localStorage.setItem('favoritos-imoveis', JSON.stringify(updated));
+            if (typeof window !== 'undefined' && window.localStorage) {
+                window.localStorage.setItem('favoritos-imoveis', JSON.stringify(updated));
             }
             return updated;
         });
@@ -150,8 +150,8 @@ export default function ClientSidePropertiesProvider({
     const removeFavorito = React.useCallback((id: string) => {
         setFavoritos((prev) => {
             const updated = prev.filter((favId) => favId !== id);
-            if (typeof window !== 'undefined') {
-                localStorage.setItem('favoritos-imoveis', JSON.stringify(updated));
+            if (typeof window !== 'undefined' && window.localStorage) {
+                window.localStorage.setItem('favoritos-imoveis', JSON.stringify(updated));
             }
             return updated;
         });

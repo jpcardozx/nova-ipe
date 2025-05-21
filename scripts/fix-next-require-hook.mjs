@@ -4,8 +4,8 @@
  * "ReferenceError: __non_webpack_require__ is not defined"
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
 
 console.log('🔧 Aplicando patch para o problema de __non_webpack_require__ no Next.js...');
 
@@ -22,7 +22,7 @@ fs.copyFileSync(requireHookPath, `${requireHookPath}.bak`);
 console.log('✅ Backup do require-hook.js criado');
 
 // Ler o conteúdo do arquivo
-let content = fs.readFileSync(requireHookPath, 'utf8');
+const content = fs.readFileSync(requireHookPath, 'utf8');
 
 // Verificar se contém o código problemático
 if (content.includes('__non_webpack_require__')) {

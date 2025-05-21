@@ -1,5 +1,5 @@
-import type { ImovelProjetado } from '@/types/imovel-client'
-import type { ImovelClient } from '@/types/imovel-client'
+import type { ImovelProjetado , ImovelClient } from '@/types/imovel-client'
+
 
 export function mapImovelToClient(i: ImovelProjetado): ImovelClient {
   return {

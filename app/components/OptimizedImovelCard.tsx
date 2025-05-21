@@ -28,6 +28,7 @@ import { formatarMoeda, formatarArea, cn } from '@/lib/utils';
 import type { ImovelClient } from '@/types/imovel-client';
 import { useInView } from 'react-intersection-observer';
 import OptimizedImageGallery from './OptimizedImageGallery';
+import { logger } from '../../lib/logger';
 
 export type FinalidadeType = 'Venda' | 'Aluguel' | 'Temporada';
 export type VariantType = 'default' | 'grid' | 'list' | 'featured' | 'compact';
@@ -67,8 +68,10 @@ function useFavorite(id: string, onToggle?: (id: string) => void) {
 
     // Inicializar estado de favorito após renderização
     useEffect(() => {
+        if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') return;
+
         try {
-            const savedFavorites = localStorage.getItem('favorites') || '[]';
+            const savedFavorites = window.localStorage.getItem('favorites') || '[]';
             const isFavorite = JSON.parse(savedFavorites).includes(id);
             setFav(isFavorite);
         } catch {
@@ -77,13 +80,15 @@ function useFavorite(id: string, onToggle?: (id: string) => void) {
     }, [id]);
 
     useEffect(() => {
+        if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') return;
+
         try {
-            const list: string[] = JSON.parse(localStorage.getItem('favorites') || '[]');
+            const list: string[] = JSON.parse(window.localStorage.getItem('favorites') || '[]');
             const updated = fav ? Array.from(new Set([...list, id])) : list.filter(x => x !== id);
-            localStorage.setItem('favorites', JSON.stringify(updated));
+            window.localStorage.setItem('favorites', JSON.stringify(updated));
             onToggle?.(id);
         } catch (error) {
-            console.error("Error updating favorites:", error);
+            logger.error("Error updating favorites:", error);
         }
     }, [fav, id, onToggle]);
 

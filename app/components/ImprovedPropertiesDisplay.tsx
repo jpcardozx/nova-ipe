@@ -5,8 +5,8 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
 import SectionHeader from './ui/SectionHeader';
-import { cn } from '@/lib/utils';
-import { formatarMoeda } from '@/lib/utils';
+import { cn , formatarMoeda } from '@/lib/utils';
+
 import { PropertyFilters, SortOptions, useEnhancedSanityProperties } from '../hooks/useEnhancedSanityProperties';
 import ImprovedPropertiesGrid from './ImprovedPropertiesGrid';
 import FavoritesEnabledGrid from './FavoritesEnabledGrid';
