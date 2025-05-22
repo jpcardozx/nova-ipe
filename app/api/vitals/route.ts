@@ -55,8 +55,40 @@ function getRating(name: string, value: number): 'good' | 'needs-improvement' | 
  */
 export async function POST(request: NextRequest) {
     try {
-        // Parse do corpo da requisição
-        const body = await request.json();
+        // Verifica o Content-Type
+        const contentType = request.headers.get('content-type');
+        if (!contentType?.includes('application/json')) {
+            return NextResponse.json({ error: 'Content-Type must be application/json' }, { status: 415 });
+        }
+
+        // Clona a request para garantir que podemos ler o body
+        const clonedRequest = request.clone();
+
+        // Tenta ler o body como texto primeiro
+        const rawBody = await clonedRequest.text();
+        if (!rawBody) {
+            return NextResponse.json({ error: 'Empty request body' }, { status: 400 });
+        }
+
+        // Tenta fazer o parse do JSON
+        let body;
+        try {
+            body = JSON.parse(rawBody);
+        } catch (e) {
+            console.error('Error parsing JSON:', e);
+            return NextResponse.json({
+                error: 'Invalid JSON in request body',
+                details: e instanceof Error ? e.message : 'Unknown parsing error'
+            }, { status: 400 });
+        }
+
+        // Valida campos obrigatórios
+        if (!body.name && !body.metricName) {
+            return NextResponse.json({ error: 'Missing required field: name/metricName' }, { status: 400 });
+        }
+        if (!body.value && body.value !== 0) {
+            return NextResponse.json({ error: 'Missing required field: value' }, { status: 400 });
+        }
 
         // Normaliza a estrutura dos dados
         const metric: WebVitalMetric = {
@@ -67,13 +99,12 @@ export async function POST(request: NextRequest) {
             page: body.page || request.nextUrl.pathname,
             timestamp: body.timestamp || Date.now(),
             // Classificação da métrica
-            rating: getRating(body.name, Number(body.value)),
+            rating: getRating(body.name || body.metricName, Number(body.value || body.metricValue)),
             // Contexto adicional
             userAgent: request.headers.get('user-agent') || undefined,
-            connection: request.headers.get('connection-type') || undefined,
-            viewport: request.headers.get('viewport-width') ?
-                `${request.headers.get('viewport-width')}x${request.headers.get('viewport-height')}` :
-                undefined
+            deviceType: body.deviceType,
+            connection: body.connection,
+            viewport: body.viewport
         };
 
         // Log em desenvolvimento

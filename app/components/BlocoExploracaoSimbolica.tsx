@@ -8,31 +8,31 @@ import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { useProperties, QuickPropertySearch } from "./ClientComponents"
 
-// Categorias realistas de Guararema
+// Categorias de imóveis em Guararema
 const categoriasDestaque = [
     {
         label: "Casas",
         icone: <Home className="w-6 h-6" />,
         href: "/buscar?tipo=casa&bairro=centro",
-        descricao: "Imóveis próximos ao comércio e infraestrutura",
+        descricao: "Imóveis residenciais em áreas centrais",
         bgImage: "/houses.jpg",
-        quantidadeMedia: "Novidades disponíveis"
+        quantidadeMedia: "Em catálogo"
     },
     {
         label: "Terrenos",
         icone: <MapPin className="w-6 h-6" />,
         href: "/buscar?tipo=terreno",
-        descricao: "Oportunidades para construção e investimento",
+        descricao: "Áreas para construção residencial",
         bgImage: "/terreno.jpg",
-        quantidadeMedia: "Catálogo Exclusivo"
+        quantidadeMedia: "Disponíveis"
     },
     {
         label: "Comércios",
         icone: <ShoppingBag className="w-6 h-6" />,
         href: "/buscar?tipo=comercial",
-        descricao: "Pontos comerciais no centro e arredores",
+        descricao: "Espaços comerciais em localização central",
         bgImage: "/comerciais.jpg",
-        quantidadeMedia: "Confira opções disponíveis"
+        quantidadeMedia: "Para locação e venda"
     },
 ]
 
@@ -58,16 +58,14 @@ export default function BlocoExploracaoGuararema() {
 
     return (
         <section className="w-full py-16 px-6 md:px-12 bg-white">
-            <div className="max-w-6xl mx-auto">
-                {/* Cabeçalho simplificado */}
-                <div className="mb-12">
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-                        Explore Imóveis em Guararema
-                    </h2>
-                    <p className="text-gray-600 max-w-2xl">
-                        Navegue por nossa seleção de imóveis disponíveis nos principais bairros da cidade.
-                    </p>
-                </div>
+            <div className="max-w-6xl mx-auto">                {/* Cabeçalho simplificado */}                <div className="mb-12">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 font-display tracking-tight">
+                    Selecione sua Categoria de Interesse
+                </h2>
+                <p className="text-gray-600 max-w-2xl font-body leading-relaxed">
+                    Explore nosso portfólio segmentado por categoria ou utilize os filtros para uma busca refinada. <span className="text-amber-600 font-medium cursor-pointer hover:underline">Atualizações semanais.</span>
+                </p>
+            </div>
 
                 {/* Cards de categorias com design sóbrio */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
@@ -100,10 +98,10 @@ export default function BlocoExploracaoGuararema() {
                                         </span>
                                     </div>
 
-                                    <h3 className="text-lg font-semibold text-white mb-1">
+                                    <h3 className="text-lg font-semibold text-white mb-1 font-display">
                                         {categoria.label}
                                     </h3>
-                                    <p className="text-sm text-white/90">
+                                    <p className="text-sm text-white/90 font-body">
                                         {categoria.descricao}
                                     </p>
                                 </div>
@@ -113,20 +111,19 @@ export default function BlocoExploracaoGuararema() {
                 </div>
 
                 {/* Seção de filtros por bairro */}
-                <div className="bg-amber-50 rounded-xl p-6 border border-amber-100">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-                        <div>
-                            <h3 className="text-lg font-semibold text-gray-900">Buscar por Bairro</h3>
-                            <p className="text-sm text-gray-600 mt-1">Encontre imóveis nos principais bairros de Guararema</p>
-                        </div>
-                        <Link
-                            href="/mapa"
-                            className="text-sm text-amber-700 hover:text-amber-800 font-medium flex items-center gap-1"
-                        >
-                            <Car className="w-4 h-4" />
-                            Ver no mapa
-                        </Link>
+                <div className="bg-amber-50 rounded-xl p-6 border border-amber-100">                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                    <div>
+                        <h3 className="text-lg font-semibold text-gray-900 font-display">Escolha seu Bairro Ideal</h3>
+                        <p className="text-sm text-gray-600 mt-1 font-body">Cada região tem sua personalidade. Qual combina com você?</p>
                     </div>
+                    <Link
+                        href="/mapa"
+                        className="text-sm text-amber-700 hover:text-amber-800 font-medium flex items-center gap-1 bg-amber-50 px-4 py-2 rounded-lg border border-amber-100 hover:bg-amber-100 transition-colors font-body"
+                    >
+                        <Car className="w-4 h-4" />
+                        Explorar no mapa
+                    </Link>
+                </div>
 
                     <div className="flex flex-wrap gap-3">
                         {filtrosBairros.map((filtro, idx) => (

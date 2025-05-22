@@ -20,7 +20,7 @@ body {
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
-  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif; /* Updated to --font-body */
 }
 
 /* Indicador de carregamento */

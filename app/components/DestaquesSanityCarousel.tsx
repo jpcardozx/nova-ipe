@@ -279,9 +279,8 @@ export function DestaquesSanityCarousel({
                     }
                     subtitle={subtitle}
                     align="left"
-                    className="max-w-3xl"
-                    titleClassName="text-3xl md:text-4xl font-bold text-gray-800"
-                    subtitleClassName="text-gray-600 mt-2 text-lg"
+                    className="max-w-3xl" titleClassName="text-display-3 text-gray-800"
+                    subtitleClassName="text-body-large text-gray-600 mt-2"
                 />
 
                 <PropertyFilter
@@ -303,17 +302,16 @@ export function DestaquesSanityCarousel({
                     autoplayInterval={6000}
                     className="pb-8"
                 />
-            ) : (
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-8 text-center">
-                    <h3 className="text-xl font-semibold text-amber-700 mb-2">Nenhum imóvel encontrado</h3>
-                    <p className="text-amber-600 mb-4">Não encontramos imóveis com os critérios de filtro selecionados.</p>
-                    <button
-                        onClick={() => setFilters({ type: 'all', bedrooms: null, priceRange: null, area: null })}
-                        className="inline-flex items-center px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition-colors"
-                    >
-                        Limpar todos os filtros
-                    </button>
-                </div>
+            ) : (<div className="bg-amber-50 border border-amber-200 rounded-xl p-8 text-center">
+                <h3 className="text-heading-3 text-amber-700 mb-2">Nenhum imóvel encontrado</h3>
+                <p className="text-body text-amber-600 mb-4">Não encontramos imóveis com os critérios de filtro selecionados.</p>
+                <button
+                    onClick={() => setFilters({ type: 'all', bedrooms: null, priceRange: null, area: null })}
+                    className="inline-flex items-center px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition-colors"
+                >
+                    Limpar todos os filtros
+                </button>
+            </div>
             )}
 
             <div className="mt-8 flex justify-center">

@@ -61,7 +61,7 @@ export const colors = {
 // Tipografia
 export const typography = {
     fontFamily: {
-        sans: 'var(--font-montserrat), ui-sans-serif, system-ui, sans-serif',
+        sans: 'var(--font-body), ui-sans-serif, system-ui, sans-serif', // Updated to --font-body
         serif: 'ui-serif, Georgia, Cambria, serif',
         mono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
     },
@@ -214,4 +214,4 @@ export const designSystem = {
     zIndex,
 };
 
-export default designSystem; 
+export default designSystem;

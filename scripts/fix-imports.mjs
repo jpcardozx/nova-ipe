@@ -42,7 +42,7 @@ const fontsDir = path.join(process.cwd(), 'public', 'fonts');
 ensureDirectoryExists(fontsDir);
 
 // 3. Copiar as fontes para o diretório public/fonts se necessário
-const fontFiles = ['Montserrat-Medium.ttf', 'Montserrat-Bold.ttf'];
+const fontFiles = []; // Removed Montserrat font files
 fontFiles.forEach(fontFile => {
     const sourceFont = path.join(process.cwd(), fontFile);
     const targetFont = path.join(fontsDir, fontFile);

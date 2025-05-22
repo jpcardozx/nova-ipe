@@ -43,17 +43,16 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
                 <span className={`inline-block px-4 py-1.5 ${colorClasses[badgeColor]} rounded-full text-sm font-semibold mb-4 animate-fade-in`}>
                     {badge}
                 </span>
-            )}
-            <h2 className={`text-3xl md:text-5xl font-bold text-[#0D1F2D] mb-4 tracking-tight ${titleClassName}`}>
+            )}            <h2 className={`text-display-2 text-[#0D1F2D] mb-4 ${titleClassName}`}>
                 {title}
             </h2>
             {subtitle && (
-                <p className={`text-lg text-[#0D1F2D]/70 leading-relaxed ${align === 'center' ? 'max-w-2xl mx-auto' : ''} ${subtitleClassName}`}>
+                <p className={`text-body-large text-[#0D1F2D]/70 leading-relaxed ${align === 'center' ? 'max-w-2xl mx-auto' : ''} ${subtitleClassName}`}>
                     {subtitle}
                 </p>
             )}
             {description && (
-                <p className={`text-lg md:text-xl text-[#0D1F2D]/70 leading-relaxed ${align === 'center' ? 'max-w-2xl mx-auto' : ''}`}>
+                <p className={`text-body-large text-[#0D1F2D]/70 leading-relaxed ${align === 'center' ? 'max-w-3xl mx-auto' : ''}`}>
                     {description}
                 </p>
             )}

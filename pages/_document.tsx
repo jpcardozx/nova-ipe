@@ -11,46 +11,37 @@
 import Document, { Html, Head, Main, NextScript, DocumentContext, DocumentInitialProps } from 'next/document';
 
 class OptimizedDocument extends Document {
-    static async getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
-        const initialProps = await Document.getInitialProps(ctx);
-        return { ...initialProps };
-    }
+  static async getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
+    const initialProps = await Document.getInitialProps(ctx);
+    return { ...initialProps };
+  }
 
-    render() {
-        return (
-            <Html lang="pt-BR">
-                <Head>
-                    {/* Preconnect to critical domains */}
-                    <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
-                    <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
-                    <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+  render() {
+    return (
+      <Html lang="pt-BR">
+        <Head>
+          {/* Preconnect to critical domains */}
+          <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
+          <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 
-                    {/* Critical fonts preload */}
-                    <link
-                        rel="preload"
-                        href="/fonts/montserrat-latin-wght-normal.woff2"
-                        as="font"
-                        type="font/woff2"
-                        crossOrigin="anonymous"
-                    />
+          {/* Preload critical images */}
+          <link
+            rel="preload"
+            href="/images/hero-background.webp"
+            as="image"
+            type="image/webp"
+          />
 
-                    {/* Preload critical images */}
-                    <link
-                        rel="preload"
-                        href="/images/hero-background.webp"
-                        as="image"
-                        type="image/webp"
-                    />
-
-                    {/* Critical inline CSS for above-the-fold content */}
-                    <style
-                        id="critical-css"
-                        dangerouslySetInnerHTML={{
-                            __html: `
+          {/* Critical inline CSS for above-the-fold content */}
+          <style
+            id="critical-css"
+            dangerouslySetInnerHTML={{
+              __html: `
                 :root {
                   --color-primary: #003049;
                   --color-secondary: #f59e0b;
-                  --font-sans: 'Montserrat', system-ui, sans-serif;
+                  --font-sans: var(--font-body), system-ui, sans-serif; /* Updated to --font-body */
                 }
                 body {
                   margin: 0;
@@ -79,13 +70,13 @@ class OptimizedDocument extends Document {
                   }
                 }
               `
-                        }}
-                    />
+            }}
+          />
 
-                    {/* Optimization for FID - load touchevents early */}
-                    <script
-                        dangerouslySetInnerHTML={{
-                            __html: `
+          {/* Optimization for FID - load touchevents early */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
                 (function() {
                   // Optimize event listeners for better FID
                   document.addEventListener('touchstart', function() {}, {passive: true});
@@ -100,16 +91,16 @@ class OptimizedDocument extends Document {
                   }
                 })();
               `
-                        }}
-                    />
-                </Head>
-                <body className="body-initial-state">
-                    <Main />
-                    <NextScript />
-                </body>
-            </Html>
-        );
-    }
+            }}
+          />
+        </Head>
+        <body className="body-initial-state">
+          <Main />
+          <NextScript />
+        </body>
+      </Html>
+    );
+  }
 }
 
 export default OptimizedDocument;

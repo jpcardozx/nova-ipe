@@ -9,42 +9,48 @@
  */
 
 // Importações essenciais
-import { Playfair_Display } from 'next/font/google';
+import { Roboto, Playfair_Display } from 'next/font/google'; // Added Playfair Display
 import Script from 'next/script';
 import LayoutClient from './components/LayoutClient';
 import CriticalStyleLoader from './components/CriticalStyleLoader';
 import LoadingStateController from './components/LoadingStateController';
 import PerformanceOptimizer from './components/PerformanceOptimizer';
 import WhatsAppMetaTags from './components/WhatsAppMetaTags';
+import FontOptimizer from './components/FontOptimizer';
 import fs from 'fs';
 import path from 'path';
 
-// Atualizado para usar o novo caminho dos estilos críticos
-
 // Importação do CSS principal - carregado depois do critical CSS
 import './globals.css';
-import './components/hydration-fix.css'; // CSS específico para corrigir problemas de hidratação
 
-// Configuração otimizada da fonte Playfair Display
-const playfairDisplay = Playfair_Display({
+// Configuração de fontes
+// Roboto for body text
+const roboto = Roboto({
   subsets: ['latin'],
+  weight: ['300', '400', '500', '700'], // Added 300 weight for better hierarchy
+  variable: '--font-roboto',
+  display: 'swap',
+  preload: true,
+});
+
+// Playfair Display for headings
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'], // Various weights for hierarchy
   variable: '--font-playfair',
   display: 'swap',
-  weight: ['400', '500', '600', '700'],
-  preload: false, // Desativando preload para evitar warnings
+  preload: true,
 });
 
 export default function RootLayout({ children }: { children: React.ReactNode; }) {
   return (
-    <html lang="pt-BR" className={`${playfairDisplay.variable} scroll-smooth`}>
+    <html lang="pt-BR" className={`${roboto.variable} ${playfair.variable} scroll-smooth`}> {/* Added playfair.variable */}
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         {/* WhatsApp meta tags para compatibilidade de links compartilhados */}
         <WhatsAppMetaTags />
-        {/* Inlined Critical CSS */}
-        <style id="critical-css" dangerouslySetInnerHTML={{
-          __html: `
-            /* Critical CSS inline */
+        {/* Inlined Critical CSS */}        <style id="critical-css" dangerouslySetInnerHTML={{
+          __html: `            /* Critical CSS inline */
             body, html {
               margin: 0;
               padding: 0;
@@ -61,6 +67,99 @@ export default function RootLayout({ children }: { children: React.ReactNode; })
               --color-brand-dark: #0D1F2D;
               --color-background: #ffffff;
               --color-foreground: #333333;
+              --font-roboto: ${roboto.style.fontFamily};
+              --font-playfair: ${playfair.style.fontFamily};
+            }
+            
+            /* Aplicação básica das fontes */
+            body {
+              font-family: var(--font-roboto), Arial, sans-serif;
+              font-weight: 400;
+              line-height: 1.6;
+              color: #333333;
+            }
+            
+            p, div, span, li, a, button {
+              font-family: var(--font-roboto), Arial, sans-serif;
+            }
+            
+            h1, h2, h3, h4, h5, h6 {
+              font-family: var(--font-playfair), Georgia, serif;
+              margin-top: 0;
+              font-weight: 700;
+              color: var(--color-brand-dark);
+              letter-spacing: -0.02em;
+              margin-bottom: 0.5em;
+            }
+            
+            /* Typography scale */
+            h1 {
+              font-size: 2.5rem;
+              line-height: 1.1;
+            }
+            
+            h2 {
+              font-size: 2rem;
+              line-height: 1.2;
+            }
+            
+            h3 {
+              font-size: 1.75rem;
+              line-height: 1.3;
+            }
+            
+            h4 {
+              font-size: 1.5rem;
+              line-height: 1.4;
+              font-weight: 600;
+            }
+            
+            h5 {
+              font-size: 1.25rem;
+              line-height: 1.4;
+              font-weight: 600;
+            }
+            
+            h6 {
+              font-size: 1rem;
+              line-height: 1.5;
+              font-weight: 600;
+            }
+            
+            /* Utility classes for typography */
+            .font-body {
+              font-family: var(--font-roboto), Arial, sans-serif !important;
+            }
+            
+            .font-display {
+              font-family: var(--font-playfair), Georgia, serif !important;
+            }
+            
+            /* Responsive typography */
+            @media (min-width: 768px) {
+              h1 {
+                font-size: 3.5rem;
+              }
+              
+              h2 {
+                font-size: 2.75rem;
+              }
+              
+              h3 {
+                font-size: 2.25rem;
+              }
+              
+              h4 {
+                font-size: 1.75rem;
+              }
+              
+              h5 {
+                font-size: 1.5rem;
+              }
+              
+              h6 {
+                font-size: 1.25rem;
+              }
             }
             
             .container-ipe {
@@ -69,12 +168,6 @@ export default function RootLayout({ children }: { children: React.ReactNode; })
               margin-right: auto;
               padding-left: 1rem;
               padding-right: 1rem;
-            }
-            
-            h1 {
-              font-size: 2.25rem;
-              font-weight: 700;
-              line-height: 1.1;            margin-top: 0;
             }
           `
         }} />
@@ -141,7 +234,7 @@ export default function RootLayout({ children }: { children: React.ReactNode; })
 
         {/* Critical scripts */}
         <Script src="/js/critical-preload.js" strategy="beforeInteractive" />
-        <Script src="/js/whatsapp-optimizer.js" strategy="lazyOnload" />
+        <Script src="/js/whatsapp-optimizer.js" strategy="lazyOnload" async />
 
         {/* Service Worker */}
         <Script
@@ -166,6 +259,7 @@ export default function RootLayout({ children }: { children: React.ReactNode; })
       </head>
       <body className="bg-white text-gray-900 antialiased">
         <LayoutClient>
+          <FontOptimizer />
           {/* Componentes cliente para gerenciar carregamento otimizado */}
           <CriticalStyleLoader href="/critical-bundle.css" />
           <LoadingStateController />

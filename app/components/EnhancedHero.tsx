@@ -90,30 +90,29 @@ const GuararemaHero: React.FC = () => {
     const [formErrors, setFormErrors] = useState<FormErrors>({});
 
     const heroRef = useRef(null);
-    const isInView = useInView(heroRef, { once: true });    // Realistic market metrics - dados atualizados e mais relevantes    // Dados atualizados para maio de 2025
+    const isInView = useInView(heroRef, { once: true });    // Dados do mercado imobiliário de Guararema - maio de 2025
     const marketMetrics: MarketMetric[] = [
         {
             id: 'growth',
-            title: 'Valorização Imóveis',
+            title: 'Valorização Anual',
             value: '9.4%',
-            subtitle: 'média anual em Guararema',
+            subtitle: 'rentabilidade consistente',
             icon: <TrendingUp className="w-5 h-5" />
-        },
-        {
+        }, {
             id: 'properties',
-            title: 'Imóveis Selecionados',
+            title: 'Portfólio Exclusivo',
             value: '62',
-            subtitle: 'com exclusividade',
+            subtitle: 'imóveis selecionados',
             icon: <Building2 className="w-5 h-5" />
         },
         {
             id: 'time',
-            title: 'Corretores Certificados',
+            title: 'Atendimento',
             value: '24h',
-            subtitle: 'para atendimento',
+            subtitle: 'comprometimento integral',
             icon: <Clock className="w-5 h-5" />
         }
-    ];    // Dados de bairros atualizados (maio 2025)
+    ];// Dados de bairros atualizados (maio 2025)
     const neighborhoodData: Record<'invest' | 'live', NeighborhoodData[]> = {
         invest: [
             {
@@ -240,29 +239,27 @@ const GuararemaHero: React.FC = () => {
                             className="flex justify-center mb-8"
                         >
                             <div className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-full">
-                                <MapPin className="w-4 h-4 text-amber-700" />
-                                <span className="text-sm font-medium text-amber-900">
-                                    Consultoria Imobiliária em Guararema
+                                <MapPin className="w-4 h-4 text-amber-700" />                                <span className="text-sm font-medium text-amber-900">
+                                    Imobiliária especializada em Guararema
                                 </span>
                             </div>
-                        </motion.div>                            {/* Main headline - redesenhado para maior impacto */}
-                        <motion.div
+                        </motion.div>                            {/* Main headline - redesenhado para maior impacto */}                        <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
                             className="text-center mb-12"
-                        >                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                                Encontre seu refúgio
+                        >
+                            <h1 className="text-display-1 font-display text-gray-900 mb-6">
+                                Soluções Imobiliárias
                                 <span className="block bg-clip-text text-transparent bg-gradient-to-r from-amber-600 to-amber-500">
                                     em Guararema
                                 </span>
                             </h1>
 
-                            <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto">
-                                Com mais de 15 anos conectando famílias aos melhores imóveis da região, com atendimento
-                                personalizado para <span className="font-semibold">realizar sonhos</span> e <span className="font-semibold">garantir investimentos seguros</span>.
+                            <p className="text-body-large text-gray-700 max-w-3xl mx-auto font-body leading-relaxed">
+                                Conectamos você ao imóvel ideal para moradia ou investimento com segurança e expertise. <span className="medium-text">Explore nosso portfólio</span> ou <span className="medium-text cursor-pointer hover:text-amber-600 transition-colors">solicite uma consultoria</span>.
                             </p>
-                        </motion.div>                            {/* Market metrics - visual aprimorado e dados atuais */}
+                        </motion.div>{/* Market metrics - visual aprimorado e dados atuais */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -282,11 +279,9 @@ const GuararemaHero: React.FC = () => {
                                         <div className="p-2.5 bg-white text-amber-700 rounded-lg shadow-sm">
                                             {metric.icon}
                                         </div>
-                                    </div>
+                                    </div>                                    <h3 className="text-sm font-medium text-amber-800 mb-1 font-display">{metric.title}</h3>
 
-                                    <h3 className="text-sm font-medium text-amber-800 mb-1">{metric.title}</h3>
-
-                                    <div className="text-3xl font-bold text-gray-900 mb-1 flex items-baseline">
+                                    <div className="text-3xl font-bold text-gray-900 mb-1 flex items-baseline font-display">
                                         {metric.id === 'properties' ? (
                                             <AnimatedCounter value={+50} />
                                         ) : metric.id === 'time' ? (
@@ -298,7 +293,7 @@ const GuararemaHero: React.FC = () => {
                                         )}
                                     </div>
 
-                                    <p className="text-sm text-amber-700/80">{metric.subtitle}</p>
+                                    <p className="text-sm text-amber-700/80 font-body">{metric.subtitle}</p>
                                 </motion.div>
                             ))}
                         </motion.div>
@@ -353,22 +348,18 @@ const GuararemaHero: React.FC = () => {
                                 >                                        <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
                                         <h3 className="flex items-center text-2xl font-bold text-gray-900 mb-6">
                                             {selectedIntent === 'invest' ? (
-                                                <>
-                                                    <TrendingUp className="w-6 h-6 text-amber-600 mr-2" />
-                                                    Oportunidades para Investidores
+                                                <>                                                <TrendingUp className="w-6 h-6 text-amber-600 mr-2" />
+                                                    Opções para Investimento
                                                 </>
                                             ) : (
-                                                <>
-                                                    <Home className="w-6 h-6 text-green-600 mr-2" />
-                                                    Bairros Ideais para Morar
+                                                <>                                                <Home className="w-6 h-6 text-green-600 mr-2" />
+                                                    Bairros Residenciais
                                                 </>
                                             )}
-                                        </h3>
-
-                                        <p className="text-gray-600 mb-6 italic">
+                                        </h3>                                        <p className="text-gray-600 mb-6 italic">
                                             {selectedIntent === 'invest'
-                                                ? "Selecionamos áreas com melhor potencial de valorização e retorno financeiro"
-                                                : "Conheça os bairros que oferecem melhor qualidade de vida em Guararema"}
+                                                ? "Descubra onde seu investimento pode crescer até 11% ao ano. Toque para explorar."
+                                                : "Encontre o local perfeito para sua família. Selecione um bairro para saber mais."}
                                         </p>
 
                                         {/* Neighborhood list com design aprimorado */}
@@ -423,14 +414,14 @@ const GuararemaHero: React.FC = () => {
                                                 </motion.div>
                                             ))}
                                         </div>                                            {/* CTA com elementos de confiança aprimorados */}
-                                        <div className="rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 p-0.5 shadow-lg">
-                                            <button
-                                                onClick={() => setShowContactForm(true)}
-                                                className="w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-b from-transparent to-black/5 text-white rounded-[10px] font-semibold hover:from-transparent hover:to-black/10 transition-all"
-                                            >
-                                                Consulta Personalizada Gratuita
-                                                <ChevronRight className="w-5 h-5" />
-                                            </button>
+                                        <div className="rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 p-0.5 shadow-lg">                                            <button
+                                            onClick={() => setShowContactForm(true)}
+                                            className="w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-b from-transparent to-black/5 text-white rounded-[10px] font-semibold hover:from-transparent hover:to-black/10 transition-all"
+                                        >                                                {selectedIntent === 'invest'
+                                            ? "Analisar oportunidades de investimento"
+                                            : "Encontrar meu imóvel ideal"}
+                                            <ChevronRight className="w-5 h-5" />
+                                        </button>
                                         </div>
 
                                         {/* Trust elements aprimorados */}
@@ -442,17 +433,15 @@ const GuararemaHero: React.FC = () => {
                                                     <div className="w-7 ml-[-5px] h-7 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs">JL</div>
                                                 </div>
                                                 <span className="text-sm text-gray-800 font-medium">3 corretores disponíveis agora</span>
-                                            </div>
-
-                                            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-gray-500">
+                                            </div>                                            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-gray-500">
                                                 <span className="flex items-center gap-1">
-                                                    <Check className="w-3 h-3 text-green-600" /> Atendimento personalizado
+                                                    <Check className="w-3 h-3 text-green-600" /> 98% de clientes satisfeitos
                                                 </span>
                                                 <span className="flex items-center gap-1">
-                                                    <Check className="w-3 h-3 text-green-600" /> Sem compromisso
+                                                    <Check className="w-3 h-3 text-green-600" /> Primeira consulta gratuita
                                                 </span>
                                                 <span className="flex items-center gap-1">
-                                                    <Check className="w-3 h-3 text-green-600" /> Experiência local desde 2010
+                                                    <Check className="w-3 h-3 text-green-600" /> +500 transações realizadas
                                                 </span>
                                             </div>
                                         </div>

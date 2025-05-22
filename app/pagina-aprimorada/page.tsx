@@ -1,5 +1,4 @@
 import { Suspense } from 'react';
-import { Montserrat } from 'next/font/google';
 import Link from 'next/link';
 import Image from 'next/image';
 import OptimizationProvider from '../components/OptimizationProvider';
@@ -16,9 +15,11 @@ import { extractImageUrl, extractAltText } from '@/lib/image-sanity';
 import { ensureValidImageUrl } from '@/lib/sanity-image-utils';
 import { loadImage } from '@/lib/enhanced-image-loader';
 import type { ImovelClient } from '@/src/types/imovel-client';
+import { PropertyType } from '@/app/components/OptimizedPropertyCard'; // Updated import for PropertyType
+import { extractSlugString, ensureNonNullProperties } from '@/app/PropertyTypeFix';
 
 // Componentes de UI
-import SectionHeader from '../components/ui/SectionHeader';
+// import SectionHeader from '../components/ui/SectionHeader'; // This line is removed or commented out if SectionHeader from ValorAprimorado is used or if it's re-exported elsewhere.
 
 // Componentes aprimorados
 import EnhancedHero from "../components/EnhancedHero";
@@ -32,41 +33,6 @@ import ValorAprimorado from '../sections/ValorAprimorado';
 import FormularioContato from '../components/FormularioContato';
 import DestaquesEstrategicos from '../sections/Destaques';
 import { ExclusiveAnalysisOffer } from '../sections/ExclusiveAnalysisOffer';
-
-// Configuração da fonte Montserrat
-const montSerrat = Montserrat({
-    subsets: ['latin'],
-    weight: ['300', '400', '500', '600', '700', '800'],
-    display: 'swap',
-    variable: '--font-montserrat',
-});
-
-// Importando tipos e utilitários
-import type { PropertyType } from '../components/OptimizedPropertyCard';
-import { default as ClientSidePropertiesProvider } from '../components/ClientComponents';
-import { ensureNonNullProperties, extractSlugString } from '../PropertyTypeFix';
-
-// Metadados otimizados para SEO
-export const metadata: Metadata = {
-    title: 'Ipê Imobiliária | Seu Refúgio em Guararema',
-    description: 'Encontre seu imóvel ideal em Guararema. Especialistas locais há 13 anos, oferecendo as melhores oportunidades com valorização acima da média do mercado.',
-    openGraph: {
-        title: 'Ipê Imobiliária | Seu Refúgio em Guararema',
-        description: 'Encontre seu imóvel ideal em Guararema. Especialistas locais há 13 anos, oferecendo as melhores oportunidades com valorização acima da média do mercado.',
-        url: 'https://www.ipe-imoveis.com.br/',
-        siteName: 'Ipê Imobiliária Guararema',
-        locale: 'pt_BR',
-        type: 'website',
-        images: [
-            {
-                url: '/images/og-image-ipe-2025.jpg',
-                width: 1200,
-                height: 630,
-                alt: 'Ipê Imobiliária - Especialista em imóveis em Guararema',
-            }
-        ],
-    },
-};
 
 /**
  * Transforma dados do Sanity para o formato esperado pelos componentes
@@ -151,7 +117,7 @@ export default async function NovaPaginaInicial() {
     );
 
     return (
-        <div className={`${montSerrat.variable} font-sans antialiased`}>
+        <div className="font-body antialiased">
             <SkipToContent />
             <OptimizationProvider>
                 <NotificacaoBanner

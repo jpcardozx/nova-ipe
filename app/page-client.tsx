@@ -24,21 +24,18 @@ import SectionHeader from './components/ui/SectionHeader';
 export interface HomeClientProps {
     destaques: any[];
     aluguel: any[];
-    montSerratClass: string;
+    className?: string;
 }
 
 // Client component: receives all data and font class as props
-export default function HomeClient({ destaques, aluguel, montSerratClass }: HomeClientProps) {
+export default function HomeClient({ destaques, aluguel }: HomeClientProps) {
     return (
-        <div className={`${montSerratClass} flex flex-col min-h-screen bg-[#fafaf9]`}>
+        <div className="flex flex-col min-h-screen bg-[#fafaf9]">
             <Suspense fallback={null}>
                 <HomepageLoadingOptimizer />
-            </Suspense>
-
-            {/* Otimizador para links compartilhados no WhatsApp */}
-            <WhatsAppSharingOptimizer
-                title="Nova Ipê Imobiliária - Imóveis Premium em Guararema"
-                description="Encontre propriedades exclusivas para compra e aluguel em Guararema e região. Atendimento personalizado e curadoria de imóveis de alto padrão."
+            </Suspense>            {/* Otimizador para links compartilhados no WhatsApp */}            <WhatsAppSharingOptimizer
+                title="Nova Ipê Imobiliária - Seu Futuro em Guararema Começa Aqui"
+                description="Realize seu sonho da casa própria ou faça um excelente investimento em Guararema. Imóveis selecionados com valorização acima da média do mercado."
                 imageUrl="/images/og-image-whatsapp.jpg"
             />
 
@@ -50,14 +47,11 @@ export default function HomeClient({ destaques, aluguel, montSerratClass }: Home
             <OptimizationProvider>
                 <NavbarResponsive />
                 <EnhancedHero />
-                <ClientSidePropertiesProvider destaques={destaques} aluguel={aluguel} />
-                <BlocoExploracaoSimbolica />
-
-                <Suspense fallback={<section className="py-24 bg-white"><div className="container mx-auto px-4 max-w-7xl"><PropertiesLoadingSkeleton /></div></section>}>
+                <ClientSidePropertiesProvider destaques={destaques} aluguel={aluguel} />                <BlocoExploracaoSimbolica />                    <Suspense fallback={<section className="py-24 bg-white"><div className="container mx-auto px-4 max-w-7xl"><PropertiesLoadingSkeleton /></div></section>}>
                     <DestaquesSanityCarousel
                         rawProperties={destaques}
-                        title="Imóveis Cuidadosamente Selecionados"
-                        subtitle="Descubra propriedades que se destacam pela arquitetura impecável, localização estratégica e potencial de valorização excepcional em Guararema."
+                        title="Imóveis em Destaque"
+                        subtitle="Seleção de oportunidades com potencial de valorização e localização estratégica. Atualizados periodicamente."
                     />
                 </Suspense>
 
@@ -66,15 +60,13 @@ export default function HomeClient({ destaques, aluguel, montSerratClass }: Home
                     <Destaques />
                 </section>
 
-                <section className="py-24 bg-[#F8FAFC]">
-                    <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent"></div>
-                    <Suspense fallback={<div className="container mx-auto px-4 max-w-7xl relative z-10"><PropertiesLoadingSkeleton /></div>}>
-                        <DestaquesSanityCarousel
-                            rawProperties={aluguel}
-                            title="Seu Próximo Lar Está Aqui"
-                            subtitle="Uma seleção de imóveis para alugar que prioriza qualidade de vida, ótima localização e custo-benefício real. Experimente morar com qualidade em Guararema."
-                        />
-                    </Suspense>
+                <section className="py-24 bg-[#F8FAFC]">                    <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent"></div>                    <Suspense fallback={<div className="container mx-auto px-4 max-w-7xl relative z-10"><PropertiesLoadingSkeleton /></div>}>
+                    <DestaquesSanityCarousel
+                        rawProperties={aluguel}
+                        title="Propriedades para Locação"
+                        subtitle="Residências de alto padrão disponíveis para locação imediata. Consulte condições contratuais."
+                    />
+                </Suspense>
                 </section>
 
                 <div className="relative bg-white">
@@ -83,12 +75,11 @@ export default function HomeClient({ destaques, aluguel, montSerratClass }: Home
                 </div>
 
                 <section className="py-24 bg-gradient-to-b from-white to-[#F8FAFC]">
-                    <div className="container mx-auto px-4 max-w-7xl">
-                        <SectionHeader
-                            badge="Histórias de Sucesso"
-                            badgeColor="amber"
-                            title="O que Nossos Clientes Dizem"
-                        />
+                    <div className="container mx-auto px-4 max-w-7xl">                        <SectionHeader
+                        badge="Experiências"
+                        badgeColor="amber"
+                        title="Depoimentos de Clientes"
+                    />
                         <Testimonials />
                     </div>
                 </section>

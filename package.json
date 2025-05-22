@@ -85,7 +85,6 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.3.1",
-    "@fontsource/montserrat": "^5.2.5",
     "@next/bundle-analyzer": "^15.3.2",
     "@next/eslint-plugin-next": "15.3.2",
     "@opentelemetry/exporter-trace-otlp-http": "0.45.1",
