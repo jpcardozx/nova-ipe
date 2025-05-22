@@ -15,6 +15,7 @@ import LayoutClient from './components/LayoutClient';
 import CriticalStyleLoader from './components/CriticalStyleLoader';
 import LoadingStateController from './components/LoadingStateController';
 import PerformanceOptimizer from './components/PerformanceOptimizer';
+import WhatsAppMetaTags from './components/WhatsAppMetaTags';
 import fs from 'fs';
 import path from 'path';
 
@@ -38,6 +39,8 @@ export default function RootLayout({ children }: { children: React.ReactNode; })
     <html lang="pt-BR" className={`${playfairDisplay.variable} scroll-smooth`}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        {/* WhatsApp meta tags para compatibilidade de links compartilhados */}
+        <WhatsAppMetaTags />
         {/* Inlined Critical CSS */}
         <style id="critical-css" dangerouslySetInnerHTML={{
           __html: `
