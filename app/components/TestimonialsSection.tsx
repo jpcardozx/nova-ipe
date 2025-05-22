@@ -15,14 +15,14 @@ interface TestimonialProps {
 const testimonials: TestimonialProps[] = [
     {
         name: 'Ana Silva',
-        role: 'Comprou imóvel em Guararema',
-        content: 'O atendimento da Nova Ipê foi excepcional. Encontraram a casa dos meus sonhos com todas as características que eu procurava.',
+        role: 'Comprou imóvel com a Ipê',
+        content: 'O atendimento que recebi dos corretores da Ipê foi excepcional. Encontraram a casa dos meus sonhos com todas as características que eu procurava.',
         rating: 5,
         image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330'
     },
     {
         name: 'Roberto Almeida',
-        role: 'Vendeu imóvel com a Nova Ipê',
+        role: 'Vendeu imóvel com a Ipê',
         content: 'Processo muito profissional e transparente. Venderam meu imóvel em tempo recorde e com valor acima do esperado.',
         rating: 5,
         image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e'

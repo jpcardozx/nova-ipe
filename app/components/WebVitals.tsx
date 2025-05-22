@@ -1,92 +1,107 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { onCLS, onFCP, onLCP, onTTFB, onINP, type Metric } from 'web-vitals';
 
-const vitalsUrl = process.env.NEXT_PUBLIC_VITALS_URL || '/api/vitals';
+const vitalsUrl = '/api/vitals';
+
+// Cache para evitar reportar a mesma métrica múltiplas vezes
+const reportedMetrics = new Set<string>();
 
 /**
- * Envia os dados de Web Vitals para o endpoint de análise
+ * Envia os dados de Web Vitals para o endpoint de análise de forma otimizada
  */
-const sendToAnalytics = ({ name, delta, value, id }: Metric) => {
-    // Adicionamos a URL atual para contextualizar as métricas
+const sendToAnalytics = (metric: Metric) => {
+    // Evita duplicação de métricas
+    const metricKey = `${metric.name}-${metric.id}`;
+    if (reportedMetrics.has(metricKey)) return;
+    reportedMetrics.add(metricKey);
+
     const body = {
-        name,
-        delta,
-        value,
-        id,
+        name: metric.name,
+        delta: metric.delta,
+        value: metric.value,
+        id: metric.id,
         page: window.location.pathname,
         timestamp: Date.now(),
-        environment: process.env.NODE_ENV,
     };
 
-    // Log para modo de desenvolvimento
-    if (process.env.NODE_ENV !== 'production') {
-        console.log(`[WebVitals] Coletado: ${name} = ${value}`);
+    // Log em desenvolvimento
+    if (process.env.NODE_ENV === 'development') {
+        console.log(`[WebVitals] ${metric.name} = ${Math.round(metric.value)}`);
     }
 
-    // Use `navigator.sendBeacon()` se disponível, senão use `fetch()`
-    if ('sendBeacon' in navigator) {
+    // Usa sendBeacon para métricas não críticas e fetch para críticas
+    const isCriticalMetric = metric.name === 'LCP' || metric.name === 'FCP';
+    if (!isCriticalMetric && 'sendBeacon' in navigator) {
         navigator.sendBeacon(vitalsUrl, JSON.stringify(body));
     } else {
         fetch(vitalsUrl, {
             body: JSON.stringify(body),
             method: 'POST',
             keepalive: true,
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
+        }).catch(() => {
+            // Fallback para sendBeacon em caso de erro
+            if ('sendBeacon' in navigator) {
+                navigator.sendBeacon(vitalsUrl, JSON.stringify(body));
+            }
         });
     }
 };
 
 /**
  * Componente para rastrear Web Vitals
- * Carrega e configura o rastreamento de métricas de performance quando montado
+ * Carrega e configura o rastreamento de métricas de performance
  */
 export function WebVitals() {
-    const [isEnabled, setIsEnabled] = useState(false);
+    const [isEnabled] = useState(true);
 
-    useEffect(() => {
-        // Flag indicando que o componente está montado
-        setIsEnabled(true);
+    const registerVitals = useCallback(() => {
+        try {
+            // Registra primeiro as métricas mais importantes
+            onLCP((metric) => {
+                // Report LCP immediately
+                sendToAnalytics(metric);
+            });
 
-        if (process.env.NODE_ENV !== 'production') {
-            console.log('[WebVitals] Componente inicializado');
-        }
-
-        // Em vez de iniciar imediatamente, aguardamos o navegador ficar ocioso
-        // ou após carregamento completo para evitar interferência com o LCP
-        const registerVitals = () => {
-            // Inicia com as métricas mais críticas
-            onLCP(sendToAnalytics);
-
-            // Adicionado INP (Interaction to Next Paint)
-            onINP(sendToAnalytics);
-
-            // Atrasa ligeiramente as métricas menos críticas
+            // Delay non-critical metrics
             setTimeout(() => {
+                // FCP é importante mas pode esperar um pouco
                 onFCP(sendToAnalytics);
-                onTTFB(sendToAnalytics);
-                onCLS(sendToAnalytics);
-            }, 100);
-        };        // Usar requestIdleCallback se disponível, senão usar setTimeout
-        if (typeof window !== 'undefined') {
-            if ('requestIdleCallback' in window) {
-                (window as any).requestIdleCallback(() => registerVitals(), { timeout: 1000 });
-            } else {
-                // Fallback para navegadores que não suportam requestIdleCallback
-                setTimeout(registerVitals, 200); // Safer fallback
-            }
-        }
 
-        // Log para desenvolvimento
-        if (process.env.NODE_ENV === 'development') {
-            console.log('Web Vitals monitoring enabled');
+                // TTFB já aconteceu, então podemos coletar
+                onTTFB(sendToAnalytics);
+
+                // Métricas de interação podem esperar mais
+                setTimeout(() => {
+                    onCLS(sendToAnalytics);
+                    onINP(sendToAnalytics);
+                }, 300);
+            }, 100);
+        } catch (error) {
+            console.warn('Error registering Web Vitals:', error);
         }
     }, []);
 
-    // Componente não renderiza nada, apenas configura os listeners
+    useEffect(() => {
+        if (!isEnabled) return;
+
+        // Usa requestIdleCallback para registrar métricas em tempo ocioso
+        if ('requestIdleCallback' in window) {
+            (window as any).requestIdleCallback(registerVitals, { timeout: 1000 });
+        } else {
+            // Fallback para setTimeout com prioridade baixa
+            setTimeout(registerVitals, 200);
+        }
+
+        // Limpa cache de métricas ao desmontar
+        return () => {
+            reportedMetrics.clear();
+        };
+    }, [isEnabled, registerVitals]);
+
+    // Componente não renderiza nada
     return null;
 }
 

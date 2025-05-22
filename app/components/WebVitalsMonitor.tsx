@@ -11,6 +11,7 @@
 
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { onCLS, onFCP, onLCP, onTTFB, onINP, type Metric } from 'web-vitals';
 
 // Define interface for web vitals metric
 interface WebVitalMetric {
@@ -18,35 +19,59 @@ interface WebVitalMetric {
     value: number;
     delta: number;
     id: string;
+    page?: string;
+    timestamp?: number;
 }
 
 /**
  * WebVitalsMonitor - Componente para monitorar e reportar métricas Web Vitals
  * 
- * Este componente é um wrapper simples que não renderiza nada visível.
- * Em produção, você pode conectá-lo a analytics reais.
+ * Este componente é um wrapper que configura a coleta automática de métricas
+ * e as envia para a API.
  */
 export default function WebVitalsMonitor() {
     const pathname = usePathname();
 
     useEffect(() => {
-        // Não monitore em desenvolvimento para evitar dados distorcidos
-        if (process.env.NODE_ENV !== 'production') {
-            return;
-        }
+        // Handler para enviar métricas para a API
+        const reportWebVital = ({ name, delta, value, id }: Metric) => {
+            const metric: WebVitalMetric = {
+                name,
+                delta,
+                value,
+                id,
+                page: pathname || '/',
+                timestamp: Date.now()
+            };
 
-        // Em uma implementação real, você importaria e usaria:
-        // import { onCLS, onFCP, onLCP, onTTFB, onINP } from 'web-vitals';
-        // e registraria handlers para cada métrica
+            // Use sendBeacon se disponível para garantir que os dados são enviados
+            const vitalsEndpoint = '/api/vitals';
+            if ('sendBeacon' in navigator) {
+                navigator.sendBeacon(vitalsEndpoint, JSON.stringify(metric));
+            } else {
+                fetch(vitalsEndpoint, {
+                    method: 'POST',
+                    body: JSON.stringify(metric),
+                    headers: { 'Content-Type': 'application/json' },
+                    keepalive: true // Garante envio mesmo se a página estiver fechando
+                }).catch(console.error);
+            }
 
-        console.log('[WebVitalsMonitor] Inicializado para:', pathname);
-
-        // Cleanup
-        return () => {
-            console.log('[WebVitalsMonitor] Desconectado');
+            // Log em desenvolvimento
+            if (process.env.NODE_ENV === 'development') {
+                console.log(`[WebVitals] ${name}:`, value);
+            }
         };
+
+        // Registra handlers para todas as métricas principais
+        onCLS(reportWebVital);
+        onFCP(reportWebVital);
+        onLCP(reportWebVital);
+        onTTFB(reportWebVital);
+        onINP(reportWebVital);
+
     }, [pathname]);
 
-    // Este componente não renderiza nada visível
+    // Componente não renderiza nada visualmente
     return null;
 }

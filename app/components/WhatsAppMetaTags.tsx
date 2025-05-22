@@ -37,7 +37,9 @@ export default function WhatsAppMetaTags({
         const insertMetaTags = () => {
             // Garantir que metadados antigos não persistam
             const existingTags = document.querySelectorAll('meta[data-whatsapp-meta="true"]');
-            existingTags.forEach(tag => tag.remove());
+            existingTags.forEach((tag: Element) => {
+                if (tag.parentNode) tag.parentNode.removeChild(tag);
+            });
 
             // Função auxiliar para criar e inserir meta tags
             const createMetaTag = (property: string, content: string) => {
@@ -70,7 +72,9 @@ export default function WhatsAppMetaTags({
         // Limpar meta tags ao desmontar componente
         return () => {
             const tags = document.querySelectorAll('meta[data-whatsapp-meta="true"]');
-            tags.forEach(tag => tag.remove());
+            tags.forEach((tag: Element) => {
+                if (tag.parentNode) tag.parentNode.removeChild(tag);
+            });
         };
     }, [title, description, absoluteImageUrl, pageUrl]);
 

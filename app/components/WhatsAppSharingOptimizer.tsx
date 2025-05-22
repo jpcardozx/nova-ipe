@@ -33,22 +33,23 @@ export default function WhatsAppSharingOptimizer({
 
     // Adiciona os meta tags especialmente projetados para WhatsApp
     useEffect(() => {
-        // Adiciona um script para forçar o cache do WhatsApp a se atualizar
-        // Isso ajuda quando a imagem prévia é alterada mas o WhatsApp ainda mostra a versão antiga
-        const forceCacheRefresh = () => {
-            if (typeof navigator !== 'undefined' && navigator.userAgent.includes('WhatsApp')) {
-                document.head.insertAdjacentHTML(
-                    'beforeend',
-                    `<meta http-equiv="cache-control" content="no-cache, must-revalidate, post-check=0, pre-check=0" />
-           <meta http-equiv="cache-control" content="max-age=0" />
-           <meta http-equiv="expires" content="0" />
-           <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
-           <meta http-equiv="pragma" content="no-cache" />`
-                );
-            }
-        };
-
-        forceCacheRefresh();
+        // Adiciona meta tags para forçar atualização de cache do WhatsApp
+        if (typeof navigator !== 'undefined' && navigator.userAgent.includes('WhatsApp')) {
+            // Cria as meta tags manualmente
+            const metaTags = [
+                { httpEquiv: 'cache-control', content: 'no-cache, must-revalidate, post-check=0, pre-check=0' },
+                { httpEquiv: 'cache-control', content: 'max-age=0' },
+                { httpEquiv: 'expires', content: '0' },
+                { httpEquiv: 'expires', content: 'Tue, 01 Jan 1980 1:00:00 GMT' },
+                { httpEquiv: 'pragma', content: 'no-cache' },
+            ];
+            metaTags.forEach(function (meta) {
+                const tag = document.createElement('meta');
+                tag.setAttribute('http-equiv', meta.httpEquiv);
+                tag.setAttribute('content', meta.content);
+                document.head.appendChild(tag);
+            });
+        }
     }, []);
 
     return (

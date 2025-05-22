@@ -39,8 +39,23 @@ const WebVitalsDebuggerWrapper = safeDynamic(() => import('./WebVitalsDebuggerWr
     retries: 2
 });
 
+const WebVitalsDebugger = safeDynamic(() => import('./WebVitalsDebugger'), {
+    componentName: 'WebVitalsDebugger',
+    retries: 2
+});
+
 const PerformanceDiagnostics = safeDynamic(() => import('./PerformanceDiagnostics'), {
     componentName: 'PerformanceDiagnostics',
+    retries: 2
+});
+
+const DiagnosticTool = safeDynamic(() => import('./DiagnosticTool'), {
+    componentName: 'DiagnosticTool',
+    retries: 2
+});
+
+const DebugButton = safeDynamic(() => import('./DebugButton'), {
+    componentName: 'DebugButton',
     retries: 2
 });
 
@@ -200,8 +215,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                         <div id="web-vitals-mount-point" style={{ display: 'none' }} data-debug="true" />
                     </Suspense>
 
-                    {/* Web Vitals Monitor e ferramentas de otimização/diagnóstico */}
-                    {process.env.NODE_ENV === 'production' ? (
+                    {/* Web Vitals Monitor e ferramentas de otimização/diagnóstico */}                    {process.env.NODE_ENV === 'production' ? (
                         <>
                             <Suspense fallback={null}>
                                 <WebVitalsMonitor />
@@ -210,10 +224,20 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                         </>
                     ) : (
                         <>
-                            {/* Performance Debugging Tools - Development Only */}
-                            <WebVitalsDebuggerWrapper />
+                            {/* Performance Debugging Tools - Development Only */}                            <WebVitalsDebuggerWrapper />
+                            {/* Adiciona o WebVitalsDebugger para análise imediata de métricas */}
+                            <Suspense fallback={null}>
+                                <WebVitalsDebugger />
+                            </Suspense>
                             <Suspense fallback={null}>
                                 <ClientPerformanceMonitor />
+                            </Suspense>
+                            {/* Botão de depuração para ativar ferramentas de diagnóstico */}
+                            <Suspense fallback={null}>
+                                <DebugButton />
+                            </Suspense>
+                            <Suspense fallback={null}>
+                                <DiagnosticTool />
                             </Suspense>
                             <PerformanceDiagnostics />
                         </>

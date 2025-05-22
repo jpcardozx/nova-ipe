@@ -7,6 +7,7 @@ import type { ImovelClient } from '@/src/types/imovel-client';
 import type { PropertyType } from './components/OptimizedPropertyCard';
 import { ensureNonNullProperties, extractSlugString } from './PropertyTypeFix';
 import HomeClient from './page-client';
+import { Suspense } from 'react';
 
 // Font config
 const montSerrat = Montserrat({
@@ -90,6 +91,8 @@ async function fetchPropertiesData() {
 export default async function Home() {
     const { destaques, aluguel } = await fetchPropertiesData();
     return (
-        <HomeClient destaques={destaques} aluguel={aluguel} montSerratClass={montSerrat.className} />
+        <Suspense fallback={<div className="min-h-screen bg-[#fafaf9] animate-pulse" />}>
+            <HomeClient destaques={destaques} aluguel={aluguel} montSerratClass={montSerrat.className} />
+        </Suspense>
     );
 }
