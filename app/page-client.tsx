@@ -4,6 +4,7 @@ import React from 'react';
 import { Suspense } from 'react';
 import HomepageLoadingOptimizer from './components/HomepageLoadingOptimizer';
 import OptimizationProvider from './components/OptimizationProvider';
+import WhatsAppSharingOptimizer from './components/WhatsAppSharingOptimizer';
 import NavbarResponsive from './components/NavbarResponsive';
 import EnhancedHero from './components/EnhancedHero';
 import BlocoExploracaoSimbolica from './components/BlocoExploracaoSimbolica';
@@ -32,6 +33,12 @@ export default function HomeClient({ destaques, aluguel, montSerratClass }: Home
             <Suspense fallback={null}>
                 <HomepageLoadingOptimizer />
             </Suspense>
+            {/* Otimizador para links compartilhados no WhatsApp */}
+            <WhatsAppSharingOptimizer
+                title="Nova Ipê Imobiliária - Imóveis Premium em Guararema"
+                description="Encontre propriedades exclusivas para compra e aluguel em Guararema e região. Atendimento personalizado e curadoria de imóveis de alto padrão."
+                imageUrl="/images/og-image-whatsapp.jpg"
+            />
             <OptimizationProvider>
                 <NavbarResponsive />
                 <EnhancedHero />

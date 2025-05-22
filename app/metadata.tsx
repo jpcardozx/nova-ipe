@@ -23,6 +23,11 @@ export const metadata: Metadata = {
         'theme-color': '#0D1F2D',
         'msapplication-TileColor': '#0D1F2D',
         'msapplication-config': '/browserconfig.xml',
+        // Adicionando meta tags específicas para compatibilidade com WhatsApp
+        'og:image:width': '1200',
+        'og:image:height': '630',
+        'og:image:alt': 'Nova Ipê Imobiliária - Imóveis Premium em Guararema',
+        'og:locale': 'pt_BR',
     },
     icons: {
         icon: [

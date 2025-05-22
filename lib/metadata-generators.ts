@@ -2,6 +2,9 @@ import { Metadata } from 'next';
 
 // This function generates site-wide metadata
 export function generateSiteMetadata(): Metadata {
+    // Base domain for absolute URLs
+    const domain = process.env.NEXT_PUBLIC_SITE_URL || 'https://ipeimoveis.vercel.app';
+
     return {
         title: 'Nova Ipê Imobiliária - Imóveis Premium em Guararema',
         description: 'Encontre propriedades exclusivas para compra e aluguel em Guararema e região. Atendimento personalizado e curadoria de imóveis de alto padrão.',
@@ -9,14 +12,23 @@ export function generateSiteMetadata(): Metadata {
         openGraph: {
             type: 'website',
             locale: 'pt_BR',
-            url: 'https://ipeimoveis.vercel.app',
-            siteName: 'Ipê Imóveis',
-            title: 'Curadoria e gestão de Imóveis Premium em Guararema',
-            description: 'Encontre propriedades exclusivas para compra e aluguel em Guararema e região.',
+            url: domain,
+            siteName: 'Nova Ipê Imobiliária',
+            title: 'Nova Ipê Imobiliária - Imóveis Premium em Guararema',
+            description: 'Encontre propriedades exclusivas para compra e aluguel em Guararema e região. Atendimento personalizado e curadoria de imóveis de alto padrão.',
             images: [
-                { url: '/images/og-image-2025.jpg', width: 1200, height: 630 },
-                { url: '/images/og-image-square.jpg', width: 1080, height: 1080 },
-                { url: '/preview.png', width: 400, height: 400 }
+                {
+                    url: `${domain}/images/og-image-2025.jpg`,
+                    width: 1200,
+                    height: 630,
+                    alt: 'Nova Ipê Imobiliária - Imóveis Premium em Guararema',
+                },
+                {
+                    url: `${domain}/images/og-image-square.jpg`,
+                    width: 1080,
+                    height: 1080,
+                    alt: 'Nova Ipê Imobiliária',
+                },
             ],
         }
     };
