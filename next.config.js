@@ -24,6 +24,8 @@ const nextConfig = {
     ],
     // Priorizar carregamento de CSS crítico
     optimizeCss: true,
+    // Desabilitar otimizações que podem causar problemas
+    serverActions: false
   },
 
   // Otimização avançada de imagens

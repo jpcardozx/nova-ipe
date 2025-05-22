@@ -44,22 +44,31 @@ export default function WebVitalsMonitor() {
                 timestamp: Date.now()
             };
 
-            // Use sendBeacon se disponível para garantir que os dados são enviados
-            const vitalsEndpoint = '/api/vitals';
-            if ('sendBeacon' in navigator) {
-                navigator.sendBeacon(vitalsEndpoint, JSON.stringify(metric));
-            } else {
-                fetch(vitalsEndpoint, {
-                    method: 'POST',
-                    body: JSON.stringify(metric),
-                    headers: { 'Content-Type': 'application/json' },
-                    keepalive: true // Garante envio mesmo se a página estiver fechando
-                }).catch(console.error);
-            }
+            try {
+                // Garantir que o objeto está sendo serializado corretamente
+                const body = JSON.stringify(metric);
 
-            // Log em desenvolvimento
-            if (process.env.NODE_ENV === 'development') {
-                console.log(`[WebVitals] ${name}:`, value);
+                // Usar fetch para garantir o controle sobre o envio
+                fetch('/api/vitals', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body,
+                    // Garante que a requisição será completada mesmo se a página for fechada
+                    keepalive: true
+                }).catch(error => {
+                    if (process.env.NODE_ENV === 'development') {
+                        console.warn('[WebVitals] Erro ao enviar métrica:', error);
+                    }
+                });
+
+                // Log em desenvolvimento
+                if (process.env.NODE_ENV === 'development') {
+                    console.log(`[WebVitals] ${name}:`, value);
+                }
+            } catch (error) {
+                console.error('[WebVitals] Erro ao processar métrica:', error);
             }
         };
 

@@ -5,7 +5,7 @@ import type { NextRequest } from "next/server"
 
 // Versão simplificada sem imports complexos que podem causar problemas
 // em development mode
-export const runtime = "experimental-edge" // Corrigido para experimental-edge conforme recomendado
+export const runtime = "nodejs" // Alterado para nodejs para evitar problemas com o runtime experimental
 
 // Definições simplificadas
 const STUDIO_PREFIX = "/studio"

@@ -14,7 +14,9 @@ import {
     CheckCircle,
     MessageCircle,
     Phone,
-    TreePine
+    TreePine,
+    Plus,
+    Minus
 } from 'lucide-react'
 
 interface TimelineStep {
@@ -173,8 +175,14 @@ const ProcessoGuararema: React.FC = () => {
                                         <div className="text-sm font-medium text-gray-500 mb-1">
                                             {step.week}
                                         </div>
-                                        <h3 className="text-xl font-bold text-gray-900 mb-3">
+                                        <h3 className="text-xl font-bold text-gray-900 mb-3 group flex items-center justify-between">
                                             {step.title}
+                                            <span className="text-gray-400 group-hover:text-gray-600 transition-colors">
+                                                {activeStep === step.id ?
+                                                    <Minus className="w-4 h-4" /> :
+                                                    <Plus className="w-4 h-4" />
+                                                }
+                                            </span>
                                         </h3>
                                         <p className="text-gray-600 mb-4">
                                             {step.description}

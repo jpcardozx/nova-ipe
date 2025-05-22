@@ -4,14 +4,6 @@ import { MapPin, Phone, ExternalLink, Mail, Instagram, Facebook, Linkedin, Twitt
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Montserrat } from 'next/font/google';
-
-const montSerrat = Montserrat({
-    subsets: ['latin'],
-    weight: ['400'],
-    display: 'swap',
-    variable: '--font-montserrat',
-});
 
 export default function Footer() {
     const [mapLoaded, setMapLoaded] = useState(false);
@@ -30,10 +22,8 @@ export default function Footer() {
 
         elements.forEach((el: Element) => observer.observe(el));
         return () => elements.forEach((el: Element) => observer.unobserve(el));
-    }, []);
-
-    return (
-        <footer className={`relative w-full bg-[#0D1F2D] text-[#F7D7A3] overflow-hidden ${montSerrat.className}`}>
+    }, []); return (
+        <footer className="relative w-full bg-[#0D1F2D] text-[#F7D7A3] overflow-hidden font-body">
             {/* Fundo com textura e gradiente */}
             <div className="absolute inset-0">
                 <div className="relative w-full h-full">
@@ -57,8 +47,7 @@ export default function Footer() {
                         width={230}
                         height={120}
                         className="mx-auto md:mx-0 object-contain"
-                    />
-                    <p className="text-sm md:text-base text-[#F7D7A3] mt-4 font-light leading-relaxed">
+                    />                    <p className="text-body-small md:text-body text-[#F7D7A3] mt-4 thin-text leading-relaxed">
                         Consultoria Imobiliária e gestão de contratos de locação.
                     </p>
 
@@ -78,7 +67,7 @@ export default function Footer() {
                 <div className="mt-12 border-t border-white/10 pt-12 grid grid-cols-1 md:grid-cols-3 gap-10 text-sm">
                     {/* Coluna 1 */}
                     <div className="footer-animate opacity-0 translate-y-4 transition-all duration-700">
-                        <h4 className="text-[#FFAD43] text-xs uppercase mb-4 tracking-widest font-semibold">Conheça a Nova Ipê</h4>
+                        <h4 className="text-[#FFAD43] text-caption uppercase mb-4 tracking-widest semibold-text">Conheça a Nova Ipê</h4>
                         <ul className="space-y-3">
                             {["Sobre nós", "Nossa equipe", "Avaliações de clientes", "Política de privacidade", "Blog"].map((text, idx) => (
                                 <li key={idx}>

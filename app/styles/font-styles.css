@@ -1,0 +1,68 @@
+/* 
+ * Arquivo de estilos de fontes para o site Nova IPE
+ * Implementa Marcellus para títulos e Lora para corpo de texto
+ */
+
+/* Configuração de títulos com fonte Marcellus */
+h1, h2, h3, h4, h5, h6, 
+.heading, .title, .subtitle {
+  font-family: var(--font-marcellus), Georgia, serif;
+}
+
+/* Configuração do corpo de texto com fonte Lora */
+body, p, span, div, 
+input, button, textarea, select,
+.body-text, .paragraph {
+  font-family: var(--font-lora), 'Times New Roman', serif;
+}
+
+/* Ajustes específicos para melhor legibilidade */
+h1 {
+  letter-spacing: -0.02em;
+}
+
+h2, h3 {
+  letter-spacing: -0.01em;
+}
+
+p, .body-text {
+  letter-spacing: 0.01em;
+  line-height: 1.6;
+}
+
+/* Ajuste de peso para diferentes níveis de hierarquia */
+h1 {
+  font-weight: 700;
+}
+
+h2, h3 {
+  font-weight: 600;
+}
+
+h4, h5, h6 {
+  font-weight: 500;
+}
+
+p, .body-text {
+  font-weight: 400;
+}
+
+/* Destaque de texto em Lora*/
+strong, b, .bold-text {
+  font-weight: 600;
+}
+
+/* Ajustes de tamanho específicos para a fonte Marcellus em cabeçalhos */
+@media (min-width: 768px) {
+  h1 {
+    font-size: 3.25rem;
+  }
+  
+  h2 {
+    font-size: 2.5rem;
+  }
+  
+  h3 {
+    font-size: 2rem;
+  }
+}

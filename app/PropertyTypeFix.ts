@@ -15,7 +15,16 @@ function extractImageUrl(image: SanityImage): string | null {
 
         if (!id || !dimensions || !format) return null;
 
-        return `https://cdn.sanity.io/images/${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'yourprojectid'}/${process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'}/${id}-${dimensions}.${format}`;
+        // Use environment variables for project ID and dataset
+        const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+        const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET;
+
+        if (!projectId || !dataset) {
+            // console.error("Sanity project ID or dataset is not configured in environment variables.");
+            return null;
+        }
+
+        return `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}-${dimensions}.${format}`;
     }
     return null;
 }
@@ -152,7 +161,7 @@ export function ensureSanityImage(image: ImageType, fallbackUrl: string = '/imag
                 const url = extractImageUrl(image);
                 if (url) return url;
             } catch (e) {
-                console.error('Erro ao extrair URL da imagem Sanity:', e);
+                // console.error('Erro ao extrair URL da imagem Sanity:', e);
             }
         }
     }

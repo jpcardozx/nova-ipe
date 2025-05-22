@@ -3,19 +3,19 @@
 
 const fs = require('fs');
 const path = require('path');
-const { createCanvas, loadImage } = require('canvas');
-const { registerFont } = require('canvas');
+const { createCanvas, loadImage, registerFont } = require('canvas');
 
 // Register fonts
-registerFont(path.join(__dirname, '../node_modules/@fontsource/montserrat/files/montserrat-latin-400-normal.woff'), {
-    family: 'Montserrat',
-    weight: '400'
-});
-
-registerFont(path.join(__dirname, '../node_modules/@fontsource/montserrat/files/montserrat-latin-700-normal.woff'), {
-    family: 'Montserrat',
-    weight: '700'
-});
+try {
+    registerFont(path.join(__dirname, '../node_modules/@fontsource/roboto/files/roboto-latin-400-normal.woff'), { family: 'Roboto', weight: '400' });
+    registerFont(path.join(__dirname, '../node_modules/@fontsource/roboto/files/roboto-latin-700-normal.woff'), { family: 'Roboto', weight: '700' });
+    registerFont(path.join(__dirname, '../node_modules/@fontsource/playfair-display/files/playfair-display-latin-400-normal.woff'), { family: 'Playfair Display', weight: '400' });
+    registerFont(path.join(__dirname, '../node_modules/@fontsource/playfair-display/files/playfair-display-latin-700-normal.woff'), { family: 'Playfair Display', weight: '700' });
+    console.log('Roboto and Playfair Display fonts registered successfully.');
+} catch (error) {
+    console.error('Error registering fonts. Make sure @fontsource/roboto and @fontsource/playfair-display are installed and paths are correct:', error);
+    console.warn('Falling back to system fonts for OG image generation.');
+}
 
 // Create directory if it doesn't exist
 const outputDir = path.join(__dirname, '../public/images');
@@ -35,7 +35,7 @@ async function generateMainOGImage() {
     ctx.fillStyle = '#0D1F2D';
     ctx.fillRect(0, 0, width, height);
 
-    try {        // Use a solid color instead of background image since we don't have guararema-background.jpg
+    try {
         // Draw a subtle pattern or texture
         ctx.fillStyle = '#0D1F2D';
         ctx.fillRect(0, 0, width, height);
@@ -65,12 +65,12 @@ async function generateMainOGImage() {
 
         // Add title text
         ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 64px Montserrat';
+        ctx.font = 'bold 64px "Playfair Display"';
         ctx.fillText('Imóveis Premium em', 50, 280);
         ctx.fillText('Guararema', 50, 360);
 
         // Add subtitle
-        ctx.font = '32px Montserrat';
+        ctx.font = '32px Roboto';
         ctx.fillText('Propriedades exclusivas para compra e aluguel', 50, 420);
         ctx.fillText('com atendimento personalizado', 50, 470);
 
@@ -149,12 +149,12 @@ async function generateSquareVersion(mainImageBuffer) {
         // Add title text
         ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
-        ctx.font = 'bold 64px Montserrat';
+        ctx.font = 'bold 64px "Playfair Display"';
         ctx.fillText('Imóveis Premium', size / 2, 400);
         ctx.fillText('em Guararema', size / 2, 480);
 
         // Add subtitle
-        ctx.font = '32px Montserrat';
+        ctx.font = '32px Roboto';
         ctx.fillText('Compra · Venda · Locação', size / 2, 560);
 
         // Add decorative elements
@@ -199,13 +199,13 @@ async function generateWhatsAppVersion() {
         // Add text
         ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
-        ctx.font = 'bold 32px Montserrat';
+        ctx.font = 'bold 32px "Playfair Display"';
         ctx.fillText('Nova Ipê', size / 2, 180);
 
-        ctx.font = '24px Montserrat';
+        ctx.font = '24px Roboto';
         ctx.fillText('Imobiliária', size / 2, 220);
 
-        ctx.font = 'bold 20px Montserrat';
+        ctx.font = 'bold 20px Roboto';
         ctx.fillText('Guararema · SP', size / 2, 260);
 
         // Add decorative element
@@ -218,7 +218,7 @@ async function generateWhatsAppVersion() {
 
         // Add call to action
         ctx.fillStyle = '#F59E0B';
-        ctx.font = '18px Montserrat';
+        ctx.font = '18px Roboto';
         ctx.fillText('Imóveis Premium', size / 2, 350);
 
         // Add border

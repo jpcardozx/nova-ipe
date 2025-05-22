@@ -16,22 +16,22 @@ interface TestimonialProps {
 const testimonials: TestimonialProps[] = [
     {
         name: 'Ana Silva',
-        role: 'Comprou imóvel em Guararema',
-        content: 'O atendimento da Nova Ipê foi excepcional. Encontraram a casa dos meus sonhos com todas as características que eu procurava.',
+        role: 'Proprietária em Guararema',
+        content: 'A assessoria da Nova Ipê foi fundamental para a aquisição estratégica do imóvel que atendia precisamente às necessidades da nossa família.',
         rating: 5,
         image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330'
     },
     {
         name: 'Roberto Almeida',
-        role: 'Vendeu imóvel com a Nova Ipê',
-        content: 'Processo muito profissional e transparente. Venderam meu imóvel em tempo recorde e com valor acima do esperado.',
+        role: 'Investidor',
+        content: 'Processo conduzido com excelência e transparência. A comercialização foi concluída dentro do prazo estipulado e com rentabilidade superior à projetada inicialmente.',
         rating: 5,
         image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e'
     },
     {
         name: 'Carolina Mendes',
-        role: 'Cliente de aluguel',
-        content: 'Encontrei um apartamento perfeito para alugar. A equipe da Nova Ipê simplificou todo o processo burocrático.',
+        role: 'Cliente corporativo',
+        content: 'A Nova Ipê identificou uma propriedade alinhada às nossas necessidades corporativas. O suporte na documentação e negociação foi impecável.',
         rating: 4,
         image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956'
     }
@@ -63,11 +63,10 @@ const TestimonialsSection = () => {
                                             className="w-full h-full object-cover"
                                         />
                                     </div>
-                                )}
-                                <div>
-                                    <h3 className="font-semibold text-lg">{testimonial.name}</h3>
+                                )}                                <div>
+                                    <h3 className="font-display semibold-text text-lg">{testimonial.name}</h3>
                                     {testimonial.role && (
-                                        <p className="text-neutral-500 text-sm">{testimonial.role}</p>
+                                        <p className="text-caption text-neutral-500">{testimonial.role}</p>
                                     )}
                                 </div>
                             </div>
@@ -82,7 +81,7 @@ const TestimonialsSection = () => {
                                 ))}
                             </div>
 
-                            <p className="text-neutral-700">{testimonial.content}</p>
+                            <p className="text-body text-neutral-700">{testimonial.content}</p>
                         </motion.div>
                     ))}
                 </div>

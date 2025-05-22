@@ -45,37 +45,37 @@ interface CompanyMetric {
 const services: Service[] = [
     {
         id: "compra-venda",
-        title: "Intermediação de Compra e Venda",
-        description: "Assessoria completa em todas as etapas da negociação",
+        title: "Intermediação Imobiliária",
+        description: "Assessoria completa em transações",
         features: [
-            "Avaliação mercadológica precisa",
-            "Marketing digital especializado",
-            "Negociação transparente",
+            "Análise comparativa de mercado",
+            "Estratégia de comercialização",
+            "Mediação qualificada",
             "Acompanhamento jurídico"
         ],
         icon: <Home className="w-6 h-6" />
     },
     {
         id: "consultoria",
-        title: "Consultoria Imobiliária",
-        description: "Análise estratégica para investimentos e decisões",
+        title: "Consultoria para Investimento",
+        description: "Direcionamento estratégico em ativos",
         features: [
-            "Estudo de viabilidade",
-            "Análise de mercado local",
-            "Projeções de valorização",
-            "Relatórios personalizados"
+            "Análise de viabilidade financeira",
+            "Estudo de valorização local",
+            "Projeção de retorno sobre investimento",
+            "Relatório analítico personalizado"
         ],
         icon: <Target className="w-6 h-6" />
     },
     {
         id: "documentacao",
         title: "Gestão Documental",
-        description: "Segurança jurídica em todas as transações",
+        description: "Compliance imobiliário integral",
         features: [
-            "Verificação de documentação",
-            "Regularização imobiliária",
-            "Certidões e registros",
-            "Acompanhamento cartorial"
+            "Auditoria documental preventiva",
+            "Regularização cadastral",
+            "Obtenção e validação de certidões",
+            "Acompanhamento registral"
         ],
         icon: <FileCheck className="w-6 h-6" />
     }
@@ -108,29 +108,29 @@ const companyMetrics: CompanyMetric[] = [
     {
         id: "tempo-mercado",
         value: "15 anos",
-        label: "No mercado",
-        description: "Experiência consolidada em Guararema",
+        label: "De atuação",
+        description: "Expertise consolidada no mercado local",
         icon: <Clock className="w-5 h-5" />
     },
     {
         id: "transacoes",
         value: "500+",
-        label: "Transações Imobiliárias",
-        description: "Negócios concretizados com sucesso",
+        label: "Transações concluídas",
+        description: "Intermediações realizadas com sucesso",
         icon: <TrendingUp className="w-5 h-5" />
     },
     {
         id: "satisfacao",
         value: "98%",
-        label: "Satisfação",
-        description: "Índice de clientes satisfeitos",
+        label: "Índice de satisfação",
+        description: "Clientes que recomendam nossos serviços",
         icon: <Award className="w-5 h-5" />
     },
     {
         id: "equipe",
-        value: "Equipe Especializada",
-        label: "Atendimento rápido e personalizado",
-        description: "Corretores com conhecimento do mercado local",
+        value: "Resposta em 24h",
+        label: "Compromisso de atendimento",
+        description: "Equipe especializada sempre acessível",
         icon: <Users className="w-5 h-5" />
     }
 ];
@@ -147,24 +147,20 @@ export default function ApresentacaoInstitucional() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
-                    >
-                        <div className="inline-flex items-center gap-2 px-5 py-2 bg-amber-100 text-amber-800 rounded-full mb-6">
-                            <Building2 className="w-5 h-5" />
-                            <span className="text-sm font-semibold uppercase tracking-wide">
-                                Conheça a Nova Ipê
+                    >                        <div className="inline-flex items-center gap-2 px-5 py-2 bg-amber-100 text-amber-800 rounded-full mb-6">
+                            <Building2 className="w-5 h-5" />                            <span className="text-sm font-semibold uppercase tracking-wide">
+                                Conheça a Ipê
                             </span>
-                        </div>
-
-                        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                            Excelência em negócios imobiliários
+                        </div>                        <h2 className="text-display-1 text-gray-900 mb-6">
+                            Excelência em assessoria
                             <span className="block text-amber-600 mt-2">
-                                há mais de uma década
+                                imobiliária desde 2010
                             </span>
                         </h2>
 
-                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            Somos a principal referência imobiliária de Guararema,
-                            combinando tradição, inovação e conhecimento profundo do mercado local.
+                        <p className="text-body-large text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                            Mais de 500 clientes confiaram em nossa
+                            <span className="text-amber-600 cursor-pointer"> expertise no mercado local</span> para realizar investimentos e aquisições estratégicas.
                         </p>
                     </motion.div>
                 </div>
@@ -185,14 +181,13 @@ export default function ApresentacaoInstitucional() {
                                 className="object-cover"
                                 sizes="(min-width: 1024px) 50vw, 100vw" // Added sizes prop
                                 priority
-                            />
-                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
+                            />                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
                                 <h3 className="text-white text-xl font-bold mb-2">
-                                    Nossa Sede
+                                    Escritório Central
                                 </h3>
                                 <p className="text-white/90">
-                                    Localizada no coração de Guararema, nossa estrutura
-                                    oferece atendimento completo e personalizado.
+                                    Localizado na região central de Guararema, com atendimento
+                                    integrado para compradores e proprietários.
                                 </p>
                             </div>
                         </div>
@@ -211,14 +206,13 @@ export default function ApresentacaoInstitucional() {
                                     <div className="p-3 bg-amber-100 text-amber-700 rounded-lg">
                                         {metric.icon}
                                     </div>
-                                    <div>
-                                        <p className="text-3xl font-bold text-gray-900">
-                                            {metric.value}
-                                        </p>
-                                        <p className="text-sm font-medium text-gray-700">
+                                    <div>                                <p className="text-heading-1 text-gray-900">
+                                        {metric.value}
+                                    </p>
+                                        <p className="text-body-small medium-text text-gray-700">
                                             {metric.label}
                                         </p>
-                                        <p className="text-xs text-gray-500 mt-1">
+                                        <p className="text-caption text-gray-500 mt-1">
                                             {metric.description}
                                         </p>
                                     </div>
@@ -228,11 +222,12 @@ export default function ApresentacaoInstitucional() {
                     </div>
                 </div>
 
-                {/* Serviços Oferecidos */}
-                <div className="mb-20">
-                    <h3 className="text-3xl font-bold text-gray-900 text-center mb-12">
-                        Nossos Serviços
-                    </h3>
+                {/* Serviços Oferecidos */}                <div className="mb-20">                    <h3 className="text-display-3 text-gray-900 text-center mb-4">
+                    Como podemos ajudar você?
+                </h3>
+                    <p className="text-body text-gray-600 text-center max-w-2xl mx-auto mb-12">
+                        Selecione o serviço que você precisa e descubra como podemos fazer a diferença no seu projeto imobiliário.
+                    </p>
 
                     <div className="grid lg:grid-cols-3 gap-6 mb-8">
                         {services.map((service) => (
@@ -297,7 +292,7 @@ export default function ApresentacaoInstitucional() {
 
                 {/* Certificações e Credibilidade */}
                 <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-8 md:p-12 mb-16">
-                    <h3 className="text-3xl font-bold text-gray-900 text-center mb-8">
+                    <h3 className="text-3xl font-bold text-gray-900 text-center mb-8 font-display tracking-tight">
                         Certificações e Credibilidade
                     </h3>
 
@@ -342,11 +337,11 @@ export default function ApresentacaoInstitucional() {
                 >
                     <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-10 text-white max-w-3xl mx-auto">
                         <Shield className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-                        <h3 className="text-3xl font-bold mb-4 text-white">
+                        <h3 className="text-3xl font-bold mb-4 text-white font-display tracking-tight">
                             Pronto para uma experiência imobiliária diferenciada?
                         </h3>
 
-                        <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
+                        <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto font-body">
                             Agende uma visita ao nosso escritório ou solicite uma consultoria
                             personalizada. Nossa equipe está pronta para atender suas demandas.
                         </p>

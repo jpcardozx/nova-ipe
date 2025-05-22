@@ -17,16 +17,20 @@ import {
     Trees,
     Car,
     AlertCircle,
-    Zap,
-    ArrowUpRight,
-    Check,
+    Zap, ArrowUpRight,
+    ChevronLeft,
     ChevronRight,
+    Check,
     BriefcaseBusiness,
     Users,
     Info,
     X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { usePropertyData } from '@/app/hooks/usePropertyData';
+import { PropertyCard } from '@/app/components/PropertyCard';
+import { Button } from '@/components/ui/button';
+import type { ImovelClient } from '@/types/imovel-client';
 
 // TIPOS
 interface GuararemaMetric {
@@ -73,17 +77,17 @@ interface ComparativeData {
 const userProfiles = [
     {
         id: 'familia',
-        title: 'Famílias',
+        title: 'Para sua Família',
         icon: <Users className="w-5 h-5" />
     },
     {
         id: 'profissional',
-        title: 'Profissionais remotos',
+        title: 'Para Trabalhar',
         icon: <BriefcaseBusiness className="w-5 h-5" />
     },
     {
         id: 'investidor',
-        title: 'Investidores',
+        title: 'Para seu Futuro',
         icon: <TrendingUp className="w-5 h-5" />
     }
 ];
@@ -237,27 +241,27 @@ const comparativeData: Record<string, ComparativeData[]> = {
 const guararemaMetrics: GuararemaMetric[] = [
     {
         id: 'qualidade-vida',
-        label: 'Índice de qualidade de vida',
+        label: 'Bem-estar e tranquilidade',
         value: '78/100',
-        comparison: '+32% vs. média de SP',
+        comparison: '32% melhor que em SP',
         trend: 'positive',
         icon: <Users className="w-6 h-6" />,
         source: 'Quality of Life Index 2024'
     },
     {
         id: 'acesso-sp',
-        label: 'Tempo médio até SP (centro)',
+        label: 'Próximo da capital',
         value: '45 min',
-        comparison: 'via CPTM linha Mogi-Luz',
+        comparison: 'e sem enfrentar trânsito',
         trend: 'neutral',
         icon: <Train className="w-6 h-6" />,
         source: 'CPTM - Horários 2025'
     },
     {
         id: 'valorizacao',
-        label: 'Valorização imobiliária média',
+        label: 'Seu patrimônio cresce',
         value: '9.2% a.a.',
-        comparison: '+92% vs. média Grande SP',
+        comparison: 'quase o dobro da média de SP',
         trend: 'positive',
         icon: <TrendingUp className="w-6 h-6" />,
         source: 'DataZap Imóveis Q1 2025'
@@ -480,6 +484,10 @@ function DestaquesEstrategicos() {
     const [activeAdvantage, setActiveAdvantage] = useState('mobilidade-estrategica');
     const [shownSource, setShownSource] = useState<string | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const propertyData = usePropertyData('/api/imoveis-destaque');
+    const { data: imoveis = [], isLoading = false, error = null } = propertyData || {};
+    const [activeIndex, setActiveIndex] = useState(0);
+    const [expandedCard, setExpandedCard] = useState<string | null>(null);
 
     // EFEITOS VISUAIS DE SCROLL
     const { scrollYProgress } = useScroll({
@@ -497,6 +505,35 @@ function DestaquesEstrategicos() {
             setActiveAdvantage(firstAdvantageId);
         }
     }, [selectedProfile]);
+
+    // Early return for loading/error states
+    if (isLoading) {
+        return <DestaquesLoadingSkeleton />;
+    }
+
+    if (error || !imoveis.length) {
+        return (
+            <div className="flex flex-col items-center justify-center p-8 text-center">
+                <p className="text-gray-600">
+                    {error || 'Nenhum imóvel em destaque disponível no momento.'}
+                </p>
+            </div>
+        );
+    }
+
+    const handleNextSlide = () => {
+        setActiveIndex((current) => (current + 1) % Math.ceil(imoveis.length / 3));
+        setExpandedCard(null);
+    };
+
+    const handlePrevSlide = () => {
+        setActiveIndex((current) =>
+            current === 0 ? Math.ceil(imoveis.length / 3) - 1 : current - 1
+        );
+        setExpandedCard(null);
+    };
+
+    const visibleImoveis = imoveis.slice(activeIndex * 3, (activeIndex + 1) * 3);
 
     return (
         <section ref={containerRef} className="relative py-16 sm:py-24 bg-white overflow-hidden">
@@ -517,13 +554,12 @@ function DestaquesEstrategicos() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
-                    >
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                            Guararema em números e fatos
+                    >                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                            Por que escolher Guararema?
                         </h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            Dados comparativos, métricas verificáveis e vantagens específicas
-                            para embasar sua decisão de investimento ou mudança
+                            Descubra os benefícios reais de viver ou investir aqui.
+                            <span className="text-amber-600 font-medium cursor-pointer"> Toque nos números para conhecer as fontes.</span>
                         </p>
                     </motion.div>
                 </div>
@@ -561,14 +597,13 @@ function DestaquesEstrategicos() {
                                     {metric.icon}
                                 </div>
 
-                                <div>
-                                    <h3 className="text-sm font-medium text-gray-500 mb-1">
-                                        {metric.label}
-                                    </h3>
-                                    <p className="text-2xl font-bold text-gray-900 mb-1">
+                                <div>                                    <h3 className="text-caption text-gray-500 mb-1">
+                                    {metric.label}
+                                </h3>
+                                    <p className="text-heading-2 text-gray-900 mb-1">
                                         {metric.value}
                                     </p>
-                                    <p className={`text-sm font-medium ${metric.trend === 'positive' ? 'text-green-600' :
+                                    <p className={`text-body-small medium-text ${metric.trend === 'positive' ? 'text-green-600' :
                                         metric.trend === 'negative' ? 'text-red-600' : 'text-gray-600'
                                         }`}>
                                         {metric.comparison}
@@ -614,17 +649,16 @@ function DestaquesEstrategicos() {
                 </div>
 
                 {/* Tabela comparativa SP vs Guararema */}
-                <div className="mb-16">
-                    <div className="text-center mb-8">
-                        <h3 className="text-2xl font-bold text-gray-900">
-                            São Paulo × Guararema: comparativo objetivo
-                        </h3>
-                        <p className="text-gray-600 mt-2">
-                            Dados específicos para {selectedProfile === 'familia' ? 'famílias' :
-                                selectedProfile === 'profissional' ? 'profissionais remotos' :
-                                    'investidores'} com fontes verificáveis
-                        </p>
-                    </div>
+                <div className="mb-16">                <div className="text-center mb-8">
+                    <h3 className="text-heading-1 text-gray-900">
+                        São Paulo × Guararema: comparativo objetivo
+                    </h3>
+                    <p className="text-body text-gray-600 mt-2">
+                        Dados específicos para {selectedProfile === 'familia' ? 'famílias' :
+                            selectedProfile === 'profissional' ? 'profissionais remotos' :
+                                'investidores'} com fontes verificáveis
+                    </p>
+                </div>
 
                     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
                         <div className="overflow-x-auto">
@@ -974,13 +1008,12 @@ function DestaquesEstrategicos() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     className="text-center"
-                >
-                    <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm max-w-4xl mx-auto">
-                        <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                >                    <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm max-w-4xl mx-auto">
+                        <h3 className="text-heading-1 text-gray-900 mb-4">
                             Compare na prática: visite Guararema
                         </h3>
 
-                        <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
+                        <p className="text-body-large text-gray-600 mb-8 max-w-2xl mx-auto">
                             A melhor maneira de confirmar estes dados é conhecer a cidade pessoalmente.
                             Agende uma visita guiada personalizada conforme seu perfil e interesses.
                         </p>
@@ -1007,7 +1040,99 @@ function DestaquesEstrategicos() {
                     </div>
                 </motion.div>
             </motion.div>
+
+            {/* Destaques Imobiliários - Carrossel */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+                <div className="text-center mb-10">                    <h2 className="text-display-2 text-gray-900">
+                    Imóveis em Destaque
+                </h2>
+                    <p className="mt-4 text-lg text-gray-600">
+                        Confira nossa seleção especial de propriedades em Guararema
+                    </p>
+                </div>
+
+                <div className="relative">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {visibleImoveis.map((imovel: ImovelClient) => (
+                            <PropertyCard
+                                key={imovel._id}
+                                imovel={imovel}
+                                showExpand
+                                isExpanded={expandedCard === imovel._id}
+                                onExpandClick={() => setExpandedCard(
+                                    expandedCard === imovel._id ? null : imovel._id
+                                )}
+                            />
+                        ))}
+                    </div>
+
+                    {imoveis.length > 3 && (
+                        <>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="absolute -left-12 top-1/2 -translate-y-1/2"
+                                onClick={handlePrevSlide}
+                            >
+                                <ChevronLeft className="h-6 w-6" />
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="absolute -right-12 top-1/2 -translate-y-1/2"
+                                onClick={handleNextSlide}
+                            >
+                                <ChevronRight className="h-6 w-6" />
+                            </Button>
+                        </>
+                    )}
+                </div>
+
+                <div className="flex justify-center mt-6 gap-2">
+                    {Array.from({ length: Math.ceil(imoveis.length / 3) }).map((_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => {
+                                setActiveIndex(i);
+                                setExpandedCard(null);
+                            }}
+                            className={cn(
+                                "w-2 h-2 rounded-full transition-all duration-300",
+                                i === activeIndex ? "bg-gray-800 w-4" : "bg-gray-300"
+                            )}
+                        />
+                    ))}
+                </div>
+            </div>
         </section>
+    );
+}
+
+function DestaquesLoadingSkeleton() {
+    return (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-10">
+                <div className="h-8 w-64 bg-gray-200 rounded-lg mx-auto mb-4 animate-pulse" />
+                <div className="h-4 w-96 bg-gray-100 rounded-lg mx-auto animate-pulse" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[1, 2, 3].map((i) => (
+                    <div key={i} className="bg-white rounded-lg overflow-hidden shadow-md">
+                        <div className="aspect-[4/3] bg-gray-200 animate-pulse" />
+                        <div className="p-4">
+                            <div className="h-6 w-3/4 bg-gray-200 rounded-lg mb-2 animate-pulse" />
+                            <div className="h-4 w-1/2 bg-gray-100 rounded-lg mb-4 animate-pulse" />
+                            <div className="flex gap-4 mb-4">
+                                {[1, 2, 3].map((j) => (
+                                    <div key={j} className="h-4 w-8 bg-gray-100 rounded-lg animate-pulse" />
+                                ))}
+                            </div>
+                            <div className="h-6 w-1/3 bg-gray-200 rounded-lg animate-pulse" />
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
     );
 }
 

@@ -2,6 +2,9 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
 
+// Definir runtime como edge (necessário para o ImageResponse)
+export const runtime = 'edge';
+
 // Rota de API para gerar imagens OG dinâmicas
 export async function GET(request: NextRequest) {
     try {

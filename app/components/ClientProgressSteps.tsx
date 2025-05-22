@@ -325,15 +325,13 @@ const ProcessoGuararema: React.FC<ProcessoGuararemaProps> = ({
                     <div className="inline-flex items-center px-4 py-1.5 bg-amber-100 text-amber-800 rounded-full mb-6 text-sm font-medium">
                         <MapPin className="w-4 h-4 mr-1.5" />
                         Guararema: 45 min de São Paulo (CPTM)
-                    </div>
-
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                        A mudança para Guararema em 7 etapas objetivas
+                    </div>                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                        Protocolo estruturado de análise imobiliária
                     </h1>
 
                     <p className="text-lg text-gray-600 mb-10">
-                        Processo estruturado para quem busca mais espaço e qualidade de vida
-                        mantendo a conexão com São Paulo. Atendimento adaptado ao seu perfil.
+                        Metodologia exclusiva de assessoria para aquisição e investimento em propriedades
+                        na região de Guararema, com atendimento personalizado por perfil de cliente.
                     </p>
 
                     {/* SELETOR DE PERFIL (SIMPLIFICADO E FOCADO) */}

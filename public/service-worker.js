@@ -1,6 +1,6 @@
 /**
  * Service Worker for Nova Ipê Imobiliária
- * Generated on: 2025-05-21T23:31:25.386Z
+ * Generated on: 2025-05-22T02:23:21.177Z
  * 
  * This service worker implements a stale-while-revalidate strategy for static chunks
  * to prevent chunk loading errors and improve offline capabilities.
@@ -152,4 +152,4 @@ if (typeof self !== 'undefined') {
 
 
 
-// Build timestamp: 1747870285394
+// Build timestamp: 1747880601180

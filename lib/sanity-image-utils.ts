@@ -4,7 +4,6 @@
 
 import type { SanityImage, ImageType } from '../app/PropertyTypeFix';
 import { extractImageUrl } from './image-sanity';
-import { debugImage } from './debug-image';
 
 /**
  * Interface para imagem normalizada
@@ -40,11 +39,11 @@ export function ensureValidImageUrl(
 ): NormalizedImage {
     try {
         // Debug a estrutura da imagem com diagnóstico detalhado
-        debugImage(image, 'ensureValidImageUrl');
+        // debugImage(image, 'ensureValidImageUrl');
 
         // Caso nulo/indefinido
         if (!image) {
-            console.log('[Image Extractor] Imagem nula ou indefinida, usando fallback');
+            // console.log('[Image Extractor] Imagem nula ou indefinida, usando fallback');
             return {
                 url: fallbackUrl,
                 alt: defaultAlt
@@ -53,7 +52,7 @@ export function ensureValidImageUrl(
 
         // Caso seja string (URL direta)
         if (typeof image === 'string') {
-            console.log('[Image Extractor] Imagem é uma string URL:', image.substring(0, 50) + '...');
+            // console.log('[Image Extractor] Imagem é uma string URL:', image.substring(0, 50) + '...');
             return {
                 url: image,
                 alt: defaultAlt
@@ -74,33 +73,33 @@ export function ensureValidImageUrl(
 
         // Estratégia 1: Usar URLs diretas (prioridade mais alta)
         if (image.url) {
-            console.log('[Image Extractor] Usando image.url');
+            // console.log('[Image Extractor] Usando image.url');
             url = image.url;
         } else if (image.imagemUrl) {
-            console.log('[Image Extractor] Usando image.imagemUrl');
+            // console.log('[Image Extractor] Usando image.imagemUrl');
             url = image.imagemUrl;
         } else if (image.asset?.url) {
-            console.log('[Image Extractor] Usando image.asset.url');
+            // console.log('[Image Extractor] Usando image.asset.url');
             url = image.asset.url;
         }
         // Estratégia 2: Usar a função extractImageUrl para processar referências
         else if (image.asset?._ref) {
-            console.log('[Image Extractor] Processando referência Sanity:', image.asset._ref);
+            // console.log('[Image Extractor] Processando referência Sanity:', image.asset._ref);
             url = extractImageUrl(image);
         }
 
         // Verificação final
         if (!url) {
-            console.warn('[Image Extractor] Falha ao extrair URL, usando fallback');
+            // console.warn('[Image Extractor] Falha ao extrair URL, usando fallback');
             url = fallbackUrl;
         }
 
         // Log da URL final
-        console.log(`[Image Extractor] URL extraída com sucesso: ${url.substring(0, 50)}${url.length > 50 ? '...' : ''}`);        // Retornar imagem normalizada com todos os dados necessários
+        // console.log(`[Image Extractor] URL extraída com sucesso: ${url.substring(0, 50)}${url.length > 50 ? '...' : ''}`);        // Retornar imagem normalizada com todos os dados necessários
         result.url = url; // Atualiza a URL no resultado
         return result;
     } catch (error) {
-        console.error('[Image Extractor] Erro crítico ao processar imagem:', error);
+        // console.error('[Image Extractor] Erro crítico ao processar imagem:', error);
         return {
             url: fallbackUrl,
             alt: defaultAlt

@@ -14,16 +14,7 @@ import { extractImageUrl } from './image-sanity';
  * @returns Objeto de imagem padronizado
  */
 export function normalizeImage(image: any, defaultAlt: string = ''): ClientImage {
-    console.log("normalizeImage called with:", {
-        imageType: image ? typeof image : 'null/undefined',
-        imageHasUrl: image?.url ? true : false,
-        imageHasImagemUrl: image?.imagemUrl ? true : false,
-        imageHasAsset: image?.asset ? true : false,
-        defaultAlt
-    });
-
     if (!image) {
-        console.warn("normalizeImage: No image provided, returning fallback");
         return { alt: defaultAlt };
     }
 
@@ -41,19 +32,16 @@ export function normalizeImage(image: any, defaultAlt: string = ''): ClientImage
     };
 
     if (image.imagemUrl || image.url) {
-        console.log("normalizeImage: Image already has url or imagemUrl");
         normalizedImage.url = image.url || image.imagemUrl;
         normalizedImage.imagemUrl = image.imagemUrl || image.url;
     } else if (image.asset?._ref) {
-        console.log("normalizeImage: Image has Sanity asset reference", image.asset._ref);
         const imageUrl = extractImageUrl(image);
 
         if (!imageUrl) {
-            console.error("Failed to extract image URL using specialized function, falling back");
             try {
                 normalizedImage.url = '';
             } catch (error) {
-                console.error("Error during fallback", error);
+                // Ignorar erro
             }
         } else {
             normalizedImage.url = imageUrl;
@@ -71,16 +59,7 @@ export function normalizeImage(image: any, defaultAlt: string = ''): ClientImage
  * @returns Documento normalizado
  */
 export function normalizeDocument(doc: any): any {
-    console.log("normalizeDocument called with:", {
-        docType: doc ? typeof doc : 'null/undefined',
-        docId: doc?._id,
-        hasImage: doc?.imagem ? true : false,
-        hasOgImage: doc?.imagemOpenGraph ? true : false,
-        hasSlug: doc?.slug ? true : false
-    });
-
     if (!doc) {
-        console.warn("normalizeDocument: No document provided");
         return null;
     }
 
@@ -89,18 +68,15 @@ export function normalizeDocument(doc: any): any {
 
     // Normaliza imagens
     if (doc.imagem) {
-        console.log("normalizeDocument: Normalizing main image");
         normalizedDoc.imagem = normalizeImage(doc.imagem, doc.titulo || 'Imagem');
     }
 
     if (doc.imagemOpenGraph) {
-        console.log("normalizeDocument: Normalizing OG image");
         normalizedDoc.imagemOpenGraph = normalizeImage(doc.imagemOpenGraph, 'Open Graph');
     }
 
     // Normaliza o slug
     if (doc.slug?.current && typeof doc.slug !== 'string') {
-        console.log("normalizeDocument: Normalizing slug from object to string");
         normalizedDoc.slug = doc.slug.current;
     }
 
@@ -117,18 +93,11 @@ export function normalizeDocument(doc: any): any {
  * @returns Array de documentos normalizados
  */
 export function normalizeDocuments<T = any>(docs: any[]): T[] {
-    console.log("normalizeDocuments called with:", {
-        isArray: Array.isArray(docs),
-        length: Array.isArray(docs) ? docs.length : 0
-    });
-
     if (!Array.isArray(docs)) {
-        console.warn("normalizeDocuments: Input is not an array");
         return [];
     }
 
     const result = docs.map(doc => normalizeDocument(doc)) as T[];
-    console.log("normalizeDocuments: Processed", result.length, "documents");
     return result;
 }
 
@@ -139,8 +108,6 @@ export function normalizeDocuments<T = any>(docs: any[]): T[] {
  * @returns Query com projeção de imagens
  */
 export function buildImageProjectionQuery(baseQuery: string): string {
-    console.log("buildImageProjectionQuery called with:", { baseQuery });
-
     const result = `${baseQuery} {
         ...,
         "imagem": {
@@ -171,9 +138,6 @@ export function buildImageProjectionQuery(baseQuery: string): string {
             }
         }
     }`;
-
-    console.log("buildImageProjectionQuery: Generated query (truncated):",
-        result.substring(0, 50) + "..." + result.substring(result.length - 20));
 
     return result;
 }

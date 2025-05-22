@@ -19,16 +19,8 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Montserrat } from 'next/font/google';
 import { motion, useScroll, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
-
-const montSerrat = Montserrat({
-    subsets: ['latin'],
-    weight: ['300', '400', '500', '600', '700'],
-    display: 'swap',
-    variable: '--font-montserrat',
-});
 
 // Links para navegação do rodapé
 const footerLinks = [
@@ -108,10 +100,8 @@ export default function FooterAprimorado() {
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    return (
-        <footer className={`relative w-full bg-gradient-to-b from-gray-900 to-gray-950 text-white overflow-hidden ${montSerrat.className}`}>
+    }; return (
+        <footer className="relative w-full bg-gradient-to-b from-gray-900 to-gray-950 text-white overflow-hidden font-body">
             {/* Fundo com textura e gradiente */}
             <div className="absolute inset-0">
                 <div className="relative w-full h-full">
@@ -148,18 +138,15 @@ export default function FooterAprimorado() {
                                     width={200}
                                     height={100}
                                     className="mb-6"
-                                />
-
-                                <p className="text-gray-300 mb-6 leading-relaxed max-w-md">
+                                />                                <p className="text-gray-300 mb-6 leading-relaxed max-w-md text-body">
                                     Referência em soluções imobiliárias em Guararema desde 2010. Conhecimento local, atendimento personalizado e excelência em cada negociação.
                                 </p>
 
                                 <div className="flex flex-col gap-4 mb-8">
                                     <div className="flex items-start">
                                         <MapPin className="w-5 h-5 text-amber-400 mr-3 mt-0.5" />
-                                        <div>
-                                            <h4 className="font-medium text-white">Escritório Principal</h4>
-                                            <address className="text-gray-300 not-italic">
+                                        <div>                                            <h4 className="medium-text text-white text-body">Escritório Principal</h4>
+                                            <address className="text-gray-300 not-italic text-body-small">
                                                 Av. Professor João Batista Gardelin, 1300<br />
                                                 Centro, Guararema - SP, 08900-000
                                             </address>
@@ -168,9 +155,8 @@ export default function FooterAprimorado() {
 
                                     <div className="flex items-start">
                                         <Clock className="w-5 h-5 text-amber-400 mr-3 mt-0.5" />
-                                        <div>
-                                            <h4 className="font-medium text-white">Horário de Atendimento</h4>
-                                            <p className="text-gray-300">
+                                        <div>                                            <h4 className="medium-text text-white text-body">Horário de Atendimento</h4>
+                                            <p className="text-gray-300 text-body-small">
                                                 Segunda a Sexta: 8:30 - 18:00<br />
                                                 Sábado: 9:00 - 13:00
                                             </p>
@@ -212,8 +198,7 @@ export default function FooterAprimorado() {
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.5, delay: idx * 0.1 }}
-                                >
-                                    <h4 className="text-white font-semibold mb-6 pb-2 border-b border-gray-700">
+                                >                                    <h4 className="text-white semibold-text mb-6 pb-2 border-b border-gray-700 text-heading-3">
                                         {column.title}
                                     </h4>
                                     <ul className="space-y-3">
@@ -238,11 +223,10 @@ export default function FooterAprimorado() {
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6 }}
-                        >
-                            <h4 className="text-white font-semibold mb-4 text-xl">
+                        >                            <h4 className="text-white semibold-text mb-4 text-heading-3">
                                 Receba novidades e oportunidades
                             </h4>
-                            <p className="text-gray-300 mb-6">
+                            <p className="text-gray-300 mb-6 text-body">
                                 Inscreva-se para receber as melhores oportunidades em primeira mão
                             </p>
                             <form className="flex gap-2 max-w-md">
@@ -276,9 +260,8 @@ export default function FooterAprimorado() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="flex items-center gap-3 bg-gray-800 p-3 rounded-lg">
                                     <Award className="text-amber-400 w-6 h-6" />
-                                    <div>
-                                        <h5 className="font-medium text-white text-sm">CRECI-SP</h5>
-                                        <p className="text-gray-400 text-xs">Registro 12.345-J</p>
+                                    <div>                                        <h5 className="medium-text text-white text-body-small">CRECI-SP</h5>
+                                        <p className="text-gray-400 text-caption">Registro 12.345-J</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3 bg-gray-800 p-3 rounded-lg">

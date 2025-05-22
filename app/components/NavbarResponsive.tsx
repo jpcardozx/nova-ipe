@@ -5,14 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Montserrat } from "next/font/google";
-
-const montSerrat = Montserrat({
-    subsets: ["latin"],
-    weight: ["400"],
-    display: "swap",
-    variable: "--font-montserrat",
-});
 
 const links = [
     { label: "Início", href: "/" },
@@ -83,7 +75,7 @@ export default function NavbarResponsive() {
                 {/* Desktop Navigation */}
                 {!isMobile && (
                     <div className="flex items-center gap-8">
-                        <ul className={`flex gap-7 text-gray-800 text-sm font-medium ${montSerrat.className}`}>
+                        <ul className="flex gap-7 text-gray-800 text-button font-body">
                             {links.map(({ label, href }) => (
                                 <li key={label}>
                                     <Link

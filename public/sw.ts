@@ -14,9 +14,6 @@ const CACHE_ASSETS = [
     '/critical-property-styles.css',
     '/critical-home-styles.css',
     '/critical-detail-styles.css',
-    '/fonts/Montserrat-Bold.woff2',
-    '/fonts/Montserrat-Medium.woff2',
-    '/fonts/Montserrat-Regular.woff2',
 
     // Fallback images
     '/images/property-placeholder.jpg',

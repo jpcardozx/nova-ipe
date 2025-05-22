@@ -1,5 +1,4 @@
 // Server Component: Only data fetching, transformation, and font config
-import { Montserrat } from 'next/font/google';
 import { getImoveisDestaque, getImoveisAluguel } from '@/lib/queries';
 import { normalizeDocuments } from '@/lib/sanity-utils';
 import { ensureValidImageUrl } from '@/lib/sanity-image-utils';
@@ -9,15 +8,7 @@ import { ensureNonNullProperties, extractSlugString } from './PropertyTypeFix';
 import HomeClient from './page-client';
 import { Suspense } from 'react';
 
-// Font config
-const montSerrat = Montserrat({
-    subsets: ['latin'],
-    weight: ['300', '400', '500', '600', '700', '800'],
-    display: 'swap',
-    variable: '--font-montserrat',
-});
-
-// Data transformation (no console logs, no browser-only code)
+// Data transformation(no console logs, no browser-only code)
 function transformPropertyData(imovel: ImovelClient, propertyType: PropertyType) {
     try {
         if (!imovel) return null;
@@ -91,8 +82,15 @@ async function fetchPropertiesData() {
 export default async function Home() {
     const { destaques, aluguel } = await fetchPropertiesData();
     return (
-        <Suspense fallback={<div className="min-h-screen bg-[#fafaf9] animate-pulse" />}>
-            <HomeClient destaques={destaques} aluguel={aluguel} montSerratClass={montSerrat.className} />
-        </Suspense>
+        <main>
+            <Suspense fallback={
+                <div className="min-h-screen flex items-center justify-center bg-[#fafaf9] animate-pulse">
+                    <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+                    <span className="ml-4 text-primary-700 font-medium text-lg">Carregando...</span>
+                </div>
+            }>
+                <HomeClient destaques={destaques} aluguel={aluguel} />
+            </Suspense>
+        </main>
     );
 }
