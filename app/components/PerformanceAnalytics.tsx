@@ -9,7 +9,8 @@
  * @date 21/05/2025
  */
 
-import { useState, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 // Interface simples para métricas de performance
 interface PerformanceData {
@@ -20,172 +21,152 @@ interface PerformanceData {
         ttfb: number | null;
         cls: number | null;
     };
-    resources: {
+    resources: Array<{
         name: string;
         duration: number;
         size: number;
-    }[];
+    }>;
+
 }
 
 /**
- * Obter dados básicos de performance
+ * Obter dados básicos de performance de forma otimizada
  */
-function getBasicPerformanceData(): PerformanceData {
-    // Valores padrão
-    const data: PerformanceData = {
-        pageLoad: {
-            total: null,
-            fcp: null,
-            lcp: null,
-            ttfb: null,
-            cls: null
-        },
-        resources: []
-    };
-
-    // Se estamos no navegador, colete as métricas
-    if (typeof window !== 'undefined' && window.performance) {
-        try {
-            const perf = window.performance;
-
-            // Navegação e timing
-            if (perf.timing) {
-                data.pageLoad.total = perf.timing.loadEventEnd - perf.timing.navigationStart;
-                data.pageLoad.ttfb = perf.timing.responseStart - perf.timing.navigationStart;
-            }
-
-            // Recursos carregados
-            if (perf.getEntriesByType) {
-                // Métricas paint
-                const paintEntries = perf.getEntriesByType('paint');
-                const fcpEntry = paintEntries.find(entry => entry.name === 'first-contentful-paint');
-                if (fcpEntry) {
-                    data.pageLoad.fcp = fcpEntry.startTime;
-                }
-
-                // Recursos (JavaScript, CSS, imagens, etc.)
-                const resourceEntries = perf.getEntriesByType('resource');
-                data.resources = resourceEntries
-                    .filter(r => r.duration > 100) // Apenas recursos que levaram algum tempo para carregar
-                    .slice(0, 5) // Limite para os 5 primeiros
-                    .map(r => ({
-                        name: r.name.split('/').pop() || r.name,
-                        duration: Math.round(r.duration),
-                        size: r.encodedBodySize || 0
-                    }));
-            }
-        } catch (e) {
-            console.error('Erro ao coletar métricas de performance:', e);
-        }
+const getBasicPerformanceData = (): PerformanceData => {
+    if (typeof window === 'undefined') {
+        return {
+            pageLoad: {
+                total: null,
+                fcp: null,
+                lcp: null,
+                ttfb: null,
+                cls: null
+            },
+            resources: []
+        };
     }
 
-    return data;
-}
+    // Usa as PerformanceEntry APIs de forma eficiente
+    const loadMetrics = {
+        total: null,
+        fcp: null,
+        lcp: null,
+        ttfb: null,
+        cls: null
+    } as PerformanceData['pageLoad'];
+
+    try {
+        // Get navigation timing metrics efficiently
+        const navEntries = performance.getEntriesByType('navigation');
+        if (navEntries.length > 0) {
+            const nav = navEntries[0] as PerformanceNavigationTiming;
+            loadMetrics.total = nav.loadEventEnd - nav.fetchStart;
+            loadMetrics.ttfb = nav.responseStart - nav.requestStart;
+        }
+
+        // Get paint timing metrics
+        const paintEntries = performance.getEntriesByType('paint');
+        for (const entry of paintEntries) {
+            if (entry.name === 'first-contentful-paint') {
+                loadMetrics.fcp = entry.startTime;
+            }
+        }
+
+        // Get LCP if available
+        const lcpEntries = performance.getEntriesByType('largest-contentful-paint');
+        if (lcpEntries.length > 0) {
+            loadMetrics.lcp = lcpEntries[lcpEntries.length - 1].startTime;
+        }
+
+        // Get layout shift if available
+        const clsEntries = performance.getEntriesByType('layout-shift');
+        if (clsEntries.length > 0) {
+            loadMetrics.cls = clsEntries.reduce((acc, entry: any) => acc + entry.value, 0);
+        }
+
+        // Get resource timing metrics efficiently
+        const resources = performance.getEntriesByType('resource')
+            .map(entry => ({
+                name: entry.name.split('/').pop() || entry.name,
+                duration: entry.duration,
+                size: (entry as PerformanceResourceTiming).encodedBodySize || 0
+            }))
+            .slice(0, 50); // Limit to 50 resources to avoid memory issues
+
+        return { pageLoad: loadMetrics, resources };
+    } catch (error) {
+        console.warn('Error getting performance data:', error);
+        return { pageLoad: loadMetrics, resources: [] };
+    }
+};
 
 /**
  * PerformanceAnalytics - Componente para análise de performance em tempo real
  */
 export default function PerformanceAnalytics() {
-    const [isVisible, setIsVisible] = useState(false);
-    const [data, setData] = useState<PerformanceData>({
-        pageLoad: { total: null, fcp: null, lcp: null, ttfb: null, cls: null },
-        resources: []
-    });
+    const [visible, setVisible] = useState(false);
+    const [data, setData] = useState<PerformanceData>(() => getBasicPerformanceData());
+    const pathname = usePathname();
 
+    // Use useCallback para evitar recriações desnecessárias
+    const refreshData = useCallback(() => {
+        // Usa requestIdleCallback para evitar bloquear o thread principal
+        if ('requestIdleCallback' in window) {
+            (window as any).requestIdleCallback(
+                () => setData(getBasicPerformanceData()),
+                { timeout: 2000 }
+            );
+        } else {
+            // Fallback para setTimeout com baixa prioridade
+            setTimeout(() => setData(getBasicPerformanceData()), 50);
+        }
+    }, []);
+
+    // Atualiza dados quando a rota muda
     useEffect(() => {
-        // Verificar se devemos mostrar o painel
+        refreshData();
+    }, [pathname, refreshData]);
+
+    // Check visibility conditions
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
         const params = new URLSearchParams(window.location.search);
-        if (params.get('debug') === 'performance') {
-            setIsVisible(true);
-        }
+        const debugParam = params.get('debug');
+        const forceVisible = window.localStorage?.getItem('force_performance_panel') === 'true';
 
-        // Atalho de teclado para alternar visibilidade (Ctrl+Alt+P)
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.ctrlKey && e.altKey && e.key === 'p') {
-                e.preventDefault();
-                setIsVisible(prev => !prev);
-            }
-        };
+        setVisible(debugParam === 'performance' || debugParam === 'perf' || forceVisible);
+    }, [pathname]);
 
-        window.addEventListener('keydown', handleKeyDown);
+    // Se não estiver visível, não renderiza nada
+    if (!visible) return null;
 
-        // Atualizar dados a cada 3 segundos se o painel estiver visível
-        let intervalId: NodeJS.Timeout;
-        if (isVisible) {
-            const updateData = () => {
-                setData(getBasicPerformanceData());
-            };
-
-            updateData(); // Atualização inicial
-            intervalId = setInterval(updateData, 3000);
-        }
-
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-            if (intervalId) clearInterval(intervalId);
-        };
-    }, [isVisible]);
-
-    // Não mostrar nada se não estiver visível
-    if (!isVisible) return null;
-
+    // Renderiza o painel com os dados de performance
     return (
-        <div
-            style={{
-                position: 'fixed',
-                bottom: '20px',
-                right: '20px',
-                zIndex: 9999,
-                backgroundColor: 'rgba(0,0,0,0.8)',
-                color: 'white',
-                padding: '10px',
-                borderRadius: '5px',
-                fontSize: '12px',
-                maxWidth: '300px',
-                maxHeight: '400px',
-                overflow: 'auto'
-            }}
-        >
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                <h4 style={{ margin: '0', fontSize: '14px' }}>Performance Analytics</h4>
-                <button
-                    onClick={() => setIsVisible(false)}
-                    style={{
-                        background: 'none',
-                        border: 'none',
-                        color: 'white',
-                        cursor: 'pointer',
-                        fontSize: '14px',
-                        padding: '0',
-                    }}
-                >
-                    ×
-                </button>
+        <div className="fixed bottom-4 right-4 p-4 bg-white/90 backdrop-blur-sm shadow-lg rounded-lg text-sm max-w-md">
+            <h3 className="font-semibold mb-2">Performance Metrics</h3>
+
+            <div className="space-y-1">
+                <p>Load Time: {data.pageLoad.total ? `${Math.round(data.pageLoad.total)}ms` : 'N/A'}</p>
+                <p>TTFB: {data.pageLoad.ttfb ? `${Math.round(data.pageLoad.ttfb)}ms` : 'N/A'}</p>
+                <p>FCP: {data.pageLoad.fcp ? `${Math.round(data.pageLoad.fcp)}ms` : 'N/A'}</p>
+                <p>LCP: {data.pageLoad.lcp ? `${Math.round(data.pageLoad.lcp)}ms` : 'N/A'}</p>
+                <p>CLS: {data.pageLoad.cls ? data.pageLoad.cls.toFixed(3) : 'N/A'}</p>
             </div>
 
-            <div style={{ marginBottom: '10px' }}>
-                <h5 style={{ margin: '5px 0', color: '#60a5fa' }}>Page Load</h5>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5px' }}>
-                    <div>Total:</div>
-                    <div>{data.pageLoad.total ? `${data.pageLoad.total}ms` : 'N/A'}</div>
-
-                    <div>FCP:</div>
-                    <div>{data.pageLoad.fcp ? `${Math.round(data.pageLoad.fcp)}ms` : 'N/A'}</div>
-
-                    <div>TTFB:</div>
-                    <div>{data.pageLoad.ttfb ? `${data.pageLoad.ttfb}ms` : 'N/A'}</div>
-                </div>
-            </div>
-
+            {/* Render resource stats */}
             {data.resources.length > 0 && (
-                <div>
-                    <h5 style={{ margin: '5px 0', color: '#60a5fa' }}>Slow Resources</h5>
-                    <ul style={{ margin: '5px 0', padding: '0 0 0 15px' }}>
-                        {data.resources.map((resource, i) => (
-                            <li key={i} style={{ marginBottom: '3px' }}>
-                                {resource.name} - {resource.duration}ms
-                            </li>
-                        ))}
+                <div className="mt-4">
+                    <p className="font-semibold">Slowest Resources:</p>
+                    <ul className="text-xs space-y-1 mt-1">
+                        {data.resources
+                            .sort((a, b) => b.duration - a.duration)
+                            .slice(0, 3)
+                            .map((resource, i) => (
+                                <li key={i}>
+                                    {resource.name}: {Math.round(resource.duration)}ms
+                                </li>
+                            ))}
                     </ul>
                 </div>
             )}

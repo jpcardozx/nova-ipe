@@ -71,10 +71,11 @@ export default function NavbarResponsive() {
                             src="/images/ipeLogoWritten.png"
                             alt="Ipê Imóveis"
                             width={scrolled ? 130 : 160}
-                            height={50} // Keep height for initial rendering, style will override for aspect ratio
+                            height={50}
                             className="object-contain transition-all duration-300"
-                            style={{ height: "auto" }} // Added to maintain aspect ratio
+                            style={{ height: "auto" }}
                             priority
+                            loading="eager"
                         />
                     </div>
                 </Link>

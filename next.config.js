@@ -12,16 +12,28 @@ const isDev = !isProduction;
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  compress: true,
 
   // Usar apenas o que é realmente necessário
   experimental: {
-    // Apenas otimizações que não afetam o tempo de build
-    optimizePackageImports: ["lucide-react"]
+    // Otimizações para melhorar performance
+    optimizePackageImports: ["lucide-react"],
+    // Ativar otimização de fonts
+    fontLoaders: [
+      { loader: '@next/font/google', options: { subsets: ['latin'] } }
+    ],
+    // Priorizar carregamento de CSS crítico
+    optimizeCss: true,
   },
 
+  // Otimização avançada de imagens
   images: {
-    formats: ["image/webp"],
+    formats: ["image/webp", "image/avif"],  // Adicionar suporte a AVIF
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 60,
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     domains: ["cdn.sanity.io", "images.unsplash.com"],
     remotePatterns: [
       {

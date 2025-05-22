@@ -17,6 +17,7 @@
 @import "./styles/critical/critical.css";
 @import "./styles/cls-optimizations.css";
 @import "./styles/tailwind-compat.css";
+@import "./cls-prevention.css"; /* Novas otimizações para prevenir CLS */
 
 /* Configurações de variáveis e fundamentos */
 :root {

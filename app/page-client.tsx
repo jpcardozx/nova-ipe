@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 import HomepageLoadingOptimizer from './components/HomepageLoadingOptimizer';
 import OptimizationProvider from './components/OptimizationProvider';
 import WhatsAppSharingOptimizer from './components/WhatsAppSharingOptimizer';
+import ImageOptimizer from './components/ImageOptimizer';
 import NavbarResponsive from './components/NavbarResponsive';
 import EnhancedHero from './components/EnhancedHero';
 import BlocoExploracaoSimbolica from './components/BlocoExploracaoSimbolica';
@@ -33,17 +34,25 @@ export default function HomeClient({ destaques, aluguel, montSerratClass }: Home
             <Suspense fallback={null}>
                 <HomepageLoadingOptimizer />
             </Suspense>
+
             {/* Otimizador para links compartilhados no WhatsApp */}
             <WhatsAppSharingOptimizer
                 title="Nova Ipê Imobiliária - Imóveis Premium em Guararema"
                 description="Encontre propriedades exclusivas para compra e aluguel em Guararema e região. Atendimento personalizado e curadoria de imóveis de alto padrão."
                 imageUrl="/images/og-image-whatsapp.jpg"
             />
+
+            {/* Otimizador de imagens para melhorar Core Web Vitals */}
+            <Suspense fallback={null}>
+                <ImageOptimizer />
+            </Suspense>
+
             <OptimizationProvider>
                 <NavbarResponsive />
                 <EnhancedHero />
                 <ClientSidePropertiesProvider destaques={destaques} aluguel={aluguel} />
                 <BlocoExploracaoSimbolica />
+
                 <Suspense fallback={<section className="py-24 bg-white"><div className="container mx-auto px-4 max-w-7xl"><PropertiesLoadingSkeleton /></div></section>}>
                     <DestaquesSanityCarousel
                         rawProperties={destaques}
@@ -51,31 +60,13 @@ export default function HomeClient({ destaques, aluguel, montSerratClass }: Home
                         subtitle="Descubra propriedades que se destacam pela arquitetura impecável, localização estratégica e potencial de valorização excepcional em Guararema."
                     />
                 </Suspense>
-                <div className="hidden">
-                    <ClientCarouselWrapper
-                        properties={destaques}
-                        config={{
-                            title: "",
-                            subtitle: "",
-                            slidesToShow: 3,
-                            showControls: true,
-                            autoplay: true,
-                            autoplayInterval: 5000,
-                            viewAllLink: "/comprar",
-                            viewAllLabel: "Explorar todo o portfólio",
-                            className: "mb-16",
-                            hasAccentBackground: false,
-                            showEmptyState: destaques.length === 0,
-                            emptyStateMessage: "Carregando imóveis em destaque...",
-                            mobileLayout: "stack",
-                        }}
-                    />
-                </div>
-                <section className="relative py-24 overflow-hidden bg-gradient-to-b from-white to-[#F8FAFC]" style={{ position: 'relative' }}>
+
+                <section className="relative py-24 overflow-hidden bg-gradient-to-b from-white to-[#F8FAFC]">
                     <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
                     <Destaques />
                 </section>
-                <section className="py-24 bg-[#F8FAFC]" style={{ position: 'relative' }}>
+
+                <section className="py-24 bg-[#F8FAFC]">
                     <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent"></div>
                     <Suspense fallback={<div className="container mx-auto px-4 max-w-7xl relative z-10"><PropertiesLoadingSkeleton /></div>}>
                         <DestaquesSanityCarousel
@@ -85,39 +76,28 @@ export default function HomeClient({ destaques, aluguel, montSerratClass }: Home
                         />
                     </Suspense>
                 </section>
+
                 <div className="relative bg-white">
                     <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
                     <Valor />
                 </div>
+
                 <section className="py-24 bg-gradient-to-b from-white to-[#F8FAFC]">
                     <div className="container mx-auto px-4 max-w-7xl">
                         <SectionHeader
                             badge="Histórias de Sucesso"
                             badgeColor="amber"
                             title="O que Nossos Clientes Dizem"
-                            description="Descubra como ajudamos famílias e investidores a encontrarem o imóvel perfeito em Guararema."
                         />
                         <Testimonials />
                     </div>
                 </section>
-                <section className="py-24 bg-[#F8FAFC] relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-transparent"></div>
-                    <div className="container mx-auto px-4 max-w-7xl relative z-10">
-                        <SectionHeader
-                            badge="Processo Simplificado"
-                            badgeColor="green"
-                            title="Sua Jornada Imobiliária"
-                            description="Conduzimos você por cada etapa com transparência e eficiência, transformando a busca pelo imóvel ideal em uma experiência agradável e segura."
-                        />
-                        <div className='rounded-lg bg-white shadow-xl p-8 ease-in-out duration-300 hover:shadow-2xl'>
-                            <ClientProgressSteps />
-                        </div>
-                    </div>
+
+                <section className="py-24 bg-white">
+                    <ClientProgressSteps />
                 </section>
-                <section className="relative py-24 overflow-hidden bg-gradient-to-b from-[#F8FAFC] to-white">
-                    <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
-                    <FormularioContatoAprimorado />
-                </section>
+
+                <FormularioContatoAprimorado />
                 <Footer />
             </OptimizationProvider>
         </div>

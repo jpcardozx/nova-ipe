@@ -60,26 +60,27 @@ export default function SanityImage({
 }: SanityImageProps) {
     const [loadState, setLoadState] = useState<'loading' | 'success' | 'error'>('loading');
     const [isHovered, setIsHovered] = useState(false);
-    const [processedImage, setProcessedImage] = useState<ClientImage | null | undefined>(image);
-
-    // Pré-processamento da imagem para resolver possíveis problemas de referência
+    const [processedImage, setProcessedImage] = useState<ClientImage | null | undefined>(image);    // Pré-processamento da imagem para resolver possíveis problemas de referência
     useEffect(() => {
-        // Importar dinamicamente para evitar problemas de ciclo
-        import('@/lib/image-monitor').then(({ ensureValidImage, trackImageUsage }) => {
-            try {
-                // Garante que a imagem está válida
-                const validImage = ensureValidImage(image);
-                setProcessedImage(validImage);
-
-                // Registra uso para monitoramento
-                trackImageUsage('SanityImage', validImage, 'loading');
-            } catch (err) {
-                console.error('Erro ao processar imagem:', err);
-                setProcessedImage(image);
+        // Simplificar o processamento para evitar sobrecarga
+        try {
+            // Verificação simples se a imagem é válida
+            if (!image) {
+                setProcessedImage(null);
+                return;
             }
-        }).catch(err => {
-            console.error('Falha ao carregar utilitário de monitoramento:', err);
-        });
+
+            // Usar imagem diretamente sem processamento adicional
+            setProcessedImage(image);
+
+            // Registro mínimo para não impactar performance
+            if (process.env.NODE_ENV === 'development') {
+                console.log('SanityImage processada:', image?.url || image?.imagemUrl || 'sem URL');
+            }
+        } catch (err) {
+            console.error('Erro ao processar imagem:', err);
+            setProcessedImage(image);
+        }
     }, [image]);
 
     // Usar a função otimizada com fallback manual adicional

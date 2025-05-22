@@ -1,0 +1,84 @@
+/* 
+ * cls-prevention.css
+ * CSS específico para evitar Cumulative Layout Shift (CLS)
+ */
+
+/* Evitar layout shifts para imagens */
+img:not([width]):not([height]) {
+  aspect-ratio: 16/9;
+  width: 100%;
+  height: auto;
+}
+
+/* Evitar layout shifts para fontes */
+html {
+  font-display: optional;
+}
+
+/* Manter espaço para imagens que ainda não foram carregadas */
+.image-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.image-wrapper img {
+  transition: opacity 0.2s ease;
+}
+
+/* Evitar shifts em conteúdo dinamicamente carregado */
+.content-placeholder {
+  min-height: 200px;
+  position: relative;
+}
+
+/* Classes para lidar com conteúdo tardio */
+[data-late-content] {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+[data-late-content].loaded {
+  opacity: 1;
+}
+
+/* Otimizações para LCP (Largest Contentful Paint) */
+[data-optimize-lcp="true"] {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+  will-change: auto;
+}
+
+/* Configurações específicas para containers de iframes */
+.iframe-container {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  overflow: hidden;
+}
+
+.iframe-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Evitar que elementos tardios causem shifts */
+body > * {
+  contain: paint;
+}
+
+/* Sem shifts em elementos com animação */
+.animate-fade-in {
+  min-height: 1px;
+  opacity: 0;
+  animation: fadeIn 0.5s ease forwards;
+  will-change: opacity;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
