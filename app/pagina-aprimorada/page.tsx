@@ -19,7 +19,7 @@ import { PropertyType } from '@/app/components/OptimizedPropertyCard'; // Update
 import { extractSlugString, ensureNonNullProperties } from '@/app/PropertyTypeFix';
 
 // Componentes de UI
-// import SectionHeader from '../components/ui/SectionHeader'; // This line is removed or commented out if SectionHeader from ValorAprimorado is used or if it's re-exported elsewhere.
+import SectionHeader from '../components/ui/SectionHeader';
 
 // Componentes aprimorados
 import EnhancedHero from "../components/EnhancedHero";
