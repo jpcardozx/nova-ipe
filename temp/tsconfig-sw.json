@@ -7,6 +7,17 @@
       "WebWorker"
     ],
     "skipLibCheck": true,
-    "outFile": "C:\\Users\\João Pedro Cardozo\\OneDrive\\Área de Trabalho\\projetos\\nova-ipe\\temp\\service-worker-tsc.js"
-  }
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "outFile": "C:\\Users\\João Pedro Cardozo\\OneDrive\\Área de Trabalho\\projetos\\nova-ipe\\temp\\service-worker-tsc.js",
+    "rootDir": "..",
+    "esModuleInterop": true,
+    "strict": true
+  },
+  "include": [
+    "../app/workers/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
