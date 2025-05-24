@@ -10,15 +10,35 @@ export const runtime = "nodejs" // Alterado para nodejs para evitar problemas co
 // Definições simplificadas
 const STUDIO_PREFIX = "/studio"
 
-// Cache control básico (simplificado para debug)
+// Cache control e MIME types básicos
 const CACHE_SETTINGS = {
   "/": "public, s-maxage=60",
-  "/_next/": "public, max-age=31536000"
+  "/_next/": "public, max-age=31536000, stale-while-revalidate=31536000"
 }
+
+const MIME_TYPES: Record<string, string> = {
+  '.css': 'text/css',
+  '.js': 'application/javascript',
+  '.mjs': 'application/javascript',
+  '.json': 'application/json',
+  '.ico': 'image/x-icon',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.svg': 'image/svg+xml',
+  '.webp': 'image/webp'
+};
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const response = NextResponse.next();
+
+  // Garantir MIME types corretos
+  const ext = pathname.split('.').pop()?.toLowerCase();
+  const mimeKey = ext ? `.${ext}` as keyof typeof MIME_TYPES : null;
+  if (mimeKey && MIME_TYPES[mimeKey]) {
+    response.headers.set('Content-Type', MIME_TYPES[mimeKey]);
+  }
 
   // Configuração básica de cache
   for (const [path, cache] of Object.entries(CACHE_SETTINGS)) {

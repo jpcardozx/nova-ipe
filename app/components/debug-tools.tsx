@@ -90,3 +90,6 @@ export function LayoutDebug() {
     `}</style>
     );
 }
+
+// Add default export to fix "options.factory is not a function" webpack error
+export default DebugPanel;

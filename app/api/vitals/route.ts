@@ -55,22 +55,17 @@ function getRating(name: string, value: number): 'good' | 'needs-improvement' | 
  */
 export async function POST(request: NextRequest) {
     try {
-        // Verifica o Content-Type
-        const contentType = request.headers.get('content-type');
-        if (!contentType?.includes('application/json')) {
-            return NextResponse.json({ error: 'Content-Type must be application/json' }, { status: 415 });
+        // Accept both application/json and text/plain (for sendBeacon)
+        const contentType = request.headers.get('content-type') || '';
+        let rawBody = '';
+        if (contentType.includes('application/json') || contentType.includes('text/plain')) {
+            rawBody = await request.text();
+        } else {
+            return NextResponse.json({ error: 'Content-Type must be application/json or text/plain' }, { status: 415 });
         }
-
-        // Clona a request para garantir que podemos ler o body
-        const clonedRequest = request.clone();
-
-        // Tenta ler o body como texto primeiro
-        const rawBody = await clonedRequest.text();
         if (!rawBody) {
             return NextResponse.json({ error: 'Empty request body' }, { status: 400 });
         }
-
-        // Tenta fazer o parse do JSON
         let body;
         try {
             body = JSON.parse(rawBody);

@@ -1,4 +1,3 @@
-import Image from 'next/image';
 // src/types/imovel-client.ts
 
 import type { Imovel as SanityImovel } from '@/types/sanity-schema'

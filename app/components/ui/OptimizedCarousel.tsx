@@ -5,13 +5,15 @@ import { cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 // Import only what's needed from framer-motion
 import { motion, AnimatePresence } from 'framer-motion';
-import useEmblaCarousel from 'embla-carousel-react';
+import useEmblaCarousel, { type UseEmblaCarouselType } from 'embla-carousel-react';
 import { Button } from '@/src/components/ui/button';
 
-// Import the proper autoplay plugin
-import Autoplay, { AutoplayOptionsType } from 'embla-carousel-autoplay';
 // Import needed types from embla-carousel main package
 import type { CreatePluginType } from 'embla-carousel';
+import type { AutoplayOptionsType } from 'embla-carousel-autoplay';
+
+// Define autoplay variable that will be lazily loaded
+let Autoplay: any | undefined;
 
 // Define a simple type that mimics LoosePluginType
 type LoosePluginType = Record<string, unknown>;
@@ -19,19 +21,25 @@ type LoosePluginType = Record<string, unknown>;
 // Define a generic type for carousel options to avoid 'any'
 type CarouselOptions = OptimizedCarouselProps<unknown>['options'];
 
+// Initialize autoplay plugin on client side
+if (typeof window !== 'undefined') {
+    import('embla-carousel-autoplay').then((mod) => {
+        Autoplay = mod.default;
+    });
+}
+
 // Helper function to get plugins based on options
 function getPlugins(options: CarouselOptions = {}): CreatePluginType<LoosePluginType, Record<string, unknown>>[] {
-    if (!options.autoplay) {
+    if (!options.autoplay || !Autoplay) {
         return [];
     }
 
-    const autoplayOptions: AutoplayOptionsType = {
-        delay: options.autoplayDelay || 5000,
-        stopOnInteraction: true,
-    };
-
     return [
-        Autoplay(autoplayOptions)
+        Autoplay({
+            delay: options.autoplayDelay || 5000,
+            stopOnInteraction: true,
+            stopOnMouseEnter: true,
+        })
     ];
 }
 

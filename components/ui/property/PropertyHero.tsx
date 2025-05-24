@@ -65,10 +65,8 @@ export function PropertyHero({
     const [showGalleryModal, setShowGalleryModal] = useState(false);
     const [galleryImageIndex, setGalleryImageIndex] = useState(0);
     const [imagesLoaded, setImagesLoaded] = useState<boolean[]>(Array(images.length).fill(false));
-    const [copied, setCopied] = useState(false);
-
-    // Scroll parallax effect
-    const { scrollY } = useScroll();
+    const [copied, setCopied] = useState(false);    // Scroll parallax effect
+    const { scrollY } = useScroll({ layoutEffect: false });
     const heroOffset = useTransform(scrollY, [0, 300], [0, 100]);
 
     // Marcar imagem como carregada

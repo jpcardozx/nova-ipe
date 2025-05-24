@@ -33,13 +33,19 @@ interface PropertyMetadataProps {
 }
 
 export function PropertyMetadata({ property }: PropertyMetadataProps) {
-    // Format price as BRL currency
+    // Validação de segurança para garantir que property está definido
+    if (!property) {
+        console.error('PropertyMetadata recebeu property undefined');
+        return null;
+    }
+
+    // Format price as BRL currency - with safety check
     const formattedPrice = new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL',
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
-    }).format(property.price);
+    }).format(property.price || 0);
 
     // Generate JSON-LD for the property
     const propertySchema = {

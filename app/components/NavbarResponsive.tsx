@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -14,61 +14,87 @@ const links = [
     { label: "Contato", href: "#contato" },
 ];
 
-export default function NavbarResponsive() {
+const NavbarResponsive: React.FC = () => {
     const [open, setOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const pathname = usePathname();
 
+    // Memoize handlers to prevent unnecessary re-renders
+    const handleScroll = useMemo(
+        () => () => setScrolled(window.scrollY > 50),
+        []
+    );
+
+    const checkMobile = useMemo(
+        () => () => setIsMobile(window.innerWidth < 768),
+        []
+    );
+
     useEffect(() => {
-        // Mark component as mounted to prevent hydration issues
         setIsMounted(true);
-
-        const handleScroll = () => setScrolled(window.scrollY > 50);
-        window.addEventListener("scroll", handleScroll);
-
-        // Check if we're on mobile
-        const checkMobile = () => {
-            setIsMobile(window.innerWidth < 768);
-        };
-
-        // Initial check
+        handleScroll();
         checkMobile();
 
-        // Add resize listener
+        window.addEventListener("scroll", handleScroll);
         window.addEventListener("resize", checkMobile);
 
         return () => {
             window.removeEventListener("scroll", handleScroll);
             window.removeEventListener("resize", checkMobile);
         };
-    }, []);
-
-    // Add debugging log
-    console.log("NavbarResponsive rendering, isMounted:", isMounted, "isMobile:", isMobile);
-
-    return (
+    }, [handleScroll, checkMobile]); if (!isMounted) {
+        // Return static navbar for SSR to prevent hydration mismatch
+        return (
+            <nav className="fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-lg border-b border-neutral-200 shadow-sm transition-all duration-300 py-4">
+                <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">                    <Link href="/" aria-label="Ir para página inicial" className="group relative">
+                    <div className="relative">                        <Image
+                        src="/images/ipeLogoWritten.png"
+                        alt="Ipê Imóveis"
+                        width={140}
+                        height={45}
+                        style={{
+                            width: '140px',
+                            height: 'auto',
+                            maxHeight: '45px'
+                        }}
+                        className="object-contain"
+                        priority
+                        loading="eager"
+                        fetchPriority="high"
+                    />
+                    </div>
+                </Link>
+                </div>
+            </nav>
+        );
+    } return (
         <motion.nav
-            initial={{ y: -50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className={`fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-lg border-b border-neutral-200 shadow-sm transition-all duration-300 ${scrolled ? "py-1.5" : "py-4"}`}
-        >            <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
-                {/* Logo com efeito de hover */}
+            className={`navbar fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-lg border-b border-neutral-200 shadow-sm transition-all duration-300 ease-in-out ${scrolled ? "h-16 py-1.5" : "h-24 py-4"
+                }`}
+            initial={{ y: -100 }}
+            animate={{ y: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+        >
+            <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
+                {/* Logo com efeito de hover e scala */}
                 <Link href="/" aria-label="Ir para página inicial" className="group relative">
-                    <div className="absolute -inset-y-2 -inset-x-4 group-hover:bg-amber-50/50 rounded-xl transition-colors duration-300"></div>
-                    <div className="relative">
-                        <Image
-                            src="/images/ipeLogoWritten.png"
-                            alt="Ipê Imóveis"
-                            width={scrolled ? 130 : 160}
-                            height={50}
-                            className="object-contain transition-all duration-300"
-                            style={{ height: "auto" }}
-                            priority
-                            loading="eager"
-                        />
+                    <div className="absolute -inset-y-2 -inset-x-4 group-hover:bg-amber-50/50 rounded-xl transition-colors duration-300"></div>                    <div className="relative">                        <Image
+                        src="/images/ipeLogoWritten.png"
+                        alt="Ipê Imóveis"
+                        width={140}
+                        height={45}
+                        style={{
+                            width: '140px',
+                            height: 'auto',
+                            maxHeight: '45px'
+                        }}
+                        className={`object-contain transition-transform duration-300 ease-in-out ${scrolled ? 'scale-90' : 'scale-100'}`}
+                        priority
+                        loading="eager"
+                        fetchPriority="high"
+                    />
                     </div>
                 </Link>
 
@@ -200,3 +226,5 @@ export default function NavbarResponsive() {
         </motion.nav>
     );
 }
+
+export default NavbarResponsive;

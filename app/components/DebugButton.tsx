@@ -6,6 +6,7 @@
  */
 
 import { useState, useCallback } from 'react';
+import styles from './DebugButton.module.css';
 
 export default function DebugButton() {
     const [visible, setVisible] = useState(true);
@@ -45,48 +46,18 @@ export default function DebugButton() {
     if (!visible) return null;
 
     return (
-        <div
-            style={{
-                position: 'fixed',
-                bottom: '10px',
-                left: '10px',
-                zIndex: 9998,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px'
-            }}
-        >
+        <div className={styles.debugButtonContainer}>
             <button
                 onClick={activatePerformancePanel}
-                style={{
-                    backgroundColor: '#0D1F2D',
-                    color: 'white',
-                    border: 'none',
-                    padding: '8px 12px',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                    boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px'
-                }}
+                className={styles.activateButton}
             >
-                <span style={{ fontSize: '14px' }}>📊</span>
+                <span className={styles.icon}>📊</span>
                 Ativar Painel de Performance
             </button>
 
             <button
                 onClick={() => setVisible(false)}
-                style={{
-                    backgroundColor: 'transparent',
-                    color: '#666',
-                    border: '1px solid #ccc',
-                    padding: '4px 8px',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontSize: '10px'
-                }}
+                className={styles.hideButton}
             >
                 Ocultar Botão
             </button>

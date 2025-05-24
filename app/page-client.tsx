@@ -1,110 +1,157 @@
 "use client";
 
 import React from 'react';
-import { Suspense } from 'react';
-import HomepageLoadingOptimizer from './components/HomepageLoadingOptimizer';
-import OptimizationProvider from './components/OptimizationProvider';
-import WhatsAppSharingOptimizer from './components/WhatsAppSharingOptimizer';
-import ImageOptimizer from './components/ImageOptimizer';
+import dynamic from 'next/dynamic';
 import NavbarResponsive from './components/NavbarResponsive';
-import EnhancedHero from './components/EnhancedHero';
-import BlocoExploracaoSimbolica from './components/BlocoExploracaoSimbolica';
-import { default as ClientSidePropertiesProvider } from './components/ClientComponents';
-import ClientCarouselWrapper from './components/ClientCarouselWrapper';
-import DestaquesSanityCarousel from './components/DestaquesSanityCarousel';
-import Destaques from './sections/Destaques';
-import Valor from './sections/Valor';
-import Testimonials from './sections/Testimonials';
-import ClientProgressSteps from './components/ClientProgressSteps';
-import FormularioContatoAprimorado from './components/FormularioContato';
-import Footer from './sections/Footer';
+import HighPerformanceHero from './components/HighPerformanceHero';
+import LoadingSpinner from './components/LoadingSpinner';
+import { PriorityContent, BelowFoldContent } from './components/OptimizedLoading';
 import SectionHeader from './components/ui/SectionHeader';
+import EnhancedHero from '@/backups/pagina-aprimorada-backup/components/EnhancedHero';
+import { safeDynamicImport } from './utils/dynamic-import-fix';
 
-// Props for hydration from server
+// Only import critical above-the-fold components directly
+// Everything else is dynamically imported for better initial load performance
+
+// Dynamically import below-the-fold components - fixed to prevent webpack call undefined errors
+const ClientSidePropertiesProvider = dynamic(() =>
+    safeDynamicImport(import('./components/ClientComponents'), 'ClientSidePropertiesProvider'),
+    { loading: () => null }
+);
+const BlocoExploracaoSimbolica = dynamic(() =>
+    safeDynamicImport(import('./components/BlocoExploracaoSimbolica'), 'BlocoExploracaoSimbolica'),
+    { ssr: true }
+);
+const DestaquesSanityCarousel = dynamic(() =>
+    safeDynamicImport(import('./components/DestaquesSanityCarousel'), 'DestaquesSanityCarousel')
+);
+const Destaques = dynamic(() =>
+    safeDynamicImport(import('./sections/Destaques'), 'Destaques')
+);
+const Valor = dynamic(() =>
+    safeDynamicImport(import('./sections/Valor'), 'Valor')
+);
+const Testimonials = dynamic(() =>
+    safeDynamicImport(import('./sections/Testimonials'), 'Testimonials')
+);
+const ClientProgressSteps = dynamic(() =>
+    safeDynamicImport(import('./components/ClientProgressSteps'), 'ClientProgressSteps')
+);
+const FormularioContatoAprimorado = dynamic(() =>
+    safeDynamicImport(import('./components/FormularioContato'), 'FormularioContatoAprimorado')
+);
+const Footer = dynamic(() =>
+    safeDynamicImport(import('./sections/Footer'), 'Footer'),
+    { ssr: true }
+);
+
+// Dynamic imports for optimization components with better loading strategy
+const HomepageLoadingOptimizer = dynamic(() =>
+    safeDynamicImport(import('./components/HomepageLoadingOptimizer'), 'HomepageLoadingOptimizer'),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
+
+const WhatsAppSharingOptimizer = dynamic(() =>
+    safeDynamicImport(import('./components/WhatsAppSharingOptimizer'), 'WhatsAppSharingOptimizer'),
+    {
+        ssr: false,
+        loading: () => null
+    }
+);
+
+// Props interface
 export interface HomeClientProps {
     destaques: any[];
     aluguel: any[];
     className?: string;
 }
 
-// Client component: receives all data and font class as props
+// Client component with optimized loading
 export default function HomeClient({ destaques, aluguel }: HomeClientProps) {
     return (
         <div className="flex flex-col min-h-screen bg-[#fafaf9]">
-            <Suspense fallback={null}>
-                <HomepageLoadingOptimizer />
-            </Suspense>            {/* Otimizador para links compartilhados no WhatsApp */}            <WhatsAppSharingOptimizer
-                title="Nova Ipê Imobiliária - Seu Futuro em Guararema Começa Aqui"
-                description="Realize seu sonho da casa própria ou faça um excelente investimento em Guararema. Imóveis selecionados com valorização acima da média do mercado."
-                imageUrl="/images/og-image-whatsapp.jpg"
-            />
-
-            {/* Otimizador de imagens para melhorar Core Web Vitals */}
-            <Suspense fallback={null}>
-                <ImageOptimizer />
-            </Suspense>
-
-            <OptimizationProvider>
+            {/* Critical above-fold content - loaded immediately and optimized */}
+            <PriorityContent>
                 <NavbarResponsive />
+            </PriorityContent>
+
+            {/* Hero section - high priority and optimized */}
+            <PriorityContent>
                 <EnhancedHero />
-                <ClientSidePropertiesProvider destaques={destaques} aluguel={aluguel} />                <BlocoExploracaoSimbolica />                    <Suspense fallback={<section className="py-24 bg-white"><div className="container mx-auto px-4 max-w-7xl"><PropertiesLoadingSkeleton /></div></section>}>
-                    <DestaquesSanityCarousel
-                        rawProperties={destaques}
-                        title="Imóveis em Destaque"
-                        subtitle="Seleção de oportunidades com potencial de valorização e localização estratégica. Atualizados periodicamente."
-                    />
-                </Suspense>
+            </PriorityContent>
 
-                <section className="relative py-24 overflow-hidden bg-gradient-to-b from-white to-[#F8FAFC]">
-                    <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
-                    <Destaques />
-                </section>
+            {/* Optimization components - loaded in background */}
+            <PriorityContent fallback={null}>
+                <HomepageLoadingOptimizer />
+                <WhatsAppSharingOptimizer
+                    title="Ipê Imóveis - Serviços e Atendimento Imobiliário em Guararema"
+                    description="Imóveis selecionados com valorização acima da média do mercado. Conheça os melhores bairros e oportunidades em Guararema."
+                    imageUrl="/images/og-image-whatsapp.jpg"
+                />
+            </PriorityContent>
 
-                <section className="py-24 bg-[#F8FAFC]">                    <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent"></div>                    <Suspense fallback={<div className="container mx-auto px-4 max-w-7xl relative z-10"><PropertiesLoadingSkeleton /></div>}>
-                    <DestaquesSanityCarousel
-                        rawProperties={aluguel}
-                        title="Propriedades para Locação"
-                        subtitle="Residências de alto padrão disponíveis para locação imediata. Consulte condições contratuais."
-                    />
-                </Suspense>
-                </section>
+            {/* Main content - loaded progressively as user scrolls */}
+            <ClientSidePropertiesProvider destaques={destaques} aluguel={aluguel} />
 
-                <div className="relative bg-white">
-                    <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
-                    <Valor />
+            {/* Progressive loading below-the-fold content */}
+            <BelowFoldContent minHeight="400px">
+                <BlocoExploracaoSimbolica />
+            </BelowFoldContent>
+
+            <section className="py-16">
+                <div className="container mx-auto px-4 max-w-7xl">
+                    <BelowFoldContent minHeight="400px">
+                        <DestaquesSanityCarousel
+                            rawProperties={destaques}
+                            title="Destaques para Compra"
+                            subtitle="Imóveis selecionados para você"
+                        />
+                    </BelowFoldContent>
+
+                    <BelowFoldContent minHeight="300px">
+                        <Destaques />
+                    </BelowFoldContent>
+
+                    <BelowFoldContent minHeight="400px">
+                        <DestaquesSanityCarousel
+                            rawProperties={aluguel}
+                            title="Destaques para Aluguel"
+                            subtitle="As melhores opções para locação"
+                        />
+                    </BelowFoldContent>
                 </div>
+            </section>
 
-                <section className="py-24 bg-gradient-to-b from-white to-[#F8FAFC]">
-                    <div className="container mx-auto px-4 max-w-7xl">                        <SectionHeader
-                        badge="Experiências"
-                        badgeColor="amber"
-                        title="Depoimentos de Clientes"
+            <BelowFoldContent>
+                <Valor />
+            </BelowFoldContent>
+
+            <section className="py-16 bg-gray-50">
+                <div className="container mx-auto px-4 max-w-7xl">
+                    <SectionHeader
+                        title="O que nossos clientes dizem"
+                        subtitle="Histórias reais de sucesso"
                     />
+                    <BelowFoldContent>
                         <Testimonials />
-                    </div>
-                </section>
+                    </BelowFoldContent>
+                </div>
+            </section>
 
-                <section className="py-24 bg-white">
-                    <ClientProgressSteps />
-                </section>
+            <BelowFoldContent>
+                <ClientProgressSteps />
+            </BelowFoldContent>
 
+            <BelowFoldContent>
                 <FormularioContatoAprimorado />
-                <Footer />
-            </OptimizationProvider>
-        </div>
-    );
-}
+            </BelowFoldContent>
 
-// Only UI/CSR logic below
-function PropertiesLoadingSkeleton() {
-    return (
-        <div className="space-y-4">
-            <div className="h-8 w-56 bg-neutral-200 animate-pulse rounded-lg mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {[1, 2, 3].map(i => (
-                    <div key={i} className="h-80 bg-neutral-100 animate-pulse rounded-lg shadow-md"></div>
-                ))}
-            </div>
+            <PriorityContent>
+                <Footer />
+            </PriorityContent>
         </div>
     );
 }

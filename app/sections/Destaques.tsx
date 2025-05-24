@@ -487,12 +487,11 @@ function DestaquesEstrategicos() {
     const propertyData = usePropertyData('/api/imoveis-destaque');
     const { data: imoveis = [], isLoading = false, error = null } = propertyData || {};
     const [activeIndex, setActiveIndex] = useState(0);
-    const [expandedCard, setExpandedCard] = useState<string | null>(null);
-
-    // EFEITOS VISUAIS DE SCROLL
+    const [expandedCard, setExpandedCard] = useState<string | null>(null);    // EFEITOS VISUAIS DE SCROLL
     const { scrollYProgress } = useScroll({
         target: containerRef,
-        offset: ['start end', 'end start']
+        offset: ['start end', 'end start'],
+        layoutEffect: false
     });
 
     const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.8, 1, 1, 0.8]);

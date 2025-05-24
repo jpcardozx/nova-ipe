@@ -8,7 +8,7 @@
  */
 
 import { useEffect } from 'react';
-import Head from 'next/head';
+// Removed import Head from 'next/head' as it's not compatible with App Router
 
 interface WhatsAppMetaTagsProps {
     title?: string;

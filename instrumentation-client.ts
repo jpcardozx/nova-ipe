@@ -29,3 +29,6 @@ export function SentryInit() {
 
     return null;
 }
+
+// Add default export to fix dynamic import issues with webpack
+export default SentryInit;

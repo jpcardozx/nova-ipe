@@ -88,42 +88,27 @@ const FormularioContatoAprimorado: React.FC<ContactFormProps> = ({ className = '
     return (
         <section className={`py-12 ${className}`}>
             <div className="container mx-auto px-4 max-w-7xl">
-                <div className="grid md:grid-cols-2 gap-12 items-center">                    <div>                        <span className="inline-block px-4 py-2 bg-amber-100 text-amber-800 rounded-full text-sm font-medium mb-4">
+                <div className="grid md:grid-cols-2 gap-12 items-center">                    <div>                        <span className="inline-block px-4 py-2 bg-amber-100 text-amber-800 rounded-full text-body-2 font-medium mb-4">
                     Solicite uma consultoria
-                </span>                    <h2 className="text-display-2 text-gray-900 mb-6">
+                </span>
+                    <h2 className="text-display-2 text-neutral-900 mb-6 font-playfair">
                         Atendimento personalizado
                         <span className="block text-amber-600 mt-1">
                             para sua necessidade imobiliária
                         </span>
-                    </h2>                    <p className="text-body-large text-gray-600 mb-8 leading-relaxed">
+                    </h2>
+                    <p className="text-body-1 text-neutral-600 mb-8 leading-relaxed">
                         Complete o formulário para receber análises e oportunidades selecionadas de acordo com seu perfil de investimento ou moradia. Consultoria sem compromisso.
                     </p>
 
-                    <div className="space-y-6">                            <div className="flex gap-3 items-start">
-                        <div className="p-2 bg-amber-100 rounded-lg text-amber-700">
-                            <User className="w-5 h-5" />
-                        </div>                            <div>
-                            <h3 className="text-heading-3 text-gray-900 mb-1">Consultoria especializada</h3>
-                            <p className="text-body text-gray-600">Análise personalizada de objetivos e requisitos</p>
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-2">
+                            <Shield className="w-5 h-5 text-neutral-400" />
+                            <span className="text-body-2 text-neutral-600">Proteção e privacidade dos seus dados</span>
                         </div>
-                    </div>
-
-                        <div className="flex gap-3 items-start">
-                            <div className="p-2 bg-green-100 rounded-lg text-green-700">
-                                <Shield className="w-5 h-5" />
-                            </div>
-                            <div>                                <h3 className="text-heading-3 text-gray-900 mb-1">Segurança jurídica</h3>
-                                <p className="text-body text-gray-600">Assessoria documental e compliance imobiliário</p>
-                            </div>
-                        </div>
-
-                        <div className="flex gap-3 items-start">
-                            <div className="p-2 bg-blue-100 rounded-lg text-blue-700">
-                                <Phone className="w-5 h-5" />
-                            </div>
-                            <div>                                <h3 className="text-heading-3 text-gray-900 mb-1">Atendimento em 24h</h3>
-                                <p className="text-body text-gray-600">Agilidade e compromisso em todas as interações</p>
-                            </div>
+                        <div className="flex items-center gap-2">
+                            <Phone className="w-5 h-5 text-neutral-400" />
+                            <span className="text-body-2 text-neutral-600">Atendimento rápido e profissional</span>
                         </div>
                     </div>
                 </div>
@@ -137,15 +122,18 @@ const FormularioContatoAprimorado: React.FC<ContactFormProps> = ({ className = '
                     </div>
 
                         <form onSubmit={handleSubmit} className="space-y-5">
-                            <div>                                <label className="block text-caption medium-text text-gray-700 mb-2">
-                                <div className="flex items-center">
-                                    <div className="p-1 bg-amber-100 rounded-md mr-2">
-                                        <User className="w-3.5 h-3.5 text-amber-700" />
+                            <div>
+                                <label htmlFor="contact-name" className="block text-caption medium-text text-gray-700 mb-2">
+                                    <div className="flex items-center">
+                                        <div className="p-1 bg-amber-100 rounded-md mr-2">
+                                            <User className="w-3.5 h-3.5 text-amber-700" />
+                                        </div>
+                                        Nome completo
                                     </div>
-                                    Nome completo
-                                </div>
-                            </label>
+                                </label>
                                 <input
+                                    id="contact-name"
+                                    name="name"
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -164,7 +152,7 @@ const FormularioContatoAprimorado: React.FC<ContactFormProps> = ({ className = '
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="contact-email" className="block text-sm font-medium text-gray-700 mb-2">
                                         <div className="flex items-center">
                                             <div className="p-1 bg-amber-100 rounded-md mr-2">
                                                 <Mail className="w-3.5 h-3.5 text-amber-700" />
@@ -173,6 +161,8 @@ const FormularioContatoAprimorado: React.FC<ContactFormProps> = ({ className = '
                                         </div>
                                     </label>
                                     <input
+                                        id="contact-email"
+                                        name="email"
                                         type="email"
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -190,7 +180,7 @@ const FormularioContatoAprimorado: React.FC<ContactFormProps> = ({ className = '
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="contact-phone" className="block text-sm font-medium text-gray-700 mb-2">
                                         <div className="flex items-center">
                                             <div className="p-1 bg-amber-100 rounded-md mr-2">
                                                 <Phone className="w-3.5 h-3.5 text-amber-700" />
@@ -199,6 +189,8 @@ const FormularioContatoAprimorado: React.FC<ContactFormProps> = ({ className = '
                                         </div>
                                     </label>
                                     <input
+                                        id="contact-phone"
+                                        name="phone"
                                         type="tel"
                                         value={formData.phone}
                                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
