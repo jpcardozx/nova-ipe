@@ -68,8 +68,10 @@ const nextConfig = {
     ] : [],
     webpackBuildWorker: isProduction,
     optimizeCss: isProduction,
-    // Critical: Enable modern bundling only in production
-    bundlePagesRouterDependencies: isProduction,
+    // Enable node middleware
+    nodeMiddleware: true,
+    // Modern middleware features
+    serverComponentsExternalPackages: ['@prisma/client'],
     // Improved memory usage and rendering performance - disabled in dev for speed
     optimizeServerReact: isProduction,
     // Improved bundle optimization
