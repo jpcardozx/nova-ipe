@@ -83,7 +83,7 @@ const SocialIcon = ({ href, icon, label }: { href: string, icon: React.ReactNode
 
 export default function FooterAprimorado() {
     const [year] = useState(new Date().getFullYear());
-    const { scrollYProgress } = useScroll();
+    const { scrollYProgress } = useScroll({ layoutEffect: false });
     const opacity = useTransform(scrollYProgress, [0.7, 0.85], [0, 1]);
 
     // Estado para controle de scroll-to-top

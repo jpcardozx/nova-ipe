@@ -1,0 +1,28 @@
+{
+  "timestamp": "2025-05-22T20:57:32.967Z",
+  "pages": [
+    {
+      "name": "Alugar Page",
+      "path": "/alugar",
+      "metrics": {},
+      "error": "Navigation timeout of 60000 ms exceeded"
+    },
+    {
+      "name": "Comprar Page",
+      "path": "/comprar",
+      "metrics": {},
+      "error": "Navigation timeout of 60000 ms exceeded"
+    },
+    {
+      "name": "Home Page",
+      "path": "/",
+      "metrics": {},
+      "error": "Navigation timeout of 60000 ms exceeded"
+    }
+  ],
+  "summary": {
+    "lcpImprovement": 0,
+    "tbtImprovement": 0,
+    "avgLoadTimeImprovement": 0
+  }
+}

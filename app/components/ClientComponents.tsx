@@ -4,26 +4,17 @@ import dynamic from 'next/dynamic';
 import React, { createContext, useContext, ReactNode, memo } from 'react';
 import { Search } from 'lucide-react';
 import Link from 'next/link';
+import { safeDynamicImport } from '../utils/dynamic-import-fix';
 
-// Lazy load do componente SentryInit com tratamento de erro
+// Lazy load do componente SentryInit com tratamento de erro aprimorado
 const SentryInitClient = dynamic(
-    () => import('../../instrumentation-client')
-        .then(mod => ({ default: mod.SentryInit }))
-        .catch(err => {
-            console.warn('Failed to load Sentry initialization:', err);
-            return { default: () => null };
-        }),
+    () => safeDynamicImport(import('../../instrumentation-client'), 'SentryInit'),
     { ssr: false, loading: () => null }
 );
 
-// Dynamic import for debug tools com tratamento de erro
+// Dynamic import for debug tools com tratamento de erro aprimorado
 const DebugPanelClient = dynamic(
-    () => import('./debug-tools')
-        .then(mod => ({ default: mod.DebugPanel }))
-        .catch(err => {
-            console.warn('Failed to load debug panel:', err);
-            return { default: () => null };
-        }),
+    () => safeDynamicImport(import('./debug-tools'), 'DebugPanel'),
     { ssr: false, loading: () => null }
 );
 

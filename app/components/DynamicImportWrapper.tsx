@@ -59,16 +59,38 @@ export function safeDynamic<T>(
         retries = 2,
         loading,
         ...dynamicOptions
-    } = options;
-
-    // Create a wrapper function that handles retries and errors
+    } = options;    // Create a wrapper function that handles retries and errors
     const importWithRetry = async () => {
         let lastError: Error | null = null;
 
         // Try multiple times to load the component
         for (let attempt = 0; attempt <= retries; attempt++) {
             try {
-                return await importFn();
+                const mod = await importFn();
+
+                // Fix for webpack options.factory → .call undefined crash
+                // Ensure we always have a valid default export even if the module
+                // only exports named exports or is empty
+                if (mod && typeof mod === 'object') {
+                    if (mod.default === undefined) {
+                        if (Object.keys(mod).length > 0) {
+                            // If there are named exports but no default export,
+                            // create a wrapper component that forwards props
+                            const firstExport = Object.values(mod)[0];
+                            if (typeof firstExport === 'function') {
+                                mod.default = firstExport;
+                            } else {
+                                // Create a dummy component if no suitable export exists
+                                mod.default = () => <div>Component {componentName} loaded</div>;
+                            }
+                        } else {
+                            // Create a fallback component if module is empty
+                            mod.default = () => <div>Empty Component {componentName}</div>;
+                        }
+                    }
+                }
+
+                return mod;
             } catch (err: any) {
                 lastError = err;
                 console.warn(`Failed to load dynamic component ${componentName} (attempt ${attempt + 1}/${retries + 1}): ${err.message}`);

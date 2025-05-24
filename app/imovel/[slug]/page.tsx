@@ -7,12 +7,18 @@ import { queryImovelPorSlug, queryImoveisRelacionados } from '@lib/queries';
 import { getImovelPorSlug } from '@lib/sanity/fetchImoveis';
 
 import type { Metadata } from 'next';
-import type { ImovelProjetado , ImovelClient as ImovelDataType } from '@/types/imovel-client';
+import type { ImovelProjetado, ImovelClient as ImovelDataType } from '@/types/imovel-client';
 
 import { mapImovelToClient } from '@lib/mapImovelToClient';
 
-// Importa o componente de página
-import ImovelDetalhes from './ImovelClient';
+// Importação simples e direta de componentes
+import dynamic from 'next/dynamic';
+
+// Importação de componente de fallback
+import FallbackComponent from './FallbackComponent';
+
+// Componente principal com carregamento dinâmico e tratamento de erro
+import ImovelDetalhesClient from './ImovelDetalhesClient';
 
 // Geração estática das rotas dinâmicas
 export async function generateStaticParams() {
@@ -82,40 +88,70 @@ export default function Page({ params }: { params: { slug: string } }) {
 
 // Componente assíncrono que busca e transforma os dados
 async function ImovelPage({ slug }: { slug: string }) {
-  // Usa a função getImovelPorSlug que já deve estar configurada para servidor
-  const imovelClient = await getImovelPorSlug(slug);
-  if (!imovelClient) return notFound();
+  try {
+    // Usa a função getImovelPorSlug que já deve estar configurada para servidor
+    const imovelClient = await getImovelPorSlug(slug);
+    console.log('DEBUG: imovelClient', JSON.stringify(imovelClient, null, 2));
 
-  const preco = imovelClient.preco ?? 0;
-  const metragem = imovelClient.areaUtil
-    ? formatarArea(imovelClient.areaUtil)
-    : null;
+    // Verificação robusta - se não tem dados ou falta ID, retorna 404
+    if (!imovelClient || !imovelClient._id) {
+      console.error(`Imóvel com slug ${slug} não encontrado ou dados incompletos`);
+      return notFound();
+    }
 
-  // Busca relacionados pela mesma categoria
-  const categoriaId = imovelClient.categoria?._id;
-  let relacionados: ImovelProjetado[] = [];
+    // Garantir que imagem existe para evitar o erro "imóvel indisponível"
+    if (!imovelClient.imagem || (!imovelClient.imagem.imagemUrl && !imovelClient.imagem.url)) {
+      console.warn(`Imóvel ${slug} sem imagem, adicionando placeholder`);
+      imovelClient.imagem = {
+        _type: 'image',
+        url: '/images/og-image-2025.jpg',
+        imagemUrl: '/images/og-image-2025.jpg',
+        alt: imovelClient.titulo || 'Imóvel Nova Ipê',
+        asset: {
+          _type: 'sanity.imageAsset',
+          _ref: ''
+        }
+      };
+    }
 
-  if (categoriaId) {
-    relacionados = await sanityFetch<ImovelProjetado[]>({
-      query: queryImoveisRelacionados,
-      params: {
-        imovelId: imovelClient._id,
-        categoriaId,
-        cidade: imovelClient.cidade,
-      },
-      tags: ['imoveis', `categoria-${categoriaId}`]
-    });
+    // Busca relacionados pela mesma categoria
+    const categoriaId = imovelClient.categoria?._id;
+    let relacionados: ImovelProjetado[] = [];
+
+    if (categoriaId) {
+      try {
+        relacionados = await sanityFetch({
+          query: queryImoveisRelacionados,
+          params: {
+            imovelId: imovelClient._id,
+            categoriaId,
+            cidade: imovelClient.cidade,
+          },
+          tags: ['imoveis', `categoria-${categoriaId}`]
+        }) || [];
+      } catch (error) {
+        console.error('Erro ao buscar imóveis relacionados:', error);
+        relacionados = []; // Fallback seguro
+      }
+    }
+
+    // Mapeia os imóveis relacionados para o formato de cliente
+    const relacionadosClient = relacionados.map(mapImovelToClient);
+
+    // Usar diretamente o Client Component wrapper
+    return (
+      <ImovelDetalhesClient
+        imovel={imovelClient}
+        relacionados={relacionadosClient}
+        preco={imovelClient.preco}
+      />
+    );
+  } catch (error) {
+    console.error('❌ Erro ao renderizar página de imóvel:', error);
+    return <FallbackComponent
+      message="Erro ao carregar a página do imóvel"
+      error={error instanceof Error ? error : new Error(String(error))}
+      slug={slug}
+    />;
   }
-
-  // Mapeia para o tipo de cliente
-  const relacionadosClient: ImovelDataType[] = relacionados.map(mapImovelToClient);
-
-  // Usa o componente de detalhes
-  return (
-    <ImovelDetalhes
-      imovel={imovelClient}
-      relacionados={relacionadosClient}
-      preco={preco}
-    />
-  );
 }

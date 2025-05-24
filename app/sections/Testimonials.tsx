@@ -64,9 +64,9 @@ const TestimonialsSection = () => {
                                         />
                                     </div>
                                 )}                                <div>
-                                    <h3 className="font-display semibold-text text-lg">{testimonial.name}</h3>
+                                    <h3 className="font-playfair text-heading-3 text-neutral-900">{testimonial.name}</h3>
                                     {testimonial.role && (
-                                        <p className="text-caption text-neutral-500">{testimonial.role}</p>
+                                        <p className="text-body-2 text-neutral-500">{testimonial.role}</p>
                                     )}
                                 </div>
                             </div>
@@ -81,7 +81,7 @@ const TestimonialsSection = () => {
                                 ))}
                             </div>
 
-                            <p className="text-body text-neutral-700">{testimonial.content}</p>
+                            <p className="text-body-1 text-neutral-700 leading-relaxed">{testimonial.content}</p>
                         </motion.div>
                     ))}
                 </div>

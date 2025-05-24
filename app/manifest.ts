@@ -48,14 +48,12 @@ export default function manifest(): MetadataRoute.Manifest {
             {
                 src: "/screenshots/home-screenshot.png",
                 type: "image/png",
-                sizes: "1080x1920",
-                form_factor: "narrow",
+                sizes: "1080x1920"
             },
             {
                 src: "/screenshots/property-screenshot.png",
                 type: "image/png",
-                sizes: "1920x1080",
-                form_factor: "wide",
+                sizes: "1920x1080"
             }
         ],
         orientation: "portrait",

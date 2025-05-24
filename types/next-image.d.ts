@@ -1,7 +1,15 @@
 import * as React from 'react';
 
-export interface ImageProps {
+// Define StaticImageData interface if not already defined by next/image
+export interface StaticImageData {
     src: string;
+    height: number;
+    width: number;
+    blurDataURL?: string;
+}
+
+export interface ImageProps {
+    src: string | StaticImageData;
     alt: string;
     width?: number;
     height?: number;
@@ -23,6 +31,7 @@ export interface ImageProps {
 declare module 'next/image' {
     const Image: React.ComponentType<ImageProps>;
     export default Image;
+    export type { StaticImageData };
 }
 
 // For dynamic import

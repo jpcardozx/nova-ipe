@@ -32,18 +32,18 @@ export default function Error({
                 initial={{ y: 10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.3, delay: 0.1 }}
-                className="text-2xl font-medium text-stone-800 mb-2 text-center"
+                className="text-display-2 text-neutral-900 mb-4 text-center"
             >
-                Algo deu errado!
+                Algo deu errado
             </motion.h2>
 
             <motion.p
                 initial={{ y: 10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.3, delay: 0.2 }}
-                className="text-stone-600 text-center max-w-md mb-6"
+                className="text-body-1 text-neutral-600 text-center mb-8 max-w-md"
             >
-                Ocorreu um erro ao carregar esta página. Por favor, tente novamente.
+                Sentimos muito pelo inconveniente. Nossa equipe foi notificada e está investigando o problema.
             </motion.p>
 
             <motion.div
@@ -54,8 +54,7 @@ export default function Error({
             >
                 <button
                     onClick={() => reset()}
-                    className="inline-flex items-center justify-center px-5 py-3 bg-amber-600 text-white rounded-lg font-medium hover:bg-amber-700 transition-colors"
-                    aria-label="Tentar carregar a página novamente"
+                    className="inline-flex items-center justify-center px-6 py-3 bg-primary-600 text-white rounded-lg text-body-2 font-medium hover:bg-primary-700 transition-colors"
                 >
                     <RefreshCw className="w-4 h-4 mr-2" />
                     Tentar novamente
@@ -63,12 +62,12 @@ export default function Error({
 
                 <Link
                     href="/"
-                    className="inline-flex items-center justify-center px-5 py-3 bg-white border border-stone-200 text-stone-700 rounded-lg font-medium hover:bg-stone-50 transition-colors"
+                    className="inline-flex items-center justify-center px-6 py-3 bg-neutral-100 text-neutral-700 rounded-lg text-body-2 font-medium hover:bg-neutral-200 transition-colors"
                 >
                     <Home className="w-4 h-4 mr-2" />
-                    Voltar para a página inicial
+                    Voltar à página inicial
                 </Link>
             </motion.div>
         </div>
     )
-} 
+}

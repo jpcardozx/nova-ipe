@@ -11,8 +11,9 @@ import {
     queryImovelPorSlug,
 } from '@lib/queries'
 
-import { mapImovelToClient } from '@core/mapImovelToClient'
-import type { ImovelClient , ImovelProjetado } from '@/types/imovel-client'
+// Importando a versão do lib para garantir consistência
+import { mapImovelToClient } from '@lib/mapImovelToClient'
+import type { ImovelClient, ImovelProjetado } from '@/types/imovel-client'
 
 
 // Server-side fetcher with caching

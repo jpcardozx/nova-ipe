@@ -964,3 +964,96 @@ const ProcessoGuararema: React.FC<ProcessoGuararemaProps> = ({
 }
 
 export default ProcessoGuararema
+
+const StepCard = ({ etapa, isSelected, onClick }: { etapa: EtapaProcesso; isSelected: boolean; onClick: () => void }) => (
+    <button
+        onClick={onClick}
+        className={cn(
+            "w-full text-left p-6 rounded-xl transition-all duration-300",
+            "border border-neutral-100 bg-white",
+            isSelected ? "shadow-lg ring-2 ring-primary-200" : "shadow-sm hover:shadow-md"
+        )}
+    >
+        <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-4">
+                <div className={cn(
+                    "p-3 rounded-lg",
+                    isSelected ? "bg-primary-50 text-primary-600" : "bg-neutral-50 text-neutral-400"
+                )}>
+                    {etapa.icon}
+                </div>
+                <div>
+                    <span className="text-body-2 text-neutral-500 block mb-1">Fase {etapa.fase}</span>
+                    <h3 className="text-heading-3 text-neutral-900 font-medium mb-2">
+                        {etapa.titulo}
+                    </h3>
+                    <p className="text-body-2 text-neutral-600 mb-3">
+                        {etapa.descricao}
+                    </p>
+                    <div className="flex items-center gap-2 text-body-2 text-neutral-500">
+                        <Clock className="w-4 h-4" />
+                        <span>{etapa.tempoMedio}</span>
+                    </div>
+                </div>
+            </div>
+            <ChevronRight className={cn(
+                "w-5 h-5 transition-transform",
+                isSelected ? "rotate-90 text-primary-600" : "text-neutral-400"
+            )} />
+        </div>
+    </button>
+);
+
+const StepDetails = ({ etapa }: { etapa: EtapaProcesso }) => (
+    <div className="bg-neutral-50 p-6 rounded-xl">
+        <div className="space-y-6">
+            <div>
+                <h4 className="text-heading-4 text-neutral-900 mb-3">O que acontece nesta etapa?</h4>
+                <ul className="space-y-3">
+                    {etapa.detalhesLocais.map((detalhe, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                            <CheckCircle className="w-5 h-5 text-primary-500 shrink-0 mt-0.5" />
+                            <span className="text-body-2 text-neutral-700">{detalhe}</span>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+
+            {etapa.localAtendimento && (
+                <div>
+                    <h4 className="text-heading-4 text-neutral-900 mb-3">Local de atendimento</h4>
+                    <div className="flex items-center gap-2 text-body-2 text-neutral-700">
+                        <MapPin className="w-4 h-4 text-neutral-500" />
+                        <span>{etapa.localAtendimento}</span>
+                    </div>
+                </div>
+            )}
+
+            {etapa.dica && (
+                <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="flex items-start gap-3">
+                        <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                        <div>
+                            <h4 className="text-heading-4 text-blue-900 mb-1">Dica útil</h4>
+                            <p className="text-body-2 text-blue-700">{etapa.dica}</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {etapa.acaoTitulo && etapa.acaoUrl && (
+                <a
+                    href={etapa.acaoUrl}
+                    className={cn(
+                        "inline-flex items-center gap-2 px-6 py-3 rounded-lg",
+                        "bg-primary-600 text-white text-body-2 font-medium",
+                        "hover:bg-primary-700 transition-colors"
+                    )}
+                >
+                    {etapa.acaoTitulo}
+                    <ArrowRight className="w-4 h-4" />
+                </a>
+            )}
+        </div>
+    </div>
+);

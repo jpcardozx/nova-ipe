@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { getServiceWorkerVersion } from '../utils/service-worker-utils';
 
 /**
  * OfflineSupportProvider - Registra o service worker para suporte offline
@@ -15,32 +16,64 @@ export default function OfflineSupportProvider({
     children: React.ReactNode
 }) {
     const [offlineReady, setOfflineReady] = useState(false);
+    const [swVersion, setSwVersion] = useState<string | null>(null);
+
+    // Verificar a versão do service worker
+    const checkServiceWorkerVersion = useCallback(async () => {
+        try {
+            const versionInfo = await getServiceWorkerVersion();
+            if (versionInfo) {
+                setSwVersion(versionInfo.version);
+                console.log('Service Worker version:', versionInfo.version);
+            }
+        } catch (error) {
+            console.warn('Não foi possível verificar a versão do Service Worker:', error);
+        }
+    }, []);
 
     // Registrar o service worker
     useEffect(() => {
+        // Verificar se estamos em um navegador e se o Service Worker é suportado
         if (
             typeof window !== 'undefined' &&
             'serviceWorker' in navigator &&
+            // Evitar conflitos com outros service workers (ex: workbox)
             (window as any).workbox === undefined
         ) {
-            // Registrar service worker
+            // Só registrar o service worker em produção
             if (process.env.NODE_ENV === 'production') {
                 navigator.serviceWorker
-                .register('/sw.js') // Alterado de .ts para .js, pois o navegador requer um arquivo JS
-                .then(registration => {
-                    console.log('Service Worker registrado com sucesso:', registration);
-                    setOfflineReady(true);
-                })
-                .catch(error => {
-                    console.error('Erro ao registrar Service Worker:', error);
-                });
+                    .register('/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registrado com sucesso:', registration);
+                        setOfflineReady(true);
+
+                        // Verificar se há update disponível
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            if (newWorker) {
+                                newWorker.addEventListener('statechange', () => {
+                                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                        console.log('Nova versão do Service Worker instalada e pronta para ativação');
+                                        checkServiceWorkerVersion();
+                                    }
+                                });
+                            }
+                        });
+
+                        // Verificar versão atual
+                        checkServiceWorkerVersion();
+                    })
+                    .catch(error => {
+                        console.error('Erro ao registrar Service Worker:', error);
+                    });
             }
         }
 
         // Adicionar listeners para eventos de offline/online
         const handleOffline = () => {
             console.log('Dispositivo está offline');
-            // Podemos adicionar uma notificação ou outra UI aqui
+            // Adicionar classe para controle visual de estado offline
             document.documentElement.classList.add('offline-mode');
         };
 
@@ -53,7 +86,7 @@ export default function OfflineSupportProvider({
         window.addEventListener('online', handleOnline);
 
         // Verificar o estado inicial
-        if (!navigator.onLine) {
+        if (typeof navigator !== 'undefined' && !navigator.onLine) {
             handleOffline();
         }
 
@@ -61,7 +94,7 @@ export default function OfflineSupportProvider({
             window.removeEventListener('offline', handleOffline);
             window.removeEventListener('online', handleOnline);
         };
-    }, []);
+    }, [checkServiceWorkerVersion]);
 
     return (
         <>

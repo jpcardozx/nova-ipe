@@ -75,13 +75,14 @@ const testimonials = [
 ]
 
 const ProcessoGuararema: React.FC = () => {
-    const [activeStep, setActiveStep] = useState<string>("conversa")
-    const [showContact, setShowContact] = useState(false)
-    const containerRef = useRef<HTMLDivElement>(null)
+    const [activeStep, setActiveStep] = useState<string>("conversa");
+    const [showContact, setShowContact] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({
         target: containerRef,
-        offset: ["start end", "end start"]
-    })
+        offset: ["start end", "end start"],
+        layoutEffect: false
+    });
 
     const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0])
     const scale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.8, 1, 1, 0.8])

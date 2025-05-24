@@ -652,7 +652,7 @@ const GuararemaHero: React.FC = () => {
                                             className={`w-5 h-5 ${selectedIntent === 'live' ? 'text-amber-600' : 'text-gray-400'}`}
                                             aria-hidden="true"
                                         />
-                                        <span className="font-semibold">Quero Morar</span>
+                                        <span className="font-zsemibold">Quero Morar</span>
                                     </button>
                                 </div>
 

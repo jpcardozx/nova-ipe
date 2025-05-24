@@ -1,0 +1,17 @@
+{
+    "dev": {
+        "loaders": {
+            ".js": "jsx",
+            ".ts": "tsx"
+        },
+        "rules": {
+            "@next/next/no-img-element": "off",
+            "@next/next/no-html-link-for-pages": "off",
+            "no-console": "off"
+        },
+        "compilationOptions": {
+            "incremental": true,
+            "assumeChangesOnlyAffectDirectDependencies": true
+        }
+    }
+}

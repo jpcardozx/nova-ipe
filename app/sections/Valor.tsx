@@ -373,3 +373,72 @@ export default function ApresentacaoInstitucional() {
         </section>
     );
 }
+
+const ServiceCard: React.FC<{ service: Service; isActive: boolean; onClick: () => void }> = ({
+    service,
+    isActive,
+    onClick
+}) => (
+    <motion.button
+        onClick={onClick}
+        className={cn(
+            "w-full p-6 rounded-xl text-left transition-all",
+            "border bg-white",
+            isActive
+                ? "border-primary-200 shadow-lg ring-2 ring-primary-100"
+                : "border-neutral-100 shadow-sm hover:shadow-md"
+        )}
+        whileHover={{ y: -2 }}
+        whileTap={{ y: 0 }}
+    >
+        <div className="flex items-start gap-4">
+            <div className={cn(
+                "p-3 rounded-lg",
+                isActive ? "bg-primary-50 text-primary-600" : "bg-neutral-50 text-neutral-400"
+            )}>
+                {service.icon}
+            </div>
+            <div>
+                <h3 className="text-heading-3 text-neutral-900 font-medium mb-1">{service.title}</h3>
+                <p className="text-body-2 text-neutral-600 mb-4">{service.description}</p>
+                <ul className="space-y-2">
+                    {service.features.map((feature, index) => (
+                        <li key={index} className="flex items-center gap-2">
+                            <CheckCircle className={cn(
+                                "w-4 h-4",
+                                isActive ? "text-primary-500" : "text-neutral-400"
+                            )} />
+                            <span className="text-body-2 text-neutral-700">{feature}</span>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </div>
+    </motion.button>
+);
+
+const CertificationCard: React.FC<{ certification: Certification }> = ({ certification }) => (
+    <div className="p-6 bg-white rounded-xl border border-neutral-100 shadow-sm">
+        <h4 className="text-heading-4 text-neutral-900 font-medium mb-2">{certification.name}</h4>
+        <p className="text-body-2 text-neutral-600 mb-3">{certification.description}</p>
+        <div className="flex items-center gap-2">
+            <Clock className="w-4 h-4 text-neutral-400" />
+            <span className="text-body-2 text-neutral-500">{certification.year}</span>
+        </div>
+    </div>
+);
+
+const CompanyMetrics: React.FC<{ metrics: CompanyMetric[] }> = ({ metrics }) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {metrics.map((metric) => (
+            <div key={metric.id} className="p-6 bg-white rounded-xl border border-neutral-100 shadow-sm">
+                <div className="mb-4 p-2 bg-primary-50 text-primary-600 rounded-lg w-fit">
+                    {metric.icon}
+                </div>
+                <h4 className="text-display-3 text-primary-600 font-bold mb-1">{metric.value}</h4>
+                <h5 className="text-heading-4 text-neutral-900 font-medium mb-2">{metric.label}</h5>
+                <p className="text-body-2 text-neutral-600">{metric.description}</p>
+            </div>
+        ))}
+    </div>
+);

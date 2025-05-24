@@ -1,0 +1,302 @@
+// app/workers/service-worker.ts
+
+/// <reference lib="webworker" />
+
+// Ensure this script is running in a Service Worker context
+if (typeof self !== 'undefined') {
+    const swScope = self as unknown as ServiceWorkerGlobalScope;
+
+    const SW_VERSION = '1.4.0'; // Updated version
+    const CHUNK_CACHE_NAME = 'nova-ipe-chunk-cache-v3'; // Updated cache name
+    const OFFLINE_CACHE_NAME = 'nova-ipe-offline-cache-v3'; // Cache for offline pages
+    const STATIC_CACHE_NAME = 'nova-ipe-static-cache-v3'; // Cache for static assets
+    const CRITICAL_ASSETS = [
+        // Critical assets that should be cached immediately
+        '/_next/static/chunks/main-app.js',
+        '/_next/static/chunks/app/page.js',
+        '/_next/static/chunks/webpack.js',
+        '/offline',
+        '/404',
+        '/',
+        // Add other critical chunks here
+    ];
+
+    // Static assets with long cache times
+    const STATIC_ASSET_REGEX = /\.(css|js|png|jpg|jpeg|svg|webp|woff2|ico)$/;
+    const IMAGE_ASSET_REGEX = /\.(png|jpg|jpeg|svg|webp|gif|avif|ico)$/;
+
+    // Installation: Cache critical assets immediately
+    swScope.addEventListener('install', (event: ExtendableEvent) => {
+        console.log('[Service Worker] Installing...');
+
+        // Precache critical assets
+        event.waitUntil(
+            caches.open(CHUNK_CACHE_NAME)
+                .then(cache => {
+                    console.log('[Service Worker] Precaching critical assets');
+                    return cache.addAll(CRITICAL_ASSETS);
+                })
+                .then(() => {
+                    console.log('[Service Worker] Precaching complete');
+                    return swScope.skipWaiting(); // Force activate immediately
+                })
+                .catch(error => {
+                    console.error('[Service Worker] Precaching failed:', error);
+                    return swScope.skipWaiting(); // Still activate even if precaching fails
+                })
+        );
+    });
+
+    // Activation: Clean old caches
+    swScope.addEventListener('activate', (event: ExtendableEvent) => {
+        console.log('[Service Worker] Activating...');
+
+        event.waitUntil(
+            caches.keys()
+                .then(cacheNames => {
+                    return Promise.all(
+                        cacheNames.map(cacheName => {
+                            if ((cacheName !== CHUNK_CACHE_NAME && cacheName.startsWith('nova-ipe-chunk-cache')) ||
+                                (cacheName !== STATIC_CACHE_NAME && cacheName.startsWith('nova-ipe-static-cache')) ||
+                                (cacheName !== OFFLINE_CACHE_NAME && cacheName.startsWith('nova-ipe-offline-cache'))) {
+                                console.log('[Service Worker] Deleting old cache:', cacheName);
+                                return caches.delete(cacheName);
+                            }
+                        })
+                    );
+                })
+                .then(() => {
+                    console.log('[Service Worker] Now controlling clients');
+                    return swScope.clients.claim(); // Take control of all clients
+                })
+        );
+    });
+
+    // Handle fetch events
+    swScope.addEventListener('fetch', (event: FetchEvent) => {
+        const { request } = event;
+
+        // Only handle GET requests
+        if (request.method !== 'GET') {
+            return;
+        }
+
+        // Special handling for chunk files and critical assets
+        if (request.url.includes('/_next/static/chunks/') ||
+            CRITICAL_ASSETS.some(asset => request.url.includes(asset))) {
+
+            event.respondWith(
+                caches.open(CHUNK_CACHE_NAME)
+                    .then(async cache => {
+                        // Try cache first
+                        const cachedResponse = await cache.match(request);
+
+                        if (cachedResponse) {
+                            console.log('[Service Worker] Serving from cache:', request.url);
+
+                            // Update cache in background (stale-while-revalidate)
+                            fetch(request)
+                                .then(networkResponse => {
+                                    if (networkResponse && networkResponse.status === 200) {
+                                        console.log('[Service Worker] Updating cache for:', request.url);
+                                        cache.put(request, networkResponse.clone());
+                                    }
+                                })
+                                .catch(error => {
+                                    console.log('[Service Worker] Background fetch failed:', error);
+                                    // No need to do anything as we already returned the cached response
+                                });
+
+                            return cachedResponse;
+                        }
+
+                        console.log('[Service Worker] Cache miss, fetching from network:', request.url);
+
+                        // Not in cache, try network with timeout
+                        const timeoutPromise = new Promise<Response>((_, reject) => {
+                            setTimeout(() => reject(new Error('Fetch timeout')), 10000); // 10 second timeout
+                        });
+
+                        return Promise.race([
+                            fetch(request).then(networkResponse => {
+                                if (networkResponse && networkResponse.status === 200) {
+                                    // Cache the response for future
+                                    console.log('[Service Worker] Caching new response for:', request.url);
+                                    cache.put(request, networkResponse.clone());
+                                }
+                                return networkResponse;
+                            }),
+                            timeoutPromise
+                        ]).catch(error => {
+                            console.error('[Service Worker] Fetch failed:', error);
+
+                            // If we have an offline/fallback response, return it
+                            // For now, we'll return a simple error response
+                            return new Response(
+                                `Failed to load resource: ${request.url}\nError: ${error.message}`,
+                                {
+                                    status: 504,
+                                    statusText: 'Gateway Timeout',
+                                    headers: {
+                                        'Content-Type': 'text/plain',
+                                    }
+                                }
+                            );
+                        });
+                    })
+            );
+            return;
+        }
+        
+        // Handle static assets like images, CSS, fonts, etc.
+        if (STATIC_ASSET_REGEX.test(new URL(request.url).pathname)) {
+            event.respondWith(
+                caches.open(STATIC_CACHE_NAME).then(async (cache) => {
+                    // Try cache first
+                    const cachedResponse = await cache.match(request);
+                    
+                    if (cachedResponse) {
+                        // Use stale-while-revalidate strategy for images
+                        if (IMAGE_ASSET_REGEX.test(new URL(request.url).pathname)) {
+                            // Update cache in background for images
+                            fetch(request)
+                                .then(networkResponse => {
+                                    if (networkResponse && networkResponse.status === 200) {
+                                        cache.put(request, networkResponse.clone());
+                                    }
+                                })
+                                .catch(() => {
+                                    // Ignore network errors for background updates
+                                });
+                        }
+                        
+                        return cachedResponse;
+                    }
+                    
+                    // Not in cache, get from network
+                    try {
+                        const networkResponse = await fetch(request);
+                        
+                        // Cache successful responses
+                        if (networkResponse.status === 200) {
+                            cache.put(request, networkResponse.clone());
+                        }
+                        
+                        return networkResponse;
+                    } catch (error) {
+                        // Network failed, return fallback for images if possible
+                        if (IMAGE_ASSET_REGEX.test(new URL(request.url).pathname)) {
+                            // For images, we could return a placeholder image
+                            return caches.match('/images/placeholder.jpg').catch(() => {
+                                // If no placeholder, return error response
+                                return new Response('Image not available offline', {
+                                    status: 503,
+                                    headers: { 'Content-Type': 'text/plain' }
+                                });
+                            });
+                        }
+                        
+                        // Return generic error for other assets
+                        return new Response('Resource not available offline', {
+                            status: 503,
+                            headers: { 'Content-Type': 'text/plain' }
+                        });
+                    }
+                })
+            );
+            return;
+        }
+    });
+
+    // Handle fetch events for navigation requests
+    swScope.addEventListener('fetch', (event: FetchEvent) => {
+        const { request } = event;
+        const url = new URL(request.url);
+
+        // Basic HTML navigation request (not resource)
+        const isHTMLNavigation = request.mode === 'navigate' &&
+            request.method === 'GET' &&
+            request.headers.get('accept')?.includes('text/html');
+
+        // Handle HTML navigation requests that fail (e.g., when offline)
+        // We'll redirect to the offline page if the request fails
+        if (isHTMLNavigation) {
+            event.respondWith(
+                fetch(request)
+                    .catch(() => {
+                        // If the main page fails, serve the offline page
+                        return caches.open(OFFLINE_CACHE_NAME)
+                            .then(cache => cache.match('/offline'))
+                            .then(response => {
+                                return response || new Response('Você está offline. Por favor, verifique sua conexão.', {
+                                    status: 503,
+                                    statusText: 'Service Unavailable',
+                                    headers: { 'Content-Type': 'text/plain' }
+                                });
+                            });
+                    })
+            );
+            return;
+        }
+    });
+
+    // Handle messages from clients
+    swScope.addEventListener('message', (event) => {
+        // Ensure we have a valid client to respond to
+        const client = event.source as Client;
+        if (!client) {
+            console.error('[Service Worker] No valid client in message event');
+            return;
+        }
+
+        if (!event.data || typeof event.data !== 'object') {
+            console.warn('[Service Worker] Received invalid message data');
+            return;
+        }
+
+        // Switch based on message type
+        switch (event.data.type) {
+            case 'GET_VERSION':
+                client.postMessage({
+                    type: 'VERSION_INFO',
+                    messageId: event.data.messageId, // Echo back messageId if provided
+                    version: SW_VERSION,
+                    cacheName: CHUNK_CACHE_NAME,
+                    timestamp: Date.now()
+                });
+                break;
+
+            case 'CLEAR_CHUNK_CACHE':
+                // Clear all caches
+                Promise.all([
+                    caches.delete(CHUNK_CACHE_NAME),
+                    caches.delete(OFFLINE_CACHE_NAME),
+                    caches.delete(STATIC_CACHE_NAME)
+                ])
+                    .then(results => {
+                        const success = results.every(Boolean);
+                        client.postMessage({
+                            type: 'CHUNK_CACHE_CLEARED',
+                            messageId: event.data.messageId,
+                            success
+                        });
+                        console.log('[Service Worker] Caches cleared:', success);
+                    })
+                    .catch(error => {
+                        console.error('[Service Worker] Error clearing caches:', error);
+                        client.postMessage({
+                            type: 'CHUNK_CACHE_CLEARED',
+                            messageId: event.data.messageId,
+                            success: false,
+                            error: error.message
+                        });
+                    });
+                break;
+
+            default:
+                console.warn('[Service Worker] Unknown message type:', event.data.type);
+        }
+    });
+} else {
+    throw new Error('self is not defined. Ensure this script is running in a Service Worker context.');
+}

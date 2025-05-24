@@ -330,3 +330,5 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
 };
 
 export default ImovelDetalhes;
+
+// This file has been renamed to ImovelDetalhes.tsx. Please use that file instead.

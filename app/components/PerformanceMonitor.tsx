@@ -1,238 +1,245 @@
 'use client';
 
 /**
- * Performance Monitor Script 
- * This script helps identify rendering bottlenecks and slow components
+ * Performance Monitor Component
+ * 
+ * Monitors and reports Core Web Vitals metrics in both development and production.
+ * Only shows UI in development mode for debugging.
+ * 
+ * @version 2.0.0
+ * @date 23/05/2025
  */
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-interface PerformanceEntry {
-    name: string;
-    entryType: string;
-    startTime: number;
-    duration: number;
-    [key: string]: any;
+// Interface for the performance metrics we track
+interface PerformanceMetrics {
+    LCP: number | null; // Largest Contentful Paint
+    FID: number | null; // First Input Delay
+    CLS: number | null; // Cumulative Layout Shift
+    TTI: number | null; // Time to Interactive
+    TTFB: number | null; // Time to First Byte
+    pageLoaded: number | null; // Total page load time
 }
 
 export default function PerformanceMonitor() {
+    const [metrics, setMetrics] = useState<PerformanceMetrics>({
+        LCP: null,
+        FID: null,
+        CLS: null,
+        TTI: null,
+        TTFB: null,
+        pageLoaded: null
+    });
+
+    // Only show the UI in development mode
+    const [showUI, setShowUI] = useState(false);
+
     useEffect(() => {
-        // Only run in development
-        if (process.env.NODE_ENV !== 'development') {
-            return;
-        }
+        // Initialize metrics tracking for all environments
+        const cleanup = initPerformanceTracking((newMetrics) => {
+            setMetrics(prev => ({ ...prev, ...newMetrics }));
 
-        // Create custom styles for the monitor panel
-        const style = document.createElement('style');
-        style.textContent = `
-      .performance-monitor {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: rgba(0, 0, 0, 0.8);
-        color: #00ff00;
-        font-family: monospace;
-        padding: 10px;
-        border-radius: 5px;
-        z-index: 9999;
-        max-width: 300px;
-        font-size: 12px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-        transition: all 0.3s;
-        display: none;
-      }
-      .performance-monitor.visible {
-        display: block;
-      }
-      .performance-monitor h3 {
-        margin: 0 0 8px 0;
-        font-size: 14px;
-        border-bottom: 1px solid #333;
-        padding-bottom: 4px;
-      }
-      .performance-metric {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 4px;
-      }
-      .performance-warning {
-        color: orange;
-      }
-      .performance-critical {
-        color: red;
-        font-weight: bold;
-      }
-      .toggle-monitor {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: #333;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        font-size: 20px;
-        cursor: pointer;
-        z-index: 10000;
-      }
-    `;
-        document.head.appendChild(style);
-
-        // Create toggle button
-        const toggleButton = document.createElement('button');
-        toggleButton.className = 'toggle-monitor';
-        toggleButton.textContent = 'P';
-        toggleButton.title = 'Toggle Performance Monitor';
-        document.body.appendChild(toggleButton);
-
-        // Create monitor panel
-        const monitorPanel = document.createElement('div');
-        monitorPanel.className = 'performance-monitor';
-        monitorPanel.innerHTML = `
-      <h3>Performance Monitor</h3>
-      <div id="metrics-container"></div>
-    `;
-        document.body.appendChild(monitorPanel);
-
-        // Toggle visibility
-        toggleButton.addEventListener('click', () => {
-            monitorPanel.classList.toggle('visible');
-        });
-
-        // Store metrics
-        const metrics: Record<string, number> = {
-            FCP: 0,
-            LCP: 0,
-            CLS: 0,
-            INP: 0,
-            'Memory Usage': 0,
-            'DOM Nodes': document.querySelectorAll('*').length,
-            'Long Tasks': 0,
-            'React Renders': 0
-        };
-
-        // Update metrics in the UI
-        const updateMetricsUI = () => {
-            const container = document.getElementById('metrics-container');
-            if (!container) return;
-
-            container.innerHTML = '';
-            Object.entries(metrics).forEach(([key, value]) => {
-                const formattedValue =
-                    key === 'CLS' ? value.toFixed(3) :
-                        key === 'Memory Usage' ? `${Math.round(value / 1024 / 1024)} MB` :
-                            key === 'DOM Nodes' ? value.toString() :
-                                key === 'Long Tasks' ? value.toString() :
-                                    key === 'React Renders' ? value.toString() :
-                                        `${value.toFixed(0)} ms`;
-
-                let className = 'performance-metric';
-
-                // Add visual indicators for poor performance
-                if (
-                    (key === 'FCP' && value > 1800) ||
-                    (key === 'LCP' && value > 2500) ||
-                    (key === 'CLS' && value > 0.1) ||
-                    (key === 'INP' && value > 200) ||
-                    (key === 'Long Tasks' && value > 5)
-                ) {
-                    className += ' performance-warning';
-                }
-
-                if (
-                    (key === 'FCP' && value > 3000) ||
-                    (key === 'LCP' && value > 4000) ||
-                    (key === 'CLS' && value > 0.25) ||
-                    (key === 'INP' && value > 500) ||
-                    (key === 'Long Tasks' && value > 10)
-                ) {
-                    className += ' performance-critical';
-                }
-
-                container.innerHTML += `
-          <div class="${className}">
-            <span>${key}:</span>
-            <span>${formattedValue}</span>
-          </div>
-        `;
-            });
-        };
-
-        // Use Performance Observer to monitor metrics
-        if ('PerformanceObserver' in window) {
-            // FCP
-            new PerformanceObserver((entryList) => {
-                for (const entry of entryList.getEntries()) {
-                    metrics.FCP = entry.startTime;
-                    updateMetricsUI();
-                }
-            }).observe({ type: 'paint', buffered: true });
-
-            // LCP
-            new PerformanceObserver((entryList) => {
-                for (const entry of entryList.getEntries()) {
-                    metrics.LCP = entry.startTime;
-                    updateMetricsUI();
-                }
-            }).observe({ type: 'largest-contentful-paint', buffered: true });            // CLS
-            new PerformanceObserver((entryList) => {
-                let clsValue = 0;
-                for (const entry of entryList.getEntries()) {
-                    // We need to properly handle LayoutShift entries
-                    // First convert to unknown, then to our custom type
-                    const layoutShift = entry as unknown;
-
-                    // Check if the entry has the properties we need before using them
-                    if (
-                        layoutShift &&
-                        typeof layoutShift === 'object' &&
-                        'value' in layoutShift &&
-                        ('hadRecentInput' in layoutShift ? !(layoutShift as any).hadRecentInput : true)
-                    ) {
-                        clsValue += (layoutShift as any).value;
+            // Report to analytics in production
+            if (process.env.NODE_ENV === 'production' && window.dataLayer && newMetrics) {
+                for (const [key, value] of Object.entries(newMetrics)) {
+                    if (value !== null) {
+                        window.dataLayer.push({
+                            event: 'web-vital',
+                            metric: key,
+                            value: key === 'CLS' ? Number(value).toFixed(3) : Math.round(value as number)
+                        });
                     }
                 }
-                metrics.CLS = clsValue;
-                updateMetricsUI();
-            }).observe({ type: 'layout-shift', buffered: true });
-
-            // Long Tasks
-            new PerformanceObserver((entryList) => {
-                metrics['Long Tasks'] = entryList.getEntries().length;
-                updateMetricsUI();
-            }).observe({ type: 'longtask', buffered: true });
-        }
-
-        // Monitor memory usage
-        const checkMemoryUsage = () => {
-            if ('memory' in performance) {
-                metrics['Memory Usage'] = (performance as any).memory.usedJSHeapSize;
-                updateMetricsUI();
             }
-        };
+        });
 
-        // Count DOM nodes periodically
-        const countDOMNodes = () => {
-            metrics['DOM Nodes'] = document.querySelectorAll('*').length;
-            updateMetricsUI();
-        };
-
-        // Initial update
-        updateMetricsUI();
-
-        // Setup intervals
-        const memoryInterval = setInterval(checkMemoryUsage, 2000);
-        const domInterval = setInterval(countDOMNodes, 2000);
-
-        return () => {
-            clearInterval(memoryInterval);
-            clearInterval(domInterval);
-            document.head.removeChild(style);
-            document.body.removeChild(toggleButton);
-            document.body.removeChild(monitorPanel);
-        };
+        return cleanup;
     }, []);
 
-    return null;
+    // Show the toggle button only in development
+    if (process.env.NODE_ENV !== 'development') {
+        return null;
+    }
+
+    return (
+        <>
+            <button
+                onClick={() => setShowUI(prev => !prev)}
+                style={{
+                    position: 'fixed',
+                    bottom: '20px',
+                    right: '20px',
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    backgroundColor: '#333',
+                    color: '#fff',
+                    border: 'none',
+                    fontSize: '16px',
+                    cursor: 'pointer',
+                    zIndex: 10000,
+                }}
+                title="Toggle Performance Monitor"
+            >
+                P
+            </button>
+
+            {showUI && (
+                <div
+                    style={{
+                        position: 'fixed',
+                        bottom: '70px',
+                        right: '20px',
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        color: '#0f0',
+                        fontFamily: 'monospace',
+                        padding: '15px',
+                        borderRadius: '8px',
+                        zIndex: 9999,
+                        maxWidth: '300px',
+                        fontSize: '12px',
+                        boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)',
+                    }}
+                >
+                    <h3 style={{ margin: '0 0 10px 0', borderBottom: '1px solid #333', paddingBottom: '5px' }}>
+                        Core Web Vitals
+                    </h3>
+                    <MetricDisplay name="LCP" value={metrics.LCP} unit="ms" good={2500} needsImprovement={4000} />
+                    <MetricDisplay name="FID" value={metrics.FID} unit="ms" good={100} needsImprovement={300} />
+                    <MetricDisplay name="CLS" value={metrics.CLS} unit="" good={0.1} needsImprovement={0.25} />
+
+                    <h3 style={{ margin: '10px 0', borderBottom: '1px solid #333', paddingBottom: '5px' }}>
+                        Other Metrics
+                    </h3>
+                    <MetricDisplay name="TTFB" value={metrics.TTFB} unit="ms" good={800} needsImprovement={1800} />
+                    <MetricDisplay name="Page Load" value={metrics.pageLoaded} unit="ms" good={2000} needsImprovement={4000} />
+                </div>
+            )}
+        </>
+    );
+}
+
+// Helper component to display a metric with color coding
+function MetricDisplay({
+    name,
+    value,
+    unit,
+    good,
+    needsImprovement
+}: {
+    name: string;
+    value: number | null;
+    unit: string;
+    good: number;
+    needsImprovement: number;
+}) {
+    if (value === null) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                <span>{name}:</span>
+                <span>Measuring...</span>
+            </div>
+        );
+    }
+
+    let color = '#4caf50'; // Good (green)
+    if (value > needsImprovement) {
+        color = '#f44336'; // Poor (red)
+    } else if (value > good) {
+        color = '#ff9800'; // Needs improvement (orange)
+    }
+
+    const formattedValue = unit === '' ? value.toFixed(3) : Math.round(value);
+
+    return (
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+            <span>{name}:</span>
+            <span style={{ color }}>
+                {formattedValue}{unit}
+            </span>
+        </div>
+    );
+}
+
+// Initialize performance tracking
+function initPerformanceTracking(onMetricsUpdate: (metrics: Partial<PerformanceMetrics>) => void) {
+    if (typeof window === 'undefined' || typeof PerformanceObserver === 'undefined') {
+        return () => { }; // No-op cleanup function
+    }
+
+    const observers: PerformanceObserver[] = [];
+
+    try {
+        // LCP (Largest Contentful Paint)
+        const lcpObserver = new PerformanceObserver((entryList) => {
+            const entries = entryList.getEntries();
+            const lastEntry = entries[entries.length - 1];
+            const lcp = lastEntry.startTime;
+            onMetricsUpdate({ LCP: lcp });
+        });
+        lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
+        observers.push(lcpObserver);
+
+        // FID (First Input Delay)
+        const fidObserver = new PerformanceObserver((entryList) => {
+            const entries = entryList.getEntries();
+            entries.forEach((entry) => {
+                if ('processingStart' in entry && 'startTime' in entry) {
+                    const fid = (entry as any).processingStart - entry.startTime;
+                    onMetricsUpdate({ FID: fid });
+                }
+            });
+        });
+        fidObserver.observe({ type: 'first-input', buffered: true });
+        observers.push(fidObserver);
+
+        // CLS (Cumulative Layout Shift)
+        let clsValue = 0;
+        const clsObserver = new PerformanceObserver((entryList) => {
+            const entries = entryList.getEntries();
+            entries.forEach((entry) => {
+                if ('hadRecentInput' in entry && !(entry as any).hadRecentInput) {
+                    clsValue += (entry as any).value;
+                    onMetricsUpdate({ CLS: clsValue });
+                }
+            });
+        });
+        clsObserver.observe({ type: 'layout-shift', buffered: true });
+        observers.push(clsObserver);
+
+        // Basic navigation timing
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const perfData = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+                if (perfData) {
+                    onMetricsUpdate({
+                        TTFB: perfData.responseStart - perfData.requestStart,
+                        pageLoaded: perfData.loadEventEnd - perfData.fetchStart,
+                    });
+                }
+            }, 0);
+        });
+
+    } catch (error) {
+        console.error('Error setting up performance monitoring:', error);
+    }
+
+    // Cleanup function
+    return () => {
+        observers.forEach(observer => {
+            try {
+                observer.disconnect();
+            } catch (e) {
+                // Ignore errors during cleanup
+            }
+        });
+    };
+}
+
+// Type declaration for window.dataLayer
+declare global {
+    interface Window {
+        dataLayer?: Record<string, unknown>[];
+    }
 }

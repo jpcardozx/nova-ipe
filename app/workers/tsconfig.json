@@ -1,0 +1,22 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "lib": [
+            "ESNext",
+            "WebWorker"
+        ],
+        "types": [],
+        "noEmit": true,
+        "skipLibCheck": true,
+        "target": "ES2020",
+        "module": "ESNext",
+        "strict": false,
+        "noImplicitAny": false,
+        "strictNullChecks": false,
+        "allowJs": true,
+        "checkJs": false
+    },
+    "include": [
+        "*.ts"
+    ]
+}
