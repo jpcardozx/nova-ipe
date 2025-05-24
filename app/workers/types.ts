@@ -1,7 +1,2 @@
-interface ServiceWorkerConfig {
-    name: string;
-    maxEntries?: number;
-    maxAge?: number;
-}
-
-type CacheConfig = ServiceWorkerConfig | null;
+// Types moved to sw-types.d.ts
+export { };
