@@ -1,104 +1,230 @@
-import React, { useState } from 'react';
-import Image from 'next/image';
-import { generateLowQualityPlaceholder } from '../lib/image-performance-optimizer';
+'use client';
 
-export interface SanityImageProps {
-  image: { url?: string; width?: number; height?: number; alt?: string }; // Adjusted type to match usage in the component
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import { cn } from '@/lib/utils';
+import { ImageOff, Home } from 'lucide-react';
+import { getImageUrl } from '@/lib/optimized-sanity-image';
+
+// Unified image type that supports multiple formats
+export interface ClientImage {
+  _type?: string;
+  imagemUrl?: string;
+  url?: string;
   alt?: string;
   width?: number;
   height?: number;
-  sizes?: string;
-  priority?: boolean;
-  className?: string;
-  quality?: number;
-  objectFit?: 'cover' | 'contain' | 'fill';
-  eager?: boolean; // Para imagens acima da dobra
-  loading?: 'lazy' | 'eager';
-  onLoad?: () => void;
+  aspectRatio?: number;
+  hotspot?: {
+    x: number;
+    y: number;
+  };
+  asset?: {
+    _ref?: string;
+    url?: string;
+    _type?: string;
+  };
+  blurDataUrl?: string;
 }
 
-export type ClientImage = {
-  url: string;
-  width: number;
-  height: number;
-  aspectRatio: number;
+export interface SanityImageProps {
+  image: ClientImage | null | undefined;
   alt?: string;
-};
+  width?: number;
+  height?: number;
+  fill?: boolean;
+  sizes?: string;
+  className?: string;
+  priority?: boolean;
+  aspectRatio?: string;
+  quality?: number;
+  onLoad?: () => void;
+  showPlaceholderIcon?: boolean;
+  objectFit?: 'cover' | 'contain' | 'fill';
+  eager?: boolean;
+  loading?: 'lazy' | 'eager';
+  placeholder?: 'blur' | 'empty';
+}
 
 /**
- * SanityImage - Componente otimizado para imagens do Sanity CMS
- * Implementa estratégias avançadas de carregamento para melhorar Web Vitals
+ * Componente consolidado para renderizar imagens, com suporte a múltiplos formatos:
+ * - Formatos Sanity { url, imagemUrl, asset }
+ * - Imagens convencionais
+ * - Tratamento de erros e carregamento
+ * - Animações e efeitos visuais
+ * - Otimizações de performance
  */
 export default function SanityImage({
   image,
-  alt = 'Imagem Nova Ipê',
+  alt = '',
   width,
   height,
+  fill = false,
   sizes = '(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw',
-  priority = false,
   className = '',
+  priority = false,
+  aspectRatio,
   quality = 85,
+  onLoad,
+  showPlaceholderIcon = true,
   objectFit = 'cover',
   eager = false,
   loading: loadingProp,
-  onLoad,
+  placeholder = 'blur',
   ...props
 }: SanityImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const [imageSrc, setImageSrc] = useState<string>('');
 
   // Determina o modo de carregamento
   const loading = priority || eager ? 'eager' : loadingProp || 'lazy';
 
-  // Extrai URL da imagem do Sanity
-  const imageUrl = image?.url || (typeof image === 'string' ? image : '');
+  // Extrai a URL da imagem de diferentes formatos
+  useEffect(() => {
+    if (!image) {
+      setHasError(true);
+      return;
+    }
 
-  // Define dimensões e proporção
-  const imageWidth = width || image?.width || 800;
-  const imageHeight = height || image?.height || 600;
+    let resolvedUrl = '';
 
-  const handleImageLoad = () => {
+    // Tenta diferentes formatos de URL
+    if (image.url) {
+      resolvedUrl = image.url;
+    } else if (image.imagemUrl) {
+      resolvedUrl = image.imagemUrl;
+    } else if (image.asset?.url) {
+      resolvedUrl = image.asset.url;
+    } else if (image.asset?._ref) {
+      // Usa função utilitária para gerar URL do Sanity
+      try {
+        resolvedUrl = getImageUrl(image);
+      } catch (error) {
+        console.warn('Erro ao gerar URL da imagem Sanity:', error);
+        setHasError(true);
+        return;
+      }
+    }
+
+    if (resolvedUrl) {
+      setImageSrc(resolvedUrl);
+      setHasError(false);
+    } else {
+      setHasError(true);
+    }
+  }, [image]);
+
+  // Handler para quando a imagem carrega com sucesso
+  const handleLoad = () => {
     setIsLoaded(true);
-    if (onLoad) onLoad();
+    setHasError(false);
+    if (onLoad) {
+      onLoad();
+    }
   };
 
-  if (!imageUrl) {
+  // Handler para erros de carregamento
+  const handleError = () => {
+    setHasError(true);
+    setIsLoaded(false);
+  };
+
+  // Determina as dimensões
+  const imageDimensions = {
+    width: width || image?.width || undefined,
+    height: height || image?.height || undefined,
+  };
+
+  // Se não há imagem ou erro, mostra placeholder
+  if (!image || hasError || !imageSrc) {
     return (
       <div
-        className={`bg-neutral-200 animate-pulse ${className}`}
-        style={{ width: width || '100%', height: height || 300 }}
-        {...props}
-      />
+        className={cn(
+          'flex items-center justify-center bg-gray-100 text-gray-400',
+          fill ? 'absolute inset-0' : 'relative',
+          className
+        )}
+        style={{
+          width: fill ? undefined : imageDimensions.width,
+          height: fill ? undefined : imageDimensions.height,
+          aspectRatio: aspectRatio || (imageDimensions.width && imageDimensions.height
+            ? `${imageDimensions.width}/${imageDimensions.height}`
+            : undefined),
+        }}
+      >
+        {showPlaceholderIcon && (
+          <div className="flex flex-col items-center justify-center gap-2 p-4">
+            <ImageOff className="w-8 h-8" />
+            <span className="text-sm">Imagem não disponível</span>
+          </div>
+        )}
+      </div>
     );
   }
 
-  // Generate a simple but robust blur placeholder directly in the component
-  const blurDataURL = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${imageWidth} ${imageHeight}'%3E%3Cfilter id='b' color-interpolation-filters='sRGB'%3E%3CfeGaussianBlur stdDeviation='20'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' fill='%23f3f4f6'/%3E%3C/svg%3E`;
+  // Props comuns para o componente Image
+  const imageProps = {
+    src: imageSrc,
+    alt: alt || image.alt || 'Imagem Nova Ipê',
+    quality,
+    loading,
+    priority,
+    sizes: fill ? sizes : undefined,
+    onLoad: handleLoad,
+    onError: handleError,
+    placeholder: image.blurDataUrl && placeholder === 'blur' ? 'blur' as const : 'empty' as const,
+    blurDataURL: image.blurDataUrl,
+    className: cn(
+      'transition-opacity duration-300',
+      !isLoaded && 'opacity-0',
+      isLoaded && 'opacity-100',
+      className
+    ),
+    style: {
+      objectFit: objectFit,
+    },
+    ...props,
+  };
 
+  // Renderiza com fill
+  if (fill) {
+    return (
+      <div className="relative w-full h-full">
+        <Image
+          {...imageProps}
+          fill
+        />
+        {!isLoaded && (
+          <div className="absolute inset-0 bg-gray-100 animate-pulse" />
+        )}
+      </div>
+    );
+  }
+
+  // Renderiza com dimensões específicas
   return (
     <div
-      className={`relative overflow-hidden ${className}`}
-      data-component="sanity-image"
+      className="relative"
+      style={{
+        width: imageDimensions.width,
+        height: imageDimensions.height,
+        aspectRatio: aspectRatio || (imageDimensions.width && imageDimensions.height
+          ? `${imageDimensions.width}/${imageDimensions.height}`
+          : undefined),
+      }}
     >
       <Image
-        src={imageUrl}
-        alt={alt || image?.alt || 'Imagem Nova Ipê'}
-        width={imageWidth}
-        height={imageHeight}
-        loading={loading}
-        priority={priority}
-        quality={quality}
-        sizes={sizes}
-        className={
-          'transition-opacity duration-500' +
-          (isLoaded ? ' opacity-100' : ' opacity-0') +
-          (objectFit === 'cover' ? ' object-cover' : '') +
-          (objectFit === 'contain' ? ' object-contain' : '')
-        }
-        onLoad={handleImageLoad}
-        placeholder="blur"
-        blurDataURL={blurDataURL}
-        {...props}
+        {...imageProps}
+        width={imageDimensions.width}
+        height={imageDimensions.height}
       />
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-gray-100 animate-pulse rounded-md" />
+      )}
     </div>
   );
 }
+
+// Tipo export para compatibilidade
+export type { ClientImage as SanityImageType };

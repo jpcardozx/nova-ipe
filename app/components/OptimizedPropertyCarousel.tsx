@@ -4,7 +4,7 @@ import React, { useState, useCallback, useMemo, memo } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { cn } from '@/lib/utils';
-import OptimizedPropertyCard from './OptimizedPropertyCard';
+import { PropertyCard as OptimizedPropertyCard } from '@/components/ui/property/PropertyCard';
 import { adaptPropertyCarouselProps } from './PropertyCarouselAdapter';
 
 // Lazy load heavy components
@@ -15,8 +15,8 @@ const OptimizedCarousel = dynamic(() => import('@/app/components/ui/OptimizedCar
     loading: () => <div className="animate-pulse w-full h-[320px] bg-neutral-100 rounded-md"></div>
 });
 
-// Reutilizando o tipo do OptimizedPropertyCard
-import type { PropertyType } from './OptimizedPropertyCard';
+// Reutilizando o tipo do PropertyCard consolidado
+import type { PropertyType } from '@/components/ui/property/PropertyCard';
 
 export interface OptimizedPropertyCarouselProps {
     properties: Array<{

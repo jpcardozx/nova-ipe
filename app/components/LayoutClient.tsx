@@ -61,10 +61,10 @@ const DebugButton = safeDynamic(() => import('./DebugButton'), {
 
 // O LoadingStateManager foi identificado como causador de ChunkLoadError
 // Utilizamos configuração extra de retentativas
-const LoadingStateManager = safeDynamic(() => import('./LoadingStateManager'), {
-    componentName: 'LoadingStateManager',
-    retries: 3 // Mais retentativas para este componente problemático
-});
+// const LoadingStateManager = safeDynamic(() => import('./LoadingStateManager'), {
+//     componentName: 'LoadingStateManager',
+//     retries: 3 // Mais retentativas para este componente problemático
+// });
 
 const PerformanceAnalytics = safeDynamic(() => import('./PerformanceAnalytics'), {
     componentName: 'PerformanceAnalytics',
@@ -198,10 +198,10 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                                 })();
                             `
                                 }}
-                            />
-                        }
+                            />}
                     >
-                        <LoadingStateManager />
+                        {/* LoadingStateManager was removed during consolidation */}
+                        <></>
                     </ChunkErrorBoundary>
 
                     {/* Data prefetcher para otimização de performance */}

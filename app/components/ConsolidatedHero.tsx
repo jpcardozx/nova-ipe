@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -9,9 +9,6 @@ import {
     Phone, Mail, User, Trees, Car, X
 } from 'lucide-react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
-import PerformanceDiagnostic from '../components/PerformanceDiagnostic';
-import PerformanceVerification from '../components/PerformanceVerification';
-import CoreWebVitalsTracker from '../components/CoreWebVitalsTracker';
 
 // Types
 interface MarketMetric {
@@ -44,7 +41,7 @@ interface FormErrors {
     phone?: string;
 }
 
-// Constants (moved outside component to prevent rerenders)
+// Constants
 const MARKET_METRICS: MarketMetric[] = [
     {
         id: 'growth',
@@ -118,7 +115,7 @@ const NEIGHBORHOOD_DATA: Record<'invest' | 'live', NeighborhoodData[]> = {
     ]
 };
 
-// Enhanced animated counter with premium smooth easing
+// Enhanced animated counter
 const AnimatedCounter: React.FC<{ value: number; suffix?: string; prefix?: string; duration?: number }> = ({
     value,
     suffix = '',
@@ -140,7 +137,6 @@ const AnimatedCounter: React.FC<{ value: number; suffix?: string; prefix?: strin
             if (!startTime) startTime = timestamp;
             const progress = Math.min((timestamp - startTime) / duration, 1);
 
-            // Premium easing function for sophisticated feel
             const easeOutCubic = 1 - Math.pow(1 - progress, 3);
             const current = startValue + (endValue - startValue) * easeOutCubic;
 
@@ -163,7 +159,7 @@ const AnimatedCounter: React.FC<{ value: number; suffix?: string; prefix?: strin
     );
 };
 
-// Extracted modal component for better organization
+// Contact form modal
 const ContactFormModal: React.FC<{
     isOpen: boolean;
     onClose: () => void;
@@ -178,12 +174,10 @@ const ContactFormModal: React.FC<{
     });
     const [formErrors, setFormErrors] = useState<FormErrors>({});
 
-    // Reset form when intent changes
     useEffect(() => {
         setFormData(prev => ({ ...prev, intent: selectedIntent }));
     }, [selectedIntent]);
 
-    // Form validation
     const validateForm = useCallback((): boolean => {
         const errors: FormErrors = {};
 
@@ -207,7 +201,6 @@ const ContactFormModal: React.FC<{
         return Object.keys(errors).length === 0;
     }, [formData]);
 
-    // Form submission with debounce to prevent double submission
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -216,11 +209,9 @@ const ContactFormModal: React.FC<{
         setIsSubmitting(true);
 
         try {
-            // Simulate API call
             await new Promise(resolve => setTimeout(resolve, 1500));
             console.log('Form submitted:', { ...formData });
 
-            // Success - reset and close
             setFormData({
                 name: '',
                 email: '',
@@ -231,13 +222,11 @@ const ContactFormModal: React.FC<{
             onClose();
         } catch (error) {
             console.error('Error submitting form:', error);
-            // Would handle error appropriately here
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    // Format phone number as user types
     const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value.replace(/\D/g, '');
         let formattedValue = '';
@@ -437,7 +426,7 @@ const ContactFormModal: React.FC<{
     );
 };
 
-// Neighborhood card as a separate component
+// Neighborhood card component
 const NeighborhoodCard: React.FC<{
     neighborhood: NeighborhoodData;
     index: number;
@@ -493,14 +482,13 @@ const NeighborhoodCard: React.FC<{
     );
 };
 
-// Main component
-const GuararemaHero: React.FC = () => {
+// Main consolidated hero component
+export default function ConsolidatedHero() {
     const [selectedIntent, setSelectedIntent] = useState<'invest' | 'live'>('invest');
     const [showContactForm, setShowContactForm] = useState(false);
     const heroRef = useRef<HTMLElement>(null);
     const isInView = useInView(heroRef, { once: true });
 
-    // Using optimized background image handling
     const bgImageUrl = "/images/hero-bg.png";
 
     return (
@@ -509,7 +497,8 @@ const GuararemaHero: React.FC = () => {
             className="relative min-h-screen bg-white overflow-hidden"
             aria-labelledby="hero-heading"
         >
-            {/* Background with optimized repeating pattern */}            <div className="absolute inset-0">
+            {/* Background with optimized image */}
+            <div className="absolute inset-0">
                 <div className="relative w-full h-full">
                     <Image
                         src={bgImageUrl}
@@ -527,19 +516,19 @@ const GuararemaHero: React.FC = () => {
                 <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-100/20 rounded-full blur-3xl translate-y-1/4 -translate-x-1/3"></div>
             </div>
 
-            {/* Content */}
+            {/* Content - FIXED: Changed from opacity: 0 to opacity: 1 */}
             <div className="relative z-10">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="pt-20 sm:pt-24 lg:pt-32 pb-16 sm:pb-20">
                         <motion.div
-                            initial={{ opacity: 0 }} // Alterado para iniciar com opacidade 0
-                            animate={{ opacity: isInView ? 1 : 0 }}
+                            initial={{ opacity: 1 }} // FIXED: Was opacity: 0
+                            animate={{ opacity: 1 }}
                             transition={{ duration: 0.6 }}
                             className="max-w-5xl mx-auto"
                         >
                             {/* Header badge */}
                             <motion.div
-                                initial={{ opacity: 0, y: -10 }}
+                                initial={{ opacity: 1, y: 0 }} // FIXED: Was opacity: 0, y: -10
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1 }}
                                 className="flex justify-center mb-8"
@@ -554,7 +543,7 @@ const GuararemaHero: React.FC = () => {
 
                             {/* Main headline */}
                             <motion.div
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={{ opacity: 1, y: 0 }} // FIXED: Was opacity: 0, y: 20
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
                                 className="text-center mb-12"
@@ -574,7 +563,7 @@ const GuararemaHero: React.FC = () => {
 
                             {/* Market metrics */}
                             <motion.div
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={{ opacity: 1, y: 0 }} // FIXED: Was opacity: 0, y: 20
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
                                 className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 max-w-4xl mx-auto"
@@ -582,7 +571,7 @@ const GuararemaHero: React.FC = () => {
                                 {MARKET_METRICS.map((metric, index) => (
                                     <motion.div
                                         key={metric.id}
-                                        initial={{ opacity: 0, y: 20 }}
+                                        initial={{ opacity: 1, y: 0 }} // FIXED: Was opacity: 0, y: 20
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.3 + index * 0.1 }}
                                         whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
@@ -613,7 +602,7 @@ const GuararemaHero: React.FC = () => {
 
                             {/* Intent selector */}
                             <motion.div
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={{ opacity: 1, y: 0 }} // FIXED: Was opacity: 0, y: 20
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.5 }}
                                 className="max-w-4xl mx-auto"
@@ -660,7 +649,7 @@ const GuararemaHero: React.FC = () => {
                                             className={`w-5 h-5 ${selectedIntent === 'live' ? 'text-amber-600' : 'text-gray-400'}`}
                                             aria-hidden="true"
                                         />
-                                        <span className="font-zsemibold">Quero Morar</span>
+                                        <span className="font-semibold">Quero Morar</span>
                                     </button>
                                 </div>
 
@@ -668,9 +657,9 @@ const GuararemaHero: React.FC = () => {
                                 <AnimatePresence mode="wait">
                                     <motion.div
                                         key={selectedIntent}
-                                        initial={{ opacity: 0, x: selectedIntent === 'invest' ? -20 : 20 }}
+                                        initial={{ opacity: 1, x: 0 }} // FIXED: Was opacity: 0, x: selectedIntent === 'invest' ? -20 : 20
                                         animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: selectedIntent === 'invest' ? 20 : -20 }}
+                                        exit={{ opacity: 1, x: 0 }} // FIXED: Was opacity: 0
                                         transition={{ duration: 0.3 }}
                                         role="tabpanel"
                                         id={`${selectedIntent}-panel`}
@@ -764,6 +753,4 @@ const GuararemaHero: React.FC = () => {
             </AnimatePresence>
         </section>
     );
-};
-
-export default GuararemaHero;
+}

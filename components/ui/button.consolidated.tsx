@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -11,8 +12,10 @@ const buttonVariants = cva(
     {
         variants: {
             variant: {
+                default: 'bg-primary text-primary-foreground hover:bg-primary/90',
                 primary: 'bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700',
                 secondary: 'bg-neutral-200 text-neutral-900 hover:bg-neutral-300 active:bg-neutral-400',
+                destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
                 outline: 'border border-primary-500 text-primary-500 hover:bg-primary-50 active:bg-primary-100',
                 ghost: 'bg-transparent text-neutral-800 hover:bg-neutral-100 active:bg-neutral-200',
                 light: 'bg-white text-neutral-900 border border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50',
@@ -29,6 +32,7 @@ const buttonVariants = cva(
                 md: 'h-11 px-5 py-2',
                 lg: 'h-12 px-6 py-2.5 text-base',
                 xl: 'h-14 px-8 py-3 text-lg',
+                icon: 'h-10 w-10',
             },
             radius: {
                 none: 'rounded-none',
@@ -44,7 +48,7 @@ const buttonVariants = cva(
             }
         },
         defaultVariants: {
-            variant: 'primary',
+            variant: 'default',
             size: 'default',
             radius: 'default',
             width: 'auto',
@@ -52,14 +56,15 @@ const buttonVariants = cva(
     }
 );
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
+export interface ButtonProps
+    extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+    asChild?: boolean;
+    loading?: boolean;
+    loadingText?: string;
     leftIcon?: React.ReactNode;
     rightIcon?: React.ReactNode;
-    loading?: boolean;
-    animation?: 'none' | 'pulse' | 'scale' | 'float';
-    href?: string;
-    target?: string;
-    as?: React.ElementType;
+    animate?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -69,73 +74,64 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         size,
         radius,
         width,
+        asChild = false,
+        loading = false,
+        loadingText,
         leftIcon,
         rightIcon,
+        animate = true,
         children,
-        loading,
         disabled,
-        animation = 'none',
-        href,
-        target,
-        as: Component = href ? 'a' : 'button',
         ...props
     }, ref) => {
+        const Comp = asChild ? Slot : "button";
 
-        // Determina os estilos de animação baseado na prop animation
-        const getAnimationProps = () => {
-            switch (animation) {
-                case 'pulse':
-                    return {
-                        whileHover: { scale: 1.02 },
-                        whileTap: { scale: 0.98 },
-                        transition: { type: 'spring', stiffness: 400, damping: 10 }
-                    };
-                case 'scale':
-                    return {
-                        whileHover: { scale: 1.05 },
-                        whileTap: { scale: 0.95 },
-                        transition: { type: 'spring', stiffness: 300, damping: 10 }
-                    };
-                case 'float':
-                    return {
-                        whileHover: { y: -4, boxShadow: '0 8px 20px -6px rgba(0,0,0,0.2)' },
-                        whileTap: { y: -1, boxShadow: '0 4px 10px -4px rgba(0,0,0,0.2)' },
-                        transition: { type: 'spring', stiffness: 400, damping: 15 }
-                    };
-                default:
-                    return {};
-            }
-        };
+        const isDisabled = disabled || loading;
 
-        const MotionComponent = motion(Component as any);
-
-        return (
-            <MotionComponent
-                ref={ref as any}
-                className={cn(
-                    buttonVariants({ variant, size, radius, width, className })
-                )}
-                disabled={disabled || loading}
-                href={href}
-                target={target}
-                {...getAnimationProps()}
-                {...props}
-            >
+        const buttonContent = (
+            <>
                 {loading && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
                 )}
                 {!loading && leftIcon && (
-                    <span className="mr-2 -ml-1">{leftIcon}</span>
+                    <span className="mr-2">{leftIcon}</span>
                 )}
-                {children}
+                {loading && loadingText ? loadingText : children}
                 {!loading && rightIcon && (
-                    <span className="ml-2 -mr-1">{rightIcon}</span>
+                    <span className="ml-2">{rightIcon}</span>
                 )}
-            </MotionComponent>
+            </>
         );
+
+        const buttonElement = (
+            <Comp
+                className={cn(buttonVariants({ variant, size, radius, width }), className)}
+                ref={ref}
+                disabled={isDisabled}
+                {...props}
+            >
+                {buttonContent}
+            </Comp>
+        );
+
+        // Retorna com animação se solicitado
+        if (animate && !asChild) {
+            return (
+                <motion.div
+                    whileHover={{ scale: isDisabled ? 1 : 1.02 }}
+                    whileTap={{ scale: isDisabled ? 1 : 0.98 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                >
+                    {buttonElement}
+                </motion.div>
+            );
+        }
+
+        return buttonElement;
     }
 );
 
-Button.displayName = 'Button';
+Button.displayName = "Button";
 
-export { Button, buttonVariants }; 
+export { Button, buttonVariants };
+export default Button;

@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import type { ImovelClient } from '@/types/imovel-client';
 import ImovelCard from '../components/ImovelCard';
 import { normalizeDocuments } from '../../lib/sanity-utils';
-import { Button } from '../components/ui/Button';
+import { Button } from '@/components/ui/button';
 import FeaturedProperty from '../components/ui/FeaturedProperty';
 
 // Navigation button component
@@ -273,16 +273,16 @@ const DestaquesVendaSection: FC = () => {
                 </div>
 
                 {/* CTA */}
-                <div className="text-center mt-12">
-                    <Link href="/comprar" passHref>
-                        <Button
-                            variant="accent"
-                            size="lg"
-                            rightIcon={<ArrowRight className="w-4 h-4 ml-2" />}
-                        >
-                            Ver todos os imóveis à venda
-                        </Button>
-                    </Link>
+                <div className="text-center mt-12">                    <Link href="/comprar" passHref>
+                    <Button
+                        variant="default"
+                        size="lg"
+                        className="flex items-center gap-2"
+                    >
+                        Ver todos os imóveis à venda
+                        <ArrowRight className="w-4 h-4" />
+                    </Button>
+                </Link>
                     <p className="mt-4 text-stone-500 text-sm">
                         <MapPin className="w-3.5 h-3.5 inline-block mr-1" />
                         Mais de 120 propriedades disponíveis em Guararema e região

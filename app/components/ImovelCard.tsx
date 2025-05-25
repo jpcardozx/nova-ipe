@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { formatarMoeda, formatarArea, cn } from '@/lib/utils';
 import type { ImovelClient } from '@/types/imovel-client';
-import SanityImage from './SanityImage';
+import SanityImage from '@/components/SanityImage';
 import { DynamicComponentLoader } from '@/app/components/DynamicComponentLoader';
 
 // Carrega o OptimizedImageGallery dinamicamente para reduzir o bundle inicial

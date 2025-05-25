@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Button } from '../../components/ui/core/Button';
+import { Button } from '@/components/ui/button';
 import { Phone, Mail, MapPin, Clock } from 'lucide-react';
 
 const ContactSection = () => {
@@ -117,9 +117,7 @@ const ContactSection = () => {
                                     className="w-full p-3 border border-neutral-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                     placeholder="Digite sua mensagem"
                                 ></textarea>
-                            </div>
-
-                            <Button variant="premium" size="lg" width="full" animation="pulse">
+                            </div>                            <Button variant="default" size="lg" className="w-full">
                                 Enviar mensagem
                             </Button>
                         </form>

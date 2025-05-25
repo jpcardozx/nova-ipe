@@ -7,7 +7,7 @@
 
 import React from 'react';
 import type { OptimizedPropertyCarouselProps } from './OptimizedPropertyCarousel';
-import OptimizedPropertyCard from './OptimizedPropertyCard';
+import { PropertyCard as OptimizedPropertyCard } from '@/components/ui/property/PropertyCard';
 
 // Interface para o slide
 interface Slide {

@@ -18,6 +18,7 @@
 @import "styles/cls-optimizations.css";
 @import "styles/tailwind-compat.css";
 @import "./cls-prevention.css"; /* Novas otimizações para prevenir CLS */
+@import "styles/premium-animations.css"; /* Premium animations and micro-interactions */
 
 /* Configurações de variáveis e fundamentos */
 :root {

@@ -5,7 +5,9 @@
       "Bash(find:*)",
       "Bash(ls:*)",
       "Bash(rm:*)",
-      "Bash(timeout 10s npm run dev)"
+      "Bash(timeout 10s npm run dev)",
+      "Bash(npm install:*)",
+      "Bash(npx next build:*)"
     ],
     "deny": []
   }

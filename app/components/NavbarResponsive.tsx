@@ -117,21 +117,30 @@ const NavbarResponsive: React.FC = () => {
                             ))}
                         </ul>
 
-                        {/* WhatsApp Button com UI melhorada */}
+                        {/* Enhanced WhatsApp Button with premium styling */}
                         <motion.a
-                            whileHover={{ scale: 1.03 }}
+                            whileHover={{ scale: 1.03, y: -1 }}
                             whileTap={{ scale: 0.98 }}
                             href="https://wa.me/5511981845016"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:from-green-700 hover:to-green-600 transition-all shadow-sm hover:shadow-md"
+                            className="group relative inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-500 text-white px-5 py-3 rounded-xl text-sm font-semibold hover:from-green-700 hover:to-green-600 transition-all shadow-lg hover:shadow-xl overflow-hidden"
                         >
-                            <div className="flex items-center justify-center w-5 h-5 bg-white/20 rounded-full">
-                                <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                    <path d="M20.5 3.5c-2.6-2.6-6.9-2.6-9.5 0-2.2 2.2-2.5 5.6-1 8.2L3 21l9.3-7c2.6 1.5 6 .8 8.2-1 2.6-2.6 2.6-6.9 0-9.5z" />
-                                </svg>
+                            {/* Shimmer effect */}
+                            <div className="absolute inset-0 -top-px bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+                            
+                            <div className="relative flex items-center gap-2">
+                                <motion.div 
+                                    animate={{ rotate: [0, 5, -5, 0] }}
+                                    transition={{ duration: 0.5, delay: 0.1 }}
+                                    className="flex items-center justify-center w-5 h-5 bg-white/20 rounded-full"
+                                >
+                                    <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M20.5 3.5c-2.6-2.6-6.9-2.6-9.5 0-2.2 2.2-2.5 5.6-1 8.2L3 21l9.3-7c2.6 1.5 6 .8 8.2-1 2.6-2.6 2.6-6.9 0-9.5z" />
+                                    </svg>
+                                </motion.div>
+                                <span>Fale com especialista</span>
                             </div>
-                            <span>Fale com um consultor</span>
                         </motion.a>
                     </div>
                 )}                {/* Mobile Menu Button com animação */}

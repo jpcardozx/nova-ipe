@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import SectionHeader from './ui/SectionHeader';
 import { cn } from '@/lib/utils';
 import { processProperties, ProcessedPropertyData } from './PropertyProcessor';
-import type { PropertyType } from './OptimizedPropertyCard';
+import type { PropertyType } from '@/components/ui/property/PropertyCard';
 import { motion } from 'framer-motion';
 
 // Lazy load ícones para melhor performance

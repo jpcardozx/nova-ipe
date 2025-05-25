@@ -24,7 +24,7 @@ import {
     Home as HomeIcon,
 } from 'lucide-react';
 import { cn, formatarMoeda } from '@/lib/utils';
-import SanityImage from '@components/SanityImage';
+import SanityImage from '@/components/SanityImage';
 import type { ImovelClient } from '@/types/imovel-client';
 
 // ---- Helpers ----

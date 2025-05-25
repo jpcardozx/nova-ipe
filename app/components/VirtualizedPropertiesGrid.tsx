@@ -3,7 +3,7 @@
 import React, { useCallback } from 'react';
 import { VariableSizeGrid as Grid } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import OptimizedPropertyCard from './OptimizedPropertyCard';
+import { PropertyCard as OptimizedPropertyCard } from '@/components/ui/property/PropertyCard';
 import { XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

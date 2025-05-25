@@ -3,7 +3,7 @@
 import React from 'react';
 import { OptimizedPropertyCarouselProps } from './OptimizedPropertyCarousel';
 import { OptimizedCarouselProps } from './ui/OptimizedCarousel';
-import OptimizedPropertyCard from './OptimizedPropertyCard';
+import { PropertyCard as OptimizedPropertyCard } from '../../components/ui/property/PropertyCard';
 
 // Function to adapt OptimizedPropertyCarouselProps to OptimizedCarouselProps
 export function adaptPropertyCarouselProps(props: OptimizedPropertyCarouselProps): OptimizedCarouselProps<any> {

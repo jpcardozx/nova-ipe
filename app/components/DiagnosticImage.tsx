@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { getImageUrl } from '@/lib/optimized-sanity-image';
-import type { ClientImage } from './SanityImage';
+import type { ClientImage } from '@/components/SanityImage';
 import { cn } from '@/lib/utils';
 
 interface DiagnosticImageProps {

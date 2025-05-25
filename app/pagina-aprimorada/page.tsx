@@ -15,7 +15,7 @@ import { extractImageUrl, extractAltText } from '@/lib/image-sanity';
 import { ensureValidImageUrl } from '@/lib/sanity-image-utils';
 import { loadImage } from '@/lib/enhanced-image-loader';
 import type { ImovelClient } from '@/src/types/imovel-client';
-import { PropertyType } from '@/app/components/OptimizedPropertyCard'; // Updated import for PropertyType
+import { PropertyType } from '@/components/ui/property/PropertyCard'; // Updated import for PropertyType
 import { extractSlugString, ensureNonNullProperties } from '@/app/PropertyTypeFix';
 
 // Componentes de UI

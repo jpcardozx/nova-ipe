@@ -1,2 +1,2 @@
 // Exportações dos componentes core
-export { Button, buttonVariants, type ButtonProps } from './Button'; 
+export { Button, buttonVariants, type ButtonProps } from '@/components/ui/button';

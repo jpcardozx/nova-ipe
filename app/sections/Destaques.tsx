@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePropertyData } from '@/app/hooks/usePropertyData';
-import { PropertyCard } from '@/app/components/PropertyCard';
+import { PropertyCard } from '@/components/ui/property/PropertyCard';
 import { Button } from '@/components/ui/button';
 import type { ImovelClient } from '@/types/imovel-client';
 
@@ -1050,20 +1050,28 @@ function DestaquesEstrategicos() {
                     </p>
                 </div>
 
-                <div className="relative">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {visibleImoveis.map((imovel: ImovelClient) => (
-                            <PropertyCard
-                                key={imovel._id}
-                                imovel={imovel}
-                                showExpand
-                                isExpanded={expandedCard === imovel._id}
-                                onExpandClick={() => setExpandedCard(
-                                    expandedCard === imovel._id ? null : imovel._id
-                                )}
-                            />
-                        ))}
-                    </div>
+                <div className="relative">                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {visibleImoveis.map((imovel: ImovelClient) => (
+                        <PropertyCard key={imovel._id}
+                            id={imovel._id}
+                            title={imovel.titulo || ''}
+                            slug={imovel.slug || ''}
+                            location={imovel.bairro}
+                            city={imovel.cidade}
+                            price={imovel.preco || 0}
+                            propertyType={imovel.finalidade === 'Aluguel' ? 'rent' : 'sale'}
+                            area={imovel.areaUtil}
+                            bedrooms={imovel.dormitorios}
+                            bathrooms={imovel.banheiros}
+                            parkingSpots={imovel.vagas}
+                            mainImage={{
+                                url: imovel.imagem?.url || '/placeholder-imovel.jpg',
+                                alt: imovel.imagem?.alt || imovel.titulo || 'Imóvel'
+                            }}
+                            isHighlight={true}
+                        />
+                    ))}
+                </div>
 
                     {imoveis.length > 3 && (
                         <>

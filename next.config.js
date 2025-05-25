@@ -186,8 +186,14 @@ const nextConfig = {
   // Enhanced webpack optimization for performance
   webpack: (config, { isServer, dev }) => {
     // Aplicar patches para corrigir problemas do webpack
-    const applyWebpackFixes = require('./webpack-patch');
+    const applyWebpackFixes = require('./webpack-patch-simple');
     config = applyWebpackFixes(config);
+
+    // Prevent webpack runtime errors with array access
+    if (isServer) {
+      config.optimization = config.optimization || {};
+      config.optimization.concatenateModules = false;
+    }
 
     // Polyfill 'self' para ambiente do servidor
     if (isServer) {

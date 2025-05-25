@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { PropertyCard, PropertyCardProps } from './PropertyCard';
+import { PropertyCard, PropertyCardProps } from '@/components/ui/property/PropertyCard';
 import { cn } from '../../../../lib/utils';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -129,12 +129,9 @@ export function PropertyCarousel({
                                     itemClassName
                                 )}
                             >
-                                <div className="h-full p-1">
-                                    <PropertyCard
-                                        {...property}
-                                        variant={variant}
-                                        onClick={() => setCurrentIndex(index)}
-                                    />
+                                <div className="h-full p-1">                                    <PropertyCard
+                                    {...property}
+                                />
                                 </div>
                             </CarouselItem>
                         ))}
@@ -179,4 +176,4 @@ export function PropertyCarousel({
     );
 }
 
-export default PropertyCarousel; 
+export default PropertyCarousel;

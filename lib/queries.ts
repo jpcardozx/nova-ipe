@@ -72,7 +72,10 @@ export async function getImoveisDestaque(): Promise<any[]> {
     // Import dinâmico para evitar ciclos de dependência
     const { fixSanityImageReferences } = await import('./image-fix');
 
-    const data = await sanityClient.fetch(queryImoveisDestaque);
+    const data = await sanityClient.fetch(queryImoveisDestaque, {}, {
+      cache: 'force-cache',
+      next: { revalidate: 3600 } // Revalidar a cada hora
+    });
 
     // Corrigir referências de imagens para todos os imóveis
     if (Array.isArray(data)) {
@@ -104,7 +107,10 @@ export async function getImoveisAluguel(): Promise<any[]> {
     // Import dinâmico para evitar ciclos de dependência
     const { fixSanityImageReferences } = await import('./image-fix');
 
-    const data = await sanityClient.fetch(queryImoveisAluguel);
+    const data = await sanityClient.fetch(queryImoveisAluguel, {}, {
+      cache: 'force-cache',
+      next: { revalidate: 3600 } // Revalidar a cada hora
+    });
 
     // Corrigir referências de imagens para todos os imóveis
     if (Array.isArray(data)) {

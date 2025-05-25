@@ -19,7 +19,7 @@ import {
     X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '../core/Button';
+import { Button } from '@/components/ui/button';
 import { PropertyType } from './PropertyCard';
 
 export interface PropertyHeroProps {
@@ -350,18 +350,16 @@ export function PropertyHero({
                             </div>
 
                             {/* Ações */}
-                            <div className="flex flex-wrap gap-3">
-                                <Button
-                                    variant="premium"
-                                    size="lg"
-                                    leftIcon={<Eye size={18} />}
-                                    className="flex-1 md:flex-none"
-                                    onClick={onScheduleVisit}
-                                    disabled={status !== 'available'}
-                                    animation="float"
-                                >
-                                    Agendar visita
-                                </Button>
+                            <div className="flex flex-wrap gap-3">                                <Button
+                                variant="premium"
+                                size="lg"
+                                leftIcon={<Eye size={18} />}
+                                className="flex-1 md:flex-none"
+                                onClick={onScheduleVisit}
+                                disabled={status !== 'available'}
+                            >
+                                Agendar visita
+                            </Button>
 
                                 <Button
                                     variant={favorite ? "primary" : "outline"}
@@ -440,12 +438,10 @@ export function PropertyHero({
                                 <h3 className="font-semibold text-lg mb-3">Interessado neste imóvel?</h3>
                                 <p className="text-neutral-700 mb-5">
                                     Entre em contato com um dos nossos consultores para mais informações ou para agendar uma visita.
-                                </p>
-                                <Button
+                                </p>                                <Button
                                     variant={status === 'available' ? "premium" : "light"}
                                     size="lg"
-                                    width="full"
-                                    animation="pulse"
+                                    className="w-full"
                                     disabled={status !== 'available'}
                                 >
                                     Falar com um consultor

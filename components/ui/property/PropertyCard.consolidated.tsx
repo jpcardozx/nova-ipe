@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Montserrat } from 'next/font/google';
 import {
     BedDouble, Bath, Car, AreaChart,
@@ -270,6 +270,9 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                     {/* Preço */}
                     <div className="text-2xl font-bold text-primary-600 mb-4">
                         {formattedPrice}
+                        {propertyType === 'rent' && (
+                            <span className="text-sm font-normal text-gray-500">/mês</span>
+                        )}
                     </div>
 
                     {/* Características */}
