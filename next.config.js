@@ -28,11 +28,6 @@ const nextConfig = {
     reactRemoveProperties: isProduction,
   },
 
-  // Enable compression for faster loading
-  compress: true,
-
-  // Disable x-powered-by header for slightly better performance
-  poweredByHeader: false,
 
   // Output optimization
   // output: 'standalone', // REMOVIDO para dev mais rápido
@@ -55,6 +50,9 @@ const nextConfig = {
     ignoreDuringBuilds: isDev && isFastDev,
   },
 
+  // Note: serverComponentsExternalPackages is deprecated in Next.js 15+
+  // Prisma client is now automatically externalized
+
   experimental: {
     // Performance optimizations - reduced for dev mode
     optimizePackageImports: isProduction ? [
@@ -68,14 +66,8 @@ const nextConfig = {
     ] : [],
     webpackBuildWorker: isProduction,
     optimizeCss: isProduction,
-    // Enable node middleware
-    nodeMiddleware: true,
-    // Modern middleware features
-    serverComponentsExternalPackages: ['@prisma/client'],
     // Improved memory usage and rendering performance - disabled in dev for speed
     optimizeServerReact: isProduction,
-    // Improved bundle optimization
-    craCompat: false,
     // Server features
     serverActions: {
       bodySizeLimit: '2mb',
@@ -193,10 +185,19 @@ const nextConfig = {
 
   // Enhanced webpack optimization for performance
   webpack: (config, { isServer, dev }) => {
-    // Suppress warnings
-    config.ignoreWarnings = [
-      { message: /Critical dependency: require function is used/ }
-    ];
+    // Aplicar patches para corrigir problemas do webpack
+    const applyWebpackFixes = require('./webpack-patch');
+    config = applyWebpackFixes(config);
+
+    // Polyfill 'self' para ambiente do servidor
+    if (isServer) {
+      config.plugins = config.plugins || [];
+      config.plugins.push(
+        new (require('webpack')).DefinePlugin({
+          'self': 'globalThis'
+        })
+      );
+    }
 
     // Configure optimization only in production or when not in fast-dev mode
     if (isProduction || (!isFastDev && !dev)) {

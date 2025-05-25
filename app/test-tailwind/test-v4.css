@@ -1,6 +1,0 @@
-/* AVISO: Página de teste para Tailwind CSS */
-/* Atualizado: 17/05/2025 - Usando sintaxe para Tailwind v4 */
-
-@import "tailwindcss/preflight";
-@tailwind utilities; 
-

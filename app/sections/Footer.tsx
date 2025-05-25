@@ -7,7 +7,11 @@ import { useState, useEffect } from "react";
 
 export default function Footer() {
     const [mapLoaded, setMapLoaded] = useState(false);
-    const [year] = useState(new Date().getFullYear()); useEffect(() => {
+    const [year, setYear] = useState(2025);
+
+    useEffect(() => {
+        setYear(new Date().getFullYear());
+    }, []); useEffect(() => {
         const elements = document.querySelectorAll(".footer-animate");
         const observer = new IntersectionObserver(
             (entries: IntersectionObserverEntry[]) => {
@@ -28,11 +32,12 @@ export default function Footer() {
             <div className="absolute inset-0">
                 <div className="relative w-full h-full">
                     <Image
-                        src="/images/black-felt.png" // certifique-se de que o nome e caminho estejam corretos
+                        src="/images/black-felt.png"
                         alt="Textura de fundo do rodapé"
                         fill
                         className="object-cover object-center opacity-60"
-                        priority
+                        loading="lazy"
+                        sizes="100vw"
                     />
                 </div>
                 <div className="absolute inset-0 bg-[#0D1F2D]/80" />

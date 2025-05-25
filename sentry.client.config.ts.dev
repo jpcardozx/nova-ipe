@@ -1,5 +1,0 @@
-'use client';
-// Este arquivo substitui temporariamente o sentry.client.config.ts
-// para evitar o bloqueio do servidor de desenvolvimento
-
-// Nenhuma inicialização do Sentry para desenvolvimento

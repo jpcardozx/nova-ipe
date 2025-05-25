@@ -1,4 +1,8 @@
 ﻿// Arquivo de instrumentação simplificado para desenvolvimento
+
+// Import global polyfill to fix "self is not defined" errors
+import './lib/global-polyfill.js';
+
 export function register() {
     // Verificar se as métricas estão habilitadas explicitamente
     const enableVitals = process.env.NEXT_PUBLIC_ENABLE_WEB_VITALS === 'true';

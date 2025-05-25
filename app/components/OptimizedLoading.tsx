@@ -1,7 +1,7 @@
 'use client';
 
 import React, { Suspense, useState, useEffect, ReactNode } from 'react';
-import { useInView } from 'react-intersection-observer';
+import dynamic from 'next/dynamic';
 
 // LoadingFallback with customizable appearance
 interface LoadingFallbackProps {
@@ -48,8 +48,8 @@ interface LazyLoadedSectionProps {
     threshold?: number;
     className?: string;
     id?: string;
-    priority?: boolean; // Force immediate loading regardless of view
-    loadingHeight?: string | number; // Height for the loading placeholder
+    priority?: boolean;
+    loadingHeight?: string | number;
 }
 
 export function LazyLoadedSection({
@@ -61,23 +61,43 @@ export function LazyLoadedSection({
     priority = false,
     loadingHeight = '200px',
 }: LazyLoadedSectionProps) {
-    const { ref, inView } = useInView({ triggerOnce: true, threshold });
     const [shouldRender, setShouldRender] = useState(priority);
+    const [mounted, setMounted] = useState(false);
 
-    // If priority is true or section comes into view, render the content
     useEffect(() => {
-        if (priority || inView) {
+        setMounted(true);
+        if (priority) {
             setShouldRender(true);
+            return;
         }
-    }, [inView, priority]);
+
+        if (typeof window === 'undefined') return;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setShouldRender(true);
+                    observer.disconnect();
+                }
+            },
+            { threshold }
+        );
+
+        const element = document.getElementById(id || '');
+        if (element) {
+            observer.observe(element);
+        }
+
+        return () => observer.disconnect();
+    }, [priority, threshold, id]);
+
+    if (!mounted) {
+        return <LoadingFallback height={loadingHeight} />;
+    }
 
     return (
-        <div ref={ref} className={className} id={id}>
-            {shouldRender ? (
-                children
-            ) : (
-                placeholder || <LoadingFallback height={loadingHeight} />
-            )}
+        <div className={className} id={id}>
+            {shouldRender ? children : (placeholder || <LoadingFallback height={loadingHeight} />)}
         </div>
     );
 }
@@ -88,7 +108,7 @@ interface SuspenseBoundaryProps {
     fallback?: ReactNode;
     className?: string;
     id?: string;
-    delayMs?: number; // Optional delay before showing the fallback
+    delayMs?: number;
 }
 
 export function SuspenseBoundary({
@@ -98,24 +118,19 @@ export function SuspenseBoundary({
     id,
     delayMs = 0,
 }: SuspenseBoundaryProps) {
-    const [showFallback, setShowFallback] = useState(false);
+    const [mounted, setMounted] = useState(false);
 
-    // Show fallback only after the specified delay
     useEffect(() => {
-        if (delayMs > 0) {
-            const timer = setTimeout(() => {
-                setShowFallback(true);
-            }, delayMs);
+        setMounted(true);
+    }, []);
 
-            return () => clearTimeout(timer);
-        } else {
-            setShowFallback(true);
-        }
-    }, [delayMs]);
+    if (!mounted) {
+        return fallback || <LoadingFallback />;
+    }
 
     return (
         <div className={className} id={id}>
-            <Suspense fallback={showFallback ? (fallback || <LoadingFallback />) : null}>
+            <Suspense fallback={fallback || <LoadingFallback />}>
                 {children}
             </Suspense>
         </div>
@@ -179,9 +194,10 @@ export function PriorityContent({
 }: PriorityContentProps) {
     return (
         <SuspenseBoundary
-            fallback={fallback || <LoadingFallback />}
+            fallback={fallback}
             id={id}
             className={className}
+            delayMs={0}
         >
             {children}
         </SuspenseBoundary>

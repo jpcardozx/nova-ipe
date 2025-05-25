@@ -1,7 +1,0 @@
-/* AVISO: Importações diretas do Tailwind removidas para compatibilidade com Vercel */
-/* Arquivo modificado para resolver erro: Can't resolve 'tailwindcss/preflight' */
-/* Data da modificação: 16/05/2025 */
-
-/* Preflight removido e substituído por configurações diretas no Tailwind */
-@tailwind utilities; 
-

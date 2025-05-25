@@ -70,28 +70,40 @@ ${jsContent}`;
 
     console.log('Writing service worker to public directory...');
     fs.writeFileSync(serviceWorkerDest, jsContent);
-    console.log('Service worker build completed successfully!');
-
-    // Also try to use tsc as a fallback
+    console.log('Service worker build completed successfully!');    // Also try to use tsc as a fallback
     try {
         console.log('Attempting to also create a tsc-compiled version (as fallback)...');
         const tsConfig = {
             compilerOptions: {
                 target: "ES2020",
                 lib: ["DOM", "ES2020", "WebWorker"],
+                module: "ES2020",
+                moduleResolution: "node",
                 skipLibCheck: true,
-                outFile: path.join(tempDir, "service-worker-tsc.js")
-            }
+                strict: false,
+                allowJs: true,
+                noEmitOnError: false,
+                outDir: tempDir
+            },
+            files: [serviceWorkerSrc]
         };
 
-        // Write temporary tsconfig without the 'files' array
-        fs.writeFileSync(path.join(tempDir, "tsconfig-sw.json"), JSON.stringify(tsConfig, null, 2));
+        // Write temporary tsconfig
+        const tsConfigPath = path.join(tempDir, "tsconfig-sw.json");
+        fs.writeFileSync(tsConfigPath, JSON.stringify(tsConfig, null, 2));
 
-        // Run tsc with the source file directly
-        execSync(`npx tsc -p ${path.join(tempDir, "tsconfig-sw.json")}`, { stdio: 'inherit' });
-        console.log('TypeScript compilation successful');
+        // Run tsc with better error handling
+        try {
+            execSync(`npx tsc --project "${tsConfigPath}" --outFile "${path.join(tempDir, 'service-worker-tsc.js')}"`, {
+                stdio: 'pipe',
+                timeout: 30000 // 30 second timeout
+            });
+            console.log('TypeScript compilation successful');
+        } catch (tscCommandError) {
+            console.log('TypeScript compilation failed, but simple conversion succeeded. Error:', tscCommandError.message);
+        }
     } catch (tscError) {
-        console.log('TypeScript compiler fallback failed, but the main build succeeded:', tscError);
+        console.log('TypeScript compiler setup failed, but the main build succeeded:', tscError.message);
     }
 } catch (error) {
     console.error('Failed to build service worker:', error);

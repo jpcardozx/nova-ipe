@@ -235,7 +235,7 @@ export function useLeadQualification() {
     const qualifyLead = (data: any) => {
         // Integração com CRM/automação
         console.log("Lead qualification:", data);
-    };
-
-    return { qualifyLead };
+    }; return { qualifyLead };
 }
+
+export default ExclusiveAnalysisOffer;

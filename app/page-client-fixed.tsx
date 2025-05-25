@@ -6,65 +6,64 @@ import NavbarResponsive from './components/NavbarResponsive';
 import { PriorityContent, BelowFoldContent } from './components/OptimizedLoading';
 import SectionHeader from './components/ui/SectionHeader';
 import EnhancedHero from './components/EnhancedHero';
-import { safeDynamicImport } from './utils/dynamic-import-fix';
 
 // Critical above-the-fold components - load immediately
 // Everything else is dynamically imported for progressive loading
 
 // Core content providers
 const ClientSidePropertiesProvider = dynamic(() =>
-    safeDynamicImport(import('./components/ClientComponents'), 'ClientSidePropertiesProvider'),
+    import('./components/ClientComponents').then(mod => ({ default: mod.default })),
     { loading: () => null, ssr: false }
 );
 
 // Main sections - optimized loading
 const BlocoExploracaoSimbolica = dynamic(() =>
-    safeDynamicImport(import('./components/BlocoExploracaoSimbolica'), 'BlocoExploracaoSimbolica'),
+    import('./components/BlocoExploracaoSimbolica'),
     { ssr: true, loading: () => <div className="h-96 bg-neutral-100 animate-pulse rounded-lg" /> }
 );
 
 const DestaquesSanityCarousel = dynamic(() =>
-    safeDynamicImport(import('./components/DestaquesSanityCarousel'), 'DestaquesSanityCarousel'),
+    import('./components/DestaquesSanityCarousel'),
     { loading: () => <div className="h-96 bg-neutral-100 animate-pulse rounded-lg" /> }
 );
 
 const Destaques = dynamic(() =>
-    safeDynamicImport(import('./sections/Destaques'), 'Destaques'),
+    import('./sections/Destaques'),
     { loading: () => <div className="h-80 bg-neutral-100 animate-pulse rounded-lg" /> }
 );
 
 const Valor = dynamic(() =>
-    safeDynamicImport(import('./sections/Valor'), 'Valor'),
+    import('./sections/Valor'),
     { loading: () => <div className="h-96 bg-neutral-100 animate-pulse rounded-lg" /> }
 );
 
 const Referencias = dynamic(() =>
-    safeDynamicImport(import('./sections/Referencias'), 'Referencias'),
+    import('./sections/Referencias'),
     { loading: () => <div className="h-80 bg-neutral-100 animate-pulse rounded-lg" /> }
 );
 
 const ClientProgressSteps = dynamic(() =>
-    safeDynamicImport(import('./components/ClientProgressSteps'), 'ClientProgressSteps'),
+    import('./components/ClientProgressSteps'),
     { loading: () => <div className="h-64 bg-neutral-100 animate-pulse rounded-lg" /> }
 );
 
 const ContactSection = dynamic(() =>
-    safeDynamicImport(import('./sections/Contact'), 'ContactSection'),
+    import('./sections/Contact'),
     { loading: () => <div className="h-96 bg-neutral-100 animate-pulse rounded-lg" /> }
 );
 
 const ExclusiveAnalysisOffer = dynamic(() =>
-    safeDynamicImport(import('./sections/ExclusiveAnalysisOffer'), 'ExclusiveAnalysisOffer'),
+    import('./sections/ExclusiveAnalysisOffer'),
     { loading: () => <div className="h-80 bg-neutral-100 animate-pulse rounded-lg" /> }
 );
 
 const FormularioContato = dynamic(() =>
-    safeDynamicImport(import('./components/FormularioContato'), 'FormularioContato'),
+    import('./components/FormularioContato'),
     { loading: () => <div className="h-96 bg-neutral-100 animate-pulse rounded-lg" /> }
 );
 
 const Footer = dynamic(() =>
-    safeDynamicImport(import('./sections/Footer'), 'Footer'),
+    import('./sections/Footer'),
     { ssr: true, loading: () => <div className="h-64 bg-neutral-800 animate-pulse" /> }
 );
 
@@ -108,18 +107,14 @@ export default function HomeClient({ destaques, aluguel }: HomeClientProps) {
             {/* Performance optimization - background load */}
             <PriorityContent fallback={null}>
                 <HomepageLoadingOptimizer />
-                <WhatsAppSharingOptimizer
-                    title="Ipê Imóveis - Serviços e Atendimento Imobiliário em Guararema"
-                    description="Imóveis selecionados com valorização acima da média do mercado. Conheça os melhores bairros e oportunidades em Guararema."
-                    imageUrl="/images/og-image-whatsapp.jpg"
-                />
+                <WhatsAppSharingOptimizer />
             </PriorityContent>
 
             {/* Exclusive Analysis Section - Above fold priority */}
             <section id="analise-exclusiva" className="py-16 bg-white">
                 <div className="container mx-auto px-4 max-w-7xl">
                     <BelowFoldContent minHeight="300px">
-                        <ExclusiveAnalysisOffer variant="investor" />
+                        <ExclusiveAnalysisOffer />
                     </BelowFoldContent>
                 </div>
             </section>
@@ -127,34 +122,21 @@ export default function HomeClient({ destaques, aluguel }: HomeClientProps) {
             {/* Market Exploration Block */}
             <BelowFoldContent minHeight="400px">
                 <BlocoExploracaoSimbolica />
-            </BelowFoldContent>
+            </BelowFoldContent>            {/* Properties Content Provider */}
+            <ClientSidePropertiesProvider destaques={[]} aluguel={[]} />
 
-            {/* Properties Content Provider */}
-            <ClientSidePropertiesProvider destaques={destaques} aluguel={aluguel} />
-
-            {/* Properties Showcase Sections */}
-            <section className="py-16 bg-gray-50">
+            {/* Properties Showcase Sections */}            <section className="py-16 bg-gray-50">
                 <div className="container mx-auto px-4 max-w-7xl">
                     <BelowFoldContent minHeight="400px">
-                        <DestaquesSanityCarousel
-                            rawProperties={destaques}
-                            title="Imóveis em Destaque para Compra"
-                            subtitle="Oportunidades selecionadas com alto potencial de valorização"
-                        />
+                        <DestaquesSanityCarousel rawProperties={[]} />
                     </BelowFoldContent>
 
                     <div className="py-8">
                         <BelowFoldContent minHeight="300px">
                             <Destaques />
                         </BelowFoldContent>
-                    </div>
-
-                    <BelowFoldContent minHeight="400px">
-                        <DestaquesSanityCarousel
-                            rawProperties={aluguel}
-                            title="Melhores Opções para Aluguel"
-                            subtitle="Imóveis com rentabilidade garantida e qualidade premium"
-                        />
+                    </div>                    <BelowFoldContent minHeight="400px">
+                        <DestaquesSanityCarousel rawProperties={[]} />
                     </BelowFoldContent>
                 </div>
             </section>
@@ -204,15 +186,8 @@ export default function HomeClient({ destaques, aluguel }: HomeClientProps) {
             {/* Footer */}
             <PriorityContent>
                 <Footer />
-            </PriorityContent>
-
-            {/* WhatsApp Floating Button */}
-            <WhatsAppButton
-                phoneNumber="5511981845016"
-                message="Olá! Gostaria de mais informações sobre imóveis em Guararema (via site)"
-                pulseAnimation={true}
-                showAfterScroll={true}
-            />
+            </PriorityContent>            {/* WhatsApp Floating Button */}
+            <WhatsAppButton phoneNumber="+5511999999999" />
         </div>
     );
 }

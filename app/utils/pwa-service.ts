@@ -46,7 +46,7 @@ export function usePWAStatus(config: {
     install: () => Promise<boolean>;
 }] {
     const [status, setStatus] = useState<PWAStatus>({
-        isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
+        isOnline: true, // Default to true during SSR
         serviceWorkerActive: false,
         serviceWorkerController: false,
         serviceWorkerRegistered: false,
