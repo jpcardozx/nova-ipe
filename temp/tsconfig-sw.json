@@ -12,9 +12,9 @@
     "strict": false,
     "allowJs": true,
     "noEmitOnError": false,
-    "outDir": "/mnt/c/Users/João Pedro Cardozo/projetos/nova-ipe/temp"
+    "outDir": "C:\\Users\\João Pedro Cardozo\\projetos\\nova-ipe\\temp"
   },
   "files": [
-    "/mnt/c/Users/João Pedro Cardozo/projetos/nova-ipe/app/workers/service-worker.ts"
+    "C:\\Users\\João Pedro Cardozo\\projetos\\nova-ipe\\app\\workers\\service-worker.ts"
   ]
 }

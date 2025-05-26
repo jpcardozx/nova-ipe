@@ -11,9 +11,8 @@ const createWebpackConfig = require('./webpack.config.master');
 
 const nextConfig = {
   reactStrictMode: true, // Reativado: Identifica side effects no código
-  poweredByHeader: false,
-  compress: true, // GZip para maior performance
-
+  poweredByHeader: false,  compress: true, // GZip para maior performance
+  
   experimental: {
     // Ativar apenas features maduras
     scrollRestoration: true,
@@ -77,9 +76,23 @@ const nextConfig = {
     maxInactiveAge: 90 * 1000,
     pagesBufferLength: 5,
   },
-
   webpack: (config, { isServer, dev, buildId }) => {
     console.log(`🛠 Webpack Override | Build: ${buildId} | Server: ${isServer} | Dev: ${dev}`);
+
+    // Exclude Sentry from studio pages to prevent conflicts
+    if (config.resolve && config.resolve.alias) {
+      // For studio routes, replace Sentry with empty modules
+      if (config.name === 'client' || !isServer) {
+        config.resolve.alias = {
+          ...config.resolve.alias,
+          // Prevent Sentry conflicts in studio pages
+          '@sentry/nextjs': false,
+          '@sentry/react': false,
+          '@sentry/browser': false,
+          '@sentry-internal/replay': false,
+        };
+      }
+    }
 
     if (isServer) {
       config.externals = config.externals || [];

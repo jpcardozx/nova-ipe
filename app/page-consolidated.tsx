@@ -136,7 +136,7 @@ const TrustCredibilitySection = () => {
                 <SectionHeader
                     badge="Credibilidade e Experiência"
                     badgeColor="amber"
-                    title="Por que somos a escolha certa?"
+                    title="Por que escolher a Ipê?"
                     description="Números que comprovam nossa excelência no mercado imobiliário de Guararema"
                     align="center"
                     className="mb-16"
@@ -297,7 +297,7 @@ export default async function ConsolidatedHomePage() {
                 <NotificacaoBanner
                     text="🚀 Lançamento: Novo condomínio fechado em Guararema com infraestrutura completa!"
                     linkText="Saiba mais"
-                    linkHref="#contato"
+                    linkHref="/contato"
                     variant="default"
                     dismissible={true}
                     storageKey="may2025-launch-banner"
