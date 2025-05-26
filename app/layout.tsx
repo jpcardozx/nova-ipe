@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
 import { Montserrat } from 'next/font/google'
 import './globals.css'
+import CSSOptimizer from './components/CSSOptimizer'
+import ConsoleErrorMonitor from './components/ConsoleErrorMonitor'
 
-const montserrat = Montserrat({ 
+const montserrat = Montserrat({
   subsets: ['latin'],
   display: 'swap',
   weight: ['300', '400', '500', '600', '700'],
@@ -74,11 +76,10 @@ export const metadata: Metadata = {
     languages: {
       'pt-BR': 'https://novaipe.com.br',
     },
-  },
-  other: {
+  }, other: {
     'msapplication-TileColor': '#1a6f5c',
     'theme-color': '#1a6f5c',
-    'apple-mobile-web-app-capable': 'yes',
+    'mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-status-bar-style': 'default',
     'format-detection': 'telephone=no',
   },
@@ -98,6 +99,8 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className="font-montserrat antialiased bg-white">
+        <ConsoleErrorMonitor />
+        <CSSOptimizer />
         {children}
       </body>
     </html>

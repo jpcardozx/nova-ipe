@@ -31,6 +31,18 @@ const MIME_TYPES: Record<string, string> = {
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+  
+  // Bloquear requisições problemáticas que causam 404s desnecessários
+  const blockedPaths = [
+    '/.well-known/appspecific/',
+    '/favicon.ico.map',
+    '/_next/static/chunks/app/types.js.map'
+  ];
+  
+  if (blockedPaths.some(path => pathname.startsWith(path))) {
+    return new NextResponse(null, { status: 204 }); // No Content
+  }
+  
   const response = NextResponse.next();
 
   // Garantir MIME types corretos

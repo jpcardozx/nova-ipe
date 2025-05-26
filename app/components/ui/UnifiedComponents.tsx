@@ -6,7 +6,7 @@ import React from 'react';
 interface UnifiedLoadingProps {
     height?: string;
     title?: string;
-    variant?: 'default' | 'minimal' | 'detailed';
+    variant?: 'default' | 'minimal' | 'detailed' | 'property';
 }
 
 export const UnifiedLoading: React.FC<UnifiedLoadingProps> = ({

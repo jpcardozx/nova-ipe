@@ -188,7 +188,7 @@ export default async function NovaPaginaInicial() {
                     {/* CTA Final de Conversão */}
                     <section className="bg-[#0D1F2D] relative overflow-hidden py-16">
                         <div className="absolute inset-0 bg-gradient-to-r from-[#0D1F2D] to-[#1a3040] mix-blend-soft-light"></div>
-                        <div className="absolute inset-0 bg-[url('/wood-pattern.png')] opacity-10"></div>
+                        <div className="absolute inset-0 bg-[url('/images/wood-pattern.png')] opacity-10"></div>
                         <div className="container mx-auto relative z-10">
                             <BlocoCTAConversao
                                 titulo="Vamos Encontrar Seu Espaço Ideal?"

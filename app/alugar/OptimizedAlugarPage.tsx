@@ -9,9 +9,7 @@ import { OptimizedIcons } from '@/app/utils/optimized-icons';
 
 // Declare DOM types for this client component
 declare global {
-    interface Document {
-        documentElement: HTMLElement;
-    }    interface HTMLElement {
+    interface HTMLElement {
         setAttribute(name: string, value: string): void;
     }
 }

@@ -8,10 +8,6 @@ import type { ImovelClient } from '@/types/imovel-client';
 
 // Declare DOM types for this client component
 declare global {
-    interface Document {
-        documentElement: HTMLElement;
-    }
-
     interface HTMLElement {
         setAttribute(name: string, value: string): void;
     }

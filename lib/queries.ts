@@ -62,12 +62,25 @@ export const queryImoveisAluguel = /* groq */ `
   }
 `;
 
+// Cache para queries para evitar requisições desnecessárias
+const queryCache = new Map<string, { data: any, timestamp: number }>();
+const CACHE_DURATION = 300000; // 5 minutos
+
 /**
  * Busca imóveis em destaque para a página inicial
  * Otimizado para carregamento rápido com projeção
  * Inclui correção automática de referências de imagem
  */
 export async function getImoveisDestaque(): Promise<any[]> {
+  const cacheKey = 'imoveis-destaque';
+  const now = Date.now();
+  
+  // Verificar cache primeiro
+  const cached = queryCache.get(cacheKey);
+  if (cached && (now - cached.timestamp) < CACHE_DURATION) {
+    return cached.data;
+  }
+
   try {
     // Import dinâmico para evitar ciclos de dependência
     const { fixSanityImageReferences } = await import('./image-fix');
@@ -78,8 +91,9 @@ export async function getImoveisDestaque(): Promise<any[]> {
     });
 
     // Corrigir referências de imagens para todos os imóveis
+    let processedData = [];
     if (Array.isArray(data)) {
-      return data.map(imovel => {
+      processedData = data.map(imovel => {
         if (imovel && imovel.imagem) {
           return {
             ...imovel,
@@ -90,7 +104,9 @@ export async function getImoveisDestaque(): Promise<any[]> {
       });
     }
 
-    return data || [];
+    // Armazenar no cache
+    queryCache.set(cacheKey, { data: processedData, timestamp: now });
+    return processedData || [];
   } catch (error) {
     console.error('Erro ao buscar imóveis em destaque:', error);
     return [];
@@ -103,6 +119,15 @@ export async function getImoveisDestaque(): Promise<any[]> {
  * Inclui correção automática de referências de imagem
  */
 export async function getImoveisAluguel(): Promise<any[]> {
+  const cacheKey = 'imoveis-aluguel';
+  const now = Date.now();
+  
+  // Verificar cache primeiro
+  const cached = queryCache.get(cacheKey);
+  if (cached && (now - cached.timestamp) < CACHE_DURATION) {
+    return cached.data;
+  }
+
   try {
     // Import dinâmico para evitar ciclos de dependência
     const { fixSanityImageReferences } = await import('./image-fix');
@@ -113,8 +138,9 @@ export async function getImoveisAluguel(): Promise<any[]> {
     });
 
     // Corrigir referências de imagens para todos os imóveis
+    let processedData = [];
     if (Array.isArray(data)) {
-      return data.map(imovel => {
+      processedData = data.map(imovel => {
         if (imovel && imovel.imagem) {
           return {
             ...imovel,
@@ -125,7 +151,9 @@ export async function getImoveisAluguel(): Promise<any[]> {
       });
     }
 
-    return data || [];
+    // Armazenar no cache
+    queryCache.set(cacheKey, { data: processedData, timestamp: now });
+    return processedData || [];
   } catch (error) {
     console.error('Erro ao buscar imóveis para aluguel:', error);
     return [];

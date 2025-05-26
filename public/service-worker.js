@@ -6,11 +6,6 @@
  * to prevent chunk loading errors and improve offline capabilities.
  */
 
-
-
-
-
-export { };
 const SW_VERSION = '2.1.0';
 const BUILD_TIME = Date.now();
 const CACHE_VERSION = `v5-${BUILD_TIME}`;
@@ -22,15 +17,9 @@ const IMAGE_CACHE_NAME = `nova-ipe-image-cache-${CACHE_VERSION}`;
 
 // Critical assets for immediate caching
 const CRITICAL_ASSETS = [
-    '/_next/static/chunks/main-app.js',
-    '/_next/static/chunks/app/page.js',
-    '/_next/static/chunks/webpack.js',
-    '/offline',
-    '/404',
     '/',
-    '/fonts/critical-icons.woff2',
-    '/images/logo.png',
-    '/manifest.webmanifest',
+    '/offline',
+    // Don't cache manifest here, let Next.js handle it
 ];
 
 // Asset patterns with caching strategies
@@ -49,7 +38,7 @@ const CACHE_CONFIG = {
         name: CHUNK_CACHE_NAME,
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
         maxEntries: 300, // Aumentado para comportar mais chunks
-        priority: 'high' as const
+        priority: 'high'
     },
     image: {
         name: IMAGE_CACHE_NAME,
@@ -68,20 +57,22 @@ const CACHE_CONFIG = {
     }
 };
 
-// --- Service Worker: Deeply Improved, TypeScript-Safe, and Robust ---
-
-// TypeScript: Use globalThis for service worker context
-declare const self: ServiceWorkerGlobalScope;
-
 // --- Install Event ---
 self.addEventListener('install', (event) => {
-    const swEvent = event as ExtendableEvent;
     console.log('[Service Worker] Installing version', SW_VERSION);
-    swEvent.waitUntil(
-        Promise.all([
+    event.waitUntil(        Promise.all([
+            // Precache critical assets with individual error handling
             caches.open(CHUNK_CACHE_NAME).then(cache => {
                 console.log('[Service Worker] Precaching critical assets');
-                return cache.addAll(CRITICAL_ASSETS);
+                // Cache each asset individually to avoid failing the entire batch
+                return Promise.allSettled(
+                    CRITICAL_ASSETS.map(asset => 
+                        cache.add(asset).catch(error => {
+                            console.warn(`[Service Worker] Failed to cache ${asset}:`, error.message);
+                            return null;
+                        })
+                    )
+                );
             }),
             caches.open(STATIC_CACHE_NAME),
             caches.open(IMAGE_CACHE_NAME),
@@ -97,9 +88,8 @@ self.addEventListener('install', (event) => {
 
 // --- Activate Event ---
 self.addEventListener('activate', (event) => {
-    const swEvent = event as ExtendableEvent;
     console.log('[Service Worker] Activating version', SW_VERSION);
-    swEvent.waitUntil(
+    event.waitUntil(
         caches.keys().then(cacheNames => {
             return Promise.all([
                 ...cacheNames.map(cacheName => {
@@ -118,11 +108,11 @@ self.addEventListener('activate', (event) => {
 });
 
 // Helper functions
-function shouldCache(response | undefined): response is Response {
+function shouldCache(response) {
     return response !== undefined && response.status === 200 && response.type === 'basic';
 }
 
-function getCacheConfig(request: Request): CacheConfig | null {
+function getCacheConfig(request) {
     const url = new URL(request.url);
 
     if (PATTERNS.image.test(url.pathname) || PATTERNS.sanity.test(url.hostname)) {
@@ -140,7 +130,7 @@ function getCacheConfig(request: Request): CacheConfig | null {
     return null;
 }
 
-async function cleanCache(cacheName: string, maxEntries: number, maxAge: number) {
+async function cleanCache(cacheName, maxEntries, maxAge) {
     const cache = await caches.open(cacheName);
     const keys = await cache.keys();
     const now = Date.now();
@@ -169,59 +159,65 @@ async function cleanCache(cacheName: string, maxEntries: number, maxAge: number)
 
 // --- Fetch Event ---
 self.addEventListener('fetch', (event) => {
-    const swEvent = event as FetchEvent;
-    const { request } = swEvent;
+    const { request } = event;
 
-    // Ignorar métodos não-GET
-    if (request.method !== 'GET') return;
+    // Skip non-GET requests and chrome-extension requests
+    if (request.method !== 'GET' || request.url.startsWith('chrome-extension://')) {
+        return;
+    }
 
-    // Verificar se é um chunk dinâmico
-    const isChunk = PATTERNS.chunks.test(request.url);
-    if (isChunk) {
-        swEvent.respondWith(
-            (async () => {
-                try {
-                    const cache = await caches.open(CHUNK_CACHE_NAME);
-                    const cachedResponse = await cache.match(request);
+    // Add error boundary for all fetch handling
+    try {
+        // Verificar se é um chunk dinâmico
+        const isChunk = PATTERNS.chunks.test(request.url);
+        if (isChunk) {
+            event.respondWith(
+                (async () => {
+                    try {
+                        const cache = await caches.open(CHUNK_CACHE_NAME);
+                        const cachedResponse = await cache.match(request);
 
-                    if (cachedResponse) {
-                        // Background revalidation
-                        fetch(request)
-                            .then(networkResponse => {
-                                if (shouldCache(networkResponse)) {
-                                    void cache.put(request, networkResponse.clone());
-                                }
-                            })
-                            .catch(() => { /* Silent fail on revalidation */ });
+                        if (cachedResponse) {
+                            // Background revalidation with error handling
+                            fetch(request)
+                                .then(networkResponse => {
+                                    if (shouldCache(networkResponse)) {
+                                        cache.put(request, networkResponse.clone());
+                                    }
+                                })
+                                .catch(error => {
+                                    console.log('[Service Worker] Background revalidation failed:', error.message);
+                                });
 
-                        return cachedResponse;
+                            return cachedResponse;
+                        }
+
+                        const networkResponse = await fetch(request);
+                        if (shouldCache(networkResponse)) {
+                            await cache.put(request, networkResponse.clone());
+                        }
+                        return networkResponse;
+                    } catch (error) {
+                        console.warn('[Service Worker] Chunk fetch failed:', error.message);
+                        const cache = await caches.open(CHUNK_CACHE_NAME);
+                        const lastCachedResponse = await cache.match(request);
+                        if (lastCachedResponse) return lastCachedResponse;
+                        return new Response('', { status: 503, statusText: 'Service Unavailable' });
                     }
-
-                    const networkResponse = await fetch(request);
-                    if (shouldCache(networkResponse)) {
-                        await cache.put(request, networkResponse.clone());
-                    }
-                    return networkResponse;
-                } catch (error) {
-                    const cache = await caches.open(CHUNK_CACHE_NAME);
-                    const lastCachedResponse = await cache.match(request);
-                    if (lastCachedResponse) return lastCachedResponse;
-                    return new Response('', { status: 503 });
-                }
-            })()
-        );
+                })()
+            );
         return;
     }
 
     // Handle other resources with normal caching
     const cacheConfig = getCacheConfig(request);
     if (request.url.includes('/_next/static/chunks/') || CRITICAL_ASSETS.includes(request.url)) {
-        swEvent.respondWith(
+        event.respondWith(
             caches.match(request).then(cachedResponse => {
                 const fetchPromise = fetch(request).then(networkResponse => {
                     if (shouldCache(networkResponse)) {
                         const clone = networkResponse.clone();
-                        void caches.open(CHUNK_CACHE_NAME).then(cache => void cache.put(request, clone));
+                        caches.open(CHUNK_CACHE_NAME).then(cache => cache.put(request, clone));
                     }
                     return networkResponse;
                 });
@@ -229,15 +225,15 @@ self.addEventListener('fetch', (event) => {
             })
         );
     } else if (cacheConfig) {
-        swEvent.respondWith(
+        event.respondWith(
             caches.open(cacheConfig.name).then(async cache => {
                 const cachedResponse = await cache.match(request);
                 const fetchPromise = fetch(request)
                     .then(networkResponse => {
                         if (shouldCache(networkResponse)) {
                             const clone = networkResponse.clone();
-                            void cache.put(request, clone).then(() =>
-                                void cleanCache(cacheConfig.name, cacheConfig.maxEntries, cacheConfig.maxAge)
+                            cache.put(request, clone).then(() =>
+                                cleanCache(cacheConfig.name, cacheConfig.maxEntries, cacheConfig.maxAge)
                             );
                         }
                         return networkResponse;
@@ -250,12 +246,12 @@ self.addEventListener('fetch', (event) => {
             })
         );
     } else {
-        swEvent.respondWith(
+        event.respondWith(
             (async () => {
                 try {
-                    const response = await Promise.race<Response | undefined>([
+                    const response = await Promise.race([
                         fetch(request).catch(() => undefined),
-                        new Promise<Response | undefined>((resolve) => {
+                        new Promise((resolve) => {
                             setTimeout(async () => {
                                 const cacheResponse = await caches.match(request);
                                 resolve(cacheResponse || undefined);
@@ -266,14 +262,17 @@ self.addEventListener('fetch', (event) => {
                     if (response) return response;
                     const cacheResponse = await caches.match(request);
                     if (cacheResponse) return cacheResponse;
-                    return new Response('', { status: 503 });
-                } catch {
-                    return new Response('', { status: 503 });
+                    return new Response('', { status: 503 });                } catch (error) {
+                    console.warn('[Service Worker] General fetch failed:', error.message);
+                    return new Response('', { status: 503, statusText: 'Service Unavailable' });
                 }
             })()
         );
     }
+    } catch (error) {
+        console.error('[Service Worker] Fetch event error:', error.message);
+        // Let the request fall through to the network
+    }
 });
 
-
-// Build timestamp: 1748192405490
+// Build timestamp: 1748230283168

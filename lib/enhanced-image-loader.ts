@@ -111,6 +111,9 @@ function diagnoseImage(image: any): ImageDiagnostics {
     return diagnostics;
 }
 
+// Cache para evitar reprocessamento desnecessário
+const imageProcessingCache = new Map<string, ProcessedImage>();
+
 /**
  * Carrega imagem com vários níveis de fallback
  * @version 2.0
@@ -120,6 +123,13 @@ export function loadImage(
     fallbackUrl: string = '/images/property-placeholder.jpg',
     defaultAlt: string = 'Imagem do imóvel'
 ): ProcessedImage {
+    // Criar chave única para cache
+    const cacheKey = JSON.stringify({ image, fallbackUrl, defaultAlt });
+    
+    // Verificar cache primeiro
+    if (imageProcessingCache.has(cacheKey)) {
+        return imageProcessingCache.get(cacheKey)!;
+    }
     try {
         // Fornecer diagnóstico completo da imagem
         const diagnostics = diagnoseImage(image);
@@ -136,44 +146,76 @@ export function loadImage(
         if (typeof image === 'string') {
             imageLog.info('Usando string direta como URL da imagem');
             return { url: image, alt: defaultAlt };
-        }
-
-        // CASO 3: Objeto com propriedade URL direta
+        }        // CASO 3: Objeto com propriedade URL direta
         if (image.url) {
-            return {
+            const result = {
                 url: image.url,
                 alt: image.alt || defaultAlt,
                 hotspot: image.hotspot
             };
+            imageProcessingCache.set(cacheKey, result);
+            return result;
         }
 
         // CASO 4: Objeto com imagemUrl
         if (image.imagemUrl) {
-            return {
+            const result = {
                 url: image.imagemUrl,
                 alt: image.alt || defaultAlt,
                 hotspot: image.hotspot
             };
+            imageProcessingCache.set(cacheKey, result);
+            return result;
         }
 
         // CASO 5: Asset com URL direta
         if (image.asset?.url) {
-            return {
+            const result = {
                 url: image.asset.url,
                 alt: image.alt || defaultAlt,
                 hotspot: image.hotspot
             };
-        }
-
-        // CASO 6: Asset com referência Sanity
+            imageProcessingCache.set(cacheKey, result);
+            return result;
+        }        // CASO 6: Asset com referência Sanity
         if (image.asset?._ref) {
             const sanityUrl = createSanityImageUrl(image.asset._ref);
-            return {
+            const result = {
                 url: sanityUrl,
                 alt: image.alt || defaultAlt,
                 hotspot: image.hotspot
             };
-        }        // CASO 7: Objeto com alt mas sem URL (comum no problema atual)
+            imageProcessingCache.set(cacheKey, result);
+            return result;
+        }
+
+        // CASO 6.1: Asset existe mas _ref é undefined (problema específico detectado)
+        if (image.asset && diagnostics.hasAsset && !image.asset._ref) {
+            imageLog.warn('Asset com _ref undefined detectado - possível inconsistência de dados', {
+                propertyId: diagnostics.referenceValue || 'unknown',
+                assetKeys: diagnostics.assetKeys,
+                hasAsset: diagnostics.hasAsset,
+                assetRefExists: diagnostics.assetRefExists
+            });
+            
+            const result = { url: fallbackUrl, alt: image.alt || defaultAlt };
+            imageProcessingCache.set(cacheKey, result);
+            return result;
+        }
+
+        // CASO 6B: Asset com URL mas sem protocolo (adicionar protocolo)
+        if (image.asset?.url && !image.asset.url.startsWith('http')) {
+            const fullUrl = image.asset.url.startsWith('//') 
+                ? `https:${image.asset.url}` 
+                : `https://${image.asset.url}`;
+            const result = {
+                url: fullUrl,
+                alt: image.alt || defaultAlt,
+                hotspot: image.hotspot
+            };
+            imageProcessingCache.set(cacheKey, result);
+            return result;
+        }// CASO 7: Objeto com alt mas sem URL (comum no problema atual)
         // Aqui está a correção para o problema que estamos enfrentando
         if (image.alt && (diagnostics.keys.includes('alt') && diagnostics.keys.length === 1)) {
             // Estrutura quebrada detectada - gerar URL para buscar do Sanity pelo ID
@@ -194,14 +236,14 @@ export function loadImage(
                 url: fallbackUrl, // Por enquanto usamos fallback, mas poderia chamar API para recuperar
                 alt: image.alt
             };
-        }
-
-        // ÚLTIMO CASO: Não encontramos nenhuma estrutura válida
+        }        // ÚLTIMO CASO: Não encontramos nenhuma estrutura válida
         imageLog.warn('Estrutura de imagem não reconhecida, usando fallback', {
             details: diagnostics
         });
 
-        return { url: fallbackUrl, alt: defaultAlt };
+        const result = { url: fallbackUrl, alt: defaultAlt };
+        imageProcessingCache.set(cacheKey, result);
+        return result;
 
     } catch (error) {
         imageLog.error('Erro ao processar imagem', {
@@ -209,7 +251,9 @@ export function loadImage(
             details: { imageType: typeof image }
         });
 
-        return { url: fallbackUrl, alt: defaultAlt };
+        const fallbackResult = { url: fallbackUrl, alt: defaultAlt };
+        imageProcessingCache.set(cacheKey, fallbackResult);
+        return fallbackResult;
     }
 }
 

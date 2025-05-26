@@ -41,10 +41,8 @@ self.addEventListener('install', (event: any) => {
                 console.log('Service worker caching assets');
                 return cache.addAll(CACHE_ASSETS);
             })
-    );
-
-    // Activate the worker immediately
-    self.skipWaiting();
+    );    // Activate the worker immediately
+    (self as any).skipWaiting();
 });
 
 self.addEventListener('activate', (event: any) => {

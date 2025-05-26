@@ -1,7 +1,4 @@
-'use client';
-
 import { Suspense } from 'react';
-import { motion } from 'framer-motion';
 import { getImoveisDestaque, getImoveisAluguel } from '@/lib/queries';
 import { normalizeDocuments } from '@/lib/sanity-utils';
 import { loadImage } from '@/lib/enhanced-image-loader';
@@ -21,6 +18,9 @@ import WhatsAppButton from './components/WhatsAppButton';
 import NotificacaoBanner from './components/NotificacaoBanner';
 import { FeedbackBanner } from './components/FeedbackBanner';
 import { UnifiedLoading } from './components/ui/UnifiedComponents';
+import AnimatedStatsCard from './components/AnimatedStatsCard';
+import SafeSuspenseWrapper from './components/SafeSuspenseWrapper';
+import AnimatedCTASection from './components/AnimatedCTASection';
 
 // === SECTION IMPORTS - Seções especializadas ===
 import ValorAprimorado from './sections/ValorAprimorado';
@@ -102,79 +102,59 @@ function transformPropertyData(imovel: ImovelClient, propertyType: PropertyType)
 // === SEÇÕES CONSOLIDADAS ===
 
 // Seção de Credibilidade e Confiança
-const TrustCredibilitySection = () => (
-    <section className="py-20 bg-gradient-to-b from-white to-slate-50">
-        <div className="container mx-auto px-6 lg:px-8">
-            <SectionHeader
-                badge="Credibilidade e Experiência"
-                badgeColor="amber"
-                title="Por que somos a escolha certa?"
-                description="Números que comprovam nossa excelência no mercado imobiliário de Guararema"
-                align="center"
-                className="mb-16"
-            />
+const TrustCredibilitySection = () => {
+    const statsData = [
+        {
+            icon: "🏆",
+            number: "15+",
+            label: "Anos de Experiência",
+            description: "Liderando o mercado imobiliário de Guararema com expertise e dedicação",
+        },
+        {
+            icon: "🏠",
+            number: "500+",
+            label: "Famílias Atendidas",
+            description: "Mais de 500 famílias encontraram o lar dos sonhos conosco",
+        },
+        {
+            icon: "📈",
+            number: "98%",
+            label: "Taxa de Satisfação",
+            description: "Excelência comprovada no atendimento e resultados entregues",
+        },
+        {
+            icon: "⚡",
+            number: "30",
+            label: "Dias Médios",
+            description: "Tempo médio para encontrar o imóvel ideal para nossos clientes",
+        }
+    ];
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-                {[
-                    {
-                        icon: "🏆",
-                        number: "15+",
-                        label: "Anos de Experiência",
-                        description: "Liderando o mercado imobiliário de Guararema com expertise e dedicação",
-                    },
-                    {
-                        icon: "🏠",
-                        number: "500+",
-                        label: "Famílias Atendidas",
-                        description: "Mais de 500 famílias encontraram o lar dos sonhos conosco",
-                    },
-                    {
-                        icon: "📈",
-                        number: "98%",
-                        label: "Taxa de Satisfação",
-                        description: "Excelência comprovada no atendimento e resultados entregues",
-                    },
-                    {
-                        icon: "⚡",
-                        number: "30",
-                        label: "Dias Médios",
-                        description: "Tempo médio para encontrar o imóvel ideal para nossos clientes",
-                    }
-                ].map((item, index) => (
-                    <motion.div
-                        key={index}
-                        className="group"
-                        initial={{ opacity: 1, y: 30 }} // Changed opacity from 0 to 1
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.15, duration: 0.6 }}
-                        whileHover={{ y: -8, scale: 1.02 }}
-                    >
-                        <div className="bg-white rounded-3xl p-8 text-center shadow-lg hover:shadow-2xl transition-all duration-700 border border-slate-100 hover:border-amber-200 h-full relative overflow-hidden">
-                            {/* Background gradient */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+    return (
+        <section className="py-20 bg-gradient-to-b from-white to-slate-50">
+            <div className="container mx-auto px-6 lg:px-8">
+                <SectionHeader
+                    badge="Credibilidade e Experiência"
+                    badgeColor="amber"
+                    title="Por que somos a escolha certa?"
+                    description="Números que comprovam nossa excelência no mercado imobiliário de Guararema"
+                    align="center"
+                    className="mb-16"
+                />
 
-                            {/* Content */}
-                            <div className="relative z-10">
-                                <div className="text-5xl mb-6 group-hover:scale-110 transition-transform duration-500">
-                                    {item.icon}
-                                </div>
-                                <h3 className="text-3xl font-bold text-slate-900 mb-2 group-hover:text-amber-600 transition-colors duration-300">
-                                    {item.number}
-                                </h3>
-                                <p className="text-amber-600 font-semibold mb-4 text-sm uppercase tracking-wide">
-                                    {item.label}
-                                </p>
-                                <p className="text-slate-600 leading-relaxed text-sm">
-                                    {item.description}
-                                </p>
-                            </div>
-                        </div>
-                    </motion.div>
-                ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+                    {statsData.map((item, index) => (
+                        <AnimatedStatsCard
+                            key={index}
+                            item={item}
+                            index={index}
+                        />
+                    ))}
+                </div>
             </div>
-        </div>
-    </section>
-);
+        </section>
+    );
+};
 
 // Seção de Showcase de Imóveis Consolidada
 const PropertyShowcaseSection = ({ properties }: { properties: ProcessedProperty[] }) => (
@@ -356,14 +336,12 @@ export default async function ConsolidatedHomePage() {
 
                     {/* === SHOWCASE DE IMÓVEIS === */}
                     <PropertyShowcaseSection properties={destaqueFormatados} />
-                    <PropertyShowcaseSection properties={aluguelFormatados} />
-
-                    {/* === PROPOSTA DE VALOR DA EMPRESA === */}
+                    <PropertyShowcaseSection properties={aluguelFormatados} />                    {/* === PROPOSTA DE VALOR DA EMPRESA === */}
                     <section className="py-24 bg-gradient-to-b from-slate-50 to-white">
                         <div className="container mx-auto px-6 lg:px-8">
-                            <Suspense fallback={< UnifiedLoading height="500px" title="Carregando valores..." />}>
+                            <SafeSuspenseWrapper height="500px" title="Carregando valores...">
                                 <ValorAprimorado />
-                            </Suspense>
+                            </SafeSuspenseWrapper>
                         </div>
                     </section>
 
@@ -381,9 +359,9 @@ export default async function ConsolidatedHomePage() {
 
                             <div className="max-w-7xl mx-auto">
                                 <div className="bg-gradient-to-br from-slate-50 to-white rounded-3xl shadow-2xl border border-slate-100 p-8 lg:p-12">
-                                    <Suspense fallback={<UnifiedLoading height="400px" title="Carregando jornada..." />}>
+                                    <SafeSuspenseWrapper height="400px" title="Carregando jornada...">
                                         <ClientProgressSteps />
-                                    </Suspense>
+                                    </SafeSuspenseWrapper>
                                 </div>
                             </div>
                         </div>
@@ -456,19 +434,12 @@ export default async function ConsolidatedHomePage() {
                     {/* === CTA FINAL PREMIUM === */}
                     <section className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden py-20">
                         {/* Enhanced background patterns */}
-                        <div className="absolute inset-0 bg-[url('/wood-pattern.png')] opacity-5"></div>
+                        <div className="absolute inset-0 bg-[url('/images/wood-pattern.svg')] opacity-5"></div>
                         <div className="absolute top-0 left-0 w-full h-full">
                             <div className="absolute top-10 left-10 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl animate-pulse"></div>
                             <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-                        </div>
-
-                        <div className="container mx-auto relative z-10 px-6 lg:px-8">
-                            <motion.div
-                                initial={{ opacity: 0, y: 30 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.8 }}
-                                className="text-center max-w-4xl mx-auto"
-                            >
+                        </div>                        <div className="container mx-auto relative z-10 px-6 lg:px-8">
+                            <div className="text-center max-w-4xl mx-auto">
                                 <Suspense fallback={<UnifiedLoading height="200px" title="Carregando..." />}>
                                     <BlocoCTAConversao
                                         titulo="Pronto para encontrar seu próximo lar?"
@@ -477,7 +448,7 @@ export default async function ConsolidatedHomePage() {
                                         ctaLink="https://wa.me/5511981845016?text=Olá! Gostaria de conhecer opções de imóveis em Guararema"
                                     />
                                 </Suspense>
-                            </motion.div>
+                            </div>
                         </div>
                     </section>
                 </main>

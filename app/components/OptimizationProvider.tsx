@@ -12,18 +12,9 @@ export default function OptimizationProvider({ children }: OptimizationProviderP
         document.documentElement.setAttribute('data-loading-state', 'ready');
 
         // Optimization: Delay non-critical resources loading
-        const delayNonCritical = () => {
-            // Load non-critical resources after main content
+        const delayNonCritical = () => {            // Load non-critical resources after main content
             const loadNonCritical = () => {
-                // Prefetch other pages after main page is loaded
-                const links = ['/imovel', '/contato', '/alugar', '/comprar'];
-                links.forEach(href => {
-                    const link = document.createElement('link');
-                    link.rel = 'prefetch';
-                    link.href = href;
-                    document.head.appendChild(link);
-                });
-
+                // Focus on optimizing existing content instead of prefetching
                 // Load any deferred images
                 const deferredImages = document.querySelectorAll('img[loading="lazy"][data-src]');
                 deferredImages.forEach((img: any) => {

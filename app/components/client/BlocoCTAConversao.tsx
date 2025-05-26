@@ -40,7 +40,7 @@ export default function BlocoCTAConversao({ titulo, subtitulo, ctaText, ctaLink 
     return (
         <section id="cta-section" className="w-full py-28 px-6 md:px-12 bg-[#0D1F2D] text-white relative overflow-hidden">
             {/* Fundo com padrão sutil */}
-            <div className="absolute inset-0 bg-[url('/wood-pattern.png')] bg-center opacity-5 pointer-events-none" />
+            <div className="absolute inset-0 bg-[url('/images/wood-pattern.png')] bg-center opacity-5 pointer-events-none" />
 
             {/* Gradiente decorativo */}
             <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-gradient-radial from-[#FFAD43]/20 to-transparent rounded-full blur-3xl"></div>
