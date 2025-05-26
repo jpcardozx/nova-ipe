@@ -1,8 +1,12 @@
-// sanity.config.ts (na raiz do repo)
-// Import with try-catch to prevent Sentry conflicts
+// sanity.config.ts - Configuração SENIOR com fallbacks robustos
+// SOLUÇÃO SENIOR: Importações condicionais baseadas no ambiente
+
 let defineConfig: any;
 let deskTool: any;
 let visionTool: any;
+
+// Detectar se estamos em build de produção
+const isProductionBuild = process.env.NODE_ENV === 'production' && !process.env.SANITY_STUDIO_BUILD;
 
 try {
   const sanityImports = require("sanity");
@@ -10,17 +14,24 @@ try {
   deskTool = sanityImports.deskTool || require("sanity/desk").deskTool;
 } catch (error) {
   console.warn('Sanity import failed, using fallback:', error);
-  // Fallback for build issues
+  // Fallback robusto para build issues
   defineConfig = (config: any) => config;
-  deskTool = () => ({});
+  deskTool = () => ({ name: 'desk', title: 'Content' });
 }
 
-try {
-  const visionImports = require("@sanity/vision");
-  visionTool = visionImports.visionTool;
-} catch (error) {
-  console.warn('Vision tool import failed:', error);
-  visionTool = () => ({});
+// SOLUÇÃO SENIOR: Só importar visionTool em desenvolvimento ou studio build
+if (!isProductionBuild) {
+  try {
+    const visionImports = require("@sanity/vision");
+    visionTool = visionImports.visionTool;
+  } catch (error) {
+    console.warn('Vision tool import failed:', error);
+    visionTool = () => ({ name: 'vision', title: 'Vision' });
+  }
+} else {
+  // Em produção, não carregamos o vision tool
+  visionTool = null;
+  console.log('🎯 Vision tool excluído do build de produção');
 }
 
 import schemaTypes from "./studio/schemas";
@@ -35,7 +46,8 @@ export const sanityConfig = defineConfig({
   schema: { types: schemaTypes },
   plugins: [
     deskTool({ structure }),
-    visionTool({ defaultApiVersion: apiVersion }),
+    // Só incluir visionTool se não estivermos em build de produção
+    ...(visionTool && !isProductionBuild ? [visionTool({ defaultApiVersion: apiVersion })] : [])
   ].filter(Boolean), // Remove any undefined plugins
 });
 

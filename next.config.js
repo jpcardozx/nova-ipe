@@ -1,7 +1,8 @@
 /**
- * Next.js Configuration - Stable Consolidated Version
- * @version 9.0.0 - Stable Build
- * @date 25/05/2025
+ * Next.js Configuration - Next 14 Compatible Version
+ * @version 10.0.0 - Next 14.2.15 Compatible
+ * @date 26/05/2025
+ * CORRIGIDO: serverExternalPackages movido para experimental
  */
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -10,35 +11,38 @@ const isDev = !isProduction;
 const createWebpackConfig = require('./webpack.config.master');
 
 const nextConfig = {
-  reactStrictMode: true, // Reativado: Identifica side effects no código
-  poweredByHeader: false,  compress: true, // GZip para maior performance
+  reactStrictMode: true,
+  poweredByHeader: false,
+  compress: true,
   
   experimental: {
-    // Ativar apenas features maduras
+    // Features compatíveis com Next 14
     scrollRestoration: true,
     optimizeCss: true,
-    optimizePackageImports: [],
+    optimizePackageImports: ['lodash', 'date-fns'],
+    
+    // CORRIGIDO: serverExternalPackages foi movido para experimental
+    serverComponentsExternalPackages: [
+      '@sanity/client',
+      '@sanity/image-url',
+      '@sanity/visual-editing',
+      'get-it',
+      'sharp',
+      'canvas'
+    ],
   },
 
-  serverExternalPackages: [
-    '@sanity/client',
-    '@sanity/image-url',
-    '@sanity/visual-editing',
-    'get-it',
-    'get-it/middleware',
-  ],
-
   compiler: {
-    removeConsole: isProduction, // Limpa console.log em produção
+    removeConsole: isProduction,
     reactRemoveProperties: isProduction,
   },
 
   typescript: {
-    ignoreBuildErrors: false, // Volta a validar erros em build
+    ignoreBuildErrors: false,
   },
 
   eslint: {
-    ignoreDuringBuilds: false, // Volta a validar eslint em build
+    ignoreDuringBuilds: false,
   },
 
   images: {
@@ -55,8 +59,6 @@ const nextConfig = {
     minimumCacheTTL: 86400, // 1 dia
     dangerouslyAllowSVG: false,
     disableStaticImages: false,
-    loader: 'default',
-    path: '/_next/image',
   },
 
   async headers() {
@@ -76,30 +78,49 @@ const nextConfig = {
     maxInactiveAge: 90 * 1000,
     pagesBufferLength: 5,
   },
+
   webpack: (config, { isServer, dev, buildId }) => {
     console.log(`🛠 Webpack Override | Build: ${buildId} | Server: ${isServer} | Dev: ${dev}`);
 
-    // Exclude Sentry from studio pages to prevent conflicts
-    if (config.resolve && config.resolve.alias) {
-      // For studio routes, replace Sentry with empty modules
-      if (config.name === 'client' || !isServer) {
-        config.resolve.alias = {
-          ...config.resolve.alias,
-          // Prevent Sentry conflicts in studio pages
-          '@sentry/nextjs': false,
-          '@sentry/react': false,
-          '@sentry/browser': false,
-          '@sentry-internal/replay': false,
-        };
-      }
+    // ESTRATÉGIA CONSERVADORA: Apenas excluir no cliente em produção
+    if (!dev && !isServer) {
+      console.log('🎯 Aplicando exclusões conservadoras para build de produção...');
+      
+      config.resolve = config.resolve || {};
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        
+        // Excluir apenas dependências críticas que quebram o build
+        '@sentry/nextjs': false,
+        '@sentry/react': false,
+        '@sentry/browser': false,
+        
+        // Studio-only packages (não necessários no cliente)
+        '@sanity/vision': false, // Apenas para desenvolvimento
+        '@sanity/telemetry': false, // Telemetria desnecessária no cliente
+        
+        // CodeMirror (apenas para o studio)
+        '@codemirror/autocomplete': false,
+        '@codemirror/commands': false,
+        '@codemirror/lang-javascript': false,
+        '@uiw/react-codemirror': false,
+        
+        // Dev dependencies que podem vazar
+        'json-2-csv': false,
+        'doc-path': false,
+        'deeks': false,
+      };
     }
 
+    // Server-side externals
     if (isServer) {
       config.externals = config.externals || [];
       config.externals.push({
         'get-it': 'commonjs get-it',
         '@sanity/client': 'commonjs @sanity/client',
         '@sanity/visual-editing': 'commonjs @sanity/visual-editing',
+        'sharp': 'commonjs sharp',
+        'canvas': 'commonjs canvas',
       });
     }
 
