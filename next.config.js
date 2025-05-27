@@ -2,8 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
-  compress: true,
-    experimental: {
+  compress: true,  experimental: {
     optimizePackageImports: ['lucide-react', 'date-fns'],
     
     serverComponentsExternalPackages: [
@@ -11,6 +10,19 @@ const nextConfig = {
       '@sanity/image-url', 
       'sharp',
     ],
+    
+    // Garantir que styled-components seja tratado corretamente
+    esmExternals: 'loose',
+  },
+
+  transpilePackages: ['styled-components', '@sanity/ui'],
+
+  compiler: {
+    styledComponents: {
+      displayName: true,
+      ssr: true,
+      fileName: true,
+    },
   },
 
   typescript: {
@@ -57,23 +69,57 @@ const nextConfig = {
       };
     }
 
+    // Fix abrangente para styled-components com Sanity Studio
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'styled-components': require.resolve('styled-components'),
+    };
+
+    // Configuração especial para Sanity Studio e styled-components
+    config.module.rules.push({
+      test: /\.m?js$/,
+      include: /node_modules\/(sanity|@sanity)/,
+      resolve: {
+        fullySpecified: false,
+      },
+    });
+
+    // Tratar styled-components como externo apenas no servidor para SSR
+    if (isServer) {
+      config.externals = config.externals || [];
+      // Remover styled-components dos externals para garantir que seja bundleado corretamente
+      if (Array.isArray(config.externals)) {
+        config.externals = config.externals.filter(external => {
+          if (typeof external === 'string') {
+            return external !== 'styled-components';
+          }
+          return true;
+        });
+      }
+    }
+
+    // Garantir que styled-components seja sempre resolvido corretamente
+    config.resolve.modules = config.resolve.modules || [];
+    config.resolve.modules.push('node_modules');
+
+    // Configuração adicional para modules ESM
+    config.resolve.extensionAlias = {
+      ...config.resolve.extensionAlias,
+      '.js': ['.ts', '.tsx', '.js', '.jsx'],
+    };
+
     // Ignorar arquivos .js.map que causam erros de parsing
     config.module.rules.push({
       test: /\.js\.map$/,
       use: 'raw-loader'
     });
 
-    // Configurar para não processar source maps como módulos
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      // Evitar que webpack tente resolver source maps como módulos
-    };
-
     // Ignorar warnings de source maps
     config.ignoreWarnings = [
       /Failed to parse source map/,
       /Module parse failed.*\.js\.map/,
-      /Can't resolve.*\.js\.map/
+      /Can't resolve.*\.js\.map/,
+      /Can't resolve 'styled-components'/
     ];
 
     // Configuração específica para evitar que webpack processe .js.map como modules
