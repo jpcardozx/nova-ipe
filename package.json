@@ -28,6 +28,7 @@
     "@sanity/client": "7.3.0",
     "@sanity/image-url": "1.1.0",
     "@sanity/next-loader": "1.6.1",
+    "@sanity/ui": "2.15.18",
     "@sanity/vision": "3.89.0",
     "@sentry/nextjs": "9.22.0",
     "chalk": "5.4.1",
