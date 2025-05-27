@@ -1,47 +1,43 @@
 /**
- * Next.js Webpack Configuration - EMERGENCY RUNTIME FIX
- * @description Configuração de emergência para resolver corrupção total do webpack runtime
- * @version 7.0.0 - CRITICAL FIX
- * @author Emergency Runtime Repair
- * @date 25/05/2025
+ * Next.js Webpack Configuration - Refractor Module Fix
+ * @description Configuration to resolve refractor module import issues
+ * @version 8.0.0 - REFRACTOR FIX
+ * @author System Repair
+ * @date 26/05/2025
  */
 
 const path = require('path');
 const webpack = require('webpack');
+const fs = require('fs');
 
 /**
- * EMERGENCY FIX: Configuração que resolve corrupção crítica do webpack:
- * 1. Module factory corruption (Cannot read properties of undefined reading 'call')
- * 2. Runtime chunk initialization failures
- * 3. Client-side module loading breakdown
- * 4. React hydration system collapse
+ * REFRACTOR FIX: Configuration to resolve refractor module import issues:
+ * 1. Create proper aliases for refractor language modules
+ * 2. Handle missing refractor/lang/lang.js import
+ * 3. Ensure all refractor languages are available
+ * 4. Fix Sanity's refractor dependencies
  */
 function createWebpackConfig(config, { isServer, dev, buildId }) {
-  // ===== EMERGENCY: Prevent Module Factory Corruption =====
   
-  // 1. CRITICAL: Disable problematic optimizations that break module factories
+  // Basic optimization settings
   config.optimization = config.optimization || {};
   
   if (!isServer && dev) {
-    // DEVELOPMENT: Ultra-safe configuration
-    config.optimization.splitChunks = false; // Disable chunk splitting entirely in dev
-    config.optimization.runtimeChunk = false; // Disable runtime chunks in dev
-    config.optimization.concatenateModules = false;
-    config.optimization.providedExports = false;
-    config.optimization.usedExports = false;
-    config.optimization.sideEffects = false;
+    config.optimization.splitChunks = false;
+    config.optimization.runtimeChunk = false;
     config.optimization.minimize = false;
   }
   
-  // 2. Global Object Safety
+  // Global object safety
   config.output = config.output || {};
   config.output.globalObject = 'globalThis';
-  config.output.chunkLoadingGlobal = 'webpackChunk_nova_ipe';    // 3. EMERGENCY: Module Resolution Hardening
-  config.resolve = config.resolve || {};
-  config.resolve.symlinks = false; // Disable symlinks to prevent module confusion
-  config.resolve.cacheWithContext = false;
+  config.output.chunkLoadingGlobal = 'webpackChunk_nova_ipe';
   
-  // 4. Strict module rules to prevent factory corruption
+  // Module resolution configuration
+  config.resolve = config.resolve || {};
+  config.resolve.symlinks = false;
+  config.resolve.cacheWithContext = false;  
+  // Fallback configuration for server-side rendering
   if (!isServer) {
     config.resolve.fallback = {
       ...config.resolve.fallback,
@@ -51,38 +47,83 @@ function createWebpackConfig(config, { isServer, dev, buildId }) {
       stream: false,
       util: false,
       buffer: false,
-      events: false,      'react/jsx-dev-runtime': false, // Prevent double loading
+      events: false,
+      'react/jsx-dev-runtime': false,
       'react/jsx-runtime': false,
-      // Add ESM fallbacks for get-it  
       'get-it': false,
       'get-it/middleware': false
     };
   }
-  // 5. SANITY FIX: Specific module resolution for Sanity packages
-  if (!isServer) {
-    config.resolve.alias = {
-      ...config.resolve.alias,      // Fix get-it ES module resolution for browser
-      'get-it/middleware': path.resolve(__dirname, 'node_modules/get-it/dist/middleware.browser.js'),
-      'get-it': path.resolve(__dirname, 'node_modules/get-it/dist/index.browser.js'),
-      // Additional fallbacks for middleware submodules
-      'get-it/dist/middleware': path.resolve(__dirname, 'node_modules/get-it/dist/middleware.browser.js'),
-      'get-it/dist/index': path.resolve(__dirname, 'node_modules/get-it/dist/index.browser.js'),      // Visual editing fallbacks
-      '@sanity/visual-editing/react': path.resolve(__dirname, 'node_modules/@sanity/visual-editing/dist/react/index.js')
-    };  }
+
+  // ===== REFRACTOR MODULE RESOLUTION FIX =====
   
-  // 6. ESM Module handling for get-it and Sanity
+  if (!isServer) {
+    config.resolve.alias = config.resolve.alias || {};
+    
+    try {
+      // Find refractor package location
+      const refractorPkgPath = require.resolve('refractor/package.json');
+      const refractorDir = path.dirname(refractorPkgPath);
+      const langDir = path.join(refractorDir, 'lang');
+      
+      // Create comprehensive language module aliases
+      const languageModules = [
+        'bash', 'javascript', 'json', 'jsx', 'typescript', 'tsx', 
+        'css', 'markdown', 'html', 'python', 'java', 'cpp', 'c',
+        'csharp', 'php', 'ruby', 'go', 'rust', 'swift', 'kotlin'
+      ];
+      
+      // Set up aliases for all language modules
+      languageModules.forEach(lang => {
+        const langFile = path.join(langDir, `${lang}.js`);
+        if (fs.existsSync(langFile)) {
+          config.resolve.alias[`refractor/lang/${lang}.js`] = langFile;
+          config.resolve.alias[`refractor/lang/${lang}`] = langFile;
+        }
+      });
+      
+      // Special handling for the problematic lang.js file
+      const javascriptLangFile = path.join(langDir, 'javascript.js');
+      if (fs.existsSync(javascriptLangFile)) {
+        config.resolve.alias['refractor/lang/lang.js'] = javascriptLangFile;
+        config.resolve.alias['refractor/lang/lang'] = javascriptLangFile;
+      } else {
+        // Fallback to our custom module
+        config.resolve.alias['refractor/lang/lang.js'] = path.resolve(__dirname, 'lib/refractor-lang-fallback.js');
+        config.resolve.alias['refractor/lang/lang'] = path.resolve(__dirname, 'lib/refractor-lang-fallback.js');
+      }
+      
+      // Additional get-it aliases for Sanity
+      config.resolve.alias['get-it/middleware'] = path.resolve(__dirname, 'node_modules/get-it/dist/middleware.browser.js');
+      config.resolve.alias['get-it'] = path.resolve(__dirname, 'node_modules/get-it/dist/index.browser.js');
+      config.resolve.alias['get-it/dist/middleware'] = path.resolve(__dirname, 'node_modules/get-it/dist/middleware.browser.js');
+      config.resolve.alias['get-it/dist/index'] = path.resolve(__dirname, 'node_modules/get-it/dist/index.browser.js');
+      
+      // Sanity visual editing
+      config.resolve.alias['@sanity/visual-editing/react'] = path.resolve(__dirname, 'node_modules/@sanity/visual-editing/dist/react/index.js');
+      
+      console.log('✅ Refractor language module aliases configured successfully');
+      
+    } catch (err) {
+      console.warn('⚠️ Could not configure refractor paths:', err.message);
+      
+      // Fallback configuration if refractor is not found
+      config.resolve.alias['refractor/lang/lang.js'] = path.resolve(__dirname, 'lib/refractor-lang-fallback.js');
+      config.resolve.alias['refractor/lang/lang'] = path.resolve(__dirname, 'lib/refractor-lang-fallback.js');
+    }
+  }  
+  // ESM Module handling
   config.resolve.extensionAlias = {
     ...config.resolve.extensionAlias,
     '.js': ['.js', '.ts', '.tsx'],
     '.mjs': ['.mjs', '.js']
   };
+
+  // ===== PLUGIN CONFIGURATION =====
   
-  // ===== EMERGENCY: Plugin Configuration =====
-  
-  // 5. Minimal, safe plugins only
   config.plugins = config.plugins || [];
   
-  // Essential globals only
+  // Essential globals
   config.plugins.push(
     new webpack.DefinePlugin({
       'process.env.__NEXT_VERSION': JSON.stringify('15.2.4'),
@@ -91,29 +132,20 @@ function createWebpackConfig(config, { isServer, dev, buildId }) {
     })
   );
 
-  // 6. CRITICAL: Development optimizations for stability
+  // Development optimizations
   if (dev) {
-    // Disable filesystem cache that might be corrupted
     config.cache = false;
-    
-    // Disable all advanced optimizations
     config.optimization.removeAvailableModules = false;
     config.optimization.removeEmptyChunks = false;
     config.optimization.mergeDuplicateChunks = false;
     config.optimization.flagIncludedChunks = false;
     config.optimization.moduleIds = 'named';
     config.optimization.chunkIds = 'named';
-    
-    // Force stable module loading
     config.mode = 'development';
   }
 
-  // ===== EMERGENCY: Error Suppression =====
-  
-  // 7. Suppress all non-critical warnings that might interfere
-  config.ignoreWarnings = [/.*/]; // Ignore ALL warnings temporarily
-  
-  // 8. Stats configuration for minimal output
+  // Suppress warnings
+  config.ignoreWarnings = [/Failed to parse source map/];
   config.stats = 'minimal';
 
   return config;

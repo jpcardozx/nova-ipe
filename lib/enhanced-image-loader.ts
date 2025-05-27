@@ -166,9 +166,7 @@ export function loadImage(
             };
             imageProcessingCache.set(cacheKey, result);
             return result;
-        }
-
-        // CASO 5: Asset com URL direta
+        }        // CASO 5: Asset com URL direta
         if (image.asset?.url) {
             const result = {
                 url: image.asset.url,
@@ -177,7 +175,9 @@ export function loadImage(
             };
             imageProcessingCache.set(cacheKey, result);
             return result;
-        }        // CASO 6: Asset com referência Sanity
+        }
+
+        // CASO 6: Asset com referência Sanity
         if (image.asset?._ref) {
             const sanityUrl = createSanityImageUrl(image.asset._ref);
             const result = {
@@ -193,9 +193,11 @@ export function loadImage(
         if (image.asset && diagnostics.hasAsset && !image.asset._ref) {
             imageLog.warn('Asset com _ref undefined detectado - possível inconsistência de dados', {
                 propertyId: diagnostics.referenceValue || 'unknown',
-                assetKeys: diagnostics.assetKeys,
-                hasAsset: diagnostics.hasAsset,
-                assetRefExists: diagnostics.assetRefExists
+                details: {
+                    assetKeys: diagnostics.assetKeys,
+                    hasAsset: diagnostics.hasAsset,
+                    assetRefExists: diagnostics.assetRefExists
+                }
             });
             
             const result = { url: fallbackUrl, alt: image.alt || defaultAlt };
@@ -215,7 +217,9 @@ export function loadImage(
             };
             imageProcessingCache.set(cacheKey, result);
             return result;
-        }// CASO 7: Objeto com alt mas sem URL (comum no problema atual)
+        }
+
+        // CASO 7: Objeto com alt mas sem URL (comum no problema atual)
         // Aqui está a correção para o problema que estamos enfrentando
         if (image.alt && (diagnostics.keys.includes('alt') && diagnostics.keys.length === 1)) {
             // Estrutura quebrada detectada - gerar URL para buscar do Sanity pelo ID
@@ -236,7 +240,7 @@ export function loadImage(
                 url: fallbackUrl, // Por enquanto usamos fallback, mas poderia chamar API para recuperar
                 alt: image.alt
             };
-        }        // ÚLTIMO CASO: Não encontramos nenhuma estrutura válida
+        }// ÚLTIMO CASO: Não encontramos nenhuma estrutura válida
         imageLog.warn('Estrutura de imagem não reconhecida, usando fallback', {
             details: diagnostics
         });

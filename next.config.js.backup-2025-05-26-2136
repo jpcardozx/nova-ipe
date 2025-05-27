@@ -1,0 +1,115 @@
+/**
+ * Next.js Configuration - Clean Version
+ * @version 10.2.0 - Fixed Webpack + Sanity Issues
+ * @date 26/05/2025
+ */
+
+const isProduction = process.env.NODE_ENV === "production";
+const isDev = !isProduction;
+
+const nextConfig = {
+  reactStrictMode: true,
+  poweredByHeader: false,
+  compress: true,
+    // Transpile packages that need it
+  transpilePackages: [
+    'next-sanity'
+  ],
+  
+  experimental: {
+    // Features compatíveis com Next 14
+    scrollRestoration: true,
+    optimizeCss: true,
+    optimizePackageImports: ['lodash', 'date-fns'],
+    
+    serverComponentsExternalPackages: [
+      '@sanity/client',
+      '@sanity/image-url', 
+      '@sanity/visual-editing',
+      'get-it',
+      'sharp',
+      'canvas'
+    ],
+  },
+
+  compiler: {
+    removeConsole: isProduction,
+    reactRemoveProperties: isProduction,
+  },
+
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+
+  eslint: {
+    ignoreDuringBuilds: false,
+  },
+
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'cdn.sanity.io',
+        pathname: '/images/**',
+      },
+    ],
+    formats: ['image/webp', 'image/avif'],
+    deviceSizes: [360, 640, 1080, 1920],
+    imageSizes: [16, 32, 64, 128],
+    minimumCacheTTL: 86400, // 1 dia
+    dangerouslyAllowSVG: false,
+    disableStaticImages: false,
+  },
+
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+        ],
+      },
+    ];
+  },
+
+  onDemandEntries: {
+    maxInactiveAge: 90 * 1000,
+    pagesBufferLength: 5,
+  },
+  webpack: (config, { isServer, dev, buildId }) => {
+    console.log(`🛠 Webpack Override | Build: ${buildId} | Server: ${isServer} | Dev: ${dev}`);
+    
+    // Basic webpack configuration
+    config.resolve = config.resolve || {};
+    config.resolve.alias = config.resolve.alias || {};
+
+    // Client-side production optimizations
+    if (!dev && !isServer) {
+      console.log('🎯 Aplicando exclusões conservadoras para build de produção...');
+      
+      // Exclude studio-only packages
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        
+        // Studio-only packages (não necessários no cliente)
+        '@sanity/vision': false,
+        '@sanity/telemetry': false,
+      };
+    }
+
+    // Server-side externals
+    if (isServer) {
+      config.externals = config.externals || [];
+      config.externals.push({
+        '@sanity/client': 'commonjs @sanity/client',
+        'sharp': 'commonjs sharp',
+      });
+    }
+
+    return config;
+  },
+};
+
+module.exports = nextConfig;

@@ -1,0 +1,106 @@
+/**
+ * Next.js Configuration - Clean Version
+ * @version 11.0.0 - Simplified for stable build
+ * @date 27/05/2025
+ */
+
+const isProduction = process.env.NODE_ENV === "production";
+
+const nextConfig = {
+  reactStrictMode: true,
+  poweredByHeader: false,
+  compress: true,
+  
+  // Transpile packages that need it
+  transpilePackages: [
+    'next-sanity'
+  ],
+  
+  experimental: {
+    scrollRestoration: true,
+    optimizeCss: true,
+    optimizePackageImports: ['lodash', 'date-fns'],
+    
+    serverComponentsExternalPackages: [
+      '@sanity/client',
+      '@sanity/image-url', 
+      'sharp',
+    ],
+  },
+
+  compiler: {
+    removeConsole: isProduction,
+    reactRemoveProperties: isProduction,
+  },
+
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+
+  eslint: {
+    ignoreDuringBuilds: false,
+  },
+
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'cdn.sanity.io',
+        pathname: '/images/**',
+      },
+    ],
+    formats: ['image/webp', 'image/avif'],
+    deviceSizes: [360, 640, 1080, 1920],
+    imageSizes: [16, 32, 64, 128],
+    minimumCacheTTL: 86400,
+    dangerouslyAllowSVG: false,
+    disableStaticImages: false,
+  },
+
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+        ],
+      },
+    ];
+  },
+  webpack: (config, { isServer, dev }) => {
+    // Basic webpack configuration
+    config.resolve = config.resolve || {};
+    config.resolve.alias = config.resolve.alias || {};
+
+    // Ignore source map files that cause build errors
+    config.module.rules.push({
+      test: /\.js\.map$/,
+      use: 'ignore-loader'
+    });
+
+    // Client-side production optimizations
+    if (!dev && !isServer) {
+      // Exclude studio-only packages
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@sanity/vision': false,
+        '@sanity/telemetry': false,
+      };
+    }
+
+    // Server-side externals
+    if (isServer) {
+      config.externals = config.externals || [];
+      config.externals.push({
+        '@sanity/client': 'commonjs @sanity/client',
+        'sharp': 'commonjs sharp',
+      });
+    }
+
+    return config;
+  },
+};
+
+module.exports = nextConfig;

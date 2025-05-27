@@ -1,40 +1,18 @@
-/**
- * Next.js Configuration - Next 14 Compatible Version
- * @version 10.0.0 - Next 14.2.15 Compatible
- * @date 26/05/2025
- * CORRIGIDO: serverExternalPackages movido para experimental
- */
-
-const isProduction = process.env.NODE_ENV === "production";
-const isDev = !isProduction;
-
-const createWebpackConfig = require('./webpack.config.master');
-
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
   
   experimental: {
-    // Features compatíveis com Next 14
-    scrollRestoration: true,
     optimizeCss: true,
-    optimizePackageImports: ['lodash', 'date-fns'],
+    optimizePackageImports: ['lucide-react', 'date-fns'],
     
-    // CORRIGIDO: serverExternalPackages foi movido para experimental
     serverComponentsExternalPackages: [
       '@sanity/client',
-      '@sanity/image-url',
-      '@sanity/visual-editing',
-      'get-it',
+      '@sanity/image-url', 
       'sharp',
-      'canvas'
     ],
-  },
-
-  compiler: {
-    removeConsole: isProduction,
-    reactRemoveProperties: isProduction,
   },
 
   typescript: {
@@ -57,8 +35,6 @@ const nextConfig = {
     deviceSizes: [360, 640, 1080, 1920],
     imageSizes: [16, 32, 64, 128],
     minimumCacheTTL: 86400, // 1 dia
-    dangerouslyAllowSVG: false,
-    disableStaticImages: false,
   },
 
   async headers() {
@@ -72,59 +48,46 @@ const nextConfig = {
         ],
       },
     ];
-  },
-
-  onDemandEntries: {
-    maxInactiveAge: 90 * 1000,
-    pagesBufferLength: 5,
-  },
-
-  webpack: (config, { isServer, dev, buildId }) => {
-    console.log(`🛠 Webpack Override | Build: ${buildId} | Server: ${isServer} | Dev: ${dev}`);
-
-    // ESTRATÉGIA CONSERVADORA: Apenas excluir no cliente em produção
-    if (!dev && !isServer) {
-      console.log('🎯 Aplicando exclusões conservadoras para build de produção...');
-      
-      config.resolve = config.resolve || {};
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        
-        // Excluir apenas dependências críticas que quebram o build
-        '@sentry/nextjs': false,
-        '@sentry/react': false,
-        '@sentry/browser': false,
-        
-        // Studio-only packages (não necessários no cliente)
-        '@sanity/vision': false, // Apenas para desenvolvimento
-        '@sanity/telemetry': false, // Telemetria desnecessária no cliente
-        
-        // CodeMirror (apenas para o studio)
-        '@codemirror/autocomplete': false,
-        '@codemirror/commands': false,
-        '@codemirror/lang-javascript': false,
-        '@uiw/react-codemirror': false,
-        
-        // Dev dependencies que podem vazar
-        'json-2-csv': false,
-        'doc-path': false,
-        'deeks': false,
+  },  webpack: (config, { isServer, dev }) => {
+    // Resolver problemas de import/export
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
       };
     }
 
-    // Server-side externals
-    if (isServer) {
-      config.externals = config.externals || [];
-      config.externals.push({
-        'get-it': 'commonjs get-it',
-        '@sanity/client': 'commonjs @sanity/client',
-        '@sanity/visual-editing': 'commonjs @sanity/visual-editing',
-        'sharp': 'commonjs sharp',
-        'canvas': 'commonjs canvas',
-      });
-    }
+    // Ignorar arquivos .js.map que causam erros de parsing
+    config.module.rules.push({
+      test: /\.js\.map$/,
+      use: 'raw-loader'
+    });
 
-    return createWebpackConfig(config, { isServer, dev, buildId });
+    // Configurar para não processar source maps como módulos
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      // Evitar que webpack tente resolver source maps como módulos
+    };
+
+    // Ignorar warnings de source maps
+    config.ignoreWarnings = [
+      /Failed to parse source map/,
+      /Module parse failed.*\.js\.map/,
+      /Can't resolve.*\.js\.map/
+    ];
+
+    // Configuração específica para evitar que webpack processe .js.map como modules
+    config.module.rules.unshift({
+      test: /\.js\.map$/,
+      type: 'asset/resource',
+      generator: {
+        emit: false
+      }
+    });
+
+    return config;
   },
 };
 

@@ -187,8 +187,7 @@ export default function VirtualizedPropertiesGrid({
                             height={height}
                             rowCount={rowCount}
                             rowHeight={() => ROW_HEIGHT}
-                            width={width}
-                            itemKey={({ columnIndex, rowIndex }) => {
+                            width={width} itemKey={({ columnIndex, rowIndex }: { columnIndex: number; rowIndex: number }) => {
                                 const index = rowIndex * columnCount + columnIndex;
                                 return index < properties.length ? properties[index].id : `empty-${index}`;
                             }}

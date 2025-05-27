@@ -2,6 +2,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import '../preload' // Precarrega módulos críticos como refractor
 
 // Prevent Sentry from loading in studio page to avoid conflicts
 if (typeof window !== 'undefined') {

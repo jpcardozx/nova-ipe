@@ -1,6 +1,9 @@
 // sanity.config.ts - Configuração SENIOR com fallbacks robustos
 // SOLUÇÃO SENIOR: Importações condicionais baseadas no ambiente
 
+// Pré-carregar linguagens do refractor para evitar erros no build
+import './lib/refractor-languages';
+
 let defineConfig: any;
 let deskTool: any;
 let visionTool: any;
