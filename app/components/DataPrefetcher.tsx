@@ -107,7 +107,7 @@ async function prefetchData(url: string): Promise<void> {
                 'X-Prefetch': 'true'
             },
             priority: 'low',
-            cache: 'force-cache',
+            next: { revalidate: 3600 }, // Cache for 1 hour
             signal: AbortSignal.timeout(5000) // Abort after 5 seconds
         });
 

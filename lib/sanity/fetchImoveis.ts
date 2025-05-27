@@ -22,10 +22,11 @@ async function fetchWithCache<T>(
     params = {},
     tags: string[] = []
 ): Promise<T> {
-    try {
-        const data = await serverClient.fetch<T>(query, params, {
-            cache: 'force-cache',
-            next: { tags },
+    try {        const data = await serverClient.fetch<T>(query, params, {
+            next: { 
+                tags,
+                revalidate: 3600 // Default 1 hour cache
+            },
         });
         return data;
     } catch (err) {

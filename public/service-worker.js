@@ -1,279 +1,191 @@
-/**
- * Service Worker for Nova Ipê Imobiliária
- * Generated on: 2025-05-27T00:05:14.313Z
- * 
- * This service worker implements a stale-while-revalidate strategy for static chunks
- * to prevent chunk loading errors and improve offline capabilities.
- */
+// Service Worker para Nova Ipê - Versão JavaScript Pura
+// Versão: 2.0.0 - Compatível com todos os navegadores
 
+const CACHE_NAME = 'nova-ipe-v2.0.0';
+const STATIC_CACHE_NAME = 'nova-ipe-static-v2.0.0';
 
-
-
-
-export { };
-const SW_VERSION = '2.1.0';
-const BUILD_TIME = Date.now();
-const CACHE_VERSION = `v5-${BUILD_TIME}`;
-const CHUNK_CACHE_NAME = `nova-ipe-chunk-cache-${CACHE_VERSION}`;
-const OFFLINE_CACHE_NAME = `nova-ipe-offline-cache-${CACHE_VERSION}`;
-const STATIC_CACHE_NAME = `nova-ipe-static-cache-${CACHE_VERSION}`;
-const API_CACHE_NAME = `nova-ipe-api-cache-${CACHE_VERSION}`;
-const IMAGE_CACHE_NAME = `nova-ipe-image-cache-${CACHE_VERSION}`;
-
-// Critical assets for immediate caching
-const CRITICAL_ASSETS = [
-    '/_next/static/chunks/main-app.js',
-    '/_next/static/chunks/app/page.js',
-    '/_next/static/chunks/webpack.js',
-    '/offline',
-    '/404',
-    '/',
-    '/fonts/critical-icons.woff2',
-    '/images/logo.png',
-    '/manifest.webmanifest',
+// Recursos essenciais para cache
+const STATIC_ASSETS = [
+  '/',
+  '/manifest.json',
+  '/favicon.ico',
+  '/_next/static/css',
+  '/_next/static/js'
 ];
 
-// Asset patterns with caching strategies
-const PATTERNS = {
-    chunks: /\/_next\/static\/chunks\//,
-    static: /\.(css|js|woff2|ico)$/,
-    image: /\.(png|jpg|jpeg|svg|webp|gif|avif)$/,
-    api: /\/api\//,
-    sanity: /cdn\.sanity\.io/,
-    fonts: /\.(woff2|woff|ttf|otf)$/
-};
+// URLs que devem ser sempre atualizadas
+const DYNAMIC_URLS = [
+  '/api/',
+  '/sanity/',
+  'https://0nks58lj.apicdn.sanity.io/'
+];
 
-// Cache configuration
-const CACHE_CONFIG = {
-    chunks: {
-        name: CHUNK_CACHE_NAME,
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
-        maxEntries: 300, // Aumentado para comportar mais chunks
-        priority: 'high' as const
-    },
-    image: {
-        name: IMAGE_CACHE_NAME,
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-        maxEntries: 100
-    },
-    static: {
-        name: STATIC_CACHE_NAME,
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        maxEntries: 200
-    },
-    api: {
-        name: API_CACHE_NAME,
-        maxAge: 60 * 60 * 1000, // 1 hour
-        maxEntries: 50
-    }
-};
-
-// --- Service Worker: Deeply Improved, TypeScript-Safe, and Robust ---
-
-// TypeScript: Use globalThis for service worker context
-declare const self: ServiceWorkerGlobalScope;
-
-// --- Install Event ---
-self.addEventListener('install', (event) => {
-    const swEvent = event as ExtendableEvent;
-    console.log('[Service Worker] Installing version', SW_VERSION);
-    swEvent.waitUntil(
-        Promise.all([
-            caches.open(CHUNK_CACHE_NAME).then(cache => {
-                console.log('[Service Worker] Precaching critical assets');
-                return cache.addAll(CRITICAL_ASSETS);
-            }),
-            caches.open(STATIC_CACHE_NAME),
-            caches.open(IMAGE_CACHE_NAME),
-            caches.open(API_CACHE_NAME),
-        ])
-            .then(() => self.skipWaiting())
-            .catch(error => {
-                console.error('[Service Worker] Precaching failed:', error);
-                return self.skipWaiting();
-            })
-    );
+// Instalação do Service Worker
+self.addEventListener('install', function(event) {
+  console.log('[SW] Installing service worker...');
+  
+  event.waitUntil(
+    caches.open(STATIC_CACHE_NAME)
+      .then(function(cache) {
+        console.log('[SW] Caching static assets');
+        return cache.addAll(STATIC_ASSETS);
+      })
+      .then(function() {
+        console.log('[SW] Static assets cached successfully');
+        return self.skipWaiting();
+      })
+      .catch(function(error) {
+        console.error('[SW] Failed to cache static assets:', error);
+      })
+  );
 });
 
-// --- Activate Event ---
-self.addEventListener('activate', (event) => {
-    const swEvent = event as ExtendableEvent;
-    console.log('[Service Worker] Activating version', SW_VERSION);
-    swEvent.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all([
-                ...cacheNames.map(cacheName => {
-                    if (
-                        cacheName.startsWith('nova-ipe-') &&
-                        ![CHUNK_CACHE_NAME, STATIC_CACHE_NAME, IMAGE_CACHE_NAME, API_CACHE_NAME, OFFLINE_CACHE_NAME].includes(cacheName)
-                    ) {
-                        console.log('[Service Worker] Deleting old cache:', cacheName);
-                        return caches.delete(cacheName);
-                    }
-                }),
-                self.clients.claim(),
-            ]);
-        })
-    );
-});
-
-// Helper functions
-function shouldCache(response | undefined): response is Response {
-    return response !== undefined && response.status === 200 && response.type === 'basic';
-}
-
-function getCacheConfig(request: Request): CacheConfig | null {
-    const url = new URL(request.url);
-
-    if (PATTERNS.image.test(url.pathname) || PATTERNS.sanity.test(url.hostname)) {
-        return CACHE_CONFIG.image;
-    }
-    if (PATTERNS.static.test(url.pathname)) {
-        return CACHE_CONFIG.static;
-    }
-    if (PATTERNS.api.test(url.pathname)) {
-        return CACHE_CONFIG.api;
-    }
-    if (PATTERNS.chunks.test(url.pathname)) {
-        return CACHE_CONFIG.chunks;
-    }
-    return null;
-}
-
-async function cleanCache(cacheName: string, maxEntries: number, maxAge: number) {
-    const cache = await caches.open(cacheName);
-    const keys = await cache.keys();
-    const now = Date.now();
-
-    for (const request of keys) {
-        const response = await cache.match(request);
-        if (!response) continue;
-
-        const date = response.headers.get('date');
-        if (date) {
-            const cacheTime = new Date(date).getTime();
-            if (now - cacheTime > maxAge) {
-                await cache.delete(request);
+// Ativação do Service Worker
+self.addEventListener('activate', function(event) {
+  console.log('[SW] Activating service worker...');
+  
+  event.waitUntil(
+    caches.keys()
+      .then(function(cacheNames) {
+        return Promise.all(
+          cacheNames.map(function(cacheName) {
+            if (cacheName !== CACHE_NAME && cacheName !== STATIC_CACHE_NAME) {
+              console.log('[SW] Deleting old cache:', cacheName);
+              return caches.delete(cacheName);
             }
-        }
-    }
-
-    // If we still have too many entries, remove the oldest ones
-    if (keys.length > maxEntries) {
-        const entriesToRemove = keys.length - maxEntries;
-        for (let i = 0; i < entriesToRemove; i++) {
-            await cache.delete(keys[i]);
-        }
-    }
-}
-
-// --- Fetch Event ---
-self.addEventListener('fetch', (event) => {
-    const swEvent = event as FetchEvent;
-    const { request } = swEvent;
-
-    // Ignorar métodos não-GET
-    if (request.method !== 'GET') return;
-
-    // Verificar se é um chunk dinâmico
-    const isChunk = PATTERNS.chunks.test(request.url);
-    if (isChunk) {
-        swEvent.respondWith(
-            (async () => {
-                try {
-                    const cache = await caches.open(CHUNK_CACHE_NAME);
-                    const cachedResponse = await cache.match(request);
-
-                    if (cachedResponse) {
-                        // Background revalidation
-                        fetch(request)
-                            .then(networkResponse => {
-                                if (shouldCache(networkResponse)) {
-                                    void cache.put(request, networkResponse.clone());
-                                }
-                            })
-                            .catch(() => { /* Silent fail on revalidation */ });
-
-                        return cachedResponse;
-                    }
-
-                    const networkResponse = await fetch(request);
-                    if (shouldCache(networkResponse)) {
-                        await cache.put(request, networkResponse.clone());
-                    }
-                    return networkResponse;
-                } catch (error) {
-                    const cache = await caches.open(CHUNK_CACHE_NAME);
-                    const lastCachedResponse = await cache.match(request);
-                    if (lastCachedResponse) return lastCachedResponse;
-                    return new Response('', { status: 503 });
-                }
-            })()
+          })
         );
-        return;
-    }
-
-    // Handle other resources with normal caching
-    const cacheConfig = getCacheConfig(request);
-    if (request.url.includes('/_next/static/chunks/') || CRITICAL_ASSETS.includes(request.url)) {
-        swEvent.respondWith(
-            caches.match(request).then(cachedResponse => {
-                const fetchPromise = fetch(request).then(networkResponse => {
-                    if (shouldCache(networkResponse)) {
-                        const clone = networkResponse.clone();
-                        void caches.open(CHUNK_CACHE_NAME).then(cache => void cache.put(request, clone));
-                    }
-                    return networkResponse;
-                });
-                return cachedResponse || fetchPromise;
-            })
-        );
-    } else if (cacheConfig) {
-        swEvent.respondWith(
-            caches.open(cacheConfig.name).then(async cache => {
-                const cachedResponse = await cache.match(request);
-                const fetchPromise = fetch(request)
-                    .then(networkResponse => {
-                        if (shouldCache(networkResponse)) {
-                            const clone = networkResponse.clone();
-                            void cache.put(request, clone).then(() =>
-                                void cleanCache(cacheConfig.name, cacheConfig.maxEntries, cacheConfig.maxAge)
-                            );
-                        }
-                        return networkResponse;
-                    })
-                    .catch(() => {
-                        if (cachedResponse) return cachedResponse;
-                        throw new Error('No cached response available');
-                    });
-                return cachedResponse || fetchPromise;
-            })
-        );
-    } else {
-        swEvent.respondWith(
-            (async () => {
-                try {
-                    const response = await Promise.race<Response | undefined>([
-                        fetch(request).catch(() => undefined),
-                        new Promise<Response | undefined>((resolve) => {
-                            setTimeout(async () => {
-                                const cacheResponse = await caches.match(request);
-                                resolve(cacheResponse || undefined);
-                            }, 3000);
-                        })
-                    ]);
-
-                    if (response) return response;
-                    const cacheResponse = await caches.match(request);
-                    if (cacheResponse) return cacheResponse;
-                    return new Response('', { status: 503 });
-                } catch {
-                    return new Response('', { status: 503 });
-                }
-            })()
-        );
-    }
+      })
+      .then(function() {
+        console.log('[SW] Service worker activated successfully');
+        return self.clients.claim();
+      })
+  );
 });
 
+// Interceptação de requisições
+self.addEventListener('fetch', function(event) {
+  const request = event.request;
+  const url = new URL(request.url);
 
-// Build timestamp: 1748304314317
+  // Ignorar requisições que não são HTTP/HTTPS
+  if (!request.url.startsWith('http')) {
+    return;
+  }
+
+  // Strategy: Network First para APIs e dados dinâmicos
+  if (isDynamicRequest(request)) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
+  // Strategy: Cache First para recursos estáticos
+  if (isStaticAsset(request)) {
+    event.respondWith(cacheFirst(request));
+    return;
+  }
+
+  // Strategy: Stale While Revalidate para páginas HTML
+  event.respondWith(staleWhileRevalidate(request));
+});
+
+// Verifica se é uma requisição dinâmica
+function isDynamicRequest(request) {
+  const url = request.url;
+  return DYNAMIC_URLS.some(function(dynamicUrl) {
+    return url.includes(dynamicUrl);
+  });
+}
+
+// Verifica se é um asset estático
+function isStaticAsset(request) {
+  const url = request.url;
+  return url.includes('_next/static') || 
+         url.includes('.css') || 
+         url.includes('.js') || 
+         url.includes('.woff') || 
+         url.includes('.woff2');
+}
+
+// Strategy: Network First
+function networkFirst(request) {
+  return fetch(request)
+    .then(function(response) {
+      if (response.ok) {
+        const responseClone = response.clone();
+        caches.open(CACHE_NAME)
+          .then(function(cache) {
+            cache.put(request, responseClone);
+          });
+      }
+      return response;
+    })
+    .catch(function() {
+      return caches.match(request)
+        .then(function(response) {
+          if (response) {
+            return response;
+          }
+          // Fallback para erro de rede
+          return new Response('No cached response available', {
+            status: 503,
+            statusText: 'Service Unavailable'
+          });
+        });
+    });
+}
+
+// Strategy: Cache First
+function cacheFirst(request) {
+  return caches.match(request)
+    .then(function(response) {
+      if (response) {
+        return response;
+      }
+      
+      return fetch(request)
+        .then(function(networkResponse) {
+          if (networkResponse.ok) {
+            const responseClone = networkResponse.clone();
+            caches.open(STATIC_CACHE_NAME)
+              .then(function(cache) {
+                cache.put(request, responseClone);
+              });
+          }
+          return networkResponse;
+        });
+    });
+}
+
+// Strategy: Stale While Revalidate
+function staleWhileRevalidate(request) {
+  return caches.match(request)
+    .then(function(cachedResponse) {
+      const fetchPromise = fetch(request)
+        .then(function(networkResponse) {
+          if (networkResponse.ok) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME)
+              .then(function(cache) {
+                cache.put(request, responseClone);
+              });
+          }
+          return networkResponse;
+        })
+        .catch(function(error) {
+          console.warn('[SW] Network request failed:', error);
+          return cachedResponse;
+        });
+
+      return cachedResponse || fetchPromise;
+    });
+}
+
+// Message listener para comunicação com o client
+self.addEventListener('message', function(event) {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
+console.log('[SW] Service Worker loaded successfully');

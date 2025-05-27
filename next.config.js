@@ -3,9 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
-  
-  experimental: {
-    optimizeCss: true,
+    experimental: {
     optimizePackageImports: ['lucide-react', 'date-fns'],
     
     serverComponentsExternalPackages: [

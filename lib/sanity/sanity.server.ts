@@ -32,13 +32,13 @@ export async function serverFetch<T>({
         // Add timeout to prevent hanging requests
         const timeoutPromise = new Promise<never>((_, reject) => {
             setTimeout(() => reject(new Error('Sanity server fetch timeout')), 25000);
-        });
-
-        // Race between the fetch and the timeout
+        });        // Race between the fetch and the timeout
         const data = await Promise.race([
             serverClient.fetch<T>(query, params, {
-                cache: 'force-cache',
-                next: { tags },
+                next: { 
+                    tags,
+                    revalidate: 3600 // Default 1 hour cache
+                },
             }),
             timeoutPromise
         ]) as T;

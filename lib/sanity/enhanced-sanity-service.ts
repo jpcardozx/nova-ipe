@@ -67,16 +67,14 @@ export async function fetchWithOptimizedCache<T>(
         return memCached as T;
     }
 
-    try {
-        // Use Next.js unstable_cache with tags for revalidation
+    try {        // Use Next.js unstable_cache with tags for revalidation
         const fetchFunction = async () => {
             // Check if we should force fresh data
             const fetchOptions: FilteredResponseQueryOptions = {
-                cache: forceFresh ? 'no-store' : 'force-cache',
+                cache: forceFresh ? 'no-store' : 'default',
                 next: {
-                    // Apply revalidation settings
+                    // Apply tags for revalidation - revalidate is handled by unstable_cache
                     tags,
-                    revalidate,
                 },
             };
 

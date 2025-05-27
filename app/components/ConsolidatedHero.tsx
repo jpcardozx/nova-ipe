@@ -6,7 +6,7 @@ import Image from 'next/image';
 import {
     TrendingUp, Home, ChevronRight, BarChart3,
     Building2, MapPin, Check, Clock, Shield,
-    Phone, Mail, User, Trees, Car, X
+    Phone, Mail, User, Trees, Car, X, Star, Award
 } from 'lucide-react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 
@@ -46,22 +46,22 @@ const MARKET_METRICS: MarketMetric[] = [
     {
         id: 'growth',
         title: 'Valorização Imóveis',
-        value: '9.4%',
+        value: '11.8%',
         subtitle: 'média anual em Guararema',
         icon: <TrendingUp className="w-5 h-5" />
     },
     {
         id: 'properties',
-        title: 'Imóveis Selecionados',
-        value: '62',
-        subtitle: 'com exclusividade',
+        title: 'Oportunidades Exclusivas',
+        value: '23',
+        subtitle: 'disponíveis agora',
         icon: <Building2 className="w-5 h-5" />
     },
     {
         id: 'time',
-        title: 'Corretores Certificados',
-        value: '24h',
-        subtitle: 'para atendimento',
+        title: 'Velocidade de Venda',
+        value: '37d',
+        subtitle: 'vs 120d do mercado',
         icon: <Clock className="w-5 h-5" />
     }
 ];
@@ -71,14 +71,14 @@ const NEIGHBORHOOD_DATA: Record<'invest' | 'live', NeighborhoodData[]> = {
         {
             name: 'Centro Histórico',
             priceRange: 'R$ 750K - R$ 1.2M',
-            characteristics: 'Alta liquidez garantida',
+            characteristics: 'ROI de 8.4% + valorização',
             distance: 'Centro da cidade',
-            highlight: 'ROI de 7.8% a.a.'
+            highlight: 'Liquidez imediata garantida'
         },
         {
             name: 'Residencial Ipiranga',
             priceRange: 'R$ 550K - R$ 780K',
-            characteristics: 'Em expansão rápida',
+            characteristics: 'Gateway SP em construção',
             distance: '6km do centro',
             highlight: 'Valorização de 11.2% em 2024'
         },
@@ -87,7 +87,7 @@ const NEIGHBORHOOD_DATA: Record<'invest' | 'live', NeighborhoodData[]> = {
             priceRange: 'R$ 480K - R$ 690K',
             characteristics: 'Novos empreendimentos',
             distance: '8km do centro',
-            highlight: 'Potencial entrada Gateway'
+            highlight: 'ROI projetado de 9.8% a.a.'
         }
     ],
     live: [
@@ -486,10 +486,28 @@ const NeighborhoodCard: React.FC<{
 export default function ConsolidatedHero() {
     const [selectedIntent, setSelectedIntent] = useState<'invest' | 'live'>('invest');
     const [showContactForm, setShowContactForm] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
     const heroRef = useRef<HTMLElement>(null);
     const isInView = useInView(heroRef, { once: true });
 
+    // Fix Suspense issue by ensuring component is mounted
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
     const bgImageUrl = "/images/hero-bg.png";
+
+    // Prevent rendering until mounted to avoid hydration issues
+    if (!isMounted) {
+        return (
+            <section className="relative min-h-screen bg-white flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-amber-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Carregando experiência premium...</p>
+                </div>
+            </section>
+        );
+    }
 
     return (
         <section
@@ -547,17 +565,16 @@ export default function ConsolidatedHero() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
                                 className="text-center mb-12"
-                            >
-                                <h1 id="hero-heading" className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                                    Encontre seu refúgio
+                            >                                <h1 id="hero-heading" className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                                    Conquiste sua independência
                                     <span className="block bg-clip-text text-transparent bg-gradient-to-r from-amber-600 to-amber-500">
-                                        em Guararema
+                                        financeira com imóveis em Guararema
                                     </span>
                                 </h1>
 
                                 <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto">
-                                    Com mais de 15 anos conectando famílias aos melhores imóveis da região, com atendimento
-                                    personalizado para <span className="font-semibold">realizar sonhos</span> e <span className="font-semibold">garantir investimentos seguros</span>.
+                                    <span className="font-semibold text-blue-600">23 oportunidades exclusivas</span> selecionadas para investidores que buscam <span className="font-semibold">ROI superior a 8%</span> com{' '}
+                                    <span className="font-semibold text-green-600">liquidez garantida</span> no mercado de maior crescimento da região.
                                 </p>
                             </motion.div>
 
@@ -583,15 +600,13 @@ export default function ConsolidatedHero() {
                                             </div>
                                         </div>
 
-                                        <h3 className="text-sm font-medium text-amber-800 mb-1">{metric.title}</h3>
-
-                                        <div className="text-3xl lg:text-4xl font-bold text-gray-900 mb-1 flex items-baseline">
+                                        <h3 className="text-sm font-medium text-amber-800 mb-1">{metric.title}</h3>                                        <div className="text-3xl lg:text-4xl font-bold text-gray-900 mb-1 flex items-baseline">
                                             {metric.id === 'properties' ? (
-                                                <AnimatedCounter value={62} suffix="+" />
+                                                <AnimatedCounter value={23} suffix="" />
                                             ) : metric.id === 'time' ? (
-                                                <span className="tabular-nums">24h</span>
+                                                <span className="tabular-nums">37<span className="text-lg">d</span></span>
                                             ) : (
-                                                <AnimatedCounter value={9} suffix=".4%" />
+                                                <AnimatedCounter value={11} suffix=".8%" />
                                             )}
                                         </div>
 
@@ -695,40 +710,86 @@ export default function ConsolidatedHero() {
                                                         index={index}
                                                     />
                                                 ))}
+                                            </div>                                            {/* Urgency indicator */}
+                                            <div className="mb-4 flex items-center justify-center gap-2 text-sm">
+                                                <div className="flex items-center gap-1 px-3 py-1 bg-red-50 border border-red-200 rounded-full text-red-700">
+                                                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                                                    <span className="font-medium">
+                                                        Apenas <strong>23 oportunidades</strong> restantes
+                                                    </span>
+                                                </div>
                                             </div>
 
-                                            {/* CTA */}
-                                            <div className="rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 p-0.5 shadow-lg">
+                                            {/* Progress bar */}
+                                            <div className="mb-6">
+                                                <div className="flex justify-between text-xs text-gray-600 mb-2">
+                                                    <span>37 já reservados</span>
+                                                    <span>60 total</span>
+                                                </div>
+                                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                                    <div className="bg-gradient-to-r from-orange-500 to-red-500 h-2 rounded-full" style={{ width: '62%' }}></div>
+                                                </div>
+                                            </div>
+
+                                            {/* Premium CTA */}
+                                            <div className="rounded-xl bg-gradient-to-r from-red-600 via-red-500 to-orange-500 p-0.5 shadow-lg animate-pulse">
                                                 <button
                                                     onClick={() => setShowContactForm(true)}
-                                                    className="w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-b from-transparent to-black/5 text-white rounded-[10px] font-semibold hover:from-transparent hover:to-black/10 transition-all"
-                                                    aria-label="Solicitar consulta personalizada gratuita"
+                                                    className="w-full flex items-center justify-center gap-2 py-5 bg-gradient-to-b from-transparent to-black/10 text-white rounded-[10px] font-bold text-lg hover:from-transparent hover:to-black/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                                    aria-label="Reservar minha oportunidade de investimento"
                                                 >
-                                                    Consulta Personalizada Gratuita
-                                                    <ChevronRight className="w-5 h-5" aria-hidden="true" />
+                                                    🔥 RESERVAR MINHA OPORTUNIDADE
+                                                    <ChevronRight className="w-5 h-5 animate-bounce" aria-hidden="true" />
                                                 </button>
                                             </div>
 
-                                            {/* Trust elements */}
+                                            {/* Secondary CTA */}
+                                            <div className="mt-3">
+                                                <button
+                                                    onClick={() => setShowContactForm(true)}
+                                                    className="w-full py-3 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-medium"
+                                                >
+                                                    Ver análise de mercado gratuita
+                                                </button>
+                                            </div>                                            {/* Social Proof with ROI testimonials */}
                                             <div className="mt-6 flex flex-col items-center">
+                                                {/* Quick testimonials */}
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4 w-full">
+                                                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
+                                                        <div className="text-sm text-green-800">
+                                                            <strong>"ROI de 17.2% em 18 meses"</strong>
+                                                        </div>
+                                                        <div className="text-xs text-green-600">- Maria C., investidora</div>
+                                                    </div>
+                                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
+                                                        <div className="text-sm text-blue-800">
+                                                            <strong>"Vendeu em 15 dias"</strong>
+                                                        </div>
+                                                        <div className="text-xs text-blue-600">- Roberto S., casa Centro</div>
+                                                    </div>
+                                                </div>
+
                                                 <div className="flex items-center gap-3 mb-2">
                                                     <div className="flex -space-x-2" aria-label="Corretores disponíveis">
                                                         <div className="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center text-white text-xs">JM</div>
                                                         <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs ml-[-5px]">LF</div>
                                                         <div className="w-7 h-7 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs ml-[-5px]">JL</div>
                                                     </div>
-                                                    <span className="text-sm text-gray-800 font-medium">3 corretores disponíveis agora</span>
+                                                    <span className="text-sm text-gray-800 font-medium">3 especialistas disponíveis agora</span>
                                                 </div>
 
                                                 <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-gray-500">
                                                     <span className="flex items-center gap-1">
-                                                        <Check className="w-3 h-3 text-green-600" aria-hidden="true" /> Atendimento personalizado
+                                                        <Check className="w-3 h-3 text-green-600" aria-hidden="true" />
+                                                        <strong>ROI médio 8.4%</strong>
                                                     </span>
                                                     <span className="flex items-center gap-1">
-                                                        <Check className="w-3 h-3 text-green-600" aria-hidden="true" /> Sem compromisso
+                                                        <Check className="w-3 h-3 text-green-600" aria-hidden="true" />
+                                                        <strong>Liquidez garantida</strong>
                                                     </span>
                                                     <span className="flex items-center gap-1">
-                                                        <Check className="w-3 h-3 text-green-600" aria-hidden="true" /> Experiência local desde 2010
+                                                        <Check className="w-3 h-3 text-green-600" aria-hidden="true" />
+                                                        <strong>15 anos no mercado</strong>
                                                     </span>
                                                 </div>
                                             </div>
