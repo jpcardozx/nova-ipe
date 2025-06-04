@@ -3,9 +3,12 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Calendar, Loader2, AlertTriangle, Ghost, MapPin, Wallet } from "lucide-react";
-import type { ImovelClient as Imovel } from "@/types/imovel-client";
+import { formatarMoeda, formatarImovelInfo } from '@/lib/utils';
+import type { ImovelClient as Imovel } from "../../src/types/imovel-client";
 
-// Estado de carregamento
+/**
+ * Estado de carregamento
+ */
 export function LoadingState() {
   return (
     <div className="flex justify-center items-center py-16 text-stone-600">
@@ -15,7 +18,9 @@ export function LoadingState() {
   );
 }
 
-// Estado de erro
+/**
+ * Estado de erro
+ */
 export function ErrorState() {
   return (
     <div className="flex flex-col items-center text-center py-16 text-stone-500">
@@ -25,7 +30,9 @@ export function ErrorState() {
   );
 }
 
-// Estado vazio
+/**
+ * Estado vazio
+ */
 export function EmptyState() {
   return (
     <div className="flex flex-col items-center text-center py-16 text-stone-400">

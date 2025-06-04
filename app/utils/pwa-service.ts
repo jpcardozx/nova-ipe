@@ -104,10 +104,8 @@ export function usePWAStatus(config: {
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange);
-        }
-
-        // Auto-register Service Worker if configured
-        if (config.autoRegister && typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+        }        // Auto-register Service Worker if configured (only in production)
+        if (config.autoRegister && typeof window !== 'undefined' && 'serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
             registerServiceWorker();
         }
 
@@ -142,12 +140,10 @@ export function usePWAStatus(config: {
 
         // Check service worker status
         const serviceWorkerActive = isServiceWorkerActive();
-        const serviceWorkerController = Boolean('serviceWorker' in navigator && navigator.serviceWorker.controller);
-
-        let serviceWorkerRegistered = false;
-        let version = null;
-        let buildTimestamp = null;
-        let cacheName = null;
+        const serviceWorkerController = Boolean('serviceWorker' in navigator && navigator.serviceWorker.controller);        let serviceWorkerRegistered = false;
+        let version: string | null = null;
+        let buildTimestamp: number | null = null;
+        let cacheName: string | null = null;
         let cachedPages: string[] = [];
 
         // Get service worker registration status

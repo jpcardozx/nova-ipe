@@ -1,0 +1,6 @@
+@echo off
+echo Limpando cache do Next.js...
+if exist .next rmdir /s /q .next
+echo Iniciando servidor na porta 4000...
+set PORT=4000
+npm run dev

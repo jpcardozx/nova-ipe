@@ -1,7 +1,5 @@
-// preload.ts - Carrega dependências críticas para evitar erros no build
-
-// Importa todas as linguagens refractor logo no início da aplicação
-import '../lib/refractor-languages';
+// preload.ts - Simplified preloader without refractor
+// Refractor dependency removed as part of architectural optimization
 
 export default function preloadCriticalDependencies() {
   return {

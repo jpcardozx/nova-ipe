@@ -2,8 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from 'next-sanity';
 import { projectId, dataset, apiVersion } from '@/studio/env';
 
-// Set runtime to edge for better performance
-export const runtime = 'edge';
+// Removed edge runtime to support @sanity/client
 export const revalidate = 3600; // Revalidate hourly
 
 // Create edge-compatible Sanity client

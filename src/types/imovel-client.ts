@@ -1,31 +1,26 @@
 // src/types/imovel-client.ts
 
-import type { Imovel as SanityImovel } from '@/types/sanity-schema'
+import type { Slug, Image as SanityImage, FileAsset } from '@sanity/types';
+import type { Imovel as SanityImovel } from './sanity-schema'; // Geopoint and Block will be assumed to be part of SanityImovel or resolved otherwise
 
-// Tipo para categoria expandida
-export interface CategoriaFull {
-    _id: string
-    titulo?: string
-    slug?: {
-        current: string
-    }
-    categoriaSlug?: string  // Campo adicional para facilitar acesso
-    categoriaTitulo?: string  // Campo adicional para facilitar acesso
-    disponibilidadeImediata?: boolean
-}
-
-// Tipo de imagem que o toClientImage retorna
+// Define ImagemClient based on ImagemProjetada or as a new interface
 export interface ImagemClient {
-    _type?: string     // Tipo do objeto de imagem (geralmente 'image')
-    imagemUrl?: string  // Alterado de url para imagemUrl para compatibilidade
-    alt?: string
-    url: string  // URL da imagem, compatível com o que o Sanity retorna
-    asset?: {
-        _type?: string  // Tipo do asset (geralmente 'sanity.imageAsset')
-        _ref?: string  // Referência do Sanity para a imagem (ex: image-abc123-800x600-jpg)
-        url?: string   // URL direta do asset
-    }
+    imagemUrl?: string;
+    alt?: string;
+    asset?: { // Common structure for Sanity image assets
+        _ref?: string;
+        _type?: string;
+    };
 }
+
+// Placeholder for CategoriaFull - define its structure as needed
+export interface CategoriaFull {
+    _id: string;
+    titulo?: string;
+    slug?: string;
+    // Add other fields relevant to CategoriaFull
+}
+
 
 /**
  * Interface para o imóvel já processado para o cliente
@@ -88,5 +83,10 @@ export interface ImagemProjetada {
 export interface ImovelProjetado extends Omit<SanityImovel, 'imagem' | 'imagemOpenGraph' | 'categoria'> {
     imagem?: ImagemProjetada
     imagemOpenGraph?: { imagemUrl?: string }
-    categoria?: CategoriaFull
+    categoria?: CategoriaFull // Ensure CategoriaFull is used here if it's part of SanityImovel
 }
+
+// Re-exporting Sanity core types if they are used directly elsewhere with these names
+// export type Geopoint = SanityGeopoint; // Removed as it's not directly exported from @sanity/types
+// export type Block = SanityBlock; // Removed as it's not directly exported from @sanity/types
+export type Image = SanityImage;

@@ -1,13 +1,46 @@
 ﻿'use client';
 
-import { getImoveisParaVenda } from '@/lib/sanity/fetchImoveis';
+import { getImoveisParaVenda } from '@lib/sanity/fetchImoveis';
 import SuperOptimizedPropertyPage from '../components/SuperOptimizedPropertyPage';
-import type { ImovelClient } from '@/types/imovel-client';
+import type { ImovelClient } from '../../src/types/imovel-client';
+import type { ImovelClientType } from '../../types/imovel';
 import { useState, useEffect } from 'react';
 
 interface TurboComprarPageProps {
     preloadedProperties?: ImovelClient[];
 }
+
+/**
+ * Adapta os imóveis do formato ImovelClient para o formato ImovelClientType
+ * necessário para o componente SuperOptimizedPropertyPage
+ */
+const adaptImovelToClientType = (imoveis: ImovelClient[]): ImovelClientType[] => {
+    return imoveis.map(imovel => {
+        // Garante que propertyType seja apenas 'rent' ou 'sale'
+        const propertyType = imovel.finalidade === 'Venda' ? 'sale' : 'rent';
+
+        return {
+            id: imovel._id, // Mapeia _id para id
+            title: imovel.titulo || '',
+            slug: typeof imovel.slug === 'string' ? imovel.slug : '',
+            location: imovel.bairro || '',
+            city: imovel.cidade,
+            price: imovel.preco || 0,
+            propertyType, // Já garantido como 'rent' ou 'sale'
+            area: imovel.areaUtil,
+            bedrooms: imovel.dormitorios,
+            bathrooms: imovel.banheiros,
+            parkingSpots: imovel.vagas,
+            mainImage: {
+                url: imovel.imagem?.imagemUrl || '',
+                alt: imovel.imagem?.alt || imovel.titulo || '',
+                blurDataUrl: imovel.imagem?.imagemUrl
+            },
+            isHighlight: imovel.destaque,
+            status: 'available'
+        };
+    });
+};
 
 /**
  * TurboComprarPage - Nova versão ultra otimizada da página de compra
@@ -27,60 +60,13 @@ export default function TurboComprarPage({ preloadedProperties }: TurboComprarPa
     const [fetchFunction] = useState(() => {
         if (preloadedProperties) {
             // Se temos dados pré-carregados, usamos uma função que os retorna imediatamente
-            return () => Promise.resolve(preloadedProperties.map(imovel => {
-                // Convertendo finalidade para garantir que seja apenas 'Venda' ou 'Aluguel'
-                const finalidade = imovel.finalidade === 'Temporada' ? 'Venda' : (imovel.finalidade || 'Venda');
-                
-                return {
-                    id: imovel._id,
-                    titulo: imovel.titulo || '',
-                    slug: imovel.slug,
-                    preco: imovel.preco || 0,
-                    finalidade: finalidade as 'Venda' | 'Aluguel',
-                    bairro: imovel.bairro,
-                    cidade: imovel.cidade,
-                    areaUtil: imovel.areaUtil,
-                    dormitorios: imovel.dormitorios,
-                    banheiros: imovel.banheiros,
-                    vagas: imovel.vagas,
-                    destaque: imovel.destaque,
-                    dataPublicacao: imovel.dataPublicacao,
-                    imagem: imovel.imagem ? {
-                        url: imovel.imagem.url,
-                        alt: imovel.imagem.alt || '',
-                        blurDataUrl: imovel.imagem.alt || undefined
-                    } : undefined
-                };
-            }));
+            // e os adaptamos para o formato esperado
+            return () => Promise.resolve(adaptImovelToClientType(preloadedProperties));
         } else {
-            // Caso contrário, usamos a função normal de fetch e mapeamos o resultado
+            // Caso contrário, usamos a função normal de fetch com adaptador
             return async () => {
                 const imoveis = await getImoveisParaVenda();
-                return imoveis.map(imovel => {
-                    // Convertendo finalidade para garantir que seja apenas 'Venda' ou 'Aluguel'
-                    const finalidade = imovel.finalidade === 'Temporada' ? 'Venda' : (imovel.finalidade || 'Venda');
-                    
-                    return {
-                        id: imovel._id,
-                        titulo: imovel.titulo || '',
-                        slug: imovel.slug,
-                        preco: imovel.preco || 0,
-                        finalidade: finalidade as 'Venda' | 'Aluguel',
-                        bairro: imovel.bairro,
-                        cidade: imovel.cidade,
-                        areaUtil: imovel.areaUtil,
-                        dormitorios: imovel.dormitorios,
-                        banheiros: imovel.banheiros,
-                        vagas: imovel.vagas,
-                        destaque: imovel.destaque,
-                        dataPublicacao: imovel.dataPublicacao,
-                        imagem: imovel.imagem ? {
-                            url: imovel.imagem.url,
-                            alt: imovel.imagem.alt || '',
-                            blurDataUrl: imovel.imagem.alt || undefined
-                        } : undefined
-                    };
-                });
+                return adaptImovelToClientType(imoveis);
             };
         }
     });

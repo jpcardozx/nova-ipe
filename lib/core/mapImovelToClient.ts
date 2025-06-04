@@ -1,6 +1,7 @@
 // Implementação otimizada com melhor gerenciamento de tipos e performance
-import type { ImovelClient, ImagemClient } from '@/src/types/imovel-client';
-import type { Imovel } from '@/types/sanity-schema';
+import type { ImagemClient, ImovelClient } from '@/src/types/imovel-client';
+import type { Imovel } from '../../src/types/sanity-schema';
+import { formatarMoeda, formatarArea, formatarEndereco } from '@/lib/utils';
 
 /**
  * Mapeia um imóvel do formato Sanity para o formato client com otimizações de performance
@@ -69,9 +70,12 @@ export function mapImovelToClient(imovel: Partial<Imovel>): ImovelClient {
     galeria: galeriaProcessada,
     caracteristicas,
     imagem: imagem ? {
-      url: imagem.asset?._ref || '',
+      imagemUrl: imagem.asset?._ref || '',
       alt: hasAltProperty(imagem) ? imagem.alt : titulo || '',
-      _type: 'image'
+      asset: {
+        _type: 'sanity.imageAsset',
+        _ref: imagem.asset?._ref || ''
+      }
     } : undefined
   };
 }

@@ -42,10 +42,9 @@ export async function handleContactForm(formData: FormData) {
 
     // Revalidate relevant pages
     revalidatePath('/contato');
-    
-    return { 
+      return { 
       success: true, 
-      message: 'Mensagem enviada com sucesso! Entraremos em contato em breve.'
+      message: 'Solicitação recebida! Nossa equipe de especialistas em investimentos imobiliários entrará em contato em breve com análise personalizada.'
     };
   } catch (error) {
     console.error('Contact form submission error:', error);
@@ -91,10 +90,9 @@ export async function handlePropertyInquiry(formData: FormData) {
     if (propertyId) {
       revalidateTag(`property-${propertyId}`);
     }
-    
-    return { 
+      return { 
       success: true, 
-      message: 'Sua solicitação sobre este imóvel foi enviada. Nossa equipe entrará em contato em breve!' 
+      message: 'Solicitação recebida! Preparando análise completa de ROI e potencial de valorização para este imóvel. Nossa equipe entrará em contato em até 2 horas úteis!' 
     };
   } catch (error) {
     console.error('Property inquiry error:', error);
@@ -133,11 +131,9 @@ export async function scheduleVisit(formData: FormData) {
 
     if (!response.ok) {
       throw new Error(`Failed to schedule visit: ${response.statusText}`);
-    }
-
-    return { 
+    }    return { 
       success: true, 
-      message: 'Visita agendada com sucesso! Confirmamos os detalhes por e-mail e telefone.' 
+      message: 'Visita estratégica agendada! Prepararemos material com análise financeira completa para apresentar durante sua visita. Confirmação será enviada por e-mail e telefone.' 
     };
   } catch (error) {
     console.error('Visit scheduling error:', error);

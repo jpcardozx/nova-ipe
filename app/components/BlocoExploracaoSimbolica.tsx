@@ -79,12 +79,11 @@ export default function BlocoExploracaoGuararema() {
                             onMouseLeave={() => setHoveredIndex(null)}
                         >
                             <div className="aspect-[16/10] relative">
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10" />
-
-                                <Image
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10" />                                <Image
                                     src={categoria.bgImage}
                                     alt={categoria.label}
                                     fill
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                                 />
 
@@ -157,12 +156,10 @@ export default function BlocoExploracaoGuararema() {
                             ))}
                         </div>
                     </div>
-                </div>
-
-                {/* Chamada para ação sutil */}
+                </div>                {/* Chamada para ação sutil */}
                 <div className="mt-12 text-center">
                     <p className="text-gray-600 mb-4">
-                        Não encontrou o que procura?
+                        Não encontrou sua oportunidade ideal?
                     </p>
                     <Link
                         href="/contato"
@@ -170,7 +167,7 @@ export default function BlocoExploracaoGuararema() {
                                  bg-amber-600 text-white rounded-lg font-medium
                                  hover:bg-amber-700 transition-colors duration-200"
                     >
-                        Fale com um corretor
+                        Receber análise personalizada
                         <Search className="w-4 h-4" />
                     </Link>
                 </div>

@@ -74,9 +74,13 @@ export function loadIcon(name: string): Promise<React.ComponentType<LucideProps>
         return Promise.resolve(iconCache.get(name));
     }
 
-    return import(`lucide-react/dist/esm/icons/${name.toLowerCase()}`)
+    return import(`lucide-react/dist/esm/icons/${name.toLowerCase()}.js`)
         .then(module => {
             iconCache.set(name, module.default);
             return module.default;
+        })
+        .catch(() => {
+            // Fallback: retorna um componente vazio se o ícone não existir
+            return () => null;
         });
 }

@@ -1,0 +1,14 @@
+{
+  "timestamp": "2025-06-02T19:50:49.472Z",
+  "projectName": "Nova Ipê",
+  "diagnostics": {
+    "completedSuccessfully": true,
+    "date": "02/06/2025, 16:50:49"
+  },
+  "recommendations": [
+    "Run the comprehensive consolidation script to fix component duplication",
+    "Apply the webpack fix to resolve hydration issues",
+    "Standardize imports to use unified components",
+    "Add explicit chunk names to dynamic imports for better code splitting"
+  ]
+}

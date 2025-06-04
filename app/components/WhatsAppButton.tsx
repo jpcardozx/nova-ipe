@@ -14,7 +14,7 @@ interface WhatsAppButtonProps {
 
 export default function WhatsAppButton({
     phoneNumber,
-    message = 'Olá! Gostaria de mais informações sobre imóveis em Guararema (via site)',
+    message = 'Olá! Quero descobrir oportunidades exclusivas de investimento imobiliário em Guararema (via site)',
     pulseAnimation = true,
     showAfterScroll = true,
     className = '',
@@ -64,7 +64,7 @@ export default function WhatsAppButton({
                     <div className="flex items-center justify-center w-8 h-8 bg-white bg-opacity-20 rounded-full">
                         <Phone className="w-4 h-4" />
                     </div>
-                    <span>Fale conosco</span>
+                    <span>Consultor online</span>
                 </a>
             </div>
         </SafeHydration>

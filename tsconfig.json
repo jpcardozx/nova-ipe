@@ -1,87 +1,77 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext",
-      "webworker"
-    ],
-    "typeRoots": [
-      "./node_modules/@types",
-      "./types"
+      "esnext"
     ],
     "allowJs": false,
+    "checkJs": false,
     "skipLibCheck": true,
-    "jsx": "preserve",
     "strict": true,
     "noEmit": true,
-    "esModuleInterop": true,
+    "incremental": true,
+    "target": "es2022",
     "module": "esnext",
+    "esModuleInterop": true,
     "moduleResolution": "bundler",
+    "downlevelIteration": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "forceConsistentCasingInFileNames": true,
-    "incremental": true,
+    "jsx": "preserve",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "strictNullChecks": true,
     "baseUrl": ".",
-    "jsxImportSource": "react",
     "paths": {
       "@/*": [
         "./*"
       ],
-      "@/src/*": [
-        "./src/*"
-      ],
-      "@/lib/*": [
-        "./lib/*"
-      ],
-      "@/components/*": [
-        "./components/*"
+      "@lib/*": [
+        "lib/*"
       ],
       "@app/*": [
         "app/*"
       ],
       "@components/*": [
-        "app/components/*"
+        "app/components/*",
+        "components/*"
       ],
       "@sections/*": [
-        "app/sections/*"
+        "app/sections/*",
+        "sections/*"
       ],
-      "@lib/*": [
-        "lib/*"
-      ],
-      "lib/*": [
-        "./lib/*"
-      ],
-      "@core/*": [
-        "src/lib/*"
+      "@/types/sanity-schema": [
+        "src/types/sanity-schema.d.ts"
       ],
       "@types/*": [
         "src/types/*"
       ],
-      "@/types/*": [
-        "src/types/*"
+      "@legacy-types/*": [
+        "types/*"
       ]
-    },
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+    }
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
-    "sanity.config.ts",
-    "sanity-codegen.config.ts",
-    "app/workers/service-worker.ts"
+    "src/types/**/*.d.ts",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
-    "studio/sanity.cli.js",
-    ".next",
-    "dist"
+    "archive",
+    "temp",
+    "public/api",
+    "types/sanity-schema.js",
+    "app/page.backup.tsx",
+    "app/page.clean.tsx",
+    "app/page.new.tsx",
+    "app/page.restored.tsx",
+    "app/page-*.tsx"
   ]
 }

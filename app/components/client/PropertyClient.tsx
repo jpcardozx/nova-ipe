@@ -148,15 +148,13 @@ export function PropertyClient({ properties }: { properties: Property[] }) {
                                         </span>
                                     )}
                                 </div>
-                            </div>
-
-                            {/* Price and CTA */}
+                            </div>                            {/* Price and CTA */}
                             <div className="flex justify-between items-center">
                                 <div className="text-2xl font-bold text-green-600">
                                     {property.price ? `R$ ${property.price.toLocaleString('pt-BR')}` : 'Consulte'}
                                 </div>
                                 <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-300 text-sm font-semibold">
-                                    Ver Detalhes
+                                    Analisar Investimento
                                 </button>
                             </div>
                         </div>

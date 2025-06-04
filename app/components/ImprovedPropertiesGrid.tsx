@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PropertyCard as ImprovedPropertyCard } from '@/components/ui/property/PropertyCard';
+import { PropertyCard as ImprovedPropertyCard } from '@/app/components/ui/property/PropertyCardUnified';
 import PropertyDebugger from './PropertyDebugger';
 import { XCircle } from 'lucide-react';
 

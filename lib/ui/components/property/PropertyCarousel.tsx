@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { PropertyCard, PropertyCardProps } from '@/components/ui/property/PropertyCard';
+import { PropertyCardUnified, PropertyCardUnifiedProps } from '@/app/components/ui/property/PropertyCardUnified';
 import { cn } from '../../../../lib/utils';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface PropertyCarouselProps {
-    properties: Omit<PropertyCardProps, 'onClick'>[];
+    properties: Omit<PropertyCardUnifiedProps, 'onClick'>[];
     title?: string;
     subtitle?: string;
     className?: string;
@@ -129,7 +129,7 @@ export function PropertyCarousel({
                                     itemClassName
                                 )}
                             >
-                                <div className="h-full p-1">                                    <PropertyCard
+                                <div className="h-full p-1">                                    <PropertyCardUnified
                                     {...property}
                                 />
                                 </div>

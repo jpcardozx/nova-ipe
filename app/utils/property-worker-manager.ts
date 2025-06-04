@@ -198,11 +198,10 @@ function extractFeaturesOnMainThread(properties: Property[]): PropertyFeatures {
     }
 
     const prices = properties.map(p => p.preco || 0).filter(p => p > 0);
-    const areas = properties.map(p => p.areaUtil || 0).filter(p => p > 0);
-    const bedrooms = [...new Set(properties.map(p => p.dormitorios || 0).filter(p => p > 0))];
-    const bathrooms = [...new Set(properties.map(p => p.banheiros || 0).filter(p => p > 0))];
-    const cities = [...new Set(properties.map(p => p.cidade || '').filter(Boolean))];
-    const neighborhoods = [...new Set(properties.map(p => p.bairro || '').filter(Boolean))];
+    const areas = properties.map(p => p.areaUtil || 0).filter(p => p > 0);    const bedrooms = Array.from(new Set(properties.map(p => p.dormitorios || 0).filter(p => p > 0)));
+    const bathrooms = Array.from(new Set(properties.map(p => p.banheiros || 0).filter(p => p > 0)));
+    const cities = Array.from(new Set(properties.map(p => p.cidade || '').filter(Boolean)));
+    const neighborhoods = Array.from(new Set(properties.map(p => p.bairro || '').filter(Boolean)));
 
     return {
         minPrice: Math.min(...prices),

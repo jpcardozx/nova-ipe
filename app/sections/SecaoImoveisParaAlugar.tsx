@@ -10,17 +10,36 @@ import React, {
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useInView } from 'react-intersection-observer';
-import { ChevronLeft, ChevronRight, ExternalLink, Loader2, AlertTriangle } from 'lucide-react';
+import { ExternalLink, Loader2, AlertTriangle } from 'lucide-react';
 import { getImoveisParaAlugar } from '@lib/sanity/fetchImoveis';
-import ImovelCard from '@components/ImovelCard';
-import type { ImovelClient as Imovel } from '@/types/imovel-client';
-import type { OptimizedCarouselProps } from '@/app/components/ui/OptimizedCarousel';
+import type { ImovelClient as Imovel } from '../../src/types/imovel-client';
+import { PropertyCarousel } from '@/app/components/ui/property/PropertyCarousel';
+import type { PropertyCardUnifiedProps } from '@/app/components/ui/property/PropertyCardUnified';
 import { cn } from '@/lib/utils';
 
-const OptimizedCarousel = dynamic(
-    () => import('@/app/components/ui/OptimizedCarousel').then((mod) => mod.OptimizedCarousel as React.ComponentType<OptimizedCarouselProps<Imovel>>),
-    { ssr: false, loading: () => <CarouselSkeleton /> }
-);
+// Função para transformar dados Sanity em PropertyCardUnifiedProps
+function transformImovelToPropertyCard(imovel: Imovel): PropertyCardUnifiedProps {
+    return {
+        id: imovel._id,
+        title: imovel.titulo || 'Imóvel para alugar',
+        slug: typeof imovel.slug === 'string' ? imovel.slug : imovel._id,
+        location: imovel.endereco || imovel.bairro || '',
+        city: imovel.cidade || '',
+        price: imovel.preco || 0,
+        propertyType: 'rent',
+        area: imovel.areaUtil,
+        bedrooms: imovel.dormitorios,
+        bathrooms: imovel.banheiros,
+        parkingSpots: imovel.vagas,
+        mainImage: {
+            url: imovel.imagem?.imagemUrl || imovel.galeria?.[0]?.imagemUrl || '/images/placeholder-property.jpg',
+            alt: imovel.imagem?.alt || imovel.titulo || 'Imóvel para alugar',
+            sanityImage: imovel.imagem
+        },
+        isHighlight: imovel.destaque || false,
+        isPremium: false // Campo não existe no ImovelClient
+    };
+}
 
 function useDestaquesAluguel(staleTime = 300_000) {
     const [data, setData] = useState<Imovel[]>([]);
@@ -67,14 +86,14 @@ function SectionWrapper({
     children: React.ReactNode;
 }) {
     return (
-        <section className="relative py-16 bg-gradient-aluguel overflow-hidden">
-            <div className="absolute inset-0 opacity-5 pointer-events-none bg-pattern-dots bg-pattern-lines" />
+        <section className="relative py-16 bg-gradient-to-b from-blue-50 to-white overflow-hidden">
+            <div className="absolute inset-0 opacity-5 pointer-events-none bg-pattern-dots" />
             <div className="relative z-10 max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
                 <header className="mb-12 text-center max-w-3xl mx-auto">
                     <div className="inline-flex items-center mb-3 px-4 py-1.5 border border-blue-200 bg-blue-50 text-blue-800 rounded-full text-sm font-medium">
                         {subtitle}
                     </div>
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-medium tracking-tight mb-4">
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4 text-blue-900">
                         {title}
                     </h2>
                     <p className="text-stone-600 text-lg">{description}</p>
@@ -94,18 +113,22 @@ function SectionState({
     onRetry: () => void;
     emptyLink: string;
 }) {
-    if (status === 'loading') return <CarouselSkeleton />;
+    // loading
+    if (status === 'loading') {
+        return <CarouselSkeleton />;
+    }
+    // error
     if (status === 'error') {
         return (
-            <div className="max-w-md mx-auto bg-white border border-stone-200 rounded-lg p-8 text-center shadow-md">
-                <AlertTriangle className="w-12 h-12 text-amber-600 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Erro ao carregar</h3>
-                <p className="text-stone-600 mb-4">Tente novamente.</p>
+            <div className="bg-red-50 border border-red-100 rounded-lg p-6 text-center max-w-md mx-auto">
+                <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-red-800 mb-2">Não foi possível carregar os imóveis</h3>
+                <p className="text-red-700 mb-4">Ocorreu um erro ao buscar os imóveis para alugar.</p>
                 <button
                     onClick={onRetry}
-                    className="inline-flex items-center gap-2 px-6 py-2.5 bg-amber-700 text-white rounded-lg hover:bg-amber-800 transition"
+                    className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
                 >
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <Loader2 className="w-5 h-5 animate-spin mr-2" />
                     Recarregar
                 </button>
             </div>
@@ -146,82 +169,42 @@ function CarouselSkeleton() {
 export default function SecaoImoveisParaAlugar() {
     const { data, status, refetch } = useDestaquesAluguel();
     const { ref: sectionRef } = useInView({ triggerOnce: true, rootMargin: '200px', threshold: 0.1 });
-    const navPrevRef = useRef<HTMLButtonElement>(null);
-    const navNextRef = useRef<HTMLButtonElement>(null);
 
     const handleKeyNav = (e: KeyboardEvent<HTMLDivElement>) => {
-        if (e.key === 'ArrowLeft') navPrevRef.current?.click();
-        if (e.key === 'ArrowRight') navNextRef.current?.click();
+        // Navegação por teclado será implementada internamente pelo PropertyCarousel
     };
 
     return (
         <SectionWrapper
             title="Imóveis para aluguel"
-            subtitle="Aluguel Curado"
-            description="Espaços selecionados por custo-benefício, localização e simbologia urbana."
+            subtitle="Aluguéis exclusivos"
+            description="Espaços selecionados por localização, qualidade e conforto para toda a família."
         >
             <div ref={sectionRef} tabIndex={0} onKeyDown={handleKeyNav}>
                 {status !== 'success' && (
-                    <SectionState status={status} onRetry={refetch} emptyLink="/imoveis/alugar" />
-                )}
-
-                {status === 'success' && data.length > 0 && (
-                    <>                        <OptimizedCarousel
-                        items={data}
-                        getKey={(i: Imovel) => i._id}
-                        renderItem={(i: Imovel) => <ImovelCard imovel={i} finalidade="Aluguel" />}
-                        prevRef={navPrevRef}
-                        nextRef={navNextRef} options={{
-                            slidesToShow: 1.1,
-                            spacing: 24,
-                            loop: true,
-                            breakpoints: {
-                                '(min-width: 768px)': { slidesToShow: 2.2, spacing: 24 },
-                                '(min-width: 1024px)': { slidesToShow: 3, spacing: 24 },
-                            },
-                        }}
-                        className="overflow-visible"
-                    />
-
-                        <button
-                            ref={navPrevRef}
-                            aria-label="Slide anterior"
-                            className={cn(
-                                'absolute top-1/2 left-4 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg',
-                                'hover:scale-110 transition focus:outline-none focus:ring-2 focus:ring-blue-300'
-                            )}
-                        >
-                            <ChevronLeft className="w-6 h-6 text-blue-700" />
-                        </button>
-                        <button
-                            ref={navNextRef}
-                            aria-label="Próximo slide"
-                            className={cn(
-                                'absolute top-1/2 right-4 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg',
-                                'hover:scale-110 transition focus:outline-none focus:ring-2 focus:ring-blue-300'
-                            )}
-                        >
-                            <ChevronRight className="w-6 h-6 text-blue-700" />
-                        </button>
+                    <SectionState status={status} onRetry={refetch} emptyLink="/alugar" />
+                )}                {status === 'success' && data.length > 0 && (
+                    <>
+                        <PropertyCarousel
+                            properties={data.map(transformImovelToPropertyCard)}
+                            slidesToShow={3}
+                            showControls={true}
+                            className="overflow-visible"
+                            variant="default"
+                        />
 
                         <div className="mt-12 text-center">
                             <Link
-                                href="/imoveis/alugar"
-                                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-700 text-white rounded-full shadow hover:bg-blue-800 transition"
+                                href="/alugar"
+                                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition font-medium"
                             >
-                                Ver todos os imóveis para alugar
+                                Ver mais opções para alugar
                                 <ExternalLink className="w-4 h-4" />
                             </Link>
                         </div>
                     </>
                 )}
             </div>
-
-            <style>{`
-        .bg-gradient-aluguel {
-          background: linear-gradient(180deg, #F8FAFC 0%, #EFF4F9 100%);
-        }
-      `}</style>
         </SectionWrapper>
     );
 }

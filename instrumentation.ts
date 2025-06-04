@@ -1,19 +1,22 @@
-﻿// Arquivo de instrumentação simplificado para desenvolvimento
+// This file is instrumented by Next.js automatically
+// It runs at the start of the application, both in client and server environments
 
-// Import global polyfill to fix "self is not defined" errors
-import './lib/global-polyfill.js';
+// Force SSR to use React production bundle
+if (typeof window === 'undefined') {
+  (process.env as any).NODE_ENV = 'production';
+}
+
+// Aplicar workarounds para React DOM no SSR
+if (typeof globalThis !== 'undefined' && typeof window === 'undefined') {
+  try {
+    const { setupReactDOMWorkarounds } = require('./lib/react-dom-ssr-workarounds');
+    setupReactDOMWorkarounds();
+  } catch (e: any) {
+    console.warn('Failed to apply React DOM SSR workarounds:', e.message);
+  }
+}
 
 export function register() {
-    // Verificar se as métricas estão habilitadas explicitamente
-    const enableVitals = process.env.NEXT_PUBLIC_ENABLE_WEB_VITALS === 'true';
-
-    if (!enableVitals) {
-        // Não fazer nada em desenvolvimento normal para acelerar
-        console.log("Instrumentação está desativada para acelerar o desenvolvimento");
-        return;
-    }
-
-    // Se explicitamente habilitado, carregamos a instrumentação
-    console.log("Instrumentação ativada para coleta de métricas");
-    // Aqui você poderia importar dinamicamente código de instrumentação se necessário
+  // Este método é chamado pelo Next.js durante a inicialização
+  // Podemos adicionar mais lógica de inicialização aqui se necessário
 }

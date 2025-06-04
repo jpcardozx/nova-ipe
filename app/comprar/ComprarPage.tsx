@@ -6,8 +6,9 @@ import Navbar from '@sections/NavBar';
 import Footer from '@sections/Footer';
 import Valor from '@sections/Valor';
 import ImovelCard from '@components/ImovelCard';
+import { PropertyCardUnified } from '@/app/components/ui/property/PropertyCardUnified';
 import { getImoveisParaVenda } from '@lib/sanity/fetchImoveis';
-import type { ImovelClient } from '@/types/imovel-client';
+import type { ImovelClient } from '../../src/types/imovel-client';
 
 export default function ComprarPage() {
     const [imoveis, setImoveis] = useState<ImovelClient[]>([]);
@@ -39,16 +40,31 @@ export default function ComprarPage() {
                         <p className="text-center text-neutral-500 text-lg">
                             Nenhum imóvel disponível para compra no momento.
                         </p>
-                    ) : (
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
-                            {imoveis.map((imovel) => (
-                                <ImovelCard
-                                    key={imovel._id}
-                                    imovel={imovel}
-                                    finalidade="Venda"
-                                />
-                            ))}
-                        </div>
+                    ) : (<div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                        {imoveis.map((imovel) => (
+                            <PropertyCardUnified
+                                key={imovel._id}
+                                id={imovel._id}
+                                title={imovel.titulo || ''}
+                                slug={imovel.slug || ''}
+                                location={imovel.endereco || ''}
+                                city={imovel.cidade || ''}
+                                price={imovel.preco || 0}
+                                propertyType="sale"
+                                area={imovel.areaUtil || undefined}
+                                bedrooms={imovel.dormitorios || undefined}
+                                bathrooms={imovel.banheiros || undefined}
+                                parkingSpots={imovel.vagas || undefined}
+                                mainImage={{
+                                    url: imovel.imagem?.imagemUrl || imovel.galeria?.[0]?.imagemUrl || '',
+                                    alt: imovel.titulo || '',
+                                    sanityImage: imovel.imagem
+                                }}
+                                isHighlight={imovel.destaque || false}
+                                isNew={Boolean(imovel.dataPublicacao && new Date(imovel.dataPublicacao) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000))}
+                            />
+                        ))}
+                    </div>
                     )}
                 </section>
             </main>

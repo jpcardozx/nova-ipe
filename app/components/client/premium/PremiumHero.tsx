@@ -117,26 +117,28 @@ const PremiumHero = () => {
 
             {/* Floating Particles */}
             <div className="absolute inset-0 overflow-hidden z-15">
-                {[...Array(12)].map((_, i) => (
-                    <motion.div
-                        key={i}
-                        className="absolute w-1 h-1 bg-white/30 rounded-full"
-                        animate={{
-                            y: [-20, -window.innerHeight],
-                            opacity: [0, 1, 0],
-                            scale: [0, 1, 0]
-                        }}
-                        transition={{
-                            duration: Math.random() * 3 + 4,
-                            repeat: Infinity,
-                            delay: i * 0.4,
-                            ease: "easeOut"
-                        }}
-                        style={{
-                            left: `${Math.random() * 100}%`,
-                            top: '100%'
-                        }}
-                    />
+                {[...Array(12)].map((_, i) => (<motion.div
+                    key={i}
+                    className="absolute w-1 h-1 bg-white/30 rounded-full"
+                    animate={{
+                        y: [-20, -800], // Fixed: Use fixed value instead of window.innerHeight
+                        opacity: [0, 1, 0],
+                        scale: [0, 1, 0]
+                    }}
+                    transition={{
+                        duration: Math.max(4, Math.random() * 3 + 4), // Fixed: Ensure minimum duration
+                        repeat: Infinity,
+                        delay: i * 0.4,
+                        ease: "easeOut"
+                    }}
+                    style={{
+                        left: `${Math.random() * 100}%`,
+                        top: '100%',
+                        transform: 'translate3d(0, 0, 0)',
+                        backfaceVisibility: 'hidden',
+                        willChange: 'transform, opacity'
+                    }}
+                />
                 ))}
             </div>
 
@@ -252,8 +254,8 @@ const PremiumHero = () => {
                                 className="group relative"
                             >
                                 <div className={`w-12 h-1 rounded-full transition-all duration-300 ${index === currentSlide
-                                        ? 'bg-white'
-                                        : 'bg-white/40 group-hover:bg-white/60'
+                                    ? 'bg-white'
+                                    : 'bg-white/40 group-hover:bg-white/60'
                                     }`} />
                                 {index === currentSlide && (
                                     <motion.div

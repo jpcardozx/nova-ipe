@@ -45,37 +45,37 @@ interface CompanyMetric {
 const services: Service[] = [
     {
         id: "compra-venda",
-        title: "Intermediação Imobiliária",
-        description: "Assessoria completa em transações",
+        title: "Compra e Venda de Imóveis",
+        description: "Ajudamos você a encontrar o lar ideal",
         features: [
-            "Análise comparativa de mercado",
-            "Estratégia de comercialização",
-            "Mediação qualificada",
-            "Acompanhamento jurídico"
+            "Avaliação gratuita do seu imóvel",
+            "Divulgação em todos os portais",
+            "Acompanhamento em toda negociação",
+            "Suporte com documentação"
         ],
         icon: <Home className="w-6 h-6" />
     },
     {
         id: "consultoria",
-        title: "Consultoria para Investimento",
-        description: "Direcionamento estratégico em ativos",
+        title: "Orientação para Investidores",
+        description: "Conselhos práticos para bons investimentos",
         features: [
-            "Análise de viabilidade financeira",
-            "Estudo de valorização local",
-            "Projeção de retorno sobre investimento",
-            "Relatório analítico personalizado"
+            "Análise do potencial de valorização",
+            "Comparação de oportunidades locais",
+            "Orientação sobre custos e benefícios",
+            "Relatório simples e claro"
         ],
         icon: <Target className="w-6 h-6" />
     },
     {
         id: "documentacao",
-        title: "Gestão Documental",
-        description: "Compliance imobiliário integral",
+        title: "Apoio com Documentação",
+        description: "Cuidamos da burocracia para você",
         features: [
-            "Auditoria documental preventiva",
-            "Regularização cadastral",
-            "Obtenção e validação de certidões",
-            "Acompanhamento registral"
+            "Verificação de documentos do imóvel",
+            "Orientação sobre regularizações",
+            "Apoio na obtenção de certidões",
+            "Acompanhamento até a escritura"
         ],
         icon: <FileCheck className="w-6 h-6" />
     }
@@ -85,54 +85,53 @@ const services: Service[] = [
 const certifications: Certification[] = [
     {
         id: "creci",
-        name: "CRECI-SP 12.345-J",
-        description: "Registro ativo no Conselho Regional",
+        name: "CRECI-SP Ativo",
+        description: "Registro profissional válido e atualizado",
         year: "Desde 2010"
     },
     {
-        id: "cofeci-alterar(inexistente)",
-        name: "Certificação COFECI",
-        description: "Padrão nacional de excelência",
-        year: "Renovada em 2024"
+        id: "experiencia",
+        name: "15 Anos de Experiência",
+        description: "Conhecimento profundo do mercado local",
+        year: "Desde 2009"
     },
     {
-        id: "abmi(alterar(inexistente))",
-        name: "Membro ABMI",
-        description: "Associação Brasileira do Mercado Imobiliário",
-        year: "Desde 2015"
+        id: "local",
+        name: "Especialistas em Guararema",
+        description: "Foco total no mercado da região",
+        year: "Desde o início"
     }
 ];
 
 // Métricas institucionais
-const companyMetrics: CompanyMetric[] = [
-    {
-        id: "tempo-mercado",
-        value: "15 anos",
-        label: "De atuação",
-        description: "Expertise consolidada no mercado local",
-        icon: <Clock className="w-5 h-5" />
-    },
-    {
-        id: "transacoes",
-        value: "500+",
-        label: "Transações concluídas",
-        description: "Intermediações realizadas com sucesso",
-        icon: <TrendingUp className="w-5 h-5" />
-    },
-    {
-        id: "satisfacao",
-        value: "98%",
-        label: "Índice de satisfação",
-        description: "Clientes que recomendam nossos serviços",
-        icon: <Award className="w-5 h-5" />
-    },
-    {
-        id: "equipe",
-        value: "Resposta em 24h",
-        label: "Compromisso de atendimento",
-        description: "Equipe especializada sempre acessível",
-        icon: <Users className="w-5 h-5" />
-    }
+const companyMetrics: CompanyMetric[] = [{
+    id: "tempo-mercado",
+    value: "15 anos",
+    label: "De experiência",
+    description: "Conhecimento profundo do mercado local",
+    icon: <Clock className="w-5 h-5" />
+},
+{
+    id: "transacoes",
+    value: "500+",
+    label: "Famílias atendidas",
+    description: "Clientes que encontraram sua casa ideal",
+    icon: <TrendingUp className="w-5 h-5" />
+},
+{
+    id: "satisfacao",
+    value: "95%",
+    label: "Clientes satisfeitos",
+    description: "Famílias que recomendam nossos serviços",
+    icon: <Award className="w-5 h-5" />
+},
+{
+    id: "equipe",
+    value: "Sempre presentes",
+    label: "Atendimento dedicado",
+    description: "Equipe local sempre disponível para você",
+    icon: <Users className="w-5 h-5" />
+}
 ];
 
 export default function ApresentacaoInstitucional() {
@@ -152,15 +151,15 @@ export default function ApresentacaoInstitucional() {
                                 Conheça a Ipê
                             </span>
                         </div>                        <h2 className="text-display-1 text-gray-900 mb-6">
-                            Excelência em assessoria
+                            Nova Ipê Imóveis
                             <span className="block text-amber-600 mt-2">
-                                imobiliária desde 2010
+                                A imobiliária de Guararema
                             </span>
                         </h2>
 
                         <p className="text-body-large text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                            Mais de 500 clientes confiaram em nossa
-                            <span className="text-amber-600 cursor-pointer"> expertise no mercado local</span> para realizar investimentos e aquisições estratégicas.
+                            Mais de 500 famílias confiaram em nossa
+                            <span className="text-amber-600 cursor-pointer"> experiência local</span> para encontrar a casa ideal ou fazer um bom investimento.
                         </p>
                     </motion.div>
                 </div>
@@ -194,39 +193,37 @@ export default function ApresentacaoInstitucional() {
                     </motion.div>
 
                     <div className="grid grid-cols-2 gap-6">
-                        {companyMetrics.map((metric, index) => (
-                            <motion.div
-                                key={metric.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                                className="bg-white rounded-xl p-6 shadow-md border border-gray-100"
-                            >
-                                <div className="flex items-start gap-4">
-                                    <div className="p-3 bg-amber-100 text-amber-700 rounded-lg">
-                                        {metric.icon}
-                                    </div>
-                                    <div>                                <p className="text-heading-1 text-gray-900">
-                                        {metric.value}
-                                    </p>
-                                        <p className="text-body-small medium-text text-gray-700">
-                                            {metric.label}
-                                        </p>
-                                        <p className="text-caption text-gray-500 mt-1">
-                                            {metric.description}
-                                        </p>
-                                    </div>
+                        {companyMetrics.map((metric, index) => (<motion.div
+                            key={metric.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.1, duration: 0.6 }}
+                            className="bg-white rounded-xl p-6 shadow-md border border-gray-100"
+                        >
+                            <div className="flex items-start gap-4">
+                                <div className="p-3 bg-amber-100 text-amber-700 rounded-lg">
+                                    {metric.icon}
                                 </div>
-                            </motion.div>
+                                <div>                                <p className="text-heading-1 text-gray-900">
+                                    {metric.value}
+                                </p>
+                                    <p className="text-body-small medium-text text-gray-700">
+                                        {metric.label}
+                                    </p>
+                                    <p className="text-caption text-gray-500 mt-1">
+                                        {metric.description}
+                                    </p>
+                                </div>
+                            </div>
+                        </motion.div>
                         ))}
                     </div>
                 </div>
 
                 {/* Serviços Oferecidos */}                <div className="mb-20">                    <h3 className="text-display-3 text-gray-900 text-center mb-4">
                     Como podemos ajudar você?
-                </h3>
-                    <p className="text-body text-gray-600 text-center max-w-2xl mx-auto mb-12">
-                        Selecione o serviço que você precisa e descubra como podemos fazer a diferença no seu projeto imobiliário.
+                </h3>                    <p className="text-body text-gray-600 text-center max-w-2xl mx-auto mb-12">
+                        Escolha o que você precisa e veja como simplificamos tudo para você.
                     </p>
 
                     <div className="grid lg:grid-cols-3 gap-6 mb-8">

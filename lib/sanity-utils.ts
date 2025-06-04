@@ -1,7 +1,7 @@
 /**
  * Utilidades para integração com Sanity CMS
  */
-import type { ClientImage } from '@/components/SanityImage';
+import type { ClientImage } from '@/app/components/SanityImage';
 import { processImage } from './sanity-image-helper';
 import { extractImageUrl } from './image-sanity';
 

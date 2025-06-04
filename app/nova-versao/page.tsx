@@ -1,10 +1,8 @@
-import PaginaAprimorada from '../pagina-aprimorada/page';
-
 export default function NovaVersao() {
-    return <PaginaAprimorada />;
+    return (
+        <div className="container mx-auto py-8">
+            <h1 className="text-3xl font-bold mb-4">Nova Versão</h1>
+            <p className="text-gray-600">Esta página está em desenvolvimento.</p>
+        </div>
+    );
 }
-
-export const metadata = {
-    title: 'Imobiliária Ipê Guararema - Nova Versão',
-    description: 'Seu lugar ideal em Guararema está aqui - especialistas no mercado imobiliário da região com os melhores imóveis para compra, venda e locação.',
-};

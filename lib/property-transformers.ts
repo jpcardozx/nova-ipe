@@ -1,7 +1,7 @@
 import { loadImage } from "@/lib/enhanced-image-loader";
 import { extractSlugString } from "@/app/PropertyTypeFix";
 import type { ImovelClient } from "@/src/types/imovel-client";
-import { PropertyType } from "@/components/ui/property/PropertyCard";
+import { PropertyType } from '@/app/components/ui/property/PropertyCardUnified';
 
 /**
  * Utilitário para transformar dados do Sanity em formato utilizável pelos componentes
@@ -80,8 +80,7 @@ export function getPropertyBatches(properties: any[], batchSize = 6) {
   if (!properties || properties.length === 0) {
     return [];
   }
-  
-  const batches = [];
+    const batches: any[][] = [];
   
   for (let i = 0; i < properties.length; i += batchSize) {
     batches.push(properties.slice(i, i + batchSize));

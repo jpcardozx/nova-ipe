@@ -1,0 +1,295 @@
+const webpackFix = require('./webpack-fix');
+/** @type {import('next').NextConfig} */
+
+// Importar patchers específicos para Next.js
+try {
+  require('./lib/next-patchers');
+  require('./lib/react-dom-polyfill');
+} catch (e) {
+  console.warn('Failed to load Next.js patchers:', e.message);
+}
+
+// Comprehensive polyfill para SSR e evitar erros de window.location
+if (typeof global !== 'undefined' && typeof window === 'undefined') {
+  global.self = global.self || global;
+  global.window = global.window || {
+    location: {
+      protocol: 'http:',
+      hostname: 'localhost',
+      port: '3001',
+      pathname: '/',
+      search: '',
+      hash: '',
+      origin: 'http://localhost:3001',
+      href: 'http://localhost:3001/'
+    },
+    navigator: {
+      userAgent: 'Node.js'
+    },
+    document: {
+      createElement: () => ({}),
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      body: {},
+      head: {}
+    },
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    getComputedStyle: () => ({}),
+    matchMedia: () => ({
+      matches: false,
+      addListener: () => {},
+      removeListener: () => {}
+    })
+  };
+  
+  // Fix the specific window.location destructuring issue
+  Object.defineProperty(global.window.location, 'protocol', {
+    get: () => 'http:',
+    enumerable: true,
+    configurable: true
+  });
+  
+  // Monkey patch específico para parseRelativeUrl que causa os erros
+  const originalParseUrl = global.URL ? global.URL.prototype.toString : null;
+  if (originalParseUrl) {
+    global.URL.prototype.toString = function() {
+      try {
+        return originalParseUrl.call(this);
+      } catch (err) {
+        return 'http://localhost:3001' + this.pathname + this.search + this.hash;
+      }
+    };
+  }
+}
+
+const nextConfig = {
+  reactStrictMode: false, // Desativando temporariamente para resolver problemas de compatibilidade
+  poweredByHeader: false,
+  compress: true,
+  
+  // Configuração para evitar problemas com sintaxe inválida em módulos compilados
+  webpack: (config, { dev, isServer }) => {
+    // Modificar o parsing de JavaScript para ser mais tolerante
+    if (!dev && isServer) {
+      config.module.rules.push({
+        test: /node_modules\/next\/dist\/.*\.js$/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['next/babel'],
+            plugins: []
+          }
+        }
+      });
+    }
+    
+    return config;
+  },
+  
+  experimental: {
+    // Improve CSS optimization
+    optimizeCss: true,
+    // Reduce memory usage
+    memoryBasedWorkersCount: true,
+    // Modern JS features
+    serverComponentsExternalPackages: [],
+    // Desativando otimizações experimentais que podem causar problemas
+    optimizePackageImports: [],
+    serverComponentsExternalPackages: [
+      '@sanity/client',
+      '@sanity/image-url', 
+      'sharp',
+    ],
+  },
+
+  transpilePackages: ['styled-components'],
+
+  compiler: {
+    styledComponents: true,
+  },
+
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+
+  eslint: {
+    ignoreDuringBuilds: false,
+  },
+
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'cdn.sanity.io',
+        pathname: '/images/**',
+      },
+    ],
+    formats: ['image/webp', 'image/avif'],
+    deviceSizes: [360, 640, 1080, 1920],
+    imageSizes: [16, 32, 64, 128],
+    minimumCacheTTL: 86400,
+  },
+
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+        ],
+      },
+    ];
+  },
+  webpack: (config, { isServer, dev }) => {
+    // Fix webpack runtime for dynamic imports
+    if (!isServer) {
+      // Ensure proper webpack runtime configuration
+      config.output.chunkFilename = dev 
+        ? 'static/chunks/[name].js'
+        : 'static/chunks/[name]-[contenthash].js';
+        
+      config.output.filename = dev
+        ? 'static/chunks/[name].js'
+        : 'static/chunks/[name]-[contenthash].js';
+    }
+
+    // Server-side configurations
+    if (isServer) {
+      const webpack = require('webpack');
+      const path = require('path');
+      
+      // Adicionar polyfill antes de qualquer outro módulo
+      const originalEntry = config.entry;
+      config.entry = async () => {
+        const entries = await (typeof originalEntry === 'function' ? originalEntry() : originalEntry);
+        
+        // Garantir que o polyfill seja carregado primeiro em todos os entry points
+        const polyfillPath = path.resolve(__dirname, './lib/server-polyfills.js');
+        
+        Object.keys(entries).forEach((key) => {
+          if (Array.isArray(entries[key])) {
+            // Inserir o polyfill no início do array
+            entries[key].unshift(polyfillPath);
+          } else {
+            entries[key] = [polyfillPath, entries[key]];
+          }
+        });
+        
+        return entries;
+      };
+      
+      config.plugins.push(
+        new webpack.DefinePlugin({
+          'self': 'globalThis',
+          'window': 'globalThis',
+          'typeof self': '"object"',
+          'typeof window': '"object"',
+          'window.location': JSON.stringify({
+            protocol: 'http:',
+            hostname: 'localhost',
+            port: '3001',
+            pathname: '/',
+            search: '',
+            hash: '',
+            origin: 'http://localhost:3001',
+            href: 'http://localhost:3001/'
+          })
+        })
+      );
+
+      config.output.globalObject = 'globalThis';
+    }
+
+    // Optimize chunk splitting - fix the truncated filenames issue
+    config.optimization = {
+      ...config.optimization,
+      moduleIds: dev ? 'named' : 'deterministic',
+      chunkIds: dev ? 'named' : 'deterministic',
+      splitChunks: {
+        chunks: 'all',
+        maxInitialRequests: 20,
+        maxAsyncRequests: 20,
+        minSize: 20000,
+        maxSize: 244000,
+        cacheGroups: {
+          default: {
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true,
+          },
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            priority: -10,
+            chunks: 'all',
+            enforce: true,
+          },
+          common: {
+            name: 'common',
+            minChunks: 2,
+            priority: -30,
+            chunks: 'initial',
+          },
+        },
+      },
+    };
+
+    // Module resolution
+    config.resolve = {
+      ...config.resolve,
+      fallback: {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
+        stream: false,
+        buffer: false,
+        util: false,
+        url: false,
+        querystring: false,
+      },
+      alias: {
+        ...config.resolve.alias,
+        'styled-components': require.resolve('styled-components'),
+      },
+    };
+
+    // Sanity compatibility
+    config.module.rules.push({
+      test: /\.m?js$/,
+      include: /node_modules\/(sanity|@sanity)/,
+      resolve: {
+        fullySpecified: false,
+      },
+    });
+
+    // Server externals optimization
+    if (isServer) {
+      config.externals = config.externals || [];
+      if (Array.isArray(config.externals)) {
+        config.externals = config.externals.filter(external => {
+          if (typeof external === 'string') {
+            return external !== 'styled-components';
+          }
+          return true;
+        });
+      }
+    }
+
+    // Suppress known warnings
+    config.ignoreWarnings = [
+      /Failed to parse source map/,
+      /Module parse failed.*\.js\.map/,
+      /Cannot read properties of undefined/,
+      /Critical dependency: the request of a dependency is an expression/,
+    ];
+
+    return config;
+  },
+};
+
+module.exports = nextConfig;

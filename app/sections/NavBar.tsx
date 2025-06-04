@@ -32,17 +32,16 @@ export default function Navbar() {
             className={`fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-lg border-b border-neutral-200 shadow-sm transition-all duration-320 ${scrolled ? "py-1.5" : "py-4"}`}
         >
             <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-                {/* ✅ Logo */}
-                <Link href="/" aria-label="Ir para página inicial">
+                {/* ✅ Logo */}                <Link href="/" aria-label="Ir para página inicial">
                     <Image
                         src="/images/ipeLogoWritten.png"
                         alt="Ipê Imóveis"
                         width={scrolled ? 130 : 160}
-                        height={50}
+                        height={scrolled ? 41 : 50}
                         className="object-contain transition-all duration-300 cursor-pointer"
                         priority
                     />
-                </Link>                {/* ✅ Links Desktop */}
+                </Link>{/* ✅ Links Desktop */}
                 <ul className="hidden md:flex gap-10 text-[#0D1F2D] text-button font-body medium-text">
                     {links.map(({ label, href }) => (
                         <li key={label}>

@@ -15,7 +15,7 @@ import OptimizationProvider from '../components/OptimizationProvider';
 import WhatsAppButton from '../components/WhatsAppButton';
 import SkipToContent from '../components/SkipToContent';
 import SectionHeader from '../components/ui/SectionHeader';
-import NavbarResponsive from "../components/NavbarResponsive";
+import ClientOnlyNavbar from "../components/ClientOnlyNavbar";
 import Footer from "../sections/Footer";
 
 export default function VisitaPage() {
@@ -35,41 +35,37 @@ export default function VisitaPage() {
             title: "Transparência total",
             desc: "Due diligence completa e suporte jurídico"
         }
-    ];
-
-    const abordagemSteps = [
+    ]; const abordagemSteps = [
         {
             number: "01",
-            title: "Análise de perfil e objetivos",
-            description: "Realizamos uma avaliação detalhada do seu perfil de investidor, objetivos financeiros e necessidades específicas para direcionar nossa busca com precisão.",
+            title: "Entendemos suas necessidades",
+            description: "Conversamos sobre o que você procura: tamanho da casa, localização preferida, orçamento disponível e o que é mais importante para sua família.",
         },
         {
             number: "02",
-            title: "Seleção estratégica de ativos",
-            description: "Apresentamos um portfólio exclusivo de propriedades alinhadas ao seu perfil, incluindo oportunidades off-market com alto potencial de valorização.",
+            title: "Selecionamos as melhores opções",
+            description: "Com base no que você nos contou, preparamos uma lista personalizada dos imóveis que mais fazem sentido para seu perfil e necessidades.",
         },
         {
             number: "03",
-            title: "Due diligence completa",
-            description: "Oferecemos análise documentacional detalhada, avaliação de riscos, estudo de valorização e projeções de retorno sobre investimento.",
+            title: "Acompanhamos você nas visitas",
+            description: "Nossa equipe vai com você conhecer os imóveis, explicando todos os detalhes e respondendo suas dúvidas sobre a propriedade e a região.",
         }
-    ];
-
-    const pilaresConsultoria = [
+    ]; const pilaresConsultoria = [
         {
             icon: <Eye className="h-6 w-6 text-brand-green" />,
-            title: "Conhecimento especializado",
-            description: "Nossa equipe possui expertise em avaliação imobiliária, tendências de mercado e análise de oportunidades de investimento em Guararema."
+            title: "Conhecimento da região",
+            description: "Nossa equipe conhece muito bem Guararema: os melhores bairros, escolas próximas, comércio local e tudo que importa para o dia a dia das famílias."
         },
         {
             icon: <TrendingUp className="h-6 w-6 text-brand-green" />,
-            title: "Inteligência de mercado",
-            description: "Fornecemos dados exclusivos sobre valorização, desenvolvimento urbano e projeções de retorno sobre investimento na região."
+            title: "Informações práticas",
+            description: "Compartilhamos dados reais sobre a região: desde valores de mercado até informações sobre infraestrutura, transporte e qualidade de vida."
         },
         {
             icon: <Shield className="h-6 w-6 text-brand-green" />,
-            title: "Proteção ao investimento",
-            description: "Análise minuciosa de riscos, validação jurídica e implementação de estratégias para maximizar a segurança e o potencial do seu investimento."
+            title: "Compra segura",
+            description: "Verificamos toda a documentação do imóvel e orientamos você em cada etapa do processo para que tudo seja feito com total segurança."
         }
     ];
 
@@ -119,7 +115,7 @@ export default function VisitaPage() {
         <OptimizationProvider>
             <div className={`font-body min-h-screen flex flex-col`}>
                 <SkipToContent />
-                <NavbarResponsive />
+                <ClientOnlyNavbar />
 
                 {/* Hero Section - Seção 1: Cabeçalho de Impacto */}
                 <section id="visita-hero" className="relative py-20 lg:py-28 bg-gradient-to-br from-[#0b1c28] via-[#132f41] to-[#0a1922] overflow-hidden">
@@ -235,11 +231,11 @@ export default function VisitaPage() {
                 <section id="abordagem" className="py-24 bg-white">
                     <div className="container mx-auto px-6 lg:px-8">
                         <div className="max-w-screen-xl mx-auto">
-                            <div className="mb-16 max-w-3xl mx-auto text-center">                                <h2 className="font-display text-3xl md:text-4xl text-brand-dark mb-6 text-heading-2">
-                                Consultoria Imobiliária de Alto Valor
+                            <div className="mb-16 max-w-3xl mx-auto text-center">                <h2 className="font-display text-3xl md:text-4xl text-brand-dark mb-6 text-heading-2">
+                                Acompanhamento Personalizado na Sua Visita
                             </h2>
                                 <p className="text-neutral-600 font-body text-body-large">
-                                    Nossa abordagem vai muito além de uma simples visita. Oferecemos um processo consultivo completo para orientar suas decisões de investimento imobiliário com precisão e segurança.
+                                    Nossa equipe acompanha você pessoalmente em cada visita, explicando as características do imóvel, da região e ajudando você a tomar a melhor decisão para sua família.
                                 </p>
                             </div>
 

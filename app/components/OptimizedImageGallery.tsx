@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import SanityImage from '@/components/SanityImage';
+import SanityImage from '@/app/components/SanityImage';
 import { cn } from '@/lib/utils';
 import { getOptimalImageDimensions, generateLowQualityPlaceholder } from '@/lib/image-performance-optimizer';
 

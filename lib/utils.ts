@@ -1,6 +1,9 @@
 import { twMerge } from 'tailwind-merge';
 import { ClassValue, clsx } from 'clsx';
-import { Imovel } from '@/types/sanity-schema';
+import { differenceInYears, isValid, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Imovel } from '../src/types/sanity-schema';
+import { sanityClient } from './sanity/sanity.client'; // Ajuste para o caminho correto do cliente Sanity
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));

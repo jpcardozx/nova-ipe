@@ -17,26 +17,26 @@ export default function SerializationTest() {
   const [serializedObject, setSerializedObject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   useEffect(() => {
     async function fetchData() {
       try {
         setLoading(true);
-        
+
         // Busca dados do Sanity
         const imoveis = await getImoveisDestaque();
-        
+
         if (imoveis.length > 0 && imoveis[0].imagem) {
           const original = imoveis[0].imagem;
           setOriginalObject(original);
-          
+
           // Simula transferência servidor-cliente
           const serialized = simulateServerClientTransfer(original);
           setSerializedObject(serialized);
-          
+
           console.log('Objeto original:', original);
           console.log('Objeto após serialização:', serialized);
-          
+
           // Verifica diferenças
           const differences = findDifferences(original, serialized);
           if (differences.length > 0) {
@@ -52,20 +52,20 @@ export default function SerializationTest() {
         setLoading(false);
       }
     }
-    
+
     fetchData();
   }, []);
-  
+
   // Função para encontrar diferenças entre objetos
   function findDifferences(obj1: any, obj2: any, path: string = ''): string[] {
     const differences: string[] = [];
-    
+
     // Se tipos forem diferentes
     if (typeof obj1 !== typeof obj2) {
       differences.push(`${path} - Tipos diferentes: ${typeof obj1} vs ${typeof obj2}`);
       return differences;
     }
-    
+
     // Se não são objetos ou são null
     if (typeof obj1 !== 'object' || obj1 === null || obj2 === null) {
       if (obj1 !== obj2) {
@@ -73,26 +73,25 @@ export default function SerializationTest() {
       }
       return differences;
     }
-    
+
     // Para arrays
     if (Array.isArray(obj1) && Array.isArray(obj2)) {
       if (obj1.length !== obj2.length) {
         differences.push(`${path} - Tamanhos de array diferentes: ${obj1.length} vs ${obj2.length}`);
       }
-      
+
       const maxLength = Math.max(obj1.length, obj2.length);
       for (let i = 0; i < maxLength; i++) {
         const nestedDiff = findDifferences(obj1[i], obj2[i], `${path}[${i}]`);
         differences.push(...nestedDiff);
       }
-      
+
       return differences;
     }
-    
     // Para objetos
     const allKeys = new Set([...Object.keys(obj1), ...Object.keys(obj2)]);
-    
-    for (const key of allKeys) {
+
+    for (const key of Array.from(allKeys)) {
       // Chave existe em ambos
       if (key in obj1 && key in obj2) {
         const nestedDiff = findDifferences(obj1[key], obj2[key], path ? `${path}.${key}` : key);
@@ -107,10 +106,10 @@ export default function SerializationTest() {
         differences.push(`${path} - Chave '${key}' presente apenas no objeto serializado`);
       }
     }
-    
+
     return differences;
   }
-  
+
   function renderObjectDetails(obj: any, title: string) {
     return (
       <div className="border rounded p-3 my-2">
@@ -120,13 +119,13 @@ export default function SerializationTest() {
             <p className="mb-1">
               <span className="font-semibold">Tipo:</span> {typeof obj}
             </p>
-            
+
             {typeof obj === 'object' && (
               <>
                 <p className="mb-1">
                   <span className="font-semibold">Propriedades:</span> {Object.keys(obj).join(', ')}
                 </p>
-                
+
                 <div className="grid grid-cols-2 gap-4 my-3">
                   <div>
                     <h4 className="font-semibold mb-1">Pre-visualização:</h4>
@@ -134,7 +133,7 @@ export default function SerializationTest() {
                       <DiagnosticImage image={obj} fill />
                     </div>
                   </div>
-                  
+
                   <div>
                     <h4 className="font-semibold mb-1">Detalhes:</h4>
                     <pre className="text-xs bg-gray-50 p-2 rounded overflow-auto max-h-40">
@@ -142,7 +141,7 @@ export default function SerializationTest() {
                     </pre>
                   </div>
                 </div>
-                
+
                 {obj.asset && (
                   <div className="mt-2">
                     <h4 className="font-semibold">Detalhes do Asset:</h4>
@@ -160,22 +159,22 @@ export default function SerializationTest() {
       </div>
     );
   }
-  
+
   if (loading) {
     return <div className="p-4">Carregando dados para teste...</div>;
   }
-  
+
   if (error) {
     return <div className="p-4 text-red-500">{error}</div>;
   }
-  
+
   return (
     <div className="p-4">
       <h2 className="text-xl font-bold mb-4">Teste de Serialização de Imagem</h2>
-      
+
       {renderObjectDetails(originalObject, "Objeto Original (Servidor)")}
       {renderObjectDetails(serializedObject, "Objeto Após Serialização (Cliente)")}
-      
+
       <div className="mt-4 border-t pt-4">
         <h3 className="font-bold mb-2">Análise de Diferenças</h3>
         {originalObject && serializedObject && (

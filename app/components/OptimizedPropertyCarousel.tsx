@@ -1,10 +1,16 @@
+/**
+ * @deprecated Use PropertyCarousel from @/components/ui/property/PropertyCarousel instead
+ * Este componente será removido na próxima versão major
+ * Data de remoção planejada: Julho 2025
+ */
 'use client';
 
 import React, { useState, useCallback, useMemo, memo } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { cn } from '@/lib/utils';
-import { PropertyCard as OptimizedPropertyCard } from '@/components/ui/property/PropertyCard';
+import PropertyCardUnified from '@/app/components/ui/property/PropertyCardUnified';
+const OptimizedPropertyCard = PropertyCardUnified;
 import { adaptPropertyCarouselProps } from './PropertyCarouselAdapter';
 
 // Lazy load heavy components
@@ -16,7 +22,7 @@ const OptimizedCarousel = dynamic(() => import('@/app/components/ui/OptimizedCar
 });
 
 // Reutilizando o tipo do PropertyCard consolidado
-import type { PropertyType } from '@/components/ui/property/PropertyCard';
+import type { PropertyType } from '@/app/components/ui/property/PropertyCardUnified';
 
 export interface OptimizedPropertyCarouselProps {
     properties: Array<{
@@ -291,8 +297,7 @@ export const OptimizedPropertyCarousel = memo(function OptimizedPropertyCarousel
                     <OptimizedPropertyCard
                         key={property.id}
                         id={property.id}
-                        title={property.title}
-                        slug={property.slug}
+                        title={property.title} slug={property.slug}
                         location={property.location}
                         city={property.city}
                         price={property.price}
@@ -302,7 +307,6 @@ export const OptimizedPropertyCarousel = memo(function OptimizedPropertyCarousel
                         bathrooms={property.bathrooms}
                         parkingSpots={property.parkingSpots}
                         mainImage={property.mainImage}
-                        status={property.status}
                         isNew={property.isNew}
                         isHighlight={property.isHighlight}
                         isPremium={property.isPremium}

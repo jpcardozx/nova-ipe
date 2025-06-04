@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { getImovelEmDestaque } from '../../../lib/sanity/fetchImoveis'
 import type { ImovelClient } from '../../../src/types/imovel-client'
 
-export const runtime = 'edge'
+// Removed edge runtime to support @sanity/client
 export const revalidate = 3600 // Revalidate every hour
 
 export async function GET() {

@@ -2,7 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import type { ImovelClient as ImovelDataType } from '@/types/imovel-client';
+import { Loader2 } from 'lucide-react';
+import type { ImovelClient as ImovelDataType } from '../../../src/types/imovel-client';
 
 interface FallbackProps {
     message?: string;

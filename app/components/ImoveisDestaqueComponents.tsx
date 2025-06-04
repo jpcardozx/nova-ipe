@@ -2,9 +2,11 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { LuBedDouble, LuBath, LuCar, LuRuler, LuMapPin } from 'react-icons/lu'
+import { BedDouble, Bath, Car, Ruler, MapPin } from 'lucide-react'
 import { formatarMoeda, formatarImovelInfo } from '@/lib/utils'
-import type { Imovel } from '@/types/sanity-schema'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import type { Imovel } from '@/types/sanity-schema';
+import ImoveisDestaqueContext from './ImoveisDestaqueContext'
 
 /**
  * Componente do imóvel em destaque (Hero)
@@ -71,10 +73,8 @@ export function ImovelHero({
                     <div>
                         <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
                             {imovelFormatado.titulo}
-                        </h3>
-
-                        <div className="flex items-center text-gray-600 mb-4">
-                            <LuMapPin className="mr-1 flex-shrink-0" />
+                        </h3>                        <div className="flex items-center text-gray-600 mb-4">
+                            <MapPin className="mr-1 flex-shrink-0" />
                             <span className="truncate">{imovelFormatado.endereco}</span>
                         </div>
 
@@ -90,7 +90,7 @@ export function ImovelHero({
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
                             {imovelFormatado.caracteristicas.dormitorios !== undefined && (
                                 <div className={`flex items-center ${cores.light} p-3 rounded-lg`}>
-                                    <LuBedDouble className={`${cores.text} mr-2`} />
+                                    <BedDouble className={`${cores.text} mr-2`} />
                                     <div>
                                         <p className="text-xs text-gray-500">Dormitórios</p>
                                         <p className="font-medium">{imovelFormatado.caracteristicas.dormitorios}</p>
@@ -100,7 +100,7 @@ export function ImovelHero({
 
                             {imovelFormatado.caracteristicas.banheiros !== undefined && (
                                 <div className={`flex items-center ${cores.light} p-3 rounded-lg`}>
-                                    <LuBath className={`${cores.text} mr-2`} />
+                                    <Bath className={`${cores.text} mr-2`} />
                                     <div>
                                         <p className="text-xs text-gray-500">Banheiros</p>
                                         <p className="font-medium">{imovelFormatado.caracteristicas.banheiros}</p>
@@ -110,7 +110,7 @@ export function ImovelHero({
 
                             {imovelFormatado.caracteristicas.vagas !== undefined && (
                                 <div className={`flex items-center ${cores.light} p-3 rounded-lg`}>
-                                    <LuCar className={`${cores.text} mr-2`} />
+                                    <Car className={`${cores.text} mr-2`} />
                                     <div>
                                         <p className="text-xs text-gray-500">Vagas</p>
                                         <p className="font-medium">{imovelFormatado.caracteristicas.vagas}</p>
@@ -120,7 +120,7 @@ export function ImovelHero({
 
                             {imovelFormatado.caracteristicas.areaUtil !== undefined && (
                                 <div className={`flex items-center ${cores.light} p-3 rounded-lg`}>
-                                    <LuRuler className={`${cores.text} mr-2`} />
+                                    <Ruler className={`${cores.text} mr-2`} />
                                     <div>
                                         <p className="text-xs text-gray-500">Área</p>
                                         <p className="font-medium">{imovelFormatado.caracteristicas.areaUtil}m²</p>
@@ -222,28 +222,28 @@ export function CarouselCard({
                 <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-3 text-sm text-gray-600">
                     {imovelFormatado.caracteristicas.dormitorios !== undefined && (
                         <div className="flex items-center">
-                            <LuBedDouble className="mr-1" />
+                            <BedDouble className="mr-1" />
                             <span>{imovelFormatado.caracteristicas.dormitorios} dorm</span>
                         </div>
                     )}
 
                     {imovelFormatado.caracteristicas.banheiros !== undefined && (
                         <div className="flex items-center">
-                            <LuBath className="mr-1" />
+                            <Bath className="mr-1" />
                             <span>{imovelFormatado.caracteristicas.banheiros} banh</span>
                         </div>
                     )}
 
                     {imovelFormatado.caracteristicas.vagas !== undefined && (
                         <div className="flex items-center">
-                            <LuCar className="mr-1" />
+                            <Car className="mr-1" />
                             <span>{imovelFormatado.caracteristicas.vagas} vaga{imovelFormatado.caracteristicas.vagas !== 1 ? 's' : ''}</span>
                         </div>
                     )}
 
                     {imovelFormatado.caracteristicas.areaUtil !== undefined && (
                         <div className="flex items-center">
-                            <LuRuler className="mr-1" />
+                            <Ruler className="mr-1" />
                             <span>{imovelFormatado.caracteristicas.areaUtil}m²</span>
                         </div>
                     )}
@@ -318,3 +318,5 @@ export function EmptyState() {
         </div>
     )
 }
+
+export { ImoveisDestaqueContext }; // Exporting the context

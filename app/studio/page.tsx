@@ -2,7 +2,8 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import '../preload' // Precarrega módulos críticos como refractor
+// Simplified without refractor preload
+import '../sanity-react-compat' // Import React compatibility layer
 
 // Prevent Sentry from loading in studio page to avoid conflicts
 if (typeof window !== 'undefined') {
@@ -12,7 +13,8 @@ if (typeof window !== 'undefined') {
 
 // Carrega o NextStudio apenas no client com isolamento de Sentry
 const NextStudio = dynamic(
-    () => import('next-sanity/studio').then((mod) => mod.NextStudio),
+    // @ts-ignore - Sanity studio module doesn't have TypeScript declarations
+    () => import('../lib/sanity/studio').then((mod: any) => mod.NextStudio),
     {
         ssr: false,
         loading: () => <div>Loading Studio...</div>

@@ -26,7 +26,7 @@ export function getAdminSecret(): string {
  * Converte um ArrayBuffer em string hexadecimal.
  */
 function buf2hex(buffer: ArrayBuffer): string {
-    return [...new Uint8Array(buffer)]
+    return Array.from(new Uint8Array(buffer))
         .map((b) => b.toString(16).padStart(2, '0'))
         .join('')
 }

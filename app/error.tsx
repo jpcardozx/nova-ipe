@@ -1,10 +1,7 @@
-'use client' // Error boundaries must be Client Components
+'use client'
 
-import { useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
-import Link from 'next/link'
-
+// CRITICAL FIX: Ultra-minimal error component with no external dependencies
+// This prevents the "Cannot read properties of undefined (reading 'call')" webpack error
 export default function Error({
     error,
     reset,
@@ -12,62 +9,71 @@ export default function Error({
     error: Error & { digest?: string }
     reset: () => void
 }) {
-    useEffect(() => {
-        // Log the error to an error reporting service
-        console.error('Error caught by error boundary:', error)
-    }, [error])
+    // No hooks, no effects, no state - just log the error
+    console.error('Error caught by error boundary:', error);
 
+    // Plain HTML with inline styles only - zero dependencies
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen py-12">
-            <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.3 }}
-                className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-5"
-            >
-                <AlertTriangle className="w-8 h-8 text-red-500" />
-            </motion.div>
+        <div style={{
+            padding: '20px',
+            textAlign: 'center',
+            fontFamily: 'system-ui, -apple-system, sans-serif',
+            maxWidth: '500px',
+            margin: '40px auto'
+        }}>
+            <div style={{
+                fontSize: '48px',
+                marginBottom: '20px'
+            }}>⚠️</div>
 
-            <motion.h2
-                initial={{ y: 10, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-                className="text-display-2 text-neutral-900 mb-4 text-center"
-            >
-                Algo deu errado
-            </motion.h2>
+            <h1 style={{
+                fontSize: '24px',
+                fontWeight: 'bold',
+                marginBottom: '16px'
+            }}>
+                Ocorreu um erro
+            </h1>
 
-            <motion.p
-                initial={{ y: 10, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.3, delay: 0.2 }}
-                className="text-body-1 text-neutral-600 text-center mb-8 max-w-md"
-            >
-                Sentimos muito pelo inconveniente. Nossa equipe foi notificada e está investigando o problema.
-            </motion.p>
+            <p style={{
+                fontSize: '16px',
+                color: '#666',
+                marginBottom: '24px'
+            }}>
+                Sentimos pelo inconveniente. Nossa equipe foi notificada.
+            </p>
 
-            <motion.div
-                initial={{ y: 10, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.3, delay: 0.3 }}
-                className="flex flex-col sm:flex-row gap-4"
-            >
+            <div>
                 <button
-                    onClick={() => reset()}
-                    className="inline-flex items-center justify-center px-6 py-3 bg-primary-600 text-white rounded-lg text-body-2 font-medium hover:bg-primary-700 transition-colors"
+                    onClick={reset}
+                    style={{
+                        backgroundColor: '#f59e0b',
+                        color: 'white',
+                        border: 'none',
+                        padding: '10px 20px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        marginRight: '10px',
+                        fontSize: '14px'
+                    }}
                 >
-                    <RefreshCw className="w-4 h-4 mr-2" />
                     Tentar novamente
                 </button>
 
-                <Link
+                <a
                     href="/"
-                    className="inline-flex items-center justify-center px-6 py-3 bg-neutral-100 text-neutral-700 rounded-lg text-body-2 font-medium hover:bg-neutral-200 transition-colors"
+                    style={{
+                        display: 'inline-block',
+                        backgroundColor: '#f1f5f9',
+                        color: '#333',
+                        padding: '10px 20px',
+                        borderRadius: '4px',
+                        textDecoration: 'none',
+                        fontSize: '14px'
+                    }}
                 >
-                    <Home className="w-4 h-4 mr-2" />
-                    Voltar à página inicial
-                </Link>
-            </motion.div>
+                    Página inicial
+                </a>
+            </div>
         </div>
-    )
+    );
 }

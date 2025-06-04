@@ -91,7 +91,7 @@ export default function BlocoCTAConversao({ titulo, subtitulo, ctaText, ctaLink 
                                     <ArrowRight className="w-4 h-4 ml-1" />
                                 </Link>                                <div className="flex items-center text-stone-300 mt-4 sm:mt-0">
                                     <ShieldCheck className="w-5 h-5 mr-2 text-green-400" />
-                                    Atendimento personalizado e confidencial
+                                    Consulta confidencial e sem compromisso
                                 </div>
                             </div>
 
@@ -100,9 +100,8 @@ export default function BlocoCTAConversao({ titulo, subtitulo, ctaText, ctaLink 
                                 <div className="flex items-center">
                                     <div className="w-10 h-10 rounded-full bg-[#FFAD43]/20 flex items-center justify-center mr-3">
                                         <Clock className="w-5 h-5 text-[#FFAD43]" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-medium text-white">Resposta rápida</h4>
+                                    </div>                                    <div>
+                                        <h4 className="font-medium text-white">Resposta garantida</h4>
                                         <p className="text-sm text-gray-400">Em até 2 horas úteis</p>
                                     </div>
                                 </div>
@@ -110,10 +109,9 @@ export default function BlocoCTAConversao({ titulo, subtitulo, ctaText, ctaLink 
                                 <div className="flex items-center">
                                     <div className="w-10 h-10 rounded-full bg-[#FFAD43]/20 flex items-center justify-center mr-3">
                                         <Star className="w-5 h-5 text-[#FFAD43]" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-medium text-white">Equipe premiada</h4>
-                                        <p className="text-sm text-gray-400">Expertise comprovada</p>
+                                    </div>                                    <div>
+                                        <h4 className="font-medium text-white">Especialistas locais</h4>
+                                        <p className="text-sm text-gray-400">15+ anos em Guararema</p>
                                     </div>
                                 </div>
                             </div>

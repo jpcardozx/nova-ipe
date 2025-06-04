@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { processImage, getImageUrl, getImageAlt } from '@/lib/sanity-image-helper';
-import type { PropertyType } from '@/components/ui/property/PropertyCard';
+import type { PropertyType } from '@/app/components/ui/property/PropertyCardUnified';
 import { generateResponsiveImageSet } from '@/lib/responsive-images';
 
 /**

@@ -14,8 +14,8 @@ import {
     X
 } from 'lucide-react';
 import { cn, formatarMoeda } from '../../../../lib/utils';
-import { Button } from '@/components/ui/button';
-import { PropertyStatus, PropertyType } from '@/components/ui/property/PropertyCard';
+import { Button } from '@/app/components/ui/button';
+import { PropertyStatus, PropertyType } from '@/app/components/ui/property/PropertyCardUnified';
 
 interface PropertyImageType {
     url: string;
@@ -78,22 +78,20 @@ export function PropertyHero({
             day: '2-digit',
             month: '2-digit',
             year: 'numeric'
-        })
-        : null;    // Status config
-    const statusConfig = {
+        }) : null;
+
+    // Status config
+    const statusConfig: Record<PropertyStatus, { color: string; text: string }> = {
         available: { color: 'bg-accent-emerald-500', text: 'Disponível' },
         sold: { color: 'bg-accent-red-500', text: 'Vendido' },
-        reserved: { color: 'bg-neutral-700', text: 'Reservado' },
-        featured: { color: 'bg-primary-500', text: 'Destaque' },
         rented: { color: 'bg-blue-500', text: 'Alugado' },
         pending: { color: 'bg-yellow-500', text: 'Pendente' },
     };
 
     // Property type config
-    const propertyTypeConfig = {
+    const propertyTypeConfig: Record<PropertyType, { text: string }> = {
         sale: { text: 'Venda' },
         rent: { text: 'Aluguel' },
-        seasonal: { text: 'Temporada' },
     };
 
     // Navegação de imagens
@@ -225,54 +223,46 @@ export function PropertyHero({
                                         <span>Atualizado em {formattedDate}</span>
                                     </div>
                                 )}
-                            </motion.div>
-
-                            <motion.h1
+                            </motion.div>                            <motion.h1
                                 variants={fadeInUp}
                                 initial="hidden"
                                 animate="visible"
-                                transition={{ delay: 0.1 }}
+                                transition={{ delay: 0.1, duration: 0.6 }}
                                 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-3"
                             >
                                 {title}
                             </motion.h1>
 
-                            {fullAddress && (
-                                <motion.div
-                                    variants={fadeInUp}
-                                    initial="hidden"
-                                    animate="visible"
-                                    transition={{ delay: 0.2 }}
-                                    className="flex items-center text-neutral-600 mb-6"
-                                >
-                                    <MapPin size={18} className="mr-2 flex-shrink-0" />
-                                    <span>{fullAddress}</span>
-                                </motion.div>
-                            )}
-
-                            <motion.div
+                            {fullAddress && (<motion.div
                                 variants={fadeInUp}
                                 initial="hidden"
                                 animate="visible"
-                                transition={{ delay: 0.3 }}
+                                transition={{ delay: 0.2, duration: 0.6 }}
+                                className="flex items-center text-neutral-600 mb-6"
+                            >
+                                <MapPin size={18} className="mr-2 flex-shrink-0" />
+                                <span>{fullAddress}</span>
+                            </motion.div>
+                            )}                            <motion.div
+                                variants={fadeInUp}
+                                initial="hidden"
+                                animate="visible"
+                                transition={{ delay: 0.3, duration: 0.6 }}
                                 className="text-3xl md:text-4xl font-bold text-primary-600 mb-8"
                             >
                                 {displayPrice}
-                            </motion.div>
-
-                            <motion.div
+                            </motion.div>                            <motion.div
                                 variants={fadeInUp}
                                 initial="hidden"
                                 animate="visible"
-                                transition={{ delay: 0.4 }}
+                                transition={{ delay: 0.4, duration: 0.6 }}
                                 className="flex flex-wrap gap-4 mt-auto"
+                            >                                <Button
+                                variant="default"
+                                size="lg"
+                                className="flex-grow"
+                                onClick={onScheduleVisit}
                             >
-                                <Button
-                                    variant="premium"
-                                    size="lg"
-                                    className="flex-grow"
-                                    onClick={onScheduleVisit}
-                                >
                                     Agendar visita
                                 </Button>
 

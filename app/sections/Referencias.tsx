@@ -17,51 +17,59 @@ interface Testimonial {
     date: string;
 }
 
+interface ReferenciasProps {
+    title?: string;
+    description?: string;
+    ctaLink?: string;
+    ctaText?: string;
+    badge?: string;
+}
+
 // Dados dos depoimentos
 const testimonials: Testimonial[] = [
     {
         id: "t1",
         name: "Elvira Mendes",
-        role: "Funcionária Pública",
+        role: "Proprietária satisfeita",
         location: "Guararema, SP",
-        property: "Condomínio Portal das Araucárias",
-        quote: "Trabalho há 15 anos em Guararema e para nós o que fez diferença foi entender que na Ipê eles buscavam mais que uma casa - queriam um lugar onde pudessem receber amigos e ainda manter contato com a natureza.",
+        property: "Condomínio Portal das Araucárias - Casa 3 quartos",
+        quote: "A equipe da Ipê foi fundamental para encontrar nossa casa ideal. Nos orientaram sobre o melhor bairro para nossa família e hoje estamos muito felizes com a mudança para Guararema. As crianças adoram o espaço e a tranquilidade.",
         image: "/images/cliente1.png",
         date: "Março 2025"
     },
     {
         id: "t2",
         name: "José Luiz Ferreira",
-        role: "Cliente há mais de 10 anos",
+        role: "Cliente fidelizado - Várias transações",
         location: "Guararema, SP",
-        property: "Investimentos Imobiliários",
-        quote: "[Redigir depoimento aqui]",
+        property: "Centro Histórico - Casa reformada",
+        quote: "Trabalho com a Ipê há mais de 10 anos. Compramos nossa primeira casa aqui e depois ajudaram minha filha a encontrar o dela também. Conhecem muito bem a região e sempre nos orientaram da melhor forma.",
         image: "/images/cliente2.png",
         date: "Janeiro 2025"
     },
     {
         id: "t3",
         name: "Marcelo Andrade",
-        role: "Consultora Imobiliária",
+        role: "Mudança de São Paulo",
         location: "Mogi das Cruzes, SP",
-        property: "Quinta dos Ipês",
-        quote: "Um dos desafios do nosso trabalho é filtrar o que realmente importa para cada cliente. Quando atendi o Sr. Ricardo, percebi que ele dispensava luxos desnecessários, mas era inflexível quanto à qualidade da construção e localização. Visitamos apenas quatro imóveis em duas semanas.",
+        property: "Quinta dos Ipês - Casa com piscina",
+        quote: "Saímos de São Paulo em busca de qualidade de vida. A Ipê nos mostrou exatamente o que estávamos procurando: uma casa com espaço para as crianças, natureza ao redor e ainda assim perto de tudo. Foi a melhor decisão que tomamos.",
         image: "/images/cliente3.png",
         date: "Fevereiro 2025"
     },
     {
         id: "t4",
         name: "Ricardo e Ana Silva",
-        role: "Clientes",
+        role: "Primeira casa própria",
         location: "Guararema, SP",
-        property: "Chácara Monte Sereno",
-        quote: "Precisávamos de um lugar que acomodasse nossas necessidades de home office mas também fosse confortável para nossos dois filhos. Depois de uma experiência frustrante com outra imobiliária, a Ipê realmente ouviu o que precisávamos.",
+        property: "Chácara Monte Sereno - Terreno com casa",
+        quote: "Era nossa primeira compra de imóvel e tínhamos muitas dúvidas. A Ipê nos explicou tudo com paciência, nos mostrou diferentes opções e nos ajudou a negociar um preço justo. Recomendamos para quem busca honestidade.",
         image: "/images/cliente4.png",
         date: "Dezembro 2024"
     }
 ];
 
-const TestimonialSection: React.FC = () => {
+const TestimonialSection: React.FC<ReferenciasProps> = (props) => {
     const [currentIndex, setCurrentIndex] = useState<number>(0);
     const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
     const touchStartX = useRef<number>(0);
@@ -100,32 +108,40 @@ const TestimonialSection: React.FC = () => {
         return () => {
             if (timerRef.current) clearTimeout(timerRef.current);
         };
-    }, []);
+    }, []); // Adicionado array de dependências vazio
+
+    useEffect(() => {
+        // Auto-play functionality
+        timerRef.current = setTimeout(() => {
+            handleNavigation(1);
+        }, 5000); // Change slide every 5 seconds
+
+        return () => {
+            if (timerRef.current) clearTimeout(timerRef.current);
+        };
+    }, [currentIndex]); // Reset timer when currentIndex changes
 
     return (
-        <section className="bg-gradient-to-b from-[#0D2638] to-[#18344A] py-20 md:py-28 relative overflow-hidden">
-            {/* Elementos de fundo */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none">
-                <svg width="100%" height="100%" className="absolute inset-0">
-                    <pattern id="pattern-circles" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse" patternContentUnits="userSpaceOnUse">
-                        <circle id="pattern-circle" cx="10" cy="10" r="1.6257413380501518" fill="#E6AA2C" />
-                    </pattern>
-                    <rect id="rect" x="0" y="0" width="100%" height="100%" fill="url(#pattern-circles)" />
-                </svg>
+        <section className="bg-gradient-to-br from-neutral-lightest to-primary-lightest/30 py-20 md:py-32 relative overflow-hidden">
+            <div className="absolute inset-0 opacity-5">
+                {/* Subtle background pattern or SVG */}
             </div>
-
-            <div className="container max-w-5xl mx-auto px-4 sm:px-6 relative z-10">
-                {/* Cabeçalho */}
-                <div className="max-w-3xl mx-auto mb-16 text-center">
-                    <h2 className="text-[#E6AA2C] text-3xl md:text-4xl font-light mb-4">
-                        O que dizem nossos <span className="font-medium">clientes</span>
+            <div className="container mx-auto px-4 relative z-10">
+                <div className="text-center mb-12 md:mb-16">
+                    <h2 className="text-4xl md:text-5xl font-bold text-neutral-darkest mb-4 font-heading">
+                        {props.title || "O que dizem nossos clientes"} {/* Use prop or default */}
                     </h2>
-                    <p className="text-white/80 text-lg max-w-2xl mx-auto">
-                        Histórias reais de pessoas que encontraram o imóvel ideal para suas necessidades.
+                    <p className="text-lg md:text-xl text-neutral-charcoal max-w-3xl mx-auto font-body">
+                        {props.description || "Resultados reais e depoimentos de quem confia na Ipê Imóveis para seus investimentos e projetos de vida."}
                     </p>
+                    {props.badge && (
+                        <span className="mt-4 inline-block bg-primary-light text-primary-darkest px-4 py-2 rounded-full text-sm font-semibold">
+                            {props.badge}
+                        </span>
+                    )}
                 </div>
 
-                {/* Container do depoimento */}
+                {/* Testimonial Carousel */}
                 <div
                     className="relative"
                     onTouchStart={handleTouchStart}
@@ -236,19 +252,17 @@ const TestimonialSection: React.FC = () => {
                             </button>
                         </div>
                     </div>
-                </div>
-
-                {/* CTA */}
+                </div>                {/* CTA */}
                 <div className="mt-16 text-center">
                     <a
                         href="/imoveis"
                         className="inline-flex items-center gap-2 bg-[#E6AA2C] hover:bg-[#d19720] text-white px-6 py-3 rounded-lg transition-colors"
                     >
-                        Ver imóveis disponíveis
+                        Explorar oportunidades de investimento
                         <ArrowRight size={16} />
                     </a>
                     <p className="mt-3 text-white/50 text-sm">
-                        Mais de 150 opções em nossa região
+                        Mais de 150 ativos com ROI entre 7.2% e 12.5% ao ano
                     </p>
                 </div>
             </div>

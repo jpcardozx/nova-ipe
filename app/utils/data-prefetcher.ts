@@ -1,6 +1,3 @@
-// Data Prefetcher Utility
-'use server';
-
 /**
  * Data Prefetcher Utility
  * 
@@ -10,8 +7,36 @@
  */
 
 import { cache } from 'react';
-import type { ImovelClient } from '@/types/imovel-client';
 import { getImoveisParaVenda, getImoveisParaAlugar } from '@/lib/sanity/fetchImoveis';
+import type { ImovelClient } from '../../src/types/imovel-client';
+
+/**
+ * Otimiza os dados de um imóvel para pré-carregamento.
+ * Processamento feito no servidor para economizar CPU no cliente
+ * 
+ * @param properties Array de imóveis para otimizar
+ */
+export async function optimizeProperties(properties: ImovelClient[]): Promise<ImovelClient[]> {
+    return properties.map(p => ({
+        _id: p._id, // Ensure _id is included as required by ImovelClient
+        titulo: p.titulo,
+        slug: p.slug,
+        preco: p.preco,
+        bairro: p.bairro,
+        cidade: p.cidade,
+        areaUtil: p.areaUtil,
+        dormitorios: p.dormitorios,
+        banheiros: p.banheiros,
+        vagas: p.vagas,
+        finalidade: p.finalidade,
+        destaque: p.destaque,
+        imagem: p.imagem ? {
+            url: p.imagem.imagemUrl,
+            alt: p.imagem.alt,
+            blurDataUrl: (p.imagem as any).blurDataUrl
+        } : undefined
+    }));
+}
 
 // Cache das propriedades para cada tipo, atualizado a cada 5 minutos (300 segundos)
 export const getPreloadedPropertiesForRent = cache(async (): Promise<{
@@ -89,31 +114,3 @@ export async function isCacheValid(timestamp: number, maxAge = 300): Promise<boo
  * Alias for isCacheValid - for backward compatibility
  */
 export const isFreshData = isCacheValid;
-
-/**
- * Otimiza um conjunto de propriedades para consumo no cliente
- * Processamento feito no servidor para economizar CPU no cliente
- * 
- * @param properties Array de imóveis para otimizar
- */
-export async function optimizeProperties(properties: ImovelClient[]): Promise<ImovelClient[]> {
-    return properties.map(p => ({
-        _id: p._id, // Ensure _id is included as required by ImovelClient
-        titulo: p.titulo,
-        slug: p.slug,
-        preco: p.preco,
-        bairro: p.bairro,
-        cidade: p.cidade,
-        areaUtil: p.areaUtil,
-        dormitorios: p.dormitorios,
-        banheiros: p.banheiros,
-        vagas: p.vagas,
-        finalidade: p.finalidade,
-        destaque: p.destaque,
-        imagem: p.imagem ? {
-            url: p.imagem.url,
-            alt: p.imagem.alt,
-            blurDataUrl: (p.imagem as any).blurDataUrl
-        } : undefined
-    }));
-}

@@ -32,13 +32,9 @@ export function mapImovelToClient(imovel: any): ImovelClient {
             '';
 
         // Se tem imagem, cria objeto com as propriedades necessárias
-        // Garantimos que todos os campos necessários estão presentes
         imagem = {
-            _type: 'image',
-            url: imageUrl,
             imagemUrl: imageUrl,
             alt: imageData.alt || imovel.titulo || 'Imagem do imóvel',
-            // Preserva a referência completa do asset, ou cria uma estrutura mínima
             asset: {
                 ...assetData,
                 _type: assetData._type || 'sanity.imageAsset',
@@ -47,19 +43,15 @@ export function mapImovelToClient(imovel: any): ImovelClient {
         };
 
         console.log("mapImovelToClient - Created image object:", {
-            url: imagem.url,
             imagemUrl: imagem.imagemUrl,
             hasAsset: !!imagem.asset,
             assetRef: imagem.asset?._ref,
-            assetUrl: imagem.asset?.url,
             imageHasAsset: !!imageData.asset,
             completeObject: !!imageUrl && !!imagem.asset
         });
     } else {
         // Sem imagem, usa valores padrão
         imagem = {
-            _type: 'image',
-            url: '',
             imagemUrl: '',
             alt: 'Imagem não disponível',
             asset: {

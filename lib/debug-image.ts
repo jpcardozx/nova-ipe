@@ -68,10 +68,8 @@ export function analyzeImageStructure(image: any): Record<string, any> {
 export function debugImage(image: any, label: string = 'Imagem') {
     try {
         const analysis = analyzeImageStructure(image);
-        console.log(`[DEBUG IMAGE] ${label}:`, analysis);
-
-        // Sugerir solução baseada na análise
-        const suggestions = [];
+        console.log(`[DEBUG IMAGE] ${label}:`, analysis);        // Sugerir solução baseada na análise
+        const suggestions: string[] = [];
 
         if (!image) {
             suggestions.push('Imagem é nula ou indefinida. Verifique se o campo está sendo preenchido corretamente no Sanity.');

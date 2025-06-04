@@ -4,8 +4,9 @@ import React, { useState, useEffect, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { getImoveisParaAlugar } from '@lib/sanity/fetchImoveis';
 import { useInView } from 'react-intersection-observer';
-import type { ImovelClient } from '@/types/imovel-client';
+import type { ImovelClient } from '../../src/types/imovel-client';
 import { OptimizedIcons } from '@/app/utils/optimized-icons';
+import PropertyCardUnified from '@/app/components/ui/property/PropertyCardUnified';
 
 // Declare DOM types for this client component
 declare global {
@@ -28,12 +29,6 @@ const Footer = dynamic(() => import('@sections/Footer'), {
 const Valor = dynamic(() => import('@sections/Valor'), {
     ssr: false, // Load after main content since it's below the fold
     loading: () => <div className="h-32 bg-neutral-50 animate-pulse" />
-});
-
-// VirtualizedPropertiesGrid has major performance optimizations
-const VirtualizedPropertiesGrid = dynamic(() => import('@/app/components/VirtualizedPropertiesGrid'), {
-    ssr: true,
-    loading: () => <PropertiesLoadingSkeleton />
 });
 
 // Loading skeleton component (memoized to avoid re-renders)
@@ -66,6 +61,7 @@ export default function OptimizedAlugarPage() {
     // State for properties with loading state management
     const [imoveis, setImoveis] = useState<ImovelClient[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     // Intersection observer for the valor section to delay loading
     const { ref: valorRef, inView: valorInView } = useInView({
@@ -78,7 +74,9 @@ export default function OptimizedAlugarPage() {
 
     useEffect(() => {
         // Set critical CSS optimization flag
-        document.documentElement.setAttribute('data-page', 'property-listing');
+        if (typeof document !== 'undefined') {
+            document.documentElement.setAttribute('data-page', 'property-listing');
+        }
 
         // Fetch properties with performance tracking
         const fetchImoveis = async () => {
@@ -96,6 +94,7 @@ export default function OptimizedAlugarPage() {
                 setImoveis(data);
             } catch (err) {
                 console.error('Erro ao buscar imóveis:', err);
+                setError(err instanceof Error ? err.message : 'Erro ao carregar imóveis');
             } finally {
                 setIsLoading(false);
 
@@ -110,41 +109,35 @@ export default function OptimizedAlugarPage() {
         fetchImoveis();
     }, [initialLoadTime]);
 
-    // Format properties for virtualized grid with type safety
-    const formattedProperties = React.useMemo(() => {
-        if (!imoveis.length) return [];
+    // Handler para favoritos
+    const handleToggleFavorite = (id: string) => {
+        try {
+            const savedFavorites = localStorage.getItem('property-favorites') || '[]';
+            const favorites = JSON.parse(savedFavorites) as string[];
 
-        return imoveis
-            .filter(imovel => imovel && imovel._id)
-            .map(imovel => {
-                // Check if dataPublicacao is a valid string representing a date
-                const isNew = typeof imovel.dataPublicacao === 'string' && imovel.dataPublicacao ?
-                    (new Date().getTime() - new Date(imovel.dataPublicacao).getTime() < 7 * 24 * 60 * 60 * 1000) :
-                    false;
+            if (favorites.includes(id)) {
+                const index = favorites.indexOf(id);
+                favorites.splice(index, 1);
+            } else {
+                favorites.push(id);
+            }
 
-                // Create the formatted property object
-                return {
-                    id: imovel._id,
-                    title: imovel.titulo || '',
-                    slug: imovel.slug || imovel._id,
-                    location: imovel.bairro,
-                    city: imovel.cidade,
-                    price: imovel.preco || 0,
-                    propertyType: 'rent' as const, // For rental properties
-                    area: imovel.areaUtil,
-                    bedrooms: imovel.dormitorios,
-                    bathrooms: imovel.banheiros,
-                    parkingSpots: imovel.vagas,
-                    mainImage: {
-                        url: imovel.imagem?.url || '/images/property-placeholder.jpg',
-                        alt: imovel.imagem?.alt || imovel.titulo || ''
-                    },
-                    isHighlight: Boolean(imovel.destaque),
-                    isPremium: Boolean(imovel.destaque),
-                    isNew
-                };
-            });
-    }, [imoveis]);
+            localStorage.setItem('property-favorites', JSON.stringify(favorites));
+        } catch (error) {
+            console.error('Erro ao processar favoritos:', error);
+        }
+    };
+
+    // Verificar se um imóvel é favorito
+    const isFavorite = (id: string): boolean => {
+        try {
+            const savedFavorites = localStorage.getItem('property-favorites') || '[]';
+            const favorites = JSON.parse(savedFavorites) as string[];
+            return favorites.includes(id);
+        } catch {
+            return false;
+        }
+    };
 
     return (
         <>
@@ -152,23 +145,70 @@ export default function OptimizedAlugarPage() {
             <main className="pt-28 pb-20 bg-neutral-50 text-neutral-900 min-h-screen">
                 <section className="max-w-7xl mx-auto px-6">
                     <div className="text-center mb-16">
-                        <h1 className="text-4xl font-extrabold">Imóveis para Alugar</h1>
+                        <h1 className="text-4xl font-extrabold text-blue-900">Imóveis para Alugar</h1>
                         <p className="mt-4 text-neutral-600 text-lg">
                             Confira os imóveis disponíveis com boa localização, segurança e excelente custo-benefício.
                         </p>
                     </div>
 
-                    <Suspense fallback={<PropertiesLoadingSkeleton />}>
-                        <VirtualizedPropertiesGrid
-                            properties={formattedProperties}
-                            isLoading={isLoading}
-                            className="min-h-[800px]"
-                        />
-                    </Suspense>
+                    {isLoading ? (
+                        <PropertiesLoadingSkeleton />
+                    ) : error ? (
+                        <div className="bg-red-50 border border-red-100 rounded-lg p-8 max-w-2xl mx-auto text-center">
+                            <h2 className="text-xl font-bold text-red-800 mb-4">Erro ao carregar imóveis</h2>
+                            <p className="text-red-700 mb-6">{error}</p>
+                            <button
+                                onClick={() => {
+                                    setIsLoading(true);
+                                    setError(null);
+                                    getImoveisParaAlugar()
+                                        .then(data => setImoveis(data))
+                                        .catch(err => setError(err instanceof Error ? err.message : 'Erro ao carregar'))
+                                        .finally(() => setIsLoading(false));
+                                }}
+                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                            >
+                                Tentar novamente
+                            </button>
+                        </div>
+                    ) : imoveis.length === 0 ? (
+                        <div className="bg-blue-50 border border-blue-100 rounded-lg p-8 max-w-2xl mx-auto text-center">
+                            <h2 className="text-xl font-bold text-blue-800 mb-4">Nenhum imóvel encontrado</h2>
+                            <p className="text-blue-700 mb-6">
+                                No momento não temos imóveis disponíveis para aluguel.
+                                Entre em contato conosco para verificar novas opções em breve.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {imoveis.map(imovel => (
+                                <PropertyCardUnified
+                                    key={imovel._id}
+                                    id={imovel._id} title={imovel.titulo || 'Imóvel para alugar'}
+                                    slug={imovel.slug as string || imovel._id}
+                                    location={imovel.bairro || ''}
+                                    city={imovel.cidade}
+                                    price={imovel.preco || 0}
+                                    propertyType="rent"
+                                    area={imovel.areaUtil}
+                                    bedrooms={imovel.dormitorios}
+                                    bathrooms={imovel.banheiros}
+                                    parkingSpots={imovel.vagas} mainImage={{
+                                        url: imovel.imagem?.imagemUrl || '',
+                                        alt: imovel.imagem?.alt || imovel.titulo || 'Imóvel para alugar',
+                                        sanityImage: imovel.imagem
+                                    }}
+                                    isHighlight={imovel.destaque}
+                                    isFavorite={isFavorite(imovel._id)}
+                                    onFavoriteToggle={handleToggleFavorite}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </section>
 
                 {/* Valor section loaded only when scrolled into view */}
-                <div ref={valorRef}>
+                <div ref={valorRef} className="mt-24">
                     {valorInView && <Valor />}
                 </div>
             </main>

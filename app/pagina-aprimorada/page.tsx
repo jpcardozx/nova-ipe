@@ -9,28 +9,28 @@ import SkipToContent from '../components/SkipToContent';
 import { FeedbackBanner } from '../components/FeedbackBanner';
 
 // Importações para dados dinâmicos do Sanity
-import { getImoveisDestaque, getImoveisAluguel } from '@/lib/queries';
-import { normalizeDocuments } from '@/lib/sanity-utils';
-import { extractImageUrl, extractAltText } from '@/lib/image-sanity';
-import { ensureValidImageUrl } from '@/lib/sanity-image-utils';
-import { loadImage } from '@/lib/enhanced-image-loader';
-import type { ImovelClient } from '@/src/types/imovel-client';
-import { PropertyType } from '@/components/ui/property/PropertyCard'; // Updated import for PropertyType
-import { extractSlugString, ensureNonNullProperties } from '@/app/PropertyTypeFix';
+import { getImoveisDestaque, getImoveisAluguel } from '../../lib/queries';
+import { normalizeDocuments } from '../../lib/sanity-utils';
+import { extractImageUrl, extractAltText } from '../../lib/image-sanity';
+import { ensureValidImageUrl } from '../../lib/sanity-image-utils';
+import { loadImage } from '../../lib/enhanced-image-loader';
+import type { ImovelClient } from '../../src/types/imovel-client';
+import { PropertyType } from '../components/ui/property/PropertyCardUnified'; // Updated import for PropertyType
+import { extractSlugString, ensureNonNullProperties } from '../PropertyTypeFix';
 
 // Componentes de UI
 import SectionHeader from '../components/ui/SectionHeader';
 
 // Componentes aprimorados
 import EnhancedHero from "../components/EnhancedHero";
-import NavbarResponsive from "../components/NavbarResponsive";
+import ClientOnlyNavbar from "../components/ClientOnlyNavbar";
 import FooterAprimorado from "../sections/FooterAprimorado";
 import ClientProgressSteps from '../components/ClientProgressSteps';
 import BlocoExploracaoSimbolica from '../components/BlocoExploracaoSimbolica';
 import BlocoCTAConversao from '../components/client/BlocoCTAConversao';
 import DestaquesSanityCarousel from '../components/DestaquesSanityCarousel';
 import ValorAprimorado from '../sections/ValorAprimorado';
-import FormularioContato from '../components/FormularioContato';
+import FormularioContatoSubtil from '../components/FormularioContatoSubtil';
 import DestaquesEstrategicos from '../sections/Destaques';
 import { ExclusiveAnalysisOffer } from '../sections/ExclusiveAnalysisOffer';
 
@@ -93,8 +93,8 @@ function transformPropertyData(imovel: ImovelClient, propertyType: PropertyType)
 // Componente principal da página
 export default async function NovaPaginaInicial() {
     // Buscando dados do Sanity com tratamento de erros
-    let imoveisDestaque = [];
-    let imoveisAluguel = [];
+    let imoveisDestaque: any[] = [];
+    let imoveisAluguel: any[] = [];
 
     try {
         imoveisDestaque = await getImoveisDestaque();
@@ -129,17 +129,16 @@ export default async function NovaPaginaInicial() {
                     storageKey="may2025-launch-banner"
                 />
 
-                <NavbarResponsive />
+                <ClientOnlyNavbar />
 
                 <main id="main-content" className="overflow-hidden">
                     {/* Hero Section com Formulário de Contato */}
                     <EnhancedHero />
 
                     {/* Análise estrutural e estratégica do mercado */}
-                    <section id="analise-mercado" className="py-24 bg-white">
-                        <div className="container mx-auto px-4">
-                            <ExclusiveAnalysisOffer variant="investor" />
-                        </div>
+                    <section id="analise-mercado" className="py-24 bg-white">                        <div className="container mx-auto px-4">
+                        <ExclusiveAnalysisOffer variant="executive" />
+                    </div>
                     </section>
 
                     {/* Destaques estratégicos da região */}
@@ -177,35 +176,28 @@ export default async function NovaPaginaInicial() {
                             />
                             <ClientProgressSteps />
                         </div>
-                    </section>
-
-                    {/* Formulário de Contato Principal */}
-                    <section id="contato" className="relative py-24 overflow-hidden bg-gradient-to-b from-[#F8FAFC] to-white">
-                        <div className="absolute inset-0 bg-[url('/texture-elegant.png')] opacity-5 mix-blend-soft-light"></div>
-                        <FormularioContato />
-                    </section>
+                    </section>                    {/* Formulário de Contato Sutil e Profissional */}
+                    <FormularioContatoSubtil />
 
                     {/* CTA Final de Conversão */}
                     <section className="bg-[#0D1F2D] relative overflow-hidden py-16">
                         <div className="absolute inset-0 bg-gradient-to-r from-[#0D1F2D] to-[#1a3040] mix-blend-soft-light"></div>
                         <div className="absolute inset-0 bg-[url('/images/wood-pattern.png')] opacity-10"></div>
-                        <div className="container mx-auto relative z-10">
-                            <BlocoCTAConversao
-                                titulo="Vamos Encontrar Seu Espaço Ideal?"
-                                subtitulo="Nossa equipe está pronta para transformar sua busca imobiliária em Guararema em uma jornada personalizada e gratificante. Dê o primeiro passo agora."
-                                ctaText="Agendar Consulta Gratuita"
-                                ctaLink="https://wa.me/5511981845016?text=Olá! Gostaria de conhecer opções de imóveis em Guararema (via site)"
-                            />
+                        <div className="container mx-auto relative z-10">                            <BlocoCTAConversao
+                            titulo="Pronto para garantir sua independência financeira?"
+                            subtitulo="Guararema oferece as melhores oportunidades de ROI da região. Nossa análise exclusiva revela imóveis com potencial de valorização acima da média. Reserve sua consultoria estratégica agora."
+                            ctaText="Garantir minha análise exclusiva"
+                            ctaLink="https://wa.me/5511981845016?text=Olá! Quero receber análise exclusiva de oportunidades em Guararema (via site)"
+                        />
                         </div>
                     </section>
                 </main>
 
                 <FooterAprimorado />
 
-                {/* Botão flutuante de WhatsApp */}
-                <WhatsAppButton
+                {/* Botão flutuante de WhatsApp */}                <WhatsAppButton
                     phoneNumber="5511981845016"
-                    message="Olá! Gostaria de mais informações sobre imóveis em Guararema (via site)"
+                    message="Olá! Quero receber análise exclusiva das melhores oportunidades de investimento em Guararema (via site)"
                     pulseAnimation={true}
                     showAfterScroll={true}
                 />

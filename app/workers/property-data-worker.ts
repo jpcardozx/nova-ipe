@@ -116,27 +116,25 @@ function extractFeatures(properties: any[]) {
     }
 
     const prices = properties.map(p => p.preco || 0).filter(p => p > 0);
-    const areas = properties.map(p => p.areaUtil || 0).filter(a => a > 0);
-
-    // Get unique bedroom and bathroom counts
-    const bedrooms = [...new Set(properties
+    const areas = properties.map(p => p.areaUtil || 0).filter(a => a > 0);    // Get unique bedroom and bathroom counts
+    const bedrooms = Array.from(new Set(properties
         .map(p => p.dormitorios)
-        .filter(Boolean))]
+        .filter(Boolean)))
         .sort((a, b) => a - b);
 
-    const bathrooms = [...new Set(properties
+    const bathrooms = Array.from(new Set(properties
         .map(p => p.banheiros)
-        .filter(Boolean))]
+        .filter(Boolean)))
         .sort((a, b) => a - b);
 
     // Get unique cities and neighborhoods
-    const cities = [...new Set(properties
+    const cities = Array.from(new Set(properties
         .map(p => p.cidade)
-        .filter(Boolean))];
+        .filter(Boolean)));
 
-    const neighborhoods = [...new Set(properties
+    const neighborhoods = Array.from(new Set(properties
         .map(p => p.bairro)
-        .filter(Boolean))];
+        .filter(Boolean)));
 
     return {
         minPrice: Math.min(...prices),

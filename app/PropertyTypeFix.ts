@@ -3,7 +3,7 @@
 // Este arquivo contém funções auxiliares para corrigir problemas de tipagem com propriedades
 // e garantir que os dados estejam no formato correto para os componentes.
 
-import type { PropertyType } from '@/components/ui/property/PropertyCard';
+import type { PropertyType } from '@/types/property';
 
 // Custom implementation of extractImageUrl to replace the missing module
 function extractImageUrl(image: SanityImage): string | null {

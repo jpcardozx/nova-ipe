@@ -32,6 +32,7 @@ interface ImageDiagnostics {
     hasAsset: boolean;
     assetKeys?: string[];
     assetRefExists?: boolean;
+    assetHasUrl?: boolean;
     referenceValue?: string;
 }
 
@@ -92,21 +93,40 @@ function diagnoseImage(image: any): ImageDiagnostics {
     if (image && typeof image === 'object') {
         diagnostics.hasUrl = 'url' in image && !!image.url;
         diagnostics.hasImagemUrl = 'imagemUrl' in image && !!image.imagemUrl;
-        diagnostics.hasAsset = 'asset' in image && !!image.asset;
-
-        // Analisar asset se existir
+        diagnostics.hasAsset = 'asset' in image && !!image.asset;        // Analisar asset se existir
         if (diagnostics.hasAsset) {
             diagnostics.assetKeys = Object.keys(image.asset || {});
             diagnostics.assetRefExists = '_ref' in (image.asset || {});
-            diagnostics.referenceValue = image.asset?._ref || undefined;
+            const refValue = image.asset?._ref;
+            diagnostics.referenceValue = refValue;
+              // Adicionar informações sobre asset.url para melhor diagnóstico
+            const assetUrl = image.asset?.url;
+            if (assetUrl) {
+                diagnostics.assetHasUrl = true;
+                // Registrar apenas se necessário para debugging específico
+                // Desabilitado para reduzir ruído no console
+            } else if (diagnostics.assetRefExists && (!refValue || refValue === '')) {
+                console.warn('[Enhanced Image Loader] Asset sem dados válidos - nem _ref nem url:', {
+                    refValue,
+                    refType: typeof refValue,
+                    assetObject: image.asset
+                });
+            }
+        }
+    }    // Registrar apenas casos problemáticos para reduzir ruído no console
+    if (process.env.NODE_ENV === 'development') {
+        // Verificar se há dados de imagem válidos (incluindo asset.url)
+        const hasValidData = diagnostics.hasUrl || diagnostics.hasImagemUrl || 
+                            (diagnostics.hasAsset && diagnostics.assetRefExists && diagnostics.referenceValue) ||
+                            (diagnostics.hasAsset && image.asset?.url); // Adicionar verificação para asset.url
+        
+        if (!hasValidData) {
+            imageLog.warn('Imagem sem dados válidos detectada', {
+                details: diagnostics,
+                propertyId: image?._id || image?.propertyId || image?.id || 'unknown'
+            });
         }
     }
-
-    // Registrar o diagnóstico em logs para análises futuras
-    imageLog.debug('Diagnóstico de imagem', {
-        details: diagnostics,
-        propertyId: image?._id || image?.propertyId || image?.id || 'unknown'
-    });
 
     return diagnostics;
 }

@@ -1,8 +1,9 @@
 'use client';
 
-import { getImoveisParaAlugar } from '@/lib/sanity/fetchImoveis';
+import { getImoveisParaAlugar } from '@lib/sanity/fetchImoveis';
 import SuperOptimizedPropertyPage from '../components/SuperOptimizedPropertyPage';
-import type { ImovelClient } from '@/types/imovel-client';
+import type { ImovelClient } from '../../src/types/imovel-client';
+import type { ImovelClientType } from '../../types/imovel';
 import { useState, useEffect } from 'react';
 
 interface TurboAlugarPageProps {
@@ -10,57 +11,33 @@ interface TurboAlugarPageProps {
 }
 
 /**
- * Tipo ImovelSimplificado que corresponde exatamente ao tipo esperado pelo SuperOptimizedPropertyPage
- */
-interface ImovelSimplificado {
-    id: string;
-    titulo: string;
-    slug: string;
-    bairro?: string;
-    cidade?: string;
-    preco: number;
-    finalidade: 'Aluguel' | 'Venda';
-    areaUtil?: number;
-    dormitorios?: number;
-    banheiros?: number;
-    vagas?: number;
-    imagem?: {
-        url: string;
-        alt?: string;
-        blurDataUrl?: string;
-    };
-    destaque?: boolean;
-    dataPublicacao?: string;
-}
-
-/**
- * Adapta os imóveis do formato ImovelClient para o formato ImovelSimplificado
+ * Adapta os imóveis do formato ImovelClient para o formato ImovelClientType
  * necessário para o componente SuperOptimizedPropertyPage
  */
-const adaptImovelToSimplificado = (imoveis: ImovelClient[]): ImovelSimplificado[] => {
+const adaptImovelToClientType = (imoveis: ImovelClient[]): ImovelClientType[] => {
     return imoveis.map(imovel => {
-        // Garante que finalidade seja apenas 'Aluguel' ou 'Venda'
-        const finalidade = imovel.finalidade === 'Venda' ? 'Venda' : 'Aluguel';
+        // Garante que propertyType seja apenas 'rent' ou 'sale'
+        const propertyType = imovel.finalidade === 'Venda' ? 'sale' : 'rent';
 
         return {
             id: imovel._id, // Mapeia _id para id
-            titulo: imovel.titulo || '',
+            title: imovel.titulo || '',
             slug: typeof imovel.slug === 'string' ? imovel.slug : '',
-            bairro: imovel.bairro,
-            cidade: imovel.cidade,
-            preco: imovel.preco || 0,
-            finalidade, // Já garantido como 'Aluguel' ou 'Venda'
-            areaUtil: imovel.areaUtil,
-            dormitorios: imovel.dormitorios,
-            banheiros: imovel.banheiros,
-            vagas: imovel.vagas,
-            imagem: imovel.imagem ? {
-                url: imovel.imagem.url || '',
-                alt: imovel.imagem.alt,
-                blurDataUrl: imovel.imagem.imagemUrl
-            } : undefined,
-            destaque: imovel.destaque,
-            dataPublicacao: undefined
+            location: imovel.bairro || '',
+            city: imovel.cidade,
+            price: imovel.preco || 0,
+            propertyType, // Já garantido como 'rent' ou 'sale'
+            area: imovel.areaUtil,
+            bedrooms: imovel.dormitorios,
+            bathrooms: imovel.banheiros,
+            parkingSpots: imovel.vagas,
+            mainImage: {
+                url: imovel.imagem?.imagemUrl || '',
+                alt: imovel.imagem?.alt || imovel.titulo || '',
+                blurDataUrl: imovel.imagem?.imagemUrl
+            },
+            isHighlight: imovel.destaque,
+            status: 'available'
         };
     });
 };
@@ -78,18 +55,17 @@ const adaptImovelToSimplificado = (imoveis: ImovelClient[]): ImovelSimplificado[
  * - Integração com React Server Components
  * - Suspense estratégico para streaming de UI
  */
-export default function TurboAlugarPage({ preloadedProperties }: TurboAlugarPageProps) {
-    // Estado para armazenar os dados pré-carregados
+export default function TurboAlugarPage({ preloadedProperties }: TurboAlugarPageProps) {    // Estado para armazenar os dados pré-carregados
     const [fetchFunction, setFetchFunction] = useState(() => {
         if (preloadedProperties) {
             // Se temos dados pré-carregados, usamos uma função que os retorna imediatamente
             // e os adaptamos para o formato esperado
-            return () => Promise.resolve(adaptImovelToSimplificado(preloadedProperties));
+            return () => Promise.resolve(adaptImovelToClientType(preloadedProperties));
         } else {
             // Caso contrário, usamos a função normal de fetch com adaptador
             return async () => {
                 const imoveis = await getImoveisParaAlugar();
-                return adaptImovelToSimplificado(imoveis);
+                return adaptImovelToClientType(imoveis);
             };
         }
     });

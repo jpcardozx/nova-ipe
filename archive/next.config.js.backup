@@ -1,0 +1,73 @@
+// @ts-check
+const { merge } = require('webpack-merge');
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+// Import individual config parts
+const baseNextConfig = require('./config/next/base');
+const sanityNextConfig = require('./config/next/sanity');
+const imagesNextConfig = require('./config/next/images');
+
+// Import webpack config functions
+const webpackBase = require('./config/webpack/base');
+const webpackDev = require('./config/webpack/dev');
+const webpackProd = require('./config/webpack/prod');
+
+/**
+ * @type {import('next').NextConfig}
+ */
+let nextConfig = {
+  ...baseNextConfig,
+  ...sanityNextConfig, // Merges Sanity-specific Next.js options
+  ...imagesNextConfig, // Merges Image-specific Next.js options
+  webpack: (config, options) => {
+    const { dev, isServer, buildId, defaultLoaders, webpack } = options;
+
+    // Call the base Next.js webpack config function first (if it exists in baseNextConfig)
+    if (typeof baseNextConfig.webpack === 'function') {
+      config = baseNextConfig.webpack(config, options);
+    }
+
+    // Apply our custom base Webpack config first
+    config = webpackBase(config, options);
+
+    // Then apply environment-specific config
+    if (dev) {
+      config = webpackDev(config, options);
+    } else {
+      config = webpackProd(config, options);
+    }    // Fallbacks for Node.js core modules (example, if not fully handled in webpack/base.js)
+    // Ensure this is only applied for the client-side bundle
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...(config.resolve.fallback || {}), // Ensure fallback object exists
+        fs: false,
+        path: false,
+        // crypto: require.resolve('crypto-browserify'), // Already in webpack/base.js if uncommented
+        // stream: require.resolve('stream-browserify'), // Already in webpack/base.js if uncommented
+        // buffer: require.resolve('buffer/'), // Already in webpack/base.js if uncommented
+        // process: require.resolve('process/browser'), // Already in webpack/base.js if uncommented
+      };
+    }
+
+    // Add any final specific modifications if necessary
+    // For example, to handle the `critters` plugin if you decide to use it directly via webpack
+    // if (!dev && !isServer) {
+    //   const Critters = require('critters');
+    //   config.plugins.push(
+    //     new Critters({
+    //       // Critters options, e.g., preload: 'swap', inlineFonts: true
+    //       // Be careful with options, as they can impact build time and output
+    //     })
+    //   );
+    // }
+
+    return config;
+  },
+};
+
+// Apply bundle analyzer if ANALYZE is true
+nextConfig = withBundleAnalyzer(nextConfig);
+
+module.exports = nextConfig;

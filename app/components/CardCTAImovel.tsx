@@ -19,9 +19,8 @@ const CardCTAImovel: FC<CardCTAImovelProps> = ({
   tipoCTA = "whatsapp",
   destaque = true,
   linkPersonalizado,
-}) => {
-  // Texto e ícone dinâmico
-  const labelCTA = tipoCTA === "agendar" ? "Agendar visita guiada" : "Falar com especialista local";
+}) => {  // Texto e ícone dinâmico
+  const labelCTA = tipoCTA === "agendar" ? "Reservar minha visita exclusiva" : "Garantir atendimento prioritário";
   const iconCTA = tipoCTA === "agendar" ? <Calendar className="w-5 h-5" /> : <Phone className="w-5 h-5" />;
 
   // Formata preço apenas uma vez
@@ -30,12 +29,10 @@ const CardCTAImovel: FC<CardCTAImovelProps> = ({
     // Usa opções padrão para moeda brasileira
     return formatarMoeda(preco);
   }, [preco]);
-
   // URL do CTA
-  const safeTitle = encodeURIComponent(titulo ?? "");
-  const defaultLink = useMemo(
+  const safeTitle = encodeURIComponent(titulo ?? ""); const defaultLink = useMemo(
     () =>
-      `https://wa.me/5511981845016?text=Olá! Tenho interesse no imóvel: ${safeTitle} (via site)`,
+      `https://wa.me/5511981845016?text=Olá! Gostaria de mais informações sobre o imóvel: ${safeTitle}. Podemos conversar?`,
     [safeTitle]
   );
   const ctaUrl = linkPersonalizado?.trim() || defaultLink;
@@ -47,15 +44,18 @@ const CardCTAImovel: FC<CardCTAImovelProps> = ({
         <div className="absolute top-4 right-4 bg-amber-500/20 text-amber-600 px-3 py-0.5 text-xs font-semibold rounded-full uppercase tracking-wide">
           Em destaque
         </div>
-      )}
-
-      {/* Preço */}
+      )}      {/* Preço */}
       <div className="space-y-1">
-        <p className="text-sm text-stone-500">Valor de referência</p>
+        <p className="text-sm text-stone-500">Valor</p>
         {precoFormatado ? (
-          <p className="text-4xl font-bold tracking-tight leading-none">
-            {precoFormatado}
-          </p>
+          <div>
+            <p className="text-4xl font-bold tracking-tight leading-none">
+              {precoFormatado}
+            </p>            <p className="text-xs font-medium text-green-600 mt-1 flex items-center">
+              <Phone className="w-3 h-3 mr-1" />
+              Consulte valores e condições
+            </p>
+          </div>
         ) : (
           <p className="italic text-base text-stone-400">Sob consulta</p>
         )}
@@ -76,17 +76,13 @@ const CardCTAImovel: FC<CardCTAImovelProps> = ({
       >
         {iconCTA}
         <span>{labelCTA}</span>
-      </Link>
-
-      {/* Verificação */}
+      </Link>      {/* Verificação */}
       <div className="flex items-center gap-2 text-xs text-stone-500">
         <UserCheck className="w-4 h-4 text-amber-500" />
-        <span>Imóvel verificado pela Ipê</span>
-      </div>
-
-      {/* Nota adicional */}
+        <span>Documentação e potencial verificados pela Ipê</span>
+      </div>      {/* Nota adicional */}
       <p className="text-xs italic text-stone-400 border-t border-stone-200 pt-3">
-        Atendimento rápido. Indicamos também imóveis similares conforme seu perfil.
+        Resposta em até 2 horas. Receba análise financeira completa e comparativo de oportunidades para seu perfil de investidor.
       </p>
     </aside>
   );

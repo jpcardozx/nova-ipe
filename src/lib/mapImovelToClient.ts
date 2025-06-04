@@ -1,5 +1,6 @@
-import type { ImovelProjetado , ImovelClient } from '@/types/imovel-client'
-
+import type { ImovelProjetado , ImovelClient } from '../types/imovel-client'
+import { formatarMoeda, formatarArea, formatarEndereco } from "@/lib/utils";
+import { sanityClient } from '@/lib/sanity/sanity.client';
 
 export function mapImovelToClient(i: ImovelProjetado): ImovelClient {
   return {
@@ -16,12 +17,11 @@ export function mapImovelToClient(i: ImovelProjetado): ImovelClient {
     aceitaFinanciamento: i.aceitaFinanciamento,
     documentacaoOk: i.documentacaoOk,
     imagem: i.imagem ? {
-      url: i.imagem.imagemUrl ?? '',
       imagemUrl: i.imagem.imagemUrl ?? '',
       alt: i.imagem.alt ?? ''
     } : undefined,
     imagemOpenGraph: i.imagemOpenGraph ? {
-      url: i.imagemOpenGraph.imagemUrl ?? ''
+      imagemUrl: i.imagemOpenGraph.imagemUrl ?? ''
     } : undefined,
     categoria: i.categoria,
     endereco: i.endereco,

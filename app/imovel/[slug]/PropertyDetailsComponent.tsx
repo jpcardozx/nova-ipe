@@ -8,7 +8,7 @@ import { formatarMoeda } from '@/lib/utils';
 import WhatsAppShare from '@/app/components/WhatsAppShare';
 import SocialShareButtons from '@/app/components/SocialShareButtons';
 import PropertyMetadata from '@/app/components/PropertyMetadata';
-import type { ImovelClient as ImovelDataType } from '@/types/imovel-client';
+import type { ImovelClient as ImovelDataType } from '../../../src/types/imovel-client';
 
 interface PropertyDetailsProps {
     imovel: ImovelDataType;
@@ -102,10 +102,10 @@ const PropertyDetailsComponent: FC<PropertyDetailsProps> = ({ imovel, relacionad
                 area: typeof imovel.areaUtil === 'number' ? imovel.areaUtil : imovel.areaUtil ? parseFloat(String(imovel.areaUtil)) : undefined,
                 features: imovel.caracteristicas || [],
                 mainImage: {
-                    url: imovel.imagem?.imagemUrl || imovel.imagem?.url || '/images/og-image-2025.jpg',
+                    url: imovel.imagem?.imagemUrl || '/images/og-image-2025.jpg',
                     alt: imovel.imagem?.alt || imovel.titulo || 'Imóvel Nova Ipê'
                 },
-                images: imovel.galeria?.map(img => ({
+                images: imovel.galeria?.map((img: { imagemUrl?: string; url?: string; alt?: string }) => ({
                     url: img.imagemUrl || img.url || '',
                     alt: img.alt || imovel.titulo || 'Imóvel Nova Ipê'
                 })),

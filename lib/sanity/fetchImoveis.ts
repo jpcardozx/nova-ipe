@@ -1,5 +1,4 @@
 // lib/sanity/fetchImoveis.ts
-'use server';
 
 import { serverClient } from './sanity.server';
 import {
@@ -8,12 +7,11 @@ import {
     queryImoveisParaAlugar,
     queryImoveisAluguelDestaque,
     queryImovelEmDestaque,
+    queryImoveisDestaqueVenda,
     queryImovelPorSlug,
 } from '@lib/queries'
-
-// Importando a versão do lib para garantir consistência
+import type { ImovelClient, ImovelProjetado } from '../../src/types/imovel-client'
 import { mapImovelToClient } from '@lib/mapImovelToClient'
-import type { ImovelClient, ImovelProjetado } from '@/types/imovel-client'
 
 
 // Server-side fetcher with caching
@@ -122,6 +120,24 @@ export async function getImovelEmDestaque(): Promise<ImovelClient[]> {
         queryImovelEmDestaque,
         {},
         ['imoveis', 'destaque']
+    )
+    return mapMany(data)
+}
+
+export async function getImoveisDestaqueVenda(): Promise<ImovelClient[]> {
+    const data = await fetchWithCache<ImovelProjetado[]>(
+        queryImoveisDestaqueVenda,
+        {},
+        ['imoveis', 'destaque', 'venda']
+    )
+    return mapMany(data)
+}
+
+export async function getImoveisDestaqueAluguel(): Promise<ImovelClient[]> {
+    const data = await fetchWithCache<ImovelProjetado[]>(
+        queryImoveisAluguelDestaque,
+        {},
+        ['imoveis', 'destaque', 'aluguel']
     )
     return mapMany(data)
 }

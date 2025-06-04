@@ -53,28 +53,26 @@ export default function Footer() {
                         height={120}
                         className="mx-auto md:mx-0 object-contain"
                     />                    <p className="text-body-small md:text-body text-[#F7D7A3] mt-4 thin-text leading-relaxed">
-                        Consultoria Imobiliária e gestão de contratos de locação.
+                        Consultoria estratégica em investimentos imobiliários com foco em ROI e valorização de ativos.
                     </p>
 
-                    <div className="mt-6 flex justify-center md:justify-start">
-                        <a
-                            href="https://wa.me/5511981845016"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-[#FFAD43] text-[#0D1F2D] hover:bg-[#e89c36] transition-all text-sm font-medium shadow-md hover:shadow-lg"
-                        >
-                            Agende uma consulta
-                            <ExternalLink className="w-4 h-4" />
-                        </a>
+                    <div className="mt-6 flex justify-center md:justify-start">                        <a
+                        href="https://wa.me/5511981845016"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-[#FFAD43] text-[#0D1F2D] hover:bg-[#e89c36] transition-all text-sm font-medium shadow-md hover:shadow-lg"
+                    >
+                        Análise gratuita de investimento
+                        <ExternalLink className="w-4 h-4" />
+                    </a>
                     </div>
                 </div>
 
                 <div className="mt-12 border-t border-white/10 pt-12 grid grid-cols-1 md:grid-cols-3 gap-10 text-sm">
                     {/* Coluna 1 */}
-                    <div className="footer-animate opacity-0 translate-y-4 transition-all duration-700">
-                        <h4 className="text-[#FFAD43] text-caption uppercase mb-4 tracking-widest semibold-text">Conheça a Nova Ipê</h4>
+                    <div className="footer-animate opacity-0 translate-y-4 transition-all duration-700">                        <h4 className="text-[#FFAD43] text-caption uppercase mb-4 tracking-widest semibold-text">Oportunidades de Investimento</h4>
                         <ul className="space-y-3">
-                            {["Sobre nós", "Nossa equipe", "Avaliações de clientes", "Política de privacidade", "Blog"].map((text, idx) => (
+                            {["Propriedades com alto ROI", "Imóveis para renda", "Áreas em valorização", "Consultoria financeira", "Relatórios de mercado"].map((text, idx) => (
                                 <li key={idx}>
                                     <Link
                                         href={`/${text.toLowerCase().replace(/\s+/g, "-")}`}

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import type { ImovelClient } from '@/types/imovel-client';
+import { getImovelEmDestaque, getImoveisParaAlugar, getImoveisParaVenda } from '@/lib/sanity/fetchImoveis';
+import type { ImovelClient } from '../../src/types/imovel-client';
 
 // Helper function to normalize documents
 function normalizeDocuments<T>(docs: any[]): T[] {

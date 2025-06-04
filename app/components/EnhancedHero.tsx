@@ -1,23 +1,20 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, useRef, useCallback, Suspense, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
     TrendingUp, Home, ChevronRight, BarChart3,
     Building2, MapPin, Check, Clock, Shield,
-    Phone, Mail, User, Trees, Car, X
+    Phone, Mail, User, Trees, Car, X, Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
-import PerformanceDiagnostic from '../components/PerformanceDiagnostic';
-import PerformanceVerification from '../components/PerformanceVerification';
-import CoreWebVitalsTracker from '../components/CoreWebVitalsTracker';
 
 // Types
 interface MarketMetric {
     id: string;
     title: string;
-    value: string;
+    value: string | number;
     subtitle: string;
     icon: React.ReactNode;
 }
@@ -44,126 +41,559 @@ interface FormErrors {
     phone?: string;
 }
 
-// Constants (moved outside component to prevent rerenders)
+interface LoadingState {
+    isImageLoaded: boolean;
+    isContentReady: boolean;
+    isAnimationComplete: boolean;
+}
+
+interface HeroPerformance {
+    loadStartTime: number;
+    firstContentfulPaint?: number;
+    interactionReady?: number;
+}
+
+// Smart loading hook for progressive enhancement
+const useProgressiveLoading = () => {
+    const [loadingState, setLoadingState] = useState<LoadingState>({
+        isImageLoaded: false,
+        isContentReady: false,
+        isAnimationComplete: false,
+    });
+    const [performance] = useState<HeroPerformance>({
+        loadStartTime: Date.now(),
+    });
+
+    const markContentReady = useCallback(() => {
+        setLoadingState(prev => ({ ...prev, isContentReady: true }));
+        if (!performance.firstContentfulPaint) {
+            performance.firstContentfulPaint = Date.now() - performance.loadStartTime;
+            // Log performance in development
+            if (process.env.NODE_ENV === 'development') {
+                console.log(`🎯 Hero FCP: ${performance.firstContentfulPaint}ms`);
+            }
+        }
+    }, [performance]);
+
+    const markImageLoaded = useCallback(() => {
+        setLoadingState(prev => ({ ...prev, isImageLoaded: true }));
+    }, []);
+
+    const markInteractionReady = useCallback(() => {
+        setLoadingState(prev => ({ ...prev, isAnimationComplete: true }));
+        if (!performance.interactionReady) {
+            performance.interactionReady = Date.now() - performance.loadStartTime;
+            // Log interaction timing in development
+            if (process.env.NODE_ENV === 'development') {
+                console.log(`⚡ Hero TTI: ${performance.interactionReady}ms`);
+            }
+        }
+    }, [performance]);
+
+    const isFullyLoaded = useMemo(() =>
+        loadingState.isImageLoaded && loadingState.isContentReady && loadingState.isAnimationComplete,
+        [loadingState]
+    );
+
+    return {
+        loadingState,
+        performance,
+        markContentReady,
+        markImageLoaded,
+        markInteractionReady,
+        isFullyLoaded,
+    };
+};
+
+// Premium loading skeleton component
+const HeroSkeleton: React.FC = () => (
+    <div className="relative min-h-screen bg-gradient-to-br from-amber-50 via-white to-blue-50 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-transparent to-white/60" />
+
+        {/* Animated particles for premium feel */}
+        <div className="absolute inset-0">
+            {[...Array(6)].map((_, i) => (
+                <motion.div
+                    key={i}
+                    className="absolute w-2 h-2 bg-amber-200/40 rounded-full"
+                    style={{
+                        left: `${20 + i * 15}%`,
+                        top: `${30 + i * 8}%`,
+                    }}
+                    animate={{
+                        y: [-10, 10, -10],
+                        opacity: [0.3, 0.8, 0.3],
+                    }}
+                    transition={{
+                        duration: 3 + i * 0.5,
+                        repeat: Infinity,
+                        delay: i * 0.3,
+                    }}
+                />
+            ))}
+        </div>
+
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="pt-20 sm:pt-24 lg:pt-32 pb-16 sm:pb-20">
+                <div className="max-w-5xl mx-auto">
+                    {/* Badge skeleton */}
+                    <div className="flex justify-center mb-8">
+                        <motion.div
+                            className="h-8 w-64 bg-gradient-to-r from-amber-100 via-amber-200 to-amber-100 rounded-full"
+                            animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                        />
+                    </div>
+
+                    {/* Title skeleton */}
+                    <div className="text-center mb-12 space-y-4">
+                        <motion.div
+                            className="h-12 w-3/4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-lg mx-auto"
+                            animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                            transition={{ duration: 1.5, repeat: Infinity }}
+                        />
+                        <motion.div
+                            className="h-12 w-1/2 bg-gradient-to-r from-amber-200 via-amber-300 to-amber-200 rounded-lg mx-auto"
+                            animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                            transition={{ duration: 1.8, repeat: Infinity, delay: 0.2 }}
+                        />
+                        <motion.div
+                            className="h-6 w-5/6 bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 rounded mx-auto mt-6"
+                            animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                            transition={{ duration: 2.2, repeat: Infinity, delay: 0.4 }}
+                        />
+                        <motion.div
+                            className="h-6 w-2/3 bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 rounded mx-auto"
+                            animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                            transition={{ duration: 2.5, repeat: Infinity, delay: 0.6 }}
+                        />
+                    </div>
+
+                    {/* Metrics skeleton */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 max-w-4xl mx-auto">
+                        {[1, 2, 3].map(i => (
+                            <motion.div
+                                key={i}
+                                className="bg-amber-50 rounded-xl p-6 border border-amber-200/50"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.1, duration: 0.5 }}
+                            >
+                                <div className="flex items-start justify-between mb-4">
+                                    <motion.div
+                                        className="w-10 h-10 bg-gradient-to-r from-amber-200 via-amber-300 to-amber-200 rounded-lg relative"
+                                        animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                                        transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.2 }}
+                                        style={{
+                                            transform: 'translate3d(0, 0, 0)',
+                                            backfaceVisibility: 'hidden',
+                                            willChange: 'background-position'
+                                        }}
+                                    />
+                                </div>
+                                <motion.div
+                                    className="h-4 w-24 bg-gradient-to-r from-amber-200 via-amber-300 to-amber-200 rounded mb-2"
+                                    animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                                    transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.15 }}
+                                />
+                                <motion.div
+                                    className="h-8 w-16 bg-gradient-to-r from-gray-300 via-gray-400 to-gray-300 rounded mb-1"
+                                    animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                                    transition={{ duration: 2, repeat: Infinity, delay: i * 0.1 }}
+                                />
+                                <motion.div
+                                    className="h-3 w-20 bg-gradient-to-r from-amber-200 via-amber-300 to-amber-200 rounded"
+                                    animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                                    transition={{ duration: 2.2, repeat: Infinity, delay: i * 0.2 }}
+                                />
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {/* Enhanced loading indicator */}
+        <motion.div
+            className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.3 }} // Added duration: 0.3
+        >
+            <div className="flex items-center gap-3 px-6 py-3 bg-white/95 backdrop-blur-md rounded-full shadow-xl border border-white/20">
+                <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                >
+                    <Loader2 className="w-5 h-5 text-amber-600" />
+                </motion.div>
+                <span className="text-sm font-semibold text-gray-800">
+                    Carregando experiência premium...
+                </span>
+                <div className="flex gap-1">
+                    {[0, 1, 2].map(i => (
+                        <motion.div
+                            key={i}
+                            className="w-1.5 h-1.5 bg-amber-500 rounded-full"
+                            animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+                            transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                delay: i * 0.2,
+                            }}
+                        />
+                    ))}
+                </div>
+            </div>
+        </motion.div>
+    </div>
+);
+
+// New component: HeroContentSkeleton (derived from HeroSkeleton's inner parts)
+const HeroContentSkeleton: React.FC = () => (
+    <div className="max-w-5xl mx-auto"> {/* Matches structure of actual content container */}
+        {/* Badge skeleton */}
+        <div className="flex justify-center mb-8">
+            <motion.div
+                className="h-8 w-64 bg-gradient-to-r from-amber-100 via-amber-200 to-amber-100 rounded-full"
+                animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                transition={{ duration: 2, repeat: Infinity }}
+            />
+        </div>
+
+        {/* Title skeleton */}
+        <div className="text-center mb-12 space-y-4">
+            <motion.div
+                className="h-12 w-3/4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-lg mx-auto"
+                animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+            />
+            <motion.div
+                className="h-12 w-1/2 bg-gradient-to-r from-amber-200 via-amber-300 to-amber-200 rounded-lg mx-auto"
+                animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                transition={{ duration: 1.8, repeat: Infinity, delay: 0.2 }}
+            />
+            <motion.div
+                className="h-6 w-5/6 bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 rounded mx-auto mt-6"
+                animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                transition={{ duration: 2.2, repeat: Infinity, delay: 0.4 }}
+            />
+            <motion.div
+                className="h-6 w-2/3 bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 rounded mx-auto"
+                animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                transition={{ duration: 2.5, repeat: Infinity, delay: 0.6 }}
+            />
+        </div>
+
+        {/* Metrics skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 max-w-4xl mx-auto">
+            {[1, 2, 3].map(i => (
+                <motion.div
+                    key={i}
+                    className="bg-amber-50 rounded-xl p-6 border border-amber-200/50"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.1, duration: 0.5 }}
+                >
+                    <div className="flex items-start justify-between mb-4">
+                        <motion.div
+                            className="w-10 h-10 bg-gradient-to-r from-amber-200 via-amber-300 to-amber-200 rounded-lg relative"
+                            animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                            transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.2 }}
+                            style={{
+                                transform: 'translate3d(0, 0, 0)',
+                                backfaceVisibility: 'hidden',
+                                willChange: 'background-position'
+                            }}
+                        />
+                    </div>
+                    <motion.div
+                        className="h-4 w-24 bg-gradient-to-r from-amber-200 via-amber-300 to-amber-200 rounded mb-2"
+                        animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                        transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.15 }}
+                    />
+                    <motion.div
+                        className="h-8 w-16 bg-gradient-to-r from-gray-300 via-gray-400 to-gray-300 rounded mb-1"
+                        animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                        transition={{ duration: 2, repeat: Infinity, delay: i * 0.1 }}
+                    />
+                    <motion.div
+                        className="h-3 w-20 bg-gradient-to-r from-amber-200 via-amber-300 to-amber-200 rounded"
+                        animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                        transition={{ duration: 2.2, repeat: Infinity, delay: i * 0.2 }}
+                    />
+                </motion.div>
+            ))}
+        </div>
+    </div>
+);
+
+// Métricas mais realistas e tradicionais para uma imobiliária local
 const MARKET_METRICS: MarketMetric[] = [
     {
-        id: 'growth',
-        title: 'Valorização Imóveis',
-        value: '9.4%',
-        subtitle: 'média anual em Guararema',
-        icon: <TrendingUp className="w-5 h-5" />
-    },
-    {
-        id: 'properties',
-        title: 'Imóveis Selecionados',
-        value: '62',
-        subtitle: 'com exclusividade',
+        id: 'experience',
+        title: 'Anos de Experiência',
+        value: 15,
+        subtitle: 'atendendo Guararema',
         icon: <Building2 className="w-5 h-5" />
     },
     {
-        id: 'time',
-        title: 'Corretores Certificados',
-        value: '24h',
-        subtitle: 'para atendimento',
-        icon: <Clock className="w-5 h-5" />
+        id: 'satisfied',
+        title: 'Famílias Atendidas',
+        value: '280+',
+        subtitle: 'satisfeitas com o serviço',
+        icon: <Home className="w-5 h-5" />
+    },
+    {
+        id: 'local',
+        title: 'Conhecimento Local',
+        value: '100%',
+        subtitle: 'de todos os bairros',
+        icon: <MapPin className="w-5 h-5" />
     }
 ];
 
+// Dados de bairros mais realistas e locais
 const NEIGHBORHOOD_DATA: Record<'invest' | 'live', NeighborhoodData[]> = {
     invest: [
         {
             name: 'Centro Histórico',
-            priceRange: 'R$ 750K - R$ 1.2M',
-            characteristics: 'Alta liquidez garantida',
+            priceRange: 'R$ 280K - R$ 450K',
+            characteristics: 'Comércio consolidado',
             distance: 'Centro da cidade',
-            highlight: 'ROI de 7.8% a.a.'
+            highlight: 'Valorização constante'
         },
         {
-            name: 'Residencial Ipiranga',
-            priceRange: 'R$ 550K - R$ 780K',
-            characteristics: 'Em expansão rápida',
-            distance: '6km do centro',
-            highlight: 'Valorização de 11.2% em 2024'
+            name: 'Jardim São José',
+            priceRange: 'R$ 220K - R$ 380K',
+            characteristics: 'Área residencial em crescimento',
+            distance: '2km do centro',
+            highlight: 'Boa demanda por aluguel'
         },
         {
-            name: 'Parque Agrinco',
-            priceRange: 'R$ 480K - R$ 690K',
-            characteristics: 'Novos empreendimentos',
-            distance: '8km do centro',
-            highlight: 'Potencial entrada Gateway'
+            name: 'Vila Nova',
+            priceRange: 'R$ 180K - R$ 320K',
+            characteristics: 'Novos loteamentos',
+            distance: '3km do centro',
+            highlight: 'Potencial de crescimento'
         }
     ],
     live: [
         {
-            name: 'Recanto Verde',
-            priceRange: 'R$ 680K - R$ 950K',
-            characteristics: 'Área verde preservada',
-            distance: '5km do centro',
-            highlight: 'Qualidade de vida superior'
+            name: 'Centro',
+            priceRange: 'R$ 300K - R$ 480K',
+            characteristics: 'Toda infraestrutura próxima',
+            distance: 'Centro da cidade',
+            highlight: 'Comodidade do dia a dia'
         },
         {
-            name: 'Centro Expandido',
-            priceRange: 'R$ 620K - R$ 890K',
-            characteristics: 'Infraestrutura premium',
-            distance: 'Próximo ao centro',
-            highlight: 'Conveniência completa'
+            name: 'Jardim Florestal',
+            priceRange: 'R$ 350K - R$ 520K',
+            characteristics: 'Área verde e tranquila',
+            distance: '1.5km do centro',
+            highlight: 'Ideal para famílias'
         },
         {
-            name: 'Vista Alegre',
-            priceRange: 'R$ 580K - R$ 780K',
-            characteristics: 'Condomínios fechados',
-            distance: '7km do centro',
-            highlight: 'Segurança familiar'
+            name: 'Ponte Grande',
+            priceRange: 'R$ 280K - R$ 420K',
+            characteristics: 'Bairro tradicional',
+            distance: '2km do centro',
+            highlight: 'Comunidade estabelecida'
         }
     ]
 };
 
-// Enhanced animated counter with premium smooth easing
-const AnimatedCounter: React.FC<{ value: number; suffix?: string; prefix?: string; duration?: number }> = ({
+// Nova Ipê Premium Color Palette - Brand Aligned
+const novaIpeColors = {
+    primary: { ipe: '#E6AA2C', ipeLight: '#F7D660', ipeDark: '#B8841C' },
+    earth: { brown: '#8B4513', brownLight: '#A0522D', brownDark: '#654321' },
+    neutral: { black: '#1A1A1A', charcoal: '#2D2D2D', white: '#FFFFFF', cream: '#F8F4E3', softWhite: '#FEFEFE' }
+};
+
+// Enhanced animated counter with premium smooth easing and loading states
+const AnimatedCounter: React.FC<{
+    value: number;
+    suffix?: string;
+    prefix?: string;
+    duration?: number;
+    isReady?: boolean;
+}> = ({
     value,
     suffix = '',
     prefix = '',
-    duration = 2000
+    duration = 2500,
+    isReady = true
 }) => {
-    const [displayValue, setDisplayValue] = useState(0);
-    const ref = useRef<HTMLSpanElement>(null);
-    const isInView = useInView(ref, { once: true, margin: "-50px" });
+        const [displayValue, setDisplayValue] = useState(0);
+        const [isAnimating, setIsAnimating] = useState(false);
+        const ref = useRef<HTMLSpanElement>(null);
+        const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+        useEffect(() => {
+            if (!isInView || !isReady) return;
+
+            setIsAnimating(true);
+            let startTime: number;
+            const startValue = 0;
+            const endValue = value;
+
+            const updateCounter = (timestamp: number) => {
+                if (!startTime) startTime = timestamp;
+                const progress = Math.min((timestamp - startTime) / duration, 1);
+
+                // Premium easing function - ease-out-expo for sophisticated feel
+                const easeOutExpo = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+                const current = startValue + (endValue - startValue) * easeOutExpo;
+
+                setDisplayValue(Math.floor(current));
+
+                if (progress < 1) {
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    setDisplayValue(endValue);
+                    setIsAnimating(false);
+                }
+            };
+
+            const animationId = requestAnimationFrame(updateCounter);
+            return () => cancelAnimationFrame(animationId);
+        }, [isInView, value, duration, isReady]);
+
+        if (!isReady) {
+            return (
+                <span className="inline-block">
+                    <div className="w-12 h-8 bg-gray-200 rounded animate-pulse" />
+                </span>
+            );
+        }
+
+        return (
+            <span
+                ref={ref}
+                aria-live="polite"
+                aria-atomic="true"
+                className={`tabular-nums font-bold transition-all duration-300 ${isAnimating ? 'text-amber-600' : 'text-gray-900'
+                    }`}
+            >
+                {prefix}{displayValue.toLocaleString('pt-BR')}{suffix}
+            </span>
+        );
+    };
+
+// Smart metrics component with progressive loading
+const MetricsGrid: React.FC<{ isContentReady: boolean }> = ({ isContentReady }) => {
+    const [metricsLoaded, setMetricsLoaded] = useState(false);
 
     useEffect(() => {
-        if (!isInView) return;
+        if (isContentReady) {
+            // Simulate data loading with realistic delay
+            const timer = setTimeout(() => setMetricsLoaded(true), 300);
+            return () => clearTimeout(timer);
+        }
+    }, [isContentReady]);
 
-        let startTime: number;
-        const startValue = 0;
-        const endValue = value;
-
-        const updateCounter = (timestamp: number) => {
-            if (!startTime) startTime = timestamp;
-            const progress = Math.min((timestamp - startTime) / duration, 1);
-
-            // Premium easing function for sophisticated feel
-            const easeOutCubic = 1 - Math.pow(1 - progress, 3);
-            const current = startValue + (endValue - startValue) * easeOutCubic;
-
-            setDisplayValue(Math.floor(current));
-
-            if (progress < 1) {
-                requestAnimationFrame(updateCounter);
-            } else {
-                setDisplayValue(endValue);
-            }
-        };
-
-        requestAnimationFrame(updateCounter);
-    }, [isInView, value, duration]);
+    if (!isContentReady) {
+        return (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 max-w-4xl mx-auto">
+                {[1, 2, 3].map(i => (
+                    <div key={i} className="bg-amber-50 rounded-xl p-6 border border-amber-200/50 animate-pulse">
+                        <div className="flex items-start justify-between mb-4">
+                            <div className="w-10 h-10 bg-amber-200 rounded-lg" />
+                        </div>
+                        <div className="h-4 w-24 bg-amber-200 rounded mb-2" />
+                        <div className="h-8 w-16 bg-gray-300 rounded mb-1" />
+                        <div className="h-3 w-20 bg-amber-200 rounded" />
+                    </div>
+                ))}
+            </div>
+        );
+    }
 
     return (
-        <span ref={ref} aria-live="polite" aria-atomic="true" className="tabular-nums font-bold">
-            {prefix}{displayValue.toLocaleString('pt-BR')}{suffix}
-        </span>
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 max-w-4xl mx-auto"
+        >
+            {MARKET_METRICS.map((metric, index) => (
+                <motion.div
+                    key={metric.id}
+                    initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                    animate={{
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        transition: {
+                            delay: 0.4 + index * 0.15,
+                            duration: 0.6,
+                            type: "spring",
+                            stiffness: 100
+                        }
+                    }}
+                    whileHover={{
+                        y: -8,
+                        scale: 1.02,
+                        boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.15)",
+                        transition: { duration: 0.2 }
+                    }}
+                    className="bg-gradient-to-br from-amber-50 via-white to-amber-50/30 rounded-xl p-6 border border-amber-200/60 shadow-sm hover:border-amber-300/80 transition-all duration-300 relative overflow-hidden group"
+                >
+                    {/* Animated background gradient on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-100/0 via-amber-50/0 to-amber-100/0 group-hover:from-amber-100/30 group-hover:via-amber-50/20 group-hover:to-amber-100/30 transition-all duration-500" />
+
+                    <div className="relative">
+                        <div className="flex items-start justify-between mb-4">                            <motion.div
+                            className="p-3 bg-white text-amber-700 rounded-xl shadow-sm border border-amber-100 group-hover:shadow-md transition-all duration-300 relative"
+                            whileHover={{ scale: 1.1, rotate: 5 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                        >
+                            {metric.icon}
+                        </motion.div>
+                        </div>
+
+                        <h3 className="text-sm font-semibold text-amber-800/90 mb-2 uppercase tracking-wide">
+                            {metric.title}
+                        </h3>
+
+                        <div className="text-3xl lg:text-4xl font-bold text-gray-900 mb-1 flex items-baseline relative"> {/* MODIFIED: Added relative class */}
+                            {typeof metric.value === 'number' ? (
+                                metric.id === 'growth' ? (
+                                    <>
+                                        <AnimatedCounter
+                                            value={metric.value}
+                                            suffix="%"
+                                            isReady={metricsLoaded}
+                                            duration={2000 + index * 500}
+                                        />
+                                    </>
+                                ) : (
+                                    <AnimatedCounter
+                                        value={metric.value}
+                                        suffix="+"
+                                        isReady={metricsLoaded}
+                                        duration={2500 + index * 300}
+                                    />
+                                )
+                            ) : (
+                                <motion.span
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: metricsLoaded ? 1 : 0 }}
+                                    transition={{ delay: 0.8 + index * 0.2, duration: 0.5 }} // MODIFIED: Added duration: 0.5
+                                    className="tabular-nums"
+                                >
+                                    {metric.value}
+                                </motion.span>
+                            )}
+                        </div>
+
+                        <p className="text-sm text-amber-700/70 font-medium">{metric.subtitle}</p>
+                    </div>
+                </motion.div>
+            ))}
+        </motion.div>
     );
 };
-
-// Extracted modal component for better organization
 const ContactFormModal: React.FC<{
     isOpen: boolean;
     onClose: () => void;
@@ -260,6 +690,7 @@ const ContactFormModal: React.FC<{
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }} // Added explicit transition
             className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm"
             onClick={onClose}
             role="dialog"
@@ -270,6 +701,7 @@ const ContactFormModal: React.FC<{
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.95, opacity: 0, y: 10 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }} // Added explicit transition
                 className="w-full max-w-md bg-white rounded-2xl p-8 shadow-2xl border border-gray-100"
                 onClick={(e) => e.stopPropagation()}
             >
@@ -447,7 +879,7 @@ const NeighborhoodCard: React.FC<{
             key={neighborhood.name}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.1 }}
+            transition={{ delay: index * 0.1, duration: 0.5 }} // MODIFIED: Added duration: 0.5
             whileHover={{ scale: 1.01 }}
             className="bg-gradient-to-r from-gray-50 to-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 mb-4"
         >
@@ -493,266 +925,233 @@ const NeighborhoodCard: React.FC<{
     );
 };
 
-// Main component
+// Main component with progressive loading and enhanced UX
 const GuararemaHero: React.FC = () => {
     const [selectedIntent, setSelectedIntent] = useState<'invest' | 'live'>('invest');
     const [showContactForm, setShowContactForm] = useState(false);
     const heroRef = useRef<HTMLElement>(null);
-    const isInView = useInView(heroRef, { once: true });
+    const isInView = useInView(heroRef, { once: true, amount: 0.1 });
 
-    // Using optimized background image handling
-    const bgImageUrl = "/images/hero-bg.png";
+    // Progressive loading system
+    const {
+        loadingState,
+        markContentReady,
+        markImageLoaded,
+        markInteractionReady,
+    } = useProgressiveLoading();
+
+    // Mark content as ready when component mounts
+    useEffect(() => {
+        const timer = setTimeout(markContentReady, 100); // Adjust timeout as needed
+        return () => clearTimeout(timer);
+    }, [markContentReady]);
+
+    // Mark interaction ready when animations complete
+    useEffect(() => {
+        if (isInView && loadingState.isContentReady) {
+            const timer = setTimeout(markInteractionReady, 1000); // Adjust as needed
+            return () => clearTimeout(timer);
+        }
+    }, [isInView, loadingState.isContentReady, markInteractionReady]);
+
+    // Optimized background image handling
+    const bgImageUrl = "/images/hero-bg.jpg";
 
     return (
         <section
             ref={heroRef}
-            className="relative min-h-screen bg-white overflow-hidden"
+            className="relative min-h-screen bg-gradient-to-br from-amber-50/90 via-white to-blue-50/80 overflow-hidden"
             aria-labelledby="hero-heading"
         >
-            {/* Background with optimized repeating pattern */}            <div className="absolute inset-0">
+            {/* Background Image and Overlays - Rendered Unconditionally */}
+            <div className="absolute inset-0">
                 <div className="relative w-full h-full">
                     <Image
                         src={bgImageUrl}
-                        alt=""
+                        alt="Vista panorâmica de Guararema ao amanhecer, com névoa suave sobre as colinas e o rio Paraíba do Sul em destaque, simbolizando oportunidades imobiliárias."
                         fill
-                        className="object-cover opacity-20"
+                        className={`object-cover transition-opacity duration-1000 ${loadingState.isImageLoaded ? 'opacity-30' : 'opacity-0'}`}
                         sizes="100vw"
-                        quality={90}
+                        quality={90} /* Adjusted quality for LCP */
                         priority
-                        aria-hidden="true"
+                        onLoad={markImageLoaded}
+                        aria-hidden={false} /* Made true if alt is descriptive, false if decorative and alt="" */
                     />
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-transparent to-white/60"></div>
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-amber-100/30 rounded-full blur-3xl -translate-y-1/4 translate-x-1/3"></div>
-                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-100/20 rounded-full blur-3xl translate-y-1/4 -translate-x-1/3"></div>
+                <motion.div
+                    className="absolute inset-0 bg-gradient-to-b from-white/95 via-white/50 to-white/95"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.8 }}
+                />
+                <motion.div
+                    className="absolute inset-0"
+                    style={{
+                        background: `linear-gradient(135deg, 
+                            ${novaIpeColors.neutral.cream}/95 0%, 
+                            ${novaIpeColors.neutral.white}/85 30%, 
+                            ${novaIpeColors.primary.ipe}/5 70%, 
+                            ${novaIpeColors.neutral.softWhite}/95 100%)`
+                    }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 1.2, delay: 0.3 }}
+                />
+                <motion.div
+                    className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-3xl"
+                    style={{ backgroundColor: `${novaIpeColors.primary.ipe}15` }}
+                    initial={{ scale: 0, x: 200, y: -200 }}
+                    animate={{ scale: 1, x: 100, y: -100 }}
+                    transition={{ duration: 1.5, ease: "easeOut" }}
+                />
+                <motion.div
+                    className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full blur-3xl"
+                    style={{ backgroundColor: `${novaIpeColors.earth.brown}10` }}
+                    initial={{ scale: 0, x: -200, y: 200 }}
+                    animate={{ scale: 1, x: -100, y: 100 }}
+                    transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
+                />
             </div>
 
-            {/* Content */}
+            {/* Content Area */}
             <div className="relative z-10">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="pt-20 sm:pt-24 lg:pt-32 pb-16 sm:pb-20">
-                        <motion.div
-                            initial={{ opacity: 0 }} // Alterado para iniciar com opacidade 0
-                            animate={{ opacity: isInView ? 1 : 0 }}
-                            transition={{ duration: 0.6 }}
-                            className="max-w-5xl mx-auto"
-                        >
-                            {/* Header badge */}
+                        {!loadingState.isContentReady ? (
+                            <HeroContentSkeleton />
+                        ) : (
                             <motion.div
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.1 }}
-                                className="flex justify-center mb-8"
-                            >
-                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-full">
-                                    <MapPin className="w-4 h-4 text-amber-700" aria-hidden="true" />
-                                    <span className="text-sm font-medium text-amber-900">
-                                        Consultoria Imobiliária em Guararema
-                                    </span>
-                                </div>
-                            </motion.div>
-
-                            {/* Main headline */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.2 }}
-                                className="text-center mb-12"
-                            >
-                                <h1 id="hero-heading" className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                                    Encontre seu refúgio
-                                    <span className="block bg-clip-text text-transparent bg-gradient-to-r from-amber-600 to-amber-500">
-                                        em Guararema
-                                    </span>
-                                </h1>
-
-                                <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto">
-                                    Com mais de 15 anos conectando famílias aos melhores imóveis da região, com atendimento
-                                    personalizado para <span className="font-semibold">realizar sonhos</span> e <span className="font-semibold">garantir investimentos seguros</span>.
-                                </p>
-                            </motion.div>
-
-                            {/* Market metrics */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.3 }}
-                                className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 max-w-4xl mx-auto"
-                            >
-                                {MARKET_METRICS.map((metric, index) => (
-                                    <motion.div
-                                        key={metric.id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.3 + index * 0.1 }}
-                                        whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
-                                        className="bg-gradient-to-br from-amber-50 to-amber-100/50 rounded-xl p-6 border border-amber-200/80 shadow-sm hover:border-amber-300 transition-all duration-300"
-                                    >
-                                        <div className="flex items-start justify-between mb-4">
-                                            <div className="p-2.5 bg-white text-amber-700 rounded-lg shadow-sm">
-                                                {metric.icon}
-                                            </div>
-                                        </div>
-
-                                        <h3 className="text-sm font-medium text-amber-800 mb-1">{metric.title}</h3>
-
-                                        <div className="text-3xl lg:text-4xl font-bold text-gray-900 mb-1 flex items-baseline">
-                                            {metric.id === 'properties' ? (
-                                                <AnimatedCounter value={62} suffix="+" />
-                                            ) : metric.id === 'time' ? (
-                                                <span className="tabular-nums">24h</span>
-                                            ) : (
-                                                <AnimatedCounter value={9} suffix=".4%" />
-                                            )}
-                                        </div>
-
-                                        <p className="text-sm text-amber-700/80">{metric.subtitle}</p>
-                                    </motion.div>
-                                ))}
-                            </motion.div>
-
-                            {/* Intent selector */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.5 }}
-                                className="max-w-4xl mx-auto"
-                            >
-                                {/* Tabs */}
-                                <div
-                                    className="flex p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl shadow-inner mb-8 relative"
-                                    role="tablist"
-                                    aria-label="Escolha seu objetivo"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: (isInView && loadingState.isContentReady) ? 1 : 0 }}
+                                transition={{ duration: 0.8, ease: "easeOut" }}
+                                className="max-w-5xl mx-auto"
+                            >                                {/* Badge tradicional e respeitoso */}
+                                <motion.div
+                                    initial={{ opacity: 0, y: -20 }}
+                                    animate={{
+                                        opacity: 1,
+                                        y: 0,
+                                        transition: {
+                                            delay: 0.2,
+                                            duration: 0.5
+                                        }
+                                    }}
+                                    className="flex justify-center mb-8"
                                 >
-                                    <div
-                                        className={`absolute top-3 bottom-3 ${selectedIntent === 'invest' ? 'left-3' : 'left-1/2 ml-1.5'} w-[calc(50%-6px)] bg-white rounded-lg shadow-md transition-all duration-300 ease-out`}
-                                        aria-hidden="true"
-                                    />
-                                    <button
-                                        onClick={() => setSelectedIntent('invest')}
-                                        className={`
-                                            relative z-10 flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-lg font-medium transition-all duration-200
-                                            ${selectedIntent === 'invest' ? 'text-amber-700' : 'text-gray-500 hover:text-gray-700'}
-                                        `}
-                                        role="tab"
-                                        aria-selected={selectedIntent === 'invest'}
-                                        aria-controls="invest-panel"
-                                        id="invest-tab"
-                                    >
-                                        <TrendingUp
-                                            className={`w-5 h-5 ${selectedIntent === 'invest' ? 'text-amber-600' : 'text-gray-400'}`}
+                                    <div className="inline-flex items-center gap-3 px-6 py-3 bg-white rounded-lg shadow-sm border border-gray-200">
+                                        <Building2
+                                            className="w-5 h-5 text-amber-700"
                                             aria-hidden="true"
                                         />
-                                        <span className="font-semibold">Quero Investir</span>
-                                    </button>
-                                    <button
-                                        onClick={() => setSelectedIntent('live')}
-                                        className={`
-                                            relative z-10 flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-lg font-medium transition-all duration-200
-                                            ${selectedIntent === 'live' ? 'text-amber-700' : 'text-gray-500 hover:text-gray-700'}
-                                        `}
-                                        role="tab"
-                                        aria-selected={selectedIntent === 'live'}
-                                        aria-controls="live-panel"
-                                        id="live-tab"
-                                    >
-                                        <Home
-                                            className={`w-5 h-5 ${selectedIntent === 'live' ? 'text-amber-600' : 'text-gray-400'}`}
-                                            aria-hidden="true"
-                                        />
-                                        <span className="font-zsemibold">Quero Morar</span>
-                                    </button>
-                                </div>
+                                        <span className="text-sm font-semibold text-gray-800">
+                                            Imobiliária Ipê • Guararema desde 2009
+                                        </span>
+                                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                    </div>
+                                </motion.div>                                {/* Título mais sóbrio e tradicional */}
+                                <motion.h1
+                                    id="hero-heading"
+                                    className="text-center text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{
+                                        opacity: 1, y: 0,
+                                        transition: { delay: 0.3, duration: 0.6 }
+                                    }}
+                                >
+                                    <span className="block text-gray-900 mb-2">
+                                        Seu próximo imóvel em Guararema
+                                    </span>
+                                    <span className="block text-amber-700 text-3xl sm:text-4xl lg:text-5xl font-semibold">
+                                        com quem conhece cada rua da cidade
+                                    </span>
+                                </motion.h1>
 
-                                {/* Content */}
-                                <AnimatePresence mode="wait">
-                                    <motion.div
-                                        key={selectedIntent}
-                                        initial={{ opacity: 0, x: selectedIntent === 'invest' ? -20 : 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: selectedIntent === 'invest' ? 20 : -20 }}
-                                        transition={{ duration: 0.3 }}
-                                        role="tabpanel"
-                                        id={`${selectedIntent}-panel`}
-                                        aria-labelledby={`${selectedIntent}-tab`}
-                                    >
-                                        <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-                                            <h3 className="flex items-center text-2xl font-bold text-gray-900 mb-6">
-                                                {selectedIntent === 'invest' ? (
-                                                    <>
-                                                        <TrendingUp className="w-6 h-6 text-amber-600 mr-2" aria-hidden="true" />
-                                                        Oportunidades para Investidores
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <Home className="w-6 h-6 text-green-600 mr-2" aria-hidden="true" />
-                                                        Bairros Ideais para Morar
-                                                    </>
-                                                )}
-                                            </h3>
+                                <motion.p
+                                    className="max-w-2xl mx-auto text-center text-lg text-gray-600 mb-12"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{
+                                        opacity: 1, y: 0,
+                                        transition: { delay: 0.4, duration: 0.6 }
+                                    }}
+                                >
+                                    Há 15 anos ajudamos famílias a encontrar o lar ideal em Guararema.
+                                    Conhecimento local, atendimento pessoal e toda documentação em ordem.
+                                </motion.p>
 
-                                            <p className="text-gray-600 mb-6 italic">
-                                                {selectedIntent === 'invest'
-                                                    ? "Selecionamos áreas com melhor potencial de valorização e retorno financeiro"
-                                                    : "Conheça os bairros que oferecem melhor qualidade de vida em Guararema"}
-                                            </p>
+                                {/* Metrics Grid - Pass isContentReady for its internal loading state */}
+                                <MetricsGrid isContentReady={loadingState.isContentReady} />
 
-                                            {/* Neighborhood list */}
-                                            <div className="space-y-4 mb-8">
-                                                {NEIGHBORHOOD_DATA[selectedIntent].map((neighborhood, index) => (
-                                                    <NeighborhoodCard
-                                                        key={neighborhood.name}
-                                                        neighborhood={neighborhood}
-                                                        index={index}
-                                                    />
-                                                ))}
-                                            </div>
-
-                                            {/* CTA */}
-                                            <div className="rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 p-0.5 shadow-lg">
+                                {/* Intent Selection */}
+                                <motion.div
+                                    className="max-w-2xl mx-auto mb-12"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{
+                                        opacity: 1, y: 0,
+                                        transition: { delay: 0.5, duration: 0.6 }
+                                    }}
+                                >
+                                    <div className="flex justify-center mb-8">
+                                        <div className="inline-flex rounded-lg shadow-md bg-white p-1 border border-gray-200">
+                                            {(['invest', 'live'] as const).map((intent) => (
                                                 <button
-                                                    onClick={() => setShowContactForm(true)}
-                                                    className="w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-b from-transparent to-black/5 text-white rounded-[10px] font-semibold hover:from-transparent hover:to-black/10 transition-all"
-                                                    aria-label="Solicitar consulta personalizada gratuita"
+                                                    key={intent}
+                                                    onClick={() => setSelectedIntent(intent)}
+                                                    className={`px-6 py-3 text-sm font-semibold rounded-md transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-amber-500
+                                                        ${selectedIntent === intent
+                                                            ? 'bg-amber-500 text-white shadow-sm'
+                                                            : 'text-gray-700 hover:bg-amber-50'
+                                                        }`}
                                                 >
-                                                    Consulta Personalizada Gratuita
-                                                    <ChevronRight className="w-5 h-5" aria-hidden="true" />
+                                                    {intent === 'invest' ? 'Quero Investir' : 'Quero Morar'}
                                                 </button>
-                                            </div>
+                                            ))}
+                                        </div>
+                                    </div>
 
-                                            {/* Trust elements */}
-                                            <div className="mt-6 flex flex-col items-center">
-                                                <div className="flex items-center gap-3 mb-2">
-                                                    <div className="flex -space-x-2" aria-label="Corretores disponíveis">
-                                                        <div className="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center text-white text-xs">JM</div>
-                                                        <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs ml-[-5px]">LF</div>
-                                                        <div className="w-7 h-7 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs ml-[-5px]">JL</div>
-                                                    </div>
-                                                    <span className="text-sm text-gray-800 font-medium">3 corretores disponíveis agora</span>
-                                                </div>
-
-                                                <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-gray-500">
-                                                    <span className="flex items-center gap-1">
-                                                        <Check className="w-3 h-3 text-green-600" aria-hidden="true" /> Atendimento personalizado
-                                                    </span>
-                                                    <span className="flex items-center gap-1">
-                                                        <Check className="w-3 h-3 text-green-600" aria-hidden="true" /> Sem compromisso
-                                                    </span>
-                                                    <span className="flex items-center gap-1">
-                                                        <Check className="w-3 h-3 text-green-600" aria-hidden="true" /> Experiência local desde 2010
-                                                    </span>
-                                                </div>
-                                            </div>
+                                    <AnimatePresence mode="wait">                                        <motion.div
+                                        key={selectedIntent}
+                                        initial={{ opacity: 0, y: 15 }}
+                                        animate={{ opacity: 1, y: 0, transition: { duration: 0.4 } }}
+                                        exit={{ opacity: 0, y: -15, transition: { duration: 0.3 } }}
+                                        className="mb-10"
+                                    >
+                                        <h3 className="text-2xl font-bold text-center text-gray-800 mb-2">
+                                            {selectedIntent === 'invest' ? 'Bairros com Potencial de Valorização' : 'Melhores Locais para Sua Família'}
+                                        </h3>
+                                        <p className="text-center text-gray-600 mb-8 max-w-xl mx-auto">
+                                            {selectedIntent === 'invest'
+                                                ? 'Baseado em nossos 15 anos de experiência no mercado local.'
+                                                : 'Locais que oferecem qualidade de vida e infraestrutura completa.'}
+                                        </p>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
+                                            {NEIGHBORHOOD_DATA[selectedIntent].map((neighborhood, idx) => (
+                                                <NeighborhoodCard key={neighborhood.name} neighborhood={neighborhood} index={idx} />
+                                            ))}
                                         </div>
                                     </motion.div>
-                                </AnimatePresence>
-                            </motion.div>
-                        </motion.div>
+                                    </AnimatePresence>
+                                </motion.div> {/* End of Intent Selection motion.div */}                                <motion.div
+                                    className="text-center mt-16"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0, transition: { delay: 0.7, duration: 0.6 } }}
+                                >
+                                    <button
+                                        onClick={() => setShowContactForm(true)}
+                                        className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-lg text-white bg-amber-600 hover:bg-amber-700 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
+                                    >
+                                        <Phone className="w-5 h-5 mr-2" />
+                                        Falar com um Corretor
+                                    </button>
+                                    <p className="mt-4 text-sm text-gray-600">
+                                        Atendimento personalizado e visita agendada.
+                                    </p>
+                                </motion.div>
+                            </motion.div> // End of the main content motion.div
+                        )}
                     </div>
                 </div>
             </div>
 
-            {/* Contact form modal */}
             <AnimatePresence>
                 {showContactForm && (
                     <ContactFormModal
@@ -763,6 +1162,30 @@ const GuararemaHero: React.FC = () => {
                 )}
             </AnimatePresence>
         </section>
+    );
+};
+
+// Enhanced Hero with Suspense boundary for optimal loading
+const EnhancedHero: React.FC = () => {
+    // Preload critical image for better performance
+    useEffect(() => {
+        const link = document.createElement('link');
+        link.rel = 'preload';
+        link.href = '/images/hero-bg.jpg';
+        link.as = 'image';
+        document.head.appendChild(link);
+
+        return () => {
+            if (document.head.contains(link)) {
+                document.head.removeChild(link);
+            }
+        };
+    }, []);
+
+    return (
+        <Suspense fallback={<HeroSkeleton />}>
+            <GuararemaHero />
+        </Suspense>
     );
 };
 

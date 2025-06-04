@@ -67,12 +67,10 @@ export function ImageDiagnostic({ image, title = 'Diagnóstico da Imagem' }: Ima
         } catch (error) {
             console.error('Erro ao validar imagem:', error);
         }
-    };
-
-    // Obtém URLs usando diferentes estratégias para comparação
+    };    // Obtém URLs usando diferentes estratégias para comparação
     const standardUrl = typeof image === 'string' ? image : image.url || image.imagemUrl || '';
     let sanityExtractedUrl = '';
-    let normalizedImageResult = null; try {
+    let normalizedImageResult: any = null; try {
         if (typeof image === 'object' && image && image.asset && image.asset._ref) {
             const extractedUrl = extractImageUrl(image);
             sanityExtractedUrl = extractedUrl || '';

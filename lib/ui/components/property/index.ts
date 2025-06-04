@@ -1,16 +1,21 @@
 // Exportação de componentes relacionados a imóveis
-export * from '@/components/ui/property/PropertyCard';
+export * from '@/app/components/ui/property/PropertyCardUnified';
 export * from './PropertyCarousel';
 export * from './PropertyFeatures';
 export * from './PropertyHero';
 export * from './PropertyMap';
 
-// Exportação de tipos
+// Exportação de tipos unificados
 export type {
     PropertyType,
     PropertyStatus,
-    PropertyCardProps
-} from '@/components/ui/property/PropertyCard';
+    PropertyImage,
+    BasePropertyProps
+} from '@/app/components/ui/property/types';
+
+export type {
+    PropertyCardUnifiedProps as PropertyCardProps
+} from '@/app/components/ui/property/PropertyCardUnified';
 
 export type {
     AmenityType
@@ -18,4 +23,4 @@ export type {
 
 export type {
     NearbyPlace
-} from './PropertyMap'; 
+} from './PropertyMap';

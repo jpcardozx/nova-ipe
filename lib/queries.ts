@@ -34,6 +34,36 @@ export const queryImoveisDestaque = /* groq */ `
   }
 `;
 
+// Query específica para imóveis em destaque APENAS para venda
+export const queryImoveisDestaqueVenda = /* groq */ `
+  *[
+    _type == "imovel" && 
+    destaque == true && 
+    status == "disponivel" &&
+    finalidade == "Venda"
+  ] | order(_createdAt desc)[0...6] {
+    _id,
+    titulo,
+    slug,
+    preco,
+    finalidade,
+    tipoImovel,
+    bairro,
+    cidade,
+    dormitorios,
+    banheiros,
+    areaUtil,
+    vagas,
+    destaque,
+    "imagem": {
+      "asset": imagem.asset->,
+      "_type": "image", 
+      "alt": imagem.alt,
+      "hotspot": imagem.hotspot
+    }
+  }
+`;
+
 export const queryImoveisAluguel = /* groq */ `
   *[
     _type == "imovel" && 
@@ -91,7 +121,7 @@ export async function getImoveisDestaque(): Promise<any[]> {
     });
 
     // Corrigir referências de imagens para todos os imóveis
-    let processedData = [];
+    let processedData: any[] = [];
     if (Array.isArray(data)) {
       processedData = data.map(imovel => {
         if (imovel && imovel.imagem) {
@@ -132,13 +162,12 @@ export async function getImoveisAluguel(): Promise<any[]> {
     // Import dinâmico para evitar ciclos de dependência
     const { fixSanityImageReferences } = await import('./image-fix');    const data = await sanityClient.fetch(queryImoveisAluguel, {}, {
       next: { 
-        revalidate: 3600, // Revalidar a cada hora
-        tags: ['imoveis', 'aluguel']
+        revalidate: 3600, // Revalidar a cada hora      tags: ['imoveis', 'aluguel']
       }
     });
 
     // Corrigir referências de imagens para todos os imóveis
-    let processedData = [];
+    let processedData: any[] = [];
     if (Array.isArray(data)) {
       processedData = data.map(imovel => {
         if (imovel && imovel.imagem) {
@@ -156,6 +185,101 @@ export async function getImoveisAluguel(): Promise<any[]> {
     return processedData || [];
   } catch (error) {
     console.error('Erro ao buscar imóveis para aluguel:', error);
+    return [];
+  }
+}
+
+/**
+ * Busca imóveis em destaque APENAS para venda
+ * Otimizado para carregamento rápido com projeção
+ * Inclui correção automática de referências de imagem
+ */
+export async function getImoveisDestaqueVenda(): Promise<any[]> {
+  const cacheKey = 'imoveis-destaque-venda';
+  const now = Date.now();
+  
+  // Verificar cache primeiro
+  const cached = queryCache.get(cacheKey);
+  if (cached && (now - cached.timestamp) < CACHE_DURATION) {
+    return cached.data;
+  }
+
+  try {
+    // Import dinâmico para evitar ciclos de dependência
+    const { fixSanityImageReferences } = await import('./image-fix');    const data = await sanityClient.fetch(queryImoveisDestaqueVenda, {}, {
+      next: { 
+        revalidate: 3600, // Revalidar a cada hora        tags: ['imoveis', 'destaque', 'venda']
+      }
+    });
+
+    // Corrigir referências de imagens para todos os imóveis
+    let processedData: any[] = [];
+    if (Array.isArray(data)) {
+      processedData = data.map(imovel => {
+        if (imovel && imovel.imagem) {
+          return {
+            ...imovel,
+            imagem: fixSanityImageReferences(imovel.imagem)
+          };
+        }
+        return imovel;
+      });
+    }
+
+    // Armazenar no cache
+    queryCache.set(cacheKey, { data: processedData, timestamp: now });
+    return processedData || [];
+  } catch (error) {
+    console.error('Erro ao buscar imóveis em destaque para venda:', error);
+    return [];
+  }
+}
+
+/**
+ * Busca imóveis em destaque APENAS para aluguel
+ * Otimizado para carregamento rápido com projeção
+ * Inclui correção automática de referências de imagem
+ */
+export async function getImoveisDestaqueAluguel(): Promise<any[]> {
+  const cacheKey = 'imoveis-destaque-aluguel';
+  const now = Date.now();
+  
+  // Verificar cache primeiro
+  const cached = queryCache.get(cacheKey);
+  if (cached && (now - cached.timestamp) < CACHE_DURATION) {
+    return cached.data;
+  }
+
+  try {
+    // Import dinâmico para evitar ciclos de dependência
+    const { fixSanityImageReferences } = await import('./image-fix');
+    
+    const data = await sanityClient.fetch(queryImoveisAluguelDestaque, {}, {
+      next: { 
+        revalidate: 3600, // Revalidar a cada hora
+        tags: ['imoveis', 'destaque', 'aluguel']
+      }
+    });
+
+    // Corrigir referências de imagens para todos os imóveis
+    let processedData: any[] = [];
+    if (Array.isArray(data)) {
+      processedData = data.map(imovel => {
+        if (imovel && imovel.imagem) {
+          return {
+            ...imovel,
+            imagem: fixSanityImageReferences(imovel.imagem)
+          };
+        }
+        return imovel;
+      });
+    }
+
+    // Armazenar no cache
+    queryCache.set(cacheKey, { data: processedData, timestamp: now });
+    return processedData || [];
+  } catch (error) {
+    console.error('Erro ao buscar imóveis em destaque para aluguel:', error);
     return [];
   }
 }

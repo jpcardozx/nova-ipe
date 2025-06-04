@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useSpring, animated } from 'react-spring';
+import { motion, AnimatePresence, useSpring } from 'framer-motion';
 import { X, Check, Phone, Mail, Calendar, MapPin, Star, User, MessageCircle, Send } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -181,12 +180,10 @@ export default function PropertyContactModal({
         animate: { scale: 1, opacity: 1, y: 0 },
         exit: { scale: 0.9, opacity: 0, y: 20 },
         transition: { type: 'spring', damping: 20, stiffness: 300 }
-    };
-
-    // Progress bar animation
-    const progressWidth = useSpring({
-        width: isOpen ? `${(step / 3) * 100}%` : '0%',
-        config: { tension: 200, friction: 20 },
+    };    // Progress bar animation using framer-motion
+    const progressWidth = useSpring(isOpen ? (step / 3) * 100 : 0, {
+        stiffness: 200,
+        damping: 20
     });
 
     // Datas disponíveis (próximos 7 dias, exceto domingos)
@@ -224,15 +221,15 @@ export default function PropertyContactModal({
                         onClick={(e) => e.stopPropagation()}
                         {...modalAnimation}
                     >                        {/* Progress bar */}
-                        <animated.div
+                        <motion.div
                             style={{
-                                ...progressWidth,
                                 position: 'absolute',
                                 top: 0,
                                 left: 0,
                                 height: '4px',
                                 backgroundColor: 'var(--primary-500)',
-                                zIndex: 10
+                                zIndex: 10,
+                                width: `${progressWidth}%`
                             }}
                         />
 
@@ -244,19 +241,17 @@ export default function PropertyContactModal({
                             aria-label="Fechar"
                         >
                             <X className="h-5 w-5 text-neutral-500" />
-                        </button>
-
-                        {/* Header */}
+                        </button>                        {/* Header */}
                         <div className="p-6 pb-2">
                             <h2 className="text-xl font-bold text-neutral-900">
-                                {step === 1 ? 'Entre em contato' :
-                                    step === 2 ? 'Agende uma visita' :
-                                        'Confirme seus dados'}
+                                {step === 1 ? 'Análise de investimento personalizada' :
+                                    step === 2 ? 'Agendar visita estratégica' :
+                                        'Confirme sua análise exclusiva'}
                             </h2>
                             <p className="text-neutral-600 text-sm mt-1">
-                                {step === 1 ? 'Preencha seus dados para obter mais informações' :
-                                    step === 2 ? 'Escolha a melhor data para conhecer o imóvel' :
-                                        'Revise seus dados e envie sua solicitação'}
+                                {step === 1 ? 'Receba análise de ROI, documentação e estratégias de valorização' :
+                                    step === 2 ? 'Visita técnica focada no potencial de investimento deste imóvel' :
+                                        'Especialista entrará em contato em até 2 horas úteis'}
                             </p>
                         </div>
 
@@ -311,7 +306,7 @@ export default function PropertyContactModal({
                                                             "w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all",
                                                             errors.name ? "border-red-400" : "border-neutral-300"
                                                         )}
-                                                        placeholder="Seu nome completo"
+                                                        placeholder="Como você gostaria de ser chamado?"
                                                         disabled={isSubmitting}
                                                     />
                                                     {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
@@ -330,7 +325,7 @@ export default function PropertyContactModal({
                                                             "w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all",
                                                             errors.email ? "border-red-400" : "border-neutral-300"
                                                         )}
-                                                        placeholder="seu@email.com"
+                                                        placeholder="seu.email@preferido.com"
                                                         disabled={isSubmitting}
                                                     />
                                                     {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
@@ -356,10 +351,9 @@ export default function PropertyContactModal({
                                                     {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
                                                 </div>
 
-                                                <div>
-                                                    <p className="block text-sm font-medium text-neutral-700 mb-2">
-                                                        Preferência de contato
-                                                    </p>
+                                                <div>                                                    <p className="block text-sm font-medium text-neutral-700 mb-2">
+                                                    Como prefere que entremos em contato?
+                                                </p>
                                                     <div className="flex flex-wrap gap-2">
                                                         {['whatsapp', 'phone', 'email'].map((option) => (
                                                             <button
@@ -396,10 +390,9 @@ export default function PropertyContactModal({
                                             transition={{ duration: 0.3 }}
                                         >
                                             <div className="space-y-4">
-                                                <div>
-                                                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                                                        Data para visita
-                                                    </label>
+                                                <div>                                                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                                                    Quando você gostaria de visitar?
+                                                </label>
                                                     <div className="flex flex-wrap gap-2">
                                                         {getAvailableDates().slice(0, 7).map((date) => (
                                                             <button
@@ -429,10 +422,9 @@ export default function PropertyContactModal({
                                                     {errors.date && <p className="mt-1 text-xs text-red-500">{errors.date}</p>}
                                                 </div>
 
-                                                <div>
-                                                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                                                        Horário
-                                                    </label>
+                                                <div>                                                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                                                    Qual horário funciona melhor para você?
+                                                </label>
                                                     <div className="flex flex-wrap gap-2">
                                                         {timeSlots.map((time) => (
                                                             <button
@@ -452,18 +444,15 @@ export default function PropertyContactModal({
                                                         ))}
                                                     </div>
                                                     {errors.time && <p className="mt-1 text-xs text-red-500">{errors.time}</p>}
-                                                </div>
-
-                                                <div>
-                                                    <label htmlFor="message" className="block text-sm font-medium text-neutral-700 mb-1">
-                                                        Observações (opcional)
-                                                    </label>
+                                                </div>                                                <div>                                                    <label htmlFor="message" className="block text-sm font-medium text-neutral-700 mb-1">
+                                                    Objetivos de investimento específicos?
+                                                </label>
                                                     <textarea
                                                         id="message"
                                                         value={message}
                                                         onChange={(e) => setMessage(e.target.value)}
                                                         className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
-                                                        placeholder="Alguma informação adicional que gostaria de compartilhar?"
+                                                        placeholder="Ex: ROI mínimo esperado, prazo de retorno, tipo de renda (aluguel/valorização)..."
                                                         rows={3}
                                                         disabled={isSubmitting}
                                                     />
@@ -483,13 +472,13 @@ export default function PropertyContactModal({
                                         >
                                             <div className="space-y-4">
                                                 <div className="bg-neutral-50 p-4 rounded-lg border border-neutral-200">
-                                                    <h3 className="text-lg font-medium mb-3 text-neutral-900">Resumo da solicitação</h3>
+                                                    <h3 className="text-lg font-medium mb-3 text-neutral-900">Sua análise de investimento está sendo preparada</h3>
 
                                                     <div className="space-y-3">
                                                         <div className="flex items-start gap-3">
                                                             <User className="w-5 h-5 text-neutral-400 mt-0.5" />
                                                             <div>
-                                                                <p className="text-sm text-neutral-500">Seus dados</p>
+                                                                <p className="text-sm text-neutral-500">Seus dados de contato</p>
                                                                 <p className="font-medium">{name}</p>
                                                                 <p className="text-sm">{email}</p>
                                                                 <p className="text-sm">{phone}</p>
@@ -499,7 +488,7 @@ export default function PropertyContactModal({
                                                         <div className="flex items-start gap-3">
                                                             <Calendar className="w-5 h-5 text-neutral-400 mt-0.5" />
                                                             <div>
-                                                                <p className="text-sm text-neutral-500">Data e hora da visita</p>
+                                                                <p className="text-sm text-neutral-500">Sua visita agendada</p>
                                                                 <p className="font-medium">
                                                                     {selectedDate && format(selectedDate, "dd 'de' MMMM (EEEE)", { locale: ptBR })}
                                                                 </p>
@@ -510,24 +499,22 @@ export default function PropertyContactModal({
                                                         </div>
 
                                                         <div className="flex items-start gap-3">
-                                                            <MessageCircle className="w-5 h-5 text-neutral-400 mt-0.5" />
-                                                            <div>
-                                                                <p className="text-sm text-neutral-500">Preferência de contato</p>
+                                                            <MessageCircle className="w-5 h-5 text-neutral-400 mt-0.5" />                                                                <div>
+                                                                <p className="text-sm text-neutral-500">Como vamos entrar em contato</p>
                                                                 <p className="font-medium">
-                                                                    {preferredContact === 'whatsapp' ? 'WhatsApp' :
-                                                                        preferredContact === 'phone' ? 'Telefone' : 'Email'}
+                                                                    {preferredContact === 'whatsapp' ? 'WhatsApp prioritário' :
+                                                                        preferredContact === 'phone' ? 'Ligação direta' : 'Email executivo'}
                                                                 </p>
                                                             </div>
                                                         </div>
 
-                                                        {message && (
-                                                            <div className="flex items-start gap-3">
-                                                                <MessageCircle className="w-5 h-5 text-neutral-400 mt-0.5" />
-                                                                <div>
-                                                                    <p className="text-sm text-neutral-500">Observações</p>
-                                                                    <p className="text-sm">{message}</p>
-                                                                </div>
+                                                        {message && (<div className="flex items-start gap-3">
+                                                            <MessageCircle className="w-5 h-5 text-neutral-400 mt-0.5" />
+                                                            <div>
+                                                                <p className="text-sm text-neutral-500">Seus objetivos de investimento</p>
+                                                                <p className="text-sm">{message}</p>
                                                             </div>
+                                                        </div>
                                                         )}
                                                     </div>
                                                 </div>
@@ -556,17 +543,14 @@ export default function PropertyContactModal({
                                     </button>
                                 ) : (
                                     <div></div>
-                                )}
-
-                                {step < 3 ? (
-                                    <button
-                                        type="button"
-                                        onClick={handleNextStep}
-                                        className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg font-medium text-sm transition-colors flex items-center"
-                                        disabled={isSubmitting}
-                                    >
-                                        Continuar
-                                    </button>
+                                )}                                {step < 3 ? (<button
+                                    type="button"
+                                    onClick={handleNextStep}
+                                    className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg font-medium text-sm transition-colors flex items-center"
+                                    disabled={isSubmitting}
+                                >
+                                    {step === 1 ? 'Solicitar análise de investimento' : 'Confirmar visita estratégica'}
+                                </button>
                                 ) : (
                                     <button
                                         type="submit"
@@ -585,11 +569,10 @@ export default function PropertyContactModal({
                                             <>
                                                 <Check className="w-4 h-4" />
                                                 <span>Enviado!</span>
-                                            </>
-                                        ) : (
+                                            </>) : (
                                             <>
                                                 <Send className="w-4 h-4" />
-                                                <span>Enviar solicitação</span>
+                                                <span>Garantir minha análise de investimento</span>
                                             </>
                                         )}
                                     </button>

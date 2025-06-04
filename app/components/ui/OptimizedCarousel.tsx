@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 // Import only what's needed from framer-motion
 import { motion, AnimatePresence } from 'framer-motion';
 import useEmblaCarousel, { type UseEmblaCarouselType } from 'embla-carousel-react';
-import { Button } from '@/src/components/ui/button';
+import { Button } from '@/app/components/ui/button';
 
 // Import needed types from embla-carousel main package
 import type { CreatePluginType } from 'embla-carousel';
@@ -260,8 +260,7 @@ export function OptimizedCarousel<T>({
                             key={getKey(item)}
                             className="min-w-0 relative"
                             style={slideStyle}
-                        >
-                            {/* Wrapper de animação */}
+                        >                            {/* Wrapper de animação */}
                             <motion.div
                                 initial={{ opacity: 0.8, y: 10 }}
                                 animate={{
@@ -274,6 +273,11 @@ export function OptimizedCarousel<T>({
                                     ease: "easeOut"
                                 }}
                                 className="h-full"
+                                style={{
+                                    transform: 'translate3d(0, 0, 0)',
+                                    backfaceVisibility: 'hidden',
+                                    willChange: 'transform, opacity'
+                                }}
                             >
                                 {renderItem(item, index)}
                             </motion.div>
@@ -306,8 +310,7 @@ export function OptimizedCarousel<T>({
             {/* Navegação - Setas (interno) */}            {controls.showArrows && controls.arrowPosition === 'inside' ? (
                 <AnimatePresence>
                     {(isHovering || !options.autoplay) ? (
-                        <>
-                            {/* Botão anterior */}
+                        <>                            {/* Botão anterior */}
                             <motion.div
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
@@ -317,6 +320,11 @@ export function OptimizedCarousel<T>({
                                     "absolute top-1/2 -translate-y-1/2 left-2 md:left-4",
                                     "z-10"
                                 )}
+                                style={{
+                                    transform: 'translate3d(0, 0, 0)',
+                                    backfaceVisibility: 'hidden',
+                                    willChange: 'transform, opacity'
+                                }}
                             >
                                 <Button
                                     variant="secondary"
@@ -331,9 +339,7 @@ export function OptimizedCarousel<T>({
                                             controls.arrowSize === 'lg' ? "h-6 w-6" : "h-5 w-5"
                                     )} />
                                 </Button>
-                            </motion.div>
-
-                            {/* Botão próximo */}
+                            </motion.div>                            {/* Botão próximo */}
                             <motion.div
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
@@ -343,6 +349,11 @@ export function OptimizedCarousel<T>({
                                     "absolute top-1/2 -translate-y-1/2 right-2 md:right-4",
                                     "z-10"
                                 )}
+                                style={{
+                                    transform: 'translate3d(0, 0, 0)',
+                                    backfaceVisibility: 'hidden',
+                                    willChange: 'transform, opacity'
+                                }}
                             >
                                 <Button
                                     variant="secondary"

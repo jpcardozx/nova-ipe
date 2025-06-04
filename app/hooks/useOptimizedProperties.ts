@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import type { ImovelClient } from '@/types/imovel-client';
+import { getImoveisParaVenda, getImoveisParaAlugar } from '@/lib/sanity/fetchImoveis';
+import type { ImovelClient } from '../../src/types/imovel-client';
 
 interface UseOptimizedPropertiesOptions {
     limit?: number;
@@ -179,27 +180,25 @@ export function useOptimizedProperties(
         }
 
         const prices = allProperties.map(p => p.preco || 0).filter(p => p > 0);
-        const areas = allProperties.map(p => p.areaUtil || 0).filter(a => a > 0);
-
-        // Get unique bedroom and bathroom counts
-        const bedrooms = [...new Set(allProperties
+        const areas = allProperties.map(p => p.areaUtil || 0).filter(a => a > 0);        // Get unique bedroom and bathroom counts
+        const bedrooms = Array.from(new Set(allProperties
             .map(p => p.dormitorios)
-            .filter(Boolean) as number[])]
+            .filter(Boolean) as number[]))
             .sort((a, b) => a - b);
-
-        const bathrooms = [...new Set(allProperties
+        
+        const bathrooms = Array.from(new Set(allProperties
             .map(p => p.banheiros)
-            .filter(Boolean) as number[])]
+            .filter(Boolean) as number[]))
             .sort((a, b) => a - b);
 
         // Get unique cities and neighborhoods
-        const cities = [...new Set(allProperties
+        const cities = Array.from(new Set(allProperties
             .map(p => p.cidade)
-            .filter(Boolean) as string[])];
-
-        const neighborhoods = [...new Set(allProperties
+            .filter(Boolean) as string[]));
+        
+        const neighborhoods = Array.from(new Set(allProperties
             .map(p => p.bairro)
-            .filter(Boolean) as string[])];
+            .filter(Boolean) as string[]));
 
         return {
             minPrice: Math.min(...prices),

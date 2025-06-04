@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { FaFacebookF, FaTwitter, FaLinkedinIn, FaTelegramPlane, FaEnvelope } from 'react-icons/fa';
+import { Facebook, Twitter, Linkedin, Send, Mail } from 'lucide-react';
 import WhatsAppShare from './WhatsAppShare';
 
 interface SocialShareProps {
@@ -70,12 +70,10 @@ export default function SocialShareButtons({
         const url = getFullUrl();
         const text = title || '';
         return `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
-    };
-
-    const generateEmailShareUrl = () => {
+    }; const generateEmailShareUrl = () => {
         const url = getFullUrl();
-        const subject = title || 'Confira este link da Nova Ipê Imobiliária';
-        const body = `${description || 'Achei que você poderia se interessar:'}\n\n${url}`;
+        const subject = title || 'Oportunidade de investimento imobiliário em Guararema';
+        const body = `${description || 'Encontrei esta excelente oportunidade de investimento com potencial de valorização:'}\n\n${url}\n\nFale com um consultor para análise financeira detalhada.`;
         return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     };
 
@@ -122,7 +120,7 @@ export default function SocialShareButtons({
                     className={getButtonClass('facebook')}
                     aria-label="Compartilhar no Facebook"
                 >
-                    <FaFacebookF className={`text-lg ${showLabel ? 'mr-2' : ''}`} />
+                    <Facebook className={`text-lg ${showLabel ? 'mr-2' : ''}`} />
                     {showLabel && <span>Facebook</span>}
                 </button>
             )}
@@ -134,7 +132,7 @@ export default function SocialShareButtons({
                     className={getButtonClass('twitter')}
                     aria-label="Compartilhar no Twitter"
                 >
-                    <FaTwitter className={`text-lg ${showLabel ? 'mr-2' : ''}`} />
+                    <Twitter className={`text-lg ${showLabel ? 'mr-2' : ''}`} />
                     {showLabel && <span>Twitter</span>}
                 </button>
             )}
@@ -146,7 +144,7 @@ export default function SocialShareButtons({
                     className={getButtonClass('linkedin')}
                     aria-label="Compartilhar no LinkedIn"
                 >
-                    <FaLinkedinIn className={`text-lg ${showLabel ? 'mr-2' : ''}`} />
+                    <Linkedin className={`text-lg ${showLabel ? 'mr-2' : ''}`} />
                     {showLabel && <span>LinkedIn</span>}
                 </button>
             )}
@@ -158,7 +156,7 @@ export default function SocialShareButtons({
                     className={getButtonClass('telegram')}
                     aria-label="Compartilhar no Telegram"
                 >
-                    <FaTelegramPlane className={`text-lg ${showLabel ? 'mr-2' : ''}`} />
+                    <Send className={`text-lg ${showLabel ? 'mr-2' : ''}`} />
                     {showLabel && <span>Telegram</span>}
                 </button>
             )}
@@ -171,7 +169,7 @@ export default function SocialShareButtons({
                     className={getButtonClass('email')}
                     aria-label="Compartilhar por Email"
                 >
-                    <FaEnvelope className={`text-lg ${showLabel ? 'mr-2' : ''}`} />
+                    <Mail className={`text-lg ${showLabel ? 'mr-2' : ''}`} />
                     {showLabel && <span>Email</span>}            </a>
             )}
         </div>

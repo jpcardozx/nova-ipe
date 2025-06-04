@@ -3,15 +3,13 @@
 // This module provides high-performance data fetching capabilities for Nova-IPE
 //
 
-'use server';
-
 import { createClient, type QueryParams, type FilteredResponseQueryOptions } from "next-sanity";
 import { projectId, dataset, apiVersion } from "../../studio/env";
 import { revalidateTag, revalidatePath } from "next/cache";
 import { unstable_cache } from 'next/cache';
 import { LRUCache } from 'lru-cache';
-import type { ImovelClient } from '@/types/imovel-client';
-import { mapImovelToClient } from '@core/mapImovelToClient';
+import type { ImovelClient } from '../../src/types/imovel-client';
+import { mapImovelToClient } from '@/lib/mapImovelToClient';
 
 // Create a memory cache for very frequent queries to avoid hitting the Next.js cache
 // This will reduce memory pressure on the server's persistent cache
@@ -149,7 +147,7 @@ export const optimizedQueries = {
 
 // Function to manually trigger revalidation for all or specific properties
 export async function revalidateImoveis(type: 'all' | 'destaque' | 'aluguel' | 'venda' | string = 'all') {
-    const tags = [];
+    const tags: string[] = [];
 
     if (type === 'all') {
         tags.push('imoveis');

@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
-import { FaWhatsapp } from 'react-icons/fa';
+import { MessageCircle } from 'lucide-react';
 
 interface WhatsAppShareProps {
     title?: string;
@@ -131,7 +131,7 @@ export default function WhatsAppShare({
             className={getButtonClasses()}
             aria-label="Compartilhar no WhatsApp"
         >
-            <FaWhatsapp className={`text-lg ${showLabel ? 'mr-2' : ''}`} />
+            <MessageCircle className={`text-lg ${showLabel ? 'mr-2' : ''}`} />
             {showLabel && <span>{shared ? 'Compartilhado!' : buttonText}</span>}
         </button>
     );

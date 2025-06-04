@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { sanityClient } from '@/lib/sanity';
-import type { ImovelProjetado } from '@/types/imovel-client';
+import type { ImovelProjetado } from '../types/imovel-client';
 
 interface UseImoveisState {
     data: ImovelProjetado[];

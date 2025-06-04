@@ -1,0 +1,101 @@
+/**
+ * Estilos de layout
+ * 
+ * Estilos específicos para elementos de layout e estrutura da página
+ */
+
+/* 
+   Initial body state - consistente entre server e client rendering
+   Usa transições suaves para garantir boa experiência visual
+*/
+.body-initial-state {
+  transition: opacity 0.3s ease-out;
+}
+
+/* Visibilidade após carregamento completo */
+.body-visible {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Layout base */
+.layout-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.layout-main {
+  flex: 1;
+}
+
+/* Cabeçalho */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-index-sticky);
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-sm);
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+/* Rodapé */
+.footer {
+  background-color: var(--color-secondary);
+  color: white;
+  padding: var(--spacing-xl) 0;
+}
+
+/* Seções padrão */
+.section {
+  padding: var(--spacing-xl) 0;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.section-title {
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-primary);
+}
+
+.section-description {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-light);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Hero section */
+.hero {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}

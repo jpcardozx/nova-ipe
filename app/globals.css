@@ -13,84 +13,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Importações críticas para evitar CLS e garantir LCP otimizado */
-@import "styles/critical/critical.css";
-@import "styles/cls-optimizations.css";
-@import "styles/tailwind-compat.css";
-@import "./cls-prevention.css"; /* Novas otimizações para prevenir CLS */
-@import "styles/premium-animations.css"; /* Premium animations and micro-interactions */
-
-/* Configurações de variáveis e fundamentos */
-:root {
-  /* Cores principais - sistema de design Nova Ipê */
-  --color-brand-green: #1a6f5c;
-  --color-brand-green-dark: #145a49;
-  --color-brand-green-light: #3a8f7c;
-  --color-brand-dark: #0D1F2D;
-  --color-brand-dark-light: #1e3042;
-  --color-brand-light: #f8f4e3;
-  --color-accent-yellow: #ffcc00;
-  --color-accent-yellow-dark: #e6b800;
-    /* Cores funcionais UI */
-  --color-background: #ffffff;
-  --color-foreground: #333333;
-  --color-border: #e5e5e5;
-  --color-input: #f0f0f0;
-  --color-ring: rgba(26, 111, 92, 0.3);
-  
-  /* Typography System */
-  /* Font sizes - usando uma escala modular de 1.25 */
-  --text-xs: 0.75rem;      /* 12px */
-  --text-sm: 0.875rem;     /* 14px */
-  --text-base: 1rem;       /* 16px */
-  --text-lg: 1.125rem;     /* 18px */
-  --text-xl: 1.25rem;      /* 20px */
-  --text-2xl: 1.563rem;    /* 25px */
-  --text-3xl: 1.953rem;    /* 31px */
-  --text-4xl: 2.441rem;    /* 39px */
-  --text-5xl: 3.052rem;    /* 49px */
-  --text-6xl: 3.815rem;    /* 61px */
-
-  /* Line heights otimizados */
-  --leading-none: 1;
-  --leading-tight: 1.1;
-  --leading-snug: 1.3;
-  --leading-normal: 1.5;
-  --leading-relaxed: 1.625;
-  --leading-loose: 2;
-
-  /* Letter spacing refinado */
-  --tracking-tighter: -0.05em;
-  --tracking-tight: -0.025em;
-  --tracking-normal: 0em;
-  --tracking-wide: 0.025em;
-  --tracking-wider: 0.05em;
-  
-  /* Font weights mais consistentes */
-  --font-weight-light: 300;
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-  --font-weight-extrabold: 800;
-  
-  /* Transições */
-  --transition-fast: 150ms ease;
-  --transition-default: 300ms ease;
-  --transition-slow: 500ms ease;
-  
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-default: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
 /* Reset e normalizações básicas */
 @layer base {
   * {
-    border-color: var(--border);
+    /* border-color: var(--border); /* Uses the var from variables.css */
+    /* Updated to use the direct variable after consolidation */
+    border-color: var(--color-border);
   }
-  
+
   html {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
@@ -98,8 +28,8 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     height: 100%;
-    height: -webkit-fill-available;
-    height: 100%;
+    /* height: -webkit-fill-available; /* Consider if still needed */
+    /* height: 100%; /* Duplicate */
   }
 
   /* Scrollbar styling */
@@ -142,7 +72,10 @@
   }
 
   /* Form element fixes */
-  input, textarea, select, button {
+  input,
+  textarea,
+  select,
+  button {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -155,173 +88,8 @@
   }
 }
 
-/* Componentes personalizados */
-@layer components {
-  /* Containers e layout */
-  .container-ipe {
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    max-width: 80rem;
-  }
-  
-  @media (min-width: 640px) {
-    .container-ipe {
-      padding-left: 1.5rem;
-      padding-right: 1.5rem;
-    }
-  }
-  
-  @media (min-width: 1024px) {
-    .container-ipe {
-      padding-left: 2rem;
-      padding-right: 2rem;
-    }
-  }
-    .section-ipe {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
-  }
-  
-  @media (min-width: 768px) {
-    .section-ipe {
-      padding-top: 4rem;
-      padding-bottom: 4rem;
-    }
-  }
-  
-  @media (min-width: 1024px) {
-    .section-ipe {
-      padding-top: 6rem;
-      padding-bottom: 6rem;
-    }
-  }
-    /* Layout Flexível */
-  .flex-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .flex-between {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  .flex-start {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-  }
-    .flex-end {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  }
-  
-  /* Botões alinhados com o tema Tailwind da Nova Ipê */
-  .btn-ipe {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.375rem;
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition-property: color, background-color, border-color;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
-  }
-  
-  .btn-ipe:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 2px var(--ring);
-  }
-  
-  .btn-ipe:disabled {
-    pointer-events: none;
-    opacity: 0.5;
-  }
-    .btn-ipe-primary {
-    background-color: var(--color-brand-green);
-    color: white;
-  }
-  
-  .btn-ipe-primary:hover {
-    background-color: var(--color-brand-green-dark);
-  }  .btn-ipe-secondary {
-    background-color: var(--color-brand-dark);
-    color: white;
-  }
-  
-  .btn-ipe-secondary:hover {
-    background-color: var(--color-brand-dark-light);
-  }
-    .btn-ipe-accent {
-    background-color: var(--color-accent-yellow);
-    color: var(--color-brand-dark);
-  }
-  
-  .btn-ipe-accent:hover {
-    background-color: var(--color-accent-yellow-dark);
-  }
-    .btn-ipe-outline {
-    border: 1px solid var(--color-border);
-    background-color: transparent;
-    color: var(--color-brand-dark);
-  }
-    .btn-ipe-outline:hover {
-    background-color: var(--color-brand-light);
-  }    /* Cards e superfícies - compatíveis com o design system */
-  .card-ipe {
-    background-color: white;
-    border-radius: 0.5rem;
-    border: 1px solid var(--color-border);
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-  }
-    .card-ipe-hover {
-    transition-property: box-shadow;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
-  }
-  
-  .card-ipe-hover:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  }
-    .card-ipe-property {
-    background-color: white;
-    border-radius: 0.5rem;
-    border: 1px solid var(--color-border);
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-    aspect-ratio: 4/3;
-    min-height: 280px;
-    position: relative;
-  }
-  
-  /* Badges e elementos de destaque */
-  .badge-ipe {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 9999px;
-    padding: 0.125rem 0.625rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-  }
-  
-  .badge-ipe-accent {
-    background-color: var(--color-accent-yellow);
-    color: var(--color-brand-dark);
-  }
-  .badge-ipe-brand {
-    background-color: var(--color-brand-green);
-    color: white;
-  }
-}
+/* Componentes personalizados (Estilos de .btn-ipe, .card-ipe etc. foram movidos para styles/components.css) */
+/* @layer components { ... } */
 
 /* Utilitários personalizados */
 @layer utilities {
@@ -330,235 +98,52 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
-  
+
   .text-gradient-green {
-    background-image: linear-gradient(to right, var(--color-brand-green), var(--color-brand-green-light));
+    background-image: linear-gradient(
+      to right,
+      var(--color-brand-green),
+      var(--color-brand-green-light)
+    );
   }
-  
+
   .bg-gradient-primary {
-    background-image: linear-gradient(to bottom right, var(--color-brand-green), var(--color-brand-green-dark));
+    background-image: linear-gradient(
+      to bottom right,
+      var(--color-brand-green),
+      var(--color-brand-green-dark)
+    );
   }
-  
+
   .bg-gradient-secondary {
-    background-image: linear-gradient(to bottom right, var(--color-brand-dark), var(--color-brand-dark-light));
+    background-image: linear-gradient(
+      to bottom right,
+      var(--color-brand-dark),
+      var(--color-brand-dark-light)
+    );
   }
-  
+
   .bg-pattern-dots {
     background-image: radial-gradient(var(--color-brand-dark) 1px, transparent 1px);
     background-size: 20px 20px;
   }
 }
 
-/* Animações compatíveis com framer-motion */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+/* Animações (Keyframes e classes de animação serão movidas para cá) */
+/* @keyframes fadeIn { ... } */
+/* .animate-fade-in { ... } */
 
-@keyframes slideInFromBottom {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
+/* Classes de tipografia específicas (Serão revisadas, Tailwind utilities ou classes em components.css podem cobrir isso) */
+/* .heading-hero { ... } */
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
+/* Utilitários para formulários e layouts de página (Serão revisadas, Tailwind utilities ou classes em components.css podem cobrir isso) */
+/* .grid-properties { ... } */
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
+/* Navegação e elementos interativos (Serão revisadas, Tailwind utilities ou classes em components.css podem cobrir isso) */
+/* .nav-link { ... } */
 
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%); 
-  }
-}
-
-/* Classes para animações comuns */
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-in;
-}
-
-.animate-slide-in {
-  animation: slideInFromBottom 0.6s ease-out;
-}
-
-.animate-pulse-slow {
-  animation: pulse 3s infinite;
-}
-
-.animate-float {
-  animation: float 4s ease-in-out infinite;
-}
-
-.animate-shimmer {
-  animation: shimmer 2s infinite linear;
-}
-
-/* Importações adicionais de arquivos CSS auxiliares */
-@import "./styles/variables.css";
-@import "./styles/components.css";
-
-/* Classes de tipografia específicas */
-.heading-hero {
-  font-size: 2.25rem;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  color: var(--color-brand-dark);
-}
-
-@media (min-width: 768px) {
-  .heading-hero {
-    font-size: 3.75rem;
-  }
-}
-
-.heading-section {
-  font-size: 1.875rem;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  color: var(--color-brand-dark);
-}
-
-@media (min-width: 768px) {
-  .heading-section {
-    font-size: 2.25rem;
-  }
-}
-
-.heading-card {
-  font-size: 1.25rem;
-  font-weight: 500;
-  color: var(--color-brand-dark);
-}
-
-.subtitle-elegant {
-  font-size: 1.125rem;
-  color: #525252; /* neutral-600 equivalent */
-  line-height: 1.7;
-}
-
-@media (min-width: 768px) {
-  .subtitle-elegant {
-    font-size: 1.25rem;
-  }
-}
-
-.text-gradient-brand {
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-image: linear-gradient(to right, #1a6f5c, #3a8f7c);
-}
-
-.text-gradient-accent {
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-image: linear-gradient(to right, #e6b800, #ffcc00);
-}
-
-/* Utilitários para formulários e layouts de página */
-.grid-properties {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-}
-
-@media (min-width: 768px) {
-  .grid-properties {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .grid-properties {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.form-group-ipe {
-  margin-bottom: 1rem;
-}
-
-.input-ipe {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 0.375rem;
-}
-
-.input-ipe:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--ring);
-}
-
-.label-ipe {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #404040; /* neutral-700 equivalent */
-  margin-bottom: 0.25rem;
-}
-
-/* Navegação e elementos interativos */
-.nav-link {
-  position: relative;
-  transition-property: color;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
-.nav-link:hover {
-  color: var(--color-brand-green);
-}
-
-.nav-link-active {
-  @apply text-brand-green font-semibold;
-}
-
-.nav-link-indicator {
-  @apply pointer-events-none absolute left-0 -bottom-0.5 h-[2px] w-full overflow-hidden;
-}
-
-.nav-link-indicator-inner {
-  @apply block h-full w-full origin-left scale-x-0 bg-brand-green transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-x-100;
-}
-
-/* Media Queries para responsividade */
-@media (max-width: 640px) {
-  :root {
-    --container-padding: 1rem;
-    --section-spacing: 3rem;
-  }
-  
-  .section-ipe {
-    @apply py-8;
-  }
-  
-  .heading-hero {
-    @apply text-3xl;
-  }
-}
+/* Media Queries para responsividade (Tailwind handles this, review if custom ones are still needed) */
+/* @media (max-width: 640px) { ... } */
 
 /* Suporte para framer-motion e interações */
 .motion-safe {
@@ -597,7 +182,9 @@
 }
 
 .thin-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-neutral-300 rounded-full;
+  @apply bg-neutral-300 rounded-full; /* Ensure neutral-300 is defined or use a var */
+  background-color: var(--color-scrollbar-thumb); /* Use CSS variable */
+  border-radius: var(--radius-full); /* Use CSS variable */
 }
 
 /* Otimizações para impressão */
@@ -605,25 +192,27 @@
   .no-print {
     display: none !important;
   }
-  
+
   body {
     background: white;
     color: black;
     font-size: 12pt;
   }
-  
+
   .container-ipe {
+    /* This class is from components.css now */
     max-width: 100% !important;
     padding: 0 !important;
   }
-  
+
   a::after {
-    content: " (" attr(href) ")";
+    content: ' (' attr(href) ')';
     font-size: 10pt;
     font-style: italic;
   }
-  
+
   .card-ipe {
+    /* This class is from components.css now */
     break-inside: avoid;
   }
 }
@@ -634,160 +223,699 @@ button {
   -webkit-user-select: none;
 }
 
-html.fonts-loaded body, body.fonts-loaded {
-  font-family: var(--font-roboto), system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; /* Changed: Use --font-roboto */
+/* Font loading and application */
+/* html.fonts-loaded body, body.fonts-loaded { */
+body {
+  /* Simplified, assuming fonts are loaded via next/font or <link> */
+  font-family:
+    var(--font-sans),
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    Arial,
+    sans-serif;
 }
 
-/* Typography Utilities */
-@layer utilities {
-  .text-display-1 {
-    font-family: var(--font-playfair);
-    font-size: var(--text-6xl);
-    line-height: var(--leading-tight);
-    font-weight: var(--font-weight-bold);
-    letter-spacing: var(--tracking-tight);
-    color: var(--color-brand-dark);
-  }
-  
-  .text-display-2 {
-    font-family: var(--font-playfair);
-    font-size: var(--text-5xl);
-    line-height: var(--leading-tight);
-    font-weight: var(--font-weight-bold);
-    letter-spacing: var(--tracking-tight);
-    color: var(--color-brand-dark);
-  }
-  
-  .text-display-3 {
-    font-family: var(--font-playfair);
-    font-size: var(--text-4xl);
-    line-height: var(--leading-snug);
-    font-weight: var(--font-weight-bold);
-    letter-spacing: var(--tracking-tight);
-    color: var(--color-brand-dark);
-  }
-  
-  .text-heading-1 {
-    font-family: var(--font-playfair);
-    font-size: var(--text-3xl);
-    line-height: var(--leading-snug);
-    font-weight: var(--font-weight-semibold);
-    letter-spacing: var(--tracking-normal);
-    color: var(--color-brand-dark);
-  }
-  
-  .text-heading-2 {
-    font-family: var(--font-playfair);
-    font-size: var(--text-2xl);
-    line-height: var(--leading-normal);
-    font-weight: var(--font-weight-semibold);
-    letter-spacing: var(--tracking-normal);
-    color: var(--color-brand-dark);
-  }
-  
-  .text-heading-3 {
-    font-family: var(--font-playfair);
-    font-size: var(--text-xl);
-    line-height: var(--leading-normal);
-    font-weight: var(--font-weight-medium);
-    letter-spacing: var(--tracking-normal);
-    color: var(--color-brand-dark);
-  }
-  
-  .text-body-large {
-    font-family: var(--font-roboto);
-    font-size: var(--text-lg);
-    line-height: var(--leading-relaxed);
-    font-weight: var(--font-weight-regular);
-    letter-spacing: var(--tracking-normal);
-  }
-  
-  .text-body {
-    font-family: var(--font-roboto);
-    font-size: var(--text-base);
-    line-height: var(--leading-normal);
-    font-weight: var(--font-weight-regular);
-    letter-spacing: var(--tracking-normal);
-  }
-  
-  .text-body-small {
-    font-family: var(--font-roboto);
-    font-size: var(--text-sm);
-    line-height: var(--leading-normal);
-    font-weight: var(--font-weight-regular);
-    letter-spacing: var(--tracking-normal);
-  }
-  
-  .text-caption {
-    font-family: var(--font-roboto);
-    font-size: var(--text-xs);
-    line-height: var(--leading-normal);
-    font-weight: var(--font-weight-medium);
-    letter-spacing: var(--tracking-wide);
-    text-transform: uppercase;
-  }
-  
-  .text-button {
-    font-family: var(--font-roboto);
-    font-size: var(--text-sm);
-    line-height: var(--leading-snug);
-    font-weight: var(--font-weight-medium);
-    letter-spacing: var(--tracking-normal);
-  }
+/* Typography Utilities (These should be primarily handled by Tailwind utilities or semantic classes in components.css) */
+/* @layer utilities { .text-display-1 { ... } } */
 
-  /* Responsive typography */
-  @media (max-width: 768px) {
-    .text-display-1 {
-      font-size: var(--text-5xl);
-    }
-    
-    .text-display-2 {
-      font-size: var(--text-4xl);
-    }
-    
-    .text-display-3 {
-      font-size: var(--text-3xl);
-    }
-    
-    .text-heading-1 {
-      font-size: var(--text-2xl);
-    }
-    
-    .text-heading-2 {
-      font-size: var(--text-xl);
-    }
-    
-    .text-heading-3 {
-      font-size: var(--text-lg);
-    }
+/* Font helpers (These should be primarily handled by Tailwind utilities) */
+/* .font-display { ... } */
+
+/* --- BEGIN MERGED CONTENT --- */
+
+/* MERGED FROM: app/styles/critical/critical.css */
+html[data-loading-state='loading']:before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-brand-green), var(--color-brand-green-light));
+  z-index: 9999;
+  animation: loading_critical_bar 1.5s infinite ease-in-out; /* Renamed animation */
+}
+
+@keyframes loading_critical_bar {
+  /* Renamed animation */
+  0% {
+    width: 0;
+    left: 0;
+  }
+  50% {
+    width: 30%;
+    left: 30%;
+  }
+  100% {
+    width: 0;
+    left: 100%;
   }
 }
 
-/* Font helpers */
-.font-display {
-  font-family: var(--font-playfair), Georgia, serif !important;
+.image-placeholder {
+  /* From styles/critical/critical.css */
+  background-color: #f0f0f0; /* Consider using a CSS var */
+  background-color: var(--color-muted); /* Use CSS variable */
+  position: relative;
+  overflow: hidden;
+  display: block;
 }
 
-.font-body {
-  font-family: var(--font-roboto), Arial, sans-serif !important;
+.image-placeholder::before {
+  /* From styles/critical/critical.css */
+  content: '';
+  display: block;
+  position: absolute;
+  left: -150px;
+  top: 0;
+  height: 100%;
+  width: 150px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  animation: shimmer_critical 1.5s infinite; /* Renamed animation */
 }
 
-.thin-text {
-  font-weight: var(--font-weight-light) !important;
+@keyframes shimmer_critical {
+  /* Renamed animation */
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(450px); /* Adjust based on typical image placeholder width */
+  }
 }
 
-.regular-text {
-  font-weight: var(--font-weight-regular) !important;
+.content-placeholder {
+  /* From styles/critical/critical.css */
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
+  gap: 0.5rem;
 }
 
-.medium-text {
-  font-weight: var(--font-weight-medium) !important;
+.content-placeholder > div {
+  /* From styles/critical/critical.css */
+  height: 1rem;
+  background-color: #eaeaea; /* Consider using a CSS var */
+  background-color: var(--color-muted); /* Use CSS variable */
+  border-radius: 0.25rem;
+  border-radius: var(--radius-sm); /* Use CSS variable */
 }
 
-.semibold-text {
-  font-weight: var(--font-weight-semibold) !important;
+.keen-slider-container {
+  /* From styles/critical/critical.css */
+  min-height: 400px; /* This might be too specific for global.css, consider component-level */
+  position: relative;
 }
 
-.bold-text {
-  font-weight: var(--font-weight-bold) !important;
+.no-fouc {
+  /* From styles/critical/critical.css */
+  visibility: hidden;
 }
+
+.fouc-ready {
+  /* From styles/critical/critical.css */
+  visibility: visible;
+}
+
+.hero-placeholder {
+  /* From styles/critical/critical.css */
+  height: 70vh;
+  min-height: 500px;
+  background-color: #f5f5f5; /* Consider using a CSS var e.g. --color-muted */
+  background-color: var(--color-muted); /* Use CSS variable */
+}
+
+/* MERGED FROM: app/styles/cls-optimizations.css */
+@keyframes shimmer_cls_opt {
+  /* Renamed animation */
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.shimmer_cls_opt {
+  /* Renamed class */
+  animation: shimmer_cls_opt 1.5s infinite;
+}
+
+.aspect-property {
+  aspect-ratio: 4/3;
+}
+.aspect-square {
+  aspect-ratio: 1/1;
+}
+.aspect-video {
+  aspect-ratio: 16/9;
+}
+
+.min-h-card {
+  min-height: 450px;
+} /* Consider if these are too specific for global */
+.min-h-card-sm {
+  min-height: 320px;
+}
+.min-h-hero {
+  min-height: 500px;
+} /* Duplicate of .hero-placeholder min-height, consolidate - REMOVE THIS CLASS */
+
+.img-placeholder {
+  /* From styles/cls-optimizations.css */
+  background: linear-gradient(to bottom, #f1f1f1, #e1e1e1); /* Consider CSS var */
+  /* This class seems redundant with .image-placeholder, consider removing or merging. For now, use variables. */
+  background: linear-gradient(
+    to bottom,
+    var(--color-muted),
+    color-mix(in srgb, var(--color-muted) 80%, black)
+  ); /* Example of using color-mix for a darker shade */
+}
+
+.carousel-container {
+  /* From styles/cls-optimizations.css */
+  min-height: 450px; /* Potentially too specific for global */
+  display: grid;
+}
+
+@media (max-width: 640px) {
+  .carousel-container {
+    /* From styles/cls-optimizations.css */
+    min-height: 350px;
+  }
+  .min-h-card {
+    /* From styles/cls-optimizations.css */
+    min-height: 380px;
+  }
+}
+
+/* MERGED FROM: app/cls-prevention.css */
+img:not([width]):not([height]) {
+  /* This is a strong default, ensure it's desired */
+  /* aspect-ratio: 16/9; /* Overly specific default, consider removing or making a class */
+  /* width: 100%; */ /* Can break layout if not intended */
+  /* height: auto; */
+  /* Removing these aggressive defaults. Specific classes or inline styles should handle aspect ratios and dimensions. */
+}
+
+/* html { font-display: optional; } /* Already in globals.css base */
+
+.image-wrapper {
+  /* From cls-prevention.css */
+  position: relative;
+  overflow: hidden;
+}
+
+.image-wrapper img {
+  /* From cls-prevention.css */
+  transition: opacity 0.2s ease;
+}
+
+/* .content-placeholder { /* Already defined from styles/critical/critical.css, review for differences */
+/*  min-height: 200px; */
+/*  position: relative; */
+/* } */
+
+[data-late-content] {
+  /* From cls-prevention.css */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+[data-late-content].loaded {
+  /* From cls-prevention.css */
+  opacity: 1;
+}
+
+[data-optimize-lcp='true'] {
+  /* From cls-prevention.css */
+  content-visibility: auto;
+  /* contain-intrinsic-size: auto 500px; /* Be careful with fixed intrinsic size - REMOVE, too specific */
+  will-change: auto; /* 'auto' is default, 'transform' or 'opacity' might be better if known */
+}
+
+/* body > * { contain: paint; } /* From cls-prevention.css - VERY CAREFUL with this, can break sticky/fixed positioning or complex layouts. Test thoroughly. - REMOVE THIS, TOO DANGEROUS GLOBALLY */
+
+/* MERGED FROM: app/styles/anti-pixelation.css */
+.hero-background-image {
+  /* From anti-pixelation.css */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges; /* optimizeQuality is often better for photos */
+  /* image-rendering: optimizeQuality; */ /* Prefer optimizeQuality for photos */
+  image-rendering: optimizeQuality;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+}
+
+.parallax-element {
+  /* From anti-pixelation.css */
+  will-change: transform;
+  transform-style: preserve-3d;
+  /* -webkit-backface-visibility: hidden; */ /* Already covered by .hero-background-image */
+  /* backface-visibility: hidden; */
+  /* -webkit-transform: translateZ(0); */
+  /* transform: translateZ(0); */
+}
+
+.gpu-accelerated {
+  /* From anti-pixelation.css */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  will-change: transform; /* More specific than auto */
+}
+
+.crisp-rendering {
+  /* From anti-pixelation.css */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .hero-background-image {
+    /* From anti-pixelation.css */
+    /* image-rendering: -webkit-optimize-contrast; */ /* optimizeQuality is usually preferred */
+    image-rendering: optimizeQuality;
+  }
+}
+
+.no-subpixel {
+  /* From anti-pixelation.css */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.hw-accelerated {
+  /* From anti-pixelation.css */
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+}
+
+/* MERGED FROM: app/globals.premium.css & app/styles/premium-animations.css */
+/* (Assuming app/globals.premium.css is the more up-to-date one if they differ) */
+
+/* Keyframes from globals.premium.css */
+@keyframes fadeIn_premium {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fadeInUp_premium {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fadeInDown_premium {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes slideInRight_premium {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes float_premium {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+@keyframes float-delayed_premium {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-30px);
+  }
+}
+@keyframes pulse-glow_premium {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(59, 130, 246, 0.6);
+  }
+}
+@keyframes gradient-x_premium {
+  0%,
+  100% {
+    background-size: 200% 200%;
+    background-position: left center;
+  }
+  50% {
+    background-size: 200% 200%;
+    background-position: right center;
+  }
+}
+@keyframes heartbeat_premium {
+  0% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.05);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+@keyframes heroTextReveal_premium {
+  0% {
+    opacity: 0;
+    transform: translateY(60px) scale(0.9);
+    filter: blur(10px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(20px) scale(0.95);
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+@keyframes gradientShift_premium {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+@keyframes ultraFadeIn_premium {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+    filter: blur(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+@keyframes metricCountUp_premium {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) rotateY(90deg);
+    filter: blur(10px);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1) rotateY(45deg);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotateY(0deg);
+    filter: blur(0);
+  }
+}
+@keyframes premiumGlow_premium {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(59, 130, 246, 0.25);
+  }
+}
+@keyframes badgeFloat_premium {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.02);
+  }
+}
+@keyframes ctaShimmer_premium {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+@keyframes loading_premium_skeleton {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+} /* Renamed from 'loading' */
+
+/* Animation classes from globals.premium.css */
+.animate-fade-in-premium {
+  animation: fadeIn_premium 0.6s ease-out;
+}
+.animate-fade-in-up-premium {
+  animation: fadeInUp_premium 0.8s ease-out;
+}
+.animate-fade-in-down-premium {
+  animation: fadeInDown_premium 0.8s ease-out;
+}
+.animate-slide-in-right-premium {
+  animation: slideInRight_premium 0.8s ease-out;
+}
+.animate-float-premium {
+  animation: float_premium 6s ease-in-out infinite;
+}
+.animate-float-delayed-premium {
+  animation: float-delayed_premium 8s ease-in-out infinite;
+  animation-delay: 2s;
+}
+.animate-pulse-glow-premium {
+  animation: pulse-glow_premium 2s ease-in-out infinite;
+}
+.animate-gradient-x-premium {
+  animation: gradient-x_premium 3s ease infinite;
+}
+.animate-heartbeat-premium {
+  animation: heartbeat_premium 2s ease-in-out infinite;
+}
+.hero-text-reveal-premium {
+  animation: heroTextReveal_premium 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.ultra-fade-in-premium {
+  animation: ultraFadeIn_premium 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.metric-count-up-premium {
+  animation: metricCountUp_premium 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.premium-glow-premium {
+  animation: premiumGlow_premium 3s ease-in-out infinite;
+}
+.badge-float-premium {
+  animation: badgeFloat_premium 2s ease-in-out infinite;
+}
+.cta-shimmer-premium {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background-size: 200% 100%;
+  animation: ctaShimmer_premium 2s infinite;
+}
+.gradient-text-premium {
+  background: linear-gradient(
+    135deg,
+    #1e293b 0%,
+    #334155 25%,
+    #1e40af 50%,
+    #1e293b 75%,
+    #334155 100%
+  );
+  background-size: 300% 300%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift_premium 8s ease-in-out infinite;
+}
+
+.animation-delay-100 {
+  animation-delay: 100ms;
+}
+.animation-delay-200 {
+  animation-delay: 200ms;
+}
+.animation-delay-300 {
+  animation-delay: 300ms;
+}
+.animation-delay-400 {
+  animation-delay: 400ms;
+}
+.animation-delay-500 {
+  animation-delay: 500ms;
+}
+.animation-delay-600 {
+  animation-delay: 600ms;
+}
+.animation-delay-800 {
+  animation-delay: 800ms;
+}
+.animation-delay-1000 {
+  animation-delay: 1000ms;
+}
+
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.hover-lift-premium {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hover-lift-premium:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+.hover-scale-premium {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hover-scale-premium:hover {
+  transform: scale(1.05);
+}
+
+.glass-premium {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.glass-dark-premium {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.gradient-guararema-premium {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.gradient-trust-premium {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+.gradient-success-premium {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+/* html { scroll-behavior: smooth; } /* Already in globals.css base */
+
+.fade-in-section-premium {
+  opacity: 0;
+  transform: translateY(40px) scale(0.98);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: blur(3px);
+}
+.fade-in-section-premium.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+.skeleton-premium {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading_premium_skeleton 1.5s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important; /* scroll-behavior: auto !important; /* This was in critical-styles.css, ensure it's desired */
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .glass-premium {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+@media (prefers-contrast: high) {
+  .glass-premium,
+  .glass-dark-premium {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #000;
+  }
+}
+
+/* --- END MERGED CONTENT --- */
+
+/* Final review of imports in globals.css:
+   - @import "styles/critical/critical.css"; -> Merged
+   - @import "styles/cls-optimizations.css"; -> Merged
+   - @import "styles/tailwind-compat.css"; -> This file itself imports variables.css and components.css.
+                                              The .btn and .card styles in it need to be reconciled with components.css or Tailwind.
+                                              The reset and tailwind-v4-fix might be redundant.
+                                              FOR NOW, I will keep this import and address tailwind-compat.css separadamente.
+   - @import "./cls-prevention.css"; -> Merged
+   - @import "styles/premium-animations.css"; -> Merged (via globals.premium.css)
+   - @import "./styles/variables.css"; -> Kept (now the primary source of variables)
+   - @import "./styles/components.css"; -> Kept (primary source for component classes)
+*/

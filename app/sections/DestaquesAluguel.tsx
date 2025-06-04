@@ -24,8 +24,9 @@ import {
     Home as HomeIcon,
 } from 'lucide-react';
 import { cn, formatarMoeda } from '@/lib/utils';
-import SanityImage from '@/components/SanityImage';
-import type { ImovelClient } from '@/types/imovel-client';
+import SanityImage from '@components/SanityImage';
+import type { ImovelClient } from '../../src/types/imovel-client';
+import PropertyCardUnified from '@/app/components/ui/property/PropertyCardUnified';
 
 // ---- Helpers ----
 const formatarArea = (m2?: number): string => m2 != null ? `${m2.toLocaleString()} m²` : '';
@@ -39,7 +40,7 @@ interface BadgeProps {
 const Badge: FC<BadgeProps> = ({ variant = 'primary', children, className }) => {
     const base = 'px-3 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1 transition';
     const styles = {
-        primary: 'bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-md hover:shadow-lg',
+        primary: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md hover:shadow-lg',
         secondary: 'bg-gradient-to-r from-emerald-400 to-emerald-600 text-white shadow-md hover:shadow-lg',
     };
     return <span className={cn(base, styles[variant], className)}>{children}</span>;
@@ -52,15 +53,19 @@ interface FeatureProps {
     value?: string | number;
 }
 const Feature: FC<FeatureProps> = ({ icon, label, value }) => {
-    if (value == null) return null;
+    if (!value) return null;
     return (
-        <motion.div whileHover={{ scale: 1.03 }} className="flex items-center gap-2">
-            <div className="p-2 bg-amber-100 rounded-md text-amber-700 transition-colors">
+        <motion.div
+            className="flex items-center gap-3 border-white/20 p-2 rounded-lg text-white"
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        >
+            <div className="bg-white/20 p-2.5 rounded-lg">
                 {icon}
             </div>
             <div>
-                <div className="text-xs uppercase text-stone-400">{label}</div>
-                <div className="text-sm font-medium text-stone-900">{value}</div>
+                <div className="text-xs uppercase text-white/80">{label}</div>
+                <div className="text-sm font-medium text-white">{value}</div>
             </div>
         </motion.div>
     );
@@ -79,7 +84,7 @@ const NavButton: FC<NavButtonProps> = ({ direction, onClick, disabled }) => (
         whileHover={{ scale: disabled ? 1 : 1.1 }}
         className={cn(
             'p-3 rounded-full bg-white border shadow-sm transition-colors',
-            disabled ? 'opacity-40 cursor-not-allowed' : 'hover:bg-amber-50 hover:border-amber-200'
+            disabled ? 'opacity-40 cursor-not-allowed' : 'hover:bg-blue-50 hover:border-blue-200'
         )}
         aria-label={direction === 'prev' ? 'Imóvel anterior' : 'Próximo imóvel'}
     >
@@ -89,24 +94,34 @@ const NavButton: FC<NavButtonProps> = ({ direction, onClick, disabled }) => (
 
 // ---- Favorites Hook ----
 function useFavorites() {
-    const [favIds, setFavIds] = useState<string[]>([]);
+    const [favorites, setFavorites] = useState<string[]>([]);
+
     useEffect(() => {
-        if (typeof window === 'undefined') return;
         try {
-            const stored = window.localStorage.getItem('imoveis-fav');
-            if (stored) setFavIds(JSON.parse(stored));
-        } catch { }
+            const savedFavorites = localStorage.getItem('property-favorites') || '[]';
+            setFavorites(JSON.parse(savedFavorites));
+        } catch (error) {
+            console.error('Erro ao carregar favoritos:', error);
+            setFavorites([]);
+        }
     }, []);
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-        try {
-            window.localStorage.setItem('imoveis-fav', JSON.stringify(favIds));
-        } catch { }
-    }, [favIds]);
-    const isFav = useCallback((id: string) => favIds.includes(id), [favIds]);
+
+    const isFav = useCallback((id: string) => favorites.includes(id), [favorites]);
+
     const toggleFav = useCallback((id: string) => {
-        setFavIds(ids => ids.includes(id) ? ids.filter(x => x !== id) : [...ids, id]);
-    }, []);
+        const newFavorites = [...favorites];
+        const index = newFavorites.indexOf(id);
+
+        if (index > -1) {
+            newFavorites.splice(index, 1);
+        } else {
+            newFavorites.push(id);
+        }
+
+        setFavorites(newFavorites);
+        localStorage.setItem('property-favorites', JSON.stringify(newFavorites));
+    }, [favorites]);
+
     return { isFav, toggleFav };
 }
 
@@ -118,28 +133,6 @@ interface MiniCardProps {
     isFav: boolean;
     toggleFav: () => void;
 }
-const ImovelMiniCard: FC<MiniCardProps> = ({ imovel, isActive, onClick, isFav, toggleFav }) => (
-    <motion.div
-        onClick={onClick}
-        whileHover={{ scale: isActive ? 1 : 1.03 }}
-        className={cn(
-            'rounded-xl overflow-hidden cursor-pointer transition-transform border bg-white',
-            isActive ? 'scale-105 border-4 border-gradient-to-br from-amber-400 to-rose-500 shadow-lg' : 'border-stone-200'
-        )}
-    >
-        <div className="relative h-36">
-            <SanityImage image={imovel.imagem} alt={imovel.titulo} fill className="object-cover" />
-            <div className="absolute inset-0 bg-black/30" />
-            <Badge variant="primary" className="absolute top-2 left-2">Aluguel</Badge>
-            <button onClick={e => { e.stopPropagation(); toggleFav(); }} className="absolute top-2 right-2 p-1 bg-white rounded-full shadow">
-                <Heart className={cn('w-5 h-5 transition-colors', isFav ? 'fill-red-500 text-red-500' : 'text-gray-800')} />
-            </button>
-        </div>        <div className="p-3 bg-white">
-            <h3 className="text-sm font-semibold text-stone-900 truncate mb-1">{imovel.titulo}</h3>
-            <div className="text-sm text-amber-600 font-bold">{imovel.preco ? formatarMoeda(imovel.preco) : 'Sob consulta'}/mês</div>
-        </div>
-    </motion.div>
-);
 
 // ---- Hero Card ----
 interface HeroProps {
@@ -167,14 +160,17 @@ const ImovelHero: FC<HeroProps> = ({ imovel, isFav, toggleFav, share }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="rounded-3xl p-1 bg-gradient-to-br from-amber-400 to-rose-500 shadow-2xl max-w-4xl mx-auto"
+            className="rounded-3xl overflow-hidden shadow-xl"
         >
-            <motion.div style={{ rotateX: sX, rotateY: sY }} className="bg-white rounded-3xl overflow-hidden">
-                <div className="relative h-64">
+            <motion.div
+                style={{ rotateX: sX, rotateY: sY }}
+                className="grid grid-cols-1 lg:grid-cols-2 bg-gradient-to-br from-blue-600 to-blue-800"
+            >
+                <div className="relative h-64 lg:h-full">
                     <SanityImage image={imovel.imagem} alt={imovel.titulo} fill className="object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     <div className="absolute top-4 left-4">
-                        <Badge variant="secondary">Destaque</Badge>
+                        <Badge variant="primary">Destaque</Badge>
                     </div>
                     <div className="absolute top-4 right-4 flex gap-2">
                         <button onClick={toggleFav} className="p-2 bg-white rounded-full shadow hover:bg-white/90">
@@ -185,22 +181,29 @@ const ImovelHero: FC<HeroProps> = ({ imovel, isFav, toggleFav, share }) => {
                         </button>
                     </div>
                 </div>
-                <div className="p-6 space-y-4">
-                    <h2 className="text-3xl font-serif text-amber-600">{imovel.titulo}</h2>
-                    <div className="flex items-center gap-3 text-stone-600">
-                        <MapPin /><span>{[imovel.bairro, imovel.cidade].filter(Boolean).join(', ')}</span>
+                <div className="p-6 space-y-4 text-white">
+                    <h2 className="text-3xl font-bold">{imovel.titulo}</h2>
+                    <div className="flex items-center gap-3">
+                        <MapPin className="opacity-80" />
+                        <span>{[imovel.bairro, imovel.cidade].filter(Boolean).join(', ')}</span>
                     </div>
-                    <div className="grid grid-cols-2 gap-6">
-                        <Feature icon={<Ruler />} label="Área" value={formatarArea(imovel.areaUtil)} />
-                        <Feature icon={<BedDouble />} label="Dorms" value={imovel.dormitorios} />
-                        <Feature icon={<Bath />} label="Banheiros" value={imovel.banheiros} />
-                        <Feature icon={<Car />} label="Vagas" value={imovel.vagas} />
+
+                    <div className="text-2xl font-semibold text-white">
+                        {imovel.preco ? formatarMoeda(imovel.preco) : 'Sob consulta'}/mês
                     </div>
+
+                    <div className="grid grid-cols-2 gap-3 mt-6">
+                        {imovel.areaUtil && <Feature icon={<Ruler className="h-5 w-5" />} label="Área" value={formatarArea(imovel.areaUtil)} />}
+                        {imovel.dormitorios && <Feature icon={<BedDouble className="h-5 w-5" />} label="Dormitórios" value={imovel.dormitorios} />}
+                        {imovel.banheiros && <Feature icon={<Bath className="h-5 w-5" />} label="Banheiros" value={imovel.banheiros} />}
+                        {imovel.vagas && <Feature icon={<Car className="h-5 w-5" />} label="Vagas" value={imovel.vagas} />}
+                    </div>
+
                     <Link
                         href={`/imovel/${imovel.slug}`}
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-white rounded-lg font-semibold hover:bg-amber-600 transition-shadow shadow-md"
+                        className="inline-flex items-center gap-2 px-6 py-3 mt-6 bg-white text-blue-700 rounded-lg font-semibold hover:bg-blue-50 transition shadow-lg"
                     >
-                        Ver detalhes <ArrowRight />
+                        Quero conhecer este imóvel <ArrowRight />
                     </Link>
                 </div>
             </motion.div>
@@ -230,38 +233,150 @@ const DestaquesAluguelSection: FC = () => {
     const next = useCallback(() => setActiveIndex(i => (i + 1) % imoveis.length), [imoveis]);
     const prev = useCallback(() => setActiveIndex(i => (i - 1 + imoveis.length) % imoveis.length), [imoveis]);
     const share = useCallback((imovel: ImovelClient) => {
-        if ('clipboard' in navigator) {
-            (navigator as any).clipboard.writeText(window.location.href);
+        if (navigator.share) {
+            navigator.share({
+                title: imovel.titulo || 'Imóvel para alugar',
+                text: `Confira este imóvel: ${imovel.titulo}`,
+                url: window.location.origin + `/imovel/${imovel.slug}`
+            }).catch(err => console.log('Erro ao compartilhar:', err));
+        } else if ('clipboard' in navigator) {
+            navigator.clipboard.writeText(window.location.origin + `/imovel/${imovel.slug}`);
+            alert('Link copiado para a área de transferência!');
         }
     }, []);
 
-    if (loading) return <div ref={ref} className="py-20 text-center">Loading...</div>;
-    if (error) return <div ref={ref} className="py-20 text-center text-red-500">Error: {error}</div>;
-    if (!imoveis.length) return <div ref={ref} className="py-20 text-center">Nenhum imóvel encontrado.</div>;
+    if (loading) return (
+        <section ref={ref} className="py-20 bg-stone-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center space-y-4 mb-16">
+                    <div className="inline-block px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">
+                        Carregando destaques
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-bold text-stone-800">
+                        Imóveis para alugar
+                    </h2>
+                    <p className="text-stone-600 max-w-3xl mx-auto">
+                        Carregando nossas melhores opções de aluguel para você e sua família.
+                    </p>
+                </div>
+
+                <div className="max-w-4xl mx-auto">
+                    <div className="animate-pulse bg-stone-200 h-96 rounded-3xl"></div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
+                    {[1, 2, 3, 4].map(i => (
+                        <div key={i} className="animate-pulse bg-stone-200 h-64 rounded-xl"></div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+
+    if (error) return (
+        <section ref={ref} className="py-20 bg-stone-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div className="bg-red-50 text-red-700 p-6 rounded-lg max-w-2xl mx-auto">
+                    <h2 className="text-xl font-semibold mb-2">Erro ao carregar imóveis</h2>
+                    <p>{error}</p>
+                    <button
+                        className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                        onClick={() => { setLoading(true); setError(null); }}
+                    >
+                        Tentar novamente
+                    </button>
+                </div>
+            </div>
+        </section>
+    );
+
+    if (!imoveis.length) return (
+        <section ref={ref} className="py-20 bg-stone-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div className="bg-stone-50 p-6 rounded-lg max-w-2xl mx-auto">
+                    <h2 className="text-2xl font-semibold mb-2">Nenhum imóvel em destaque</h2>
+                    <p className="text-stone-600 mb-4">
+                        No momento não temos imóveis em destaque para alugar, mas você pode conferir todas as nossas opções.
+                    </p>
+                    <Link
+                        href="/alugar"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    >
+                        Ver todos os imóveis para alugar <ArrowRight className="w-4 h-4" />
+                    </Link>
+                </div>
+            </div>
+        </section>
+    );
 
     const destaque = imoveis[activeIndex];
 
     return (
         <section ref={ref} className="py-24 bg-stone-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
-                <ImovelHero imovel={destaque} isFav={isFav(destaque._id)} toggleFav={() => toggleFav(destaque._id)} share={() => share(destaque)} />
+                <div className="text-center space-y-4 mb-8">
+                    <div className="inline-block px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">
+                        Destaques
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-bold text-stone-800">
+                        Imóveis para alugar
+                    </h2>
+                    <p className="text-stone-600 max-w-3xl mx-auto">
+                        Espaços escolhidos a dedo para proporcionar conforto e qualidade de vida para você e sua família.
+                    </p>
+                </div>
 
-                <div className="flex justify-between items-center">
-                    <NavButton direction="prev" onClick={prev} disabled={imoveis.length < 2} />
-                    <NavButton direction="next" onClick={next} disabled={imoveis.length < 2} />
+                <ImovelHero
+                    imovel={destaque}
+                    isFav={isFav(destaque._id)}
+                    toggleFav={() => toggleFav(destaque._id)}
+                    share={() => share(destaque)}
+                />
+
+                <div className="flex justify-between items-center mb-8">
+                    <h3 className="text-2xl font-bold text-stone-800">
+                        Outras opções
+                    </h3>
+                    <div className="flex gap-2">
+                        <NavButton direction="prev" onClick={prev} disabled={imoveis.length < 2} />
+                        <NavButton direction="next" onClick={next} disabled={imoveis.length < 2} />
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {imoveis.map((m, idx) => (
-                        <ImovelMiniCard
-                            key={m._id}
-                            imovel={m}
-                            isActive={idx === activeIndex}
-                            onClick={() => setActiveIndex(idx)}
-                            isFav={isFav(m._id)}
-                            toggleFav={() => toggleFav(m._id)}
+                    {imoveis.map((imovel) => (
+                        <PropertyCardUnified
+                            key={imovel._id}
+                            id={imovel._id}
+                            title={imovel.titulo || 'Imóvel para alugar'}
+                            slug={imovel.slug as string || imovel._id}
+                            location={imovel.bairro || 'Localização não informada'}
+                            city={imovel.cidade}
+                            price={imovel.preco || 0}
+                            propertyType="rent"
+                            area={imovel.areaUtil}
+                            bedrooms={imovel.dormitorios}
+                            bathrooms={imovel.banheiros}
+                            parkingSpots={imovel.vagas}
+                            mainImage={{
+                                url: imovel.imagem?.imagemUrl || '/images/placeholder-property.jpg',
+                                alt: imovel.imagem?.alt || imovel.titulo || 'Imóvel para alugar',
+                                sanityImage: imovel.imagem
+                            }}
+                            isHighlight={imovel.destaque}
+                            isFavorite={isFav(imovel._id)}
+                            onFavoriteToggle={toggleFav}
                         />
                     ))}
+                </div>
+
+                <div className="text-center mt-8">
+                    <Link
+                        href="/alugar"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow font-medium"
+                    >
+                        Ver todos os imóveis para alugar <ArrowRight className="w-4 h-4" />
+                    </Link>
                 </div>
             </div>
         </section>

@@ -8,7 +8,11 @@ import { formatarMoeda } from '@/lib/utils';
 import WhatsAppShare from '@/app/components/WhatsAppShare';
 import SocialShareButtons from '@/app/components/SocialShareButtons';
 import PropertyMetadata from '@/app/components/PropertyMetadata';
-import type { ImovelClient as ImovelDataType } from '@/types/imovel-client';
+import { PortableText } from '@portabletext/react';
+import { ImageResponse } from 'next/og';
+import { urlFor } from '@/src/lib/sanity'; // Potential actual export from sanity.imageHelper.ts
+import type { ImovelClient as ImovelDataType } from '@/src/types/imovel-client';
+import { Button } from '@/app/components/ui/button';
 
 interface ImovelDetalhesProps {
     imovel: ImovelDataType;
@@ -27,7 +31,6 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
             imagem: {
                 exists: !!imovel.imagem,
                 imagemUrl: imovel.imagem?.imagemUrl,
-                url: imovel.imagem?.url,
                 alt: imovel.imagem?.alt
             },
             temRelacionados: relacionados?.length > 0
@@ -51,9 +54,7 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
         imovel = {
             ...imovel,
             imagem: {
-                _type: 'image',
-                url: '',
-                imagemUrl: '',
+                imagemUrl: '', // Provide a default or placeholder URL
                 alt: 'Imagem não disponível',
                 asset: {
                     _type: 'sanity.imageAsset',
@@ -67,9 +68,9 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
         <div className="p-4">
             <div className="flex flex-col md:flex-row md:space-x-4">                <div className="flex-1">
                 {/* Uso robusto do componente Image com fallback e tratamento de erro */}
-                {(imovel.imagem?.imagemUrl || imovel.imagem?.url) ? (
+                {(imovel.imagem?.imagemUrl) ? (
                     <Image
-                        src={imovel.imagem?.imagemUrl || imovel.imagem?.url || '/images/og-image-2025.jpg'}
+                        src={imovel.imagem?.imagemUrl || '/images/og-image-2025.jpg'}
                         alt={imovel.imagem?.alt || imovel.titulo || 'Imóvel Nova Ipê'}
                         width={600}
                         height={400}
@@ -156,11 +157,11 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
                 area: typeof imovel.areaUtil === 'number' ? imovel.areaUtil : imovel.areaUtil ? parseFloat(String(imovel.areaUtil)) : undefined,
                 features: imovel.caracteristicas || [],
                 mainImage: {
-                    url: imovel.imagem?.imagemUrl || imovel.imagem?.url || '/images/og-image-2025.jpg',
+                    url: imovel.imagem?.imagemUrl || '/images/og-image-2025.jpg',
                     alt: imovel.imagem?.alt || imovel.titulo || 'Imóvel Nova Ipê'
                 },
-                images: imovel.galeria?.map(img => ({
-                    url: img.imagemUrl || img.url || '',
+                images: imovel.galeria?.map((img) => ({
+                    url: img.imagemUrl || '',
                     alt: img.alt || imovel.titulo || 'Imóvel Nova Ipê'
                 })),
                 latitude: undefined, // Add if available

@@ -22,13 +22,12 @@ export default function AnimatedCTASection() {
                     transition={{ duration: 0.8 }}
                     viewport={{ once: true, margin: "-50px" }}
                     className="text-center max-w-4xl mx-auto"
-                >
-                    <Suspense fallback={<UnifiedLoading height="200px" title="Carregando..." />}>                        <BlocoCTAConversao
-                        titulo="Pronto para encontrar seu próximo lar?"
-                        subtitulo="Nossa equipe especializada está pronta para transformar seu sonho em realidade. Entre em contato agora e descubra como podemos ajudar você."
-                        ctaText="Começar Agora"
-                        ctaLink="#contato"
-                    />
+                >                    <Suspense fallback={<UnifiedLoading height="200px" title="Carregando..." />}>                        <BlocoCTAConversao
+                    titulo="Seu próximo investimento estratégico está aqui"
+                    subtitulo="Transforme suas economias em patrimônio imobiliário. Nossa consultoria especializada garante que você tome a decisão mais inteligente para o seu futuro."
+                    ctaText="Quero descobrir oportunidades"
+                    ctaLink="#contato"
+                />
                     </Suspense>
                 </motion.div>
             </div>

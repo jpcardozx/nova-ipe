@@ -6,7 +6,7 @@ import {
     queryImoveisRelacionados,
 } from '@lib/queries'
 
-import type { Imovel } from '@/types/sanity-schema'
+import type { Imovel } from '../src/types/sanity-schema'
 
 // Carrega 1 imóvel completo pelo slug (usado no SSR da página)
 export const getImovelData = cache((slug: string): Promise<Imovel | null> =>

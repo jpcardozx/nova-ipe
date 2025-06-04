@@ -1,90 +1,31 @@
-import type { Metadata } from 'next'
-import { Montserrat } from 'next/font/google'
+import { Metadata } from 'next'
+import { Poppins, Inter, Raleway } from 'next/font/google'
 import './globals.css'
-import './globals.premium.css'
-import CSSOptimizer from './components/CSSOptimizer'
-import ConsoleErrorMonitor from './components/ConsoleErrorMonitor'
+import { ThemeProvider } from './providers/ThemeProvider'
+import { metadata } from './metadata' // Import metadata
 
-const montserrat = Montserrat({
+const poppins = Poppins({
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  variable: '--font-poppins', // For headings
+});
+
+const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
   weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-montserrat'
-})
+  variable: '--font-inter', // For body text
+});
 
-export const metadata: Metadata = {
-  title: 'Ipê Imóveis - Especialistas em Imóveis Premium em Guararema | Compra, Venda e Locação',
-  description: 'Descobra imóveis exclusivos em Guararema e região com a Ipê Imóveis. Mais de 15 anos de experiência em vendas, locações e investimentos imobiliários de alto padrão. Atendimento personalizado e consultoria especializada.',
-  keywords: 'imóveis Guararema, casas para venda Guararema, apartamentos aluguel Guararema, imobiliária Guararema, investimento imobiliário, terrenos Guararema, condomínios fechados, imóveis premium, corretores especializados',
-  authors: [{ name: 'Ipê Imóveis', url: 'https://novaipe.com.br' }],
-  creator: 'Ipê Imóveis',
-  publisher: 'Ipê Imóveis',
-  category: 'Real Estate',
-  classification: 'Business',
-  openGraph: {
-    title: 'Ipê Imóveis - Especialistas em Imóveis Premium em Guararema',
-    description: 'Encontre o imóvel ideal em Guararema com nossa curadoria especializada. Vendas, locações e investimentos com a melhor imobiliária da região. Atendimento personalizado e exclusividade garantida.',
-    url: 'https://novaipe.com.br',
-    siteName: 'Ipê Imóveis',
-    images: [
-      {
-        url: '/images/og-image-2025.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Ipê Imóveis - Especialistas em Imóveis Premium em Guararema',
-        type: 'image/jpeg',
-      },
-      {
-        url: '/images/og-image-square.jpg',
-        width: 800,
-        height: 800,
-        alt: 'Ipê Imóveis - Logo',
-        type: 'image/jpeg',
-      },
-    ],
-    locale: 'pt_BR',
-    type: 'website',
-    countryName: 'Brazil',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Ipê Imóveis - Imóveis Premium em Guararema',
-    description: 'Especialistas em imóveis de alto padrão em Guararema. Encontre sua casa dos sonhos com atendimento personalizado e exclusividade.',
-    images: ['/images/og-image-2025.jpg'],
-    creator: '@ipeimoveisguararema',
-    site: '@ipeimoveisguararema',
-  },
-  robots: {
-    index: true,
-    follow: true,
-    nocache: false,
-    googleBot: {
-      index: true,
-      follow: true,
-      noimageindex: false,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-  verification: {
-    google: 'verification-token-here',
-    yandex: 'verification-token-here',
-    yahoo: 'verification-token-here',
-  },
-  alternates: {
-    canonical: 'https://novaipe.com.br',
-    languages: {
-      'pt-BR': 'https://novaipe.com.br',
-    },
-  }, other: {
-    'msapplication-TileColor': '#1a6f5c',
-    'theme-color': '#1a6f5c',
-    'mobile-web-app-capable': 'yes',
-    'apple-mobile-web-app-status-bar-style': 'default',
-    'format-detection': 'telephone=no',
-  },
-}
+const raleway = Raleway({
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-raleway', // For accent text
+});
+
+export { metadata }; // Export metadata to be used by Next.js
 
 export default function RootLayout({
   children,
@@ -92,18 +33,23 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pt-BR" className={`${montserrat.variable} scroll-smooth`}>
+    <html lang="pt-BR" className={`${poppins.variable} ${inter.variable} ${raleway.variable} scroll-smooth`} suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://cdn.sanity.io" />
-        <link rel="dns-prefetch" href="https://cdn.sanity.io" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Metadata will be handled by Next.js through the exported object */}
+        {/* Removed direct preconnect/dns-prefetch for cdn.sanity.io, Next.js handles this with Image component usage */}
+        {/* Removed direct preconnect for fonts.googleapis.com, Next/Font handles this */}
+        {/* Any other critical, non-font/image preloads can be added here if necessary */}
       </head>
-      <body className="font-montserrat antialiased bg-white">
-        <ConsoleErrorMonitor />
-        <CSSOptimizer />
-        {children}
+      <body className="font-body antialiased bg-background text-foreground transition-colors duration-300 dark:bg-neutral-charcoal dark:text-neutral-soft-white relative">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange={false}
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }

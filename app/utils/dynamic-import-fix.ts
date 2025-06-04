@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 /**
  * dynamic-import-fix.ts
  * Utility to fix webpack's "undefined is not a function" errors

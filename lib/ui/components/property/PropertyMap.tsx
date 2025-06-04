@@ -128,13 +128,12 @@ export function PropertyMap({
                     </div>
                 </motion.div>
 
-                {/* Coluna de informações de proximidade */}
-                <motion.div
+                {/* Coluna de informações de proximidade */}                <motion.div
                     variants={fadeIn}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
-                    transition={{ delay: 0.2 }}
+                    transition={{ delay: 0.2, duration: 0.6 }}
                 >
                     <div className="bg-white rounded-xl border border-neutral-200 shadow-sm p-6">
                         <h3 className="text-lg font-semibold text-neutral-900 mb-4">Proximidades</h3>

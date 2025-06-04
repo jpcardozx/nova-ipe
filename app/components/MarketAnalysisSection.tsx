@@ -4,10 +4,15 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface MarketAnalysisProps {
-    variant?: 'default' | 'premium' | 'investor';
+    variant?: 'default' | 'compact';
+    title?: string;
+    description?: string;
+    ctaLink?: string;
+    ctaText?: string;
+    badge?: string;
 }
 
-export const MarketAnalysisSection = ({ variant = 'default' }: MarketAnalysisProps) => {
+export const MarketAnalysisSection: React.FC<MarketAnalysisProps> = ({ variant = 'default' }) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [isVisible, setIsVisible] = useState(false);
 
@@ -28,12 +33,11 @@ export const MarketAnalysisSection = ({ variant = 'default' }: MarketAnalysisPro
             title: 'Comparativo Local',
             description: 'Comparamos com imóveis similares no raio de 2km',
             stat: '95% de precisão'
-        },
-        {
+        }, {
             icon: '📈',
-            title: 'Potencial de Valorização',
-            description: 'Projetamos o crescimento nos próximos 5 anos',
-            stat: '+12% ao ano'
+            title: 'Crescimento da Região',
+            description: 'Mostramos como Guararema tem se desenvolvido',
+            stat: 'Tendências locais'
         },
         {
             icon: '✅',
@@ -41,13 +45,11 @@ export const MarketAnalysisSection = ({ variant = 'default' }: MarketAnalysisPro
             description: 'Receba um relatório detalhado personalizado',
             stat: 'Gratuito'
         }
-    ];
-
-    const benefits = [
+    ]; const benefits = [
         '✓ Avaliação baseada em dados reais do mercado',
-        '✓ Consultoria personalizada com especialista local',
-        '✓ Estratégias de precificação otimizada',
-        '✓ Identificação de oportunidades de investimento'
+        '✓ Orientação personalizada com especialista local',
+        '✓ Sugestões de precificação adequada',
+        '✓ Identificação de boas oportunidades'
     ];
 
     return (
@@ -57,16 +59,14 @@ export const MarketAnalysisSection = ({ variant = 'default' }: MarketAnalysisPro
                 <div className="text-center mb-12">
                     <div className="inline-flex items-center bg-amber-100 text-amber-800 px-4 py-2 rounded-full text-sm font-semibold mb-4">
                         <span className="w-2 h-2 bg-amber-500 rounded-full mr-2 animate-pulse"></span>
-                        Análise Exclusiva Ipê
+                        Avaliação Imobiliária - Método Ipê
                     </div>
 
                     <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">
                         Descubra o verdadeiro valor do seu imóvel
-                    </h2>
-
-                    <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-                        Nossa expertise de 15+ anos em Guararema se traduz em avaliações precisas
-                        e estratégias personalizadas para maximizar seus investimentos.
+                    </h2>                    <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+                        Nossa experiência de 15+ anos em Guararema se traduz em avaliações precisas
+                        e orientações práticas para suas decisões imobiliárias.
                     </p>
                 </div>
 
@@ -84,8 +84,8 @@ export const MarketAnalysisSection = ({ variant = 'default' }: MarketAnalysisPro
                                 }}
                                 transition={{ delay: index * 0.2 }}
                                 className={`flex items-start p-6 rounded-2xl transition-all duration-500 cursor-pointer ${currentStep === index
-                                        ? 'bg-white shadow-lg border-2 border-blue-200'
-                                        : 'bg-white/50 hover:bg-white/80'
+                                    ? 'bg-white shadow-lg border-2 border-blue-200'
+                                    : 'bg-white/50 hover:bg-white/80'
                                     }`}
                                 onMouseEnter={() => setCurrentStep(index)}
                             >

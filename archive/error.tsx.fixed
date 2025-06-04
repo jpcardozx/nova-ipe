@@ -1,0 +1,79 @@
+'use client'
+
+// CRITICAL FIX: Ultra-minimal error component with no external dependencies
+// This prevents the "Cannot read properties of undefined (reading 'call')" webpack error
+export default function Error({
+    error,
+    reset,
+}: {
+    error: Error & { digest?: string }
+    reset: () => void
+}) {
+    // No hooks, no effects, no state - just log the error
+    console.error('Error caught by error boundary:', error);
+
+    // Plain HTML with inline styles only - zero dependencies
+    return (
+        <div style={{
+            padding: '20px',
+            textAlign: 'center',
+            fontFamily: 'system-ui, -apple-system, sans-serif',
+            maxWidth: '500px',
+            margin: '40px auto'
+        }}>
+            <div style={{
+                fontSize: '48px',
+                marginBottom: '20px'
+            }}>⚠️</div>
+            
+            <h1 style={{
+                fontSize: '24px',
+                fontWeight: 'bold',
+                marginBottom: '16px'
+            }}>
+                Ocorreu um erro
+            </h1>
+            
+            <p style={{
+                fontSize: '16px',
+                color: '#666',
+                marginBottom: '24px'
+            }}>
+                Sentimos pelo inconveniente. Nossa equipe foi notificada.
+            </p>
+            
+            <div>
+                <button
+                    onClick={reset}
+                    style={{
+                        backgroundColor: '#f59e0b',
+                        color: 'white',
+                        border: 'none',
+                        padding: '10px 20px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        marginRight: '10px',
+                        fontSize: '14px'
+                    }}
+                >
+                    Tentar novamente
+                </button>
+                
+                <a 
+                    href="/"
+                    style={{
+                        display: 'inline-block',
+                        backgroundColor: '#f1f5f9',
+                        color: '#333',
+                        padding: '10px 20px',
+                        borderRadius: '4px',
+                        textDecoration: 'none',
+                        fontSize: '14px'
+                    }}
+                >
+                    Página inicial
+                </a>
+            </div>
+        </div>
+    );
+}

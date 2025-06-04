@@ -17,16 +17,14 @@ export function registerChunkErrorHandler() {
         // Store original error handlers
         // We need to handle these as generic EventHandlers to avoid TypeScript errors
         const origOnError = window.onerror;
-        const origUnhandledRejection = window.onunhandledrejection;
-
-        // Create a type-safe wrapper function for the onerror handler
-        function errorHandler(
+        const origUnhandledRejection = window.onunhandledrejection;        // Create a type-safe wrapper function for the onerror handler
+        const errorHandler = (
             message: string | Event,
             source?: string,
             lineno?: number,
             colno?: number,
             error?: Error
-        ): boolean | void {
+        ): boolean | void => {
             // Check if it's a chunk loading error
             const errorMessage = message instanceof Event ? message.type : String(message);
             if (
@@ -53,12 +51,9 @@ export function registerChunkErrorHandler() {
                         console.error('Error in original error handler:', e);
                     }
                 }
-            }
-            return false;
-        }
-
-        // Create a type-safe wrapper for the unhandledrejection handler
-        function rejectionHandler(event: PromiseRejectionEvent): boolean | void {
+            }            return false;
+        };        // Create a type-safe wrapper for the unhandledrejection handler
+        const rejectionHandler = (event: PromiseRejectionEvent): boolean | void => {
             const error = event.reason;
 
             if (error && (
@@ -82,7 +77,7 @@ export function registerChunkErrorHandler() {
                 }
             }
             return false;
-        }
+        };
 
         // Assign our wrapper functions to the window
         window.onerror = errorHandler;

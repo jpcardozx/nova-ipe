@@ -177,12 +177,10 @@ export default function ContatoRefinadoIpe() {
                             <div className="bg-green-50 border border-green-100 rounded-lg p-6 text-center">
                                 <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full text-green-600 mb-4">
                                     <Check className="w-6 h-6" />
-                                </div>
-                                <h4 className="text-xl font-semibold text-gray-900 mb-2">
-                                    Mensagem enviada com sucesso!
-                                </h4>
-                                <p className="text-gray-700">
-                                    Obrigado pelo contato. Um de nossos especialistas em Guararema entrará em contato em breve.
+                                </div>                                    <h4 className="text-xl font-semibold text-gray-900 mb-2">
+                                    Solicitação recebida com sucesso!
+                                </h4><p className="text-gray-700">
+                                    Obrigado pelo interesse! Nossa equipe de especialistas em investimentos imobiliários entrará em contato em até 2 horas úteis com análises exclusivas para você.
                                 </p>
                             </div>
                         ) : (
@@ -261,13 +259,12 @@ export default function ContatoRefinadoIpe() {
                                         onChange={handleChange}
                                         className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-opacity-50 transition-colors
                       ${errors.assunto ? 'border-red-500 focus:ring-red-200' : 'border-gray-300 focus:ring-amber-200 focus:border-amber-500'}`}
-                                    >
-                                        <option value="">Selecione um assunto</option>
-                                        <option value="Compra">Quero comprar um imóvel</option>
-                                        <option value="Venda">Quero vender meu imóvel</option>
-                                        <option value="Avaliação">Quero avaliar meu imóvel</option>
-                                        <option value="Financiamento">Informações sobre financiamento</option>
-                                        <option value="Outros">Outros assuntos</option>
+                                    >                                        <option value="">Escolha seu objetivo principal</option>
+                                        <option value="Compra">Quero investir em imóvel para valorização</option>
+                                        <option value="Venda">Quero vender meu imóvel com agilidade</option>
+                                        <option value="Avaliação">Quero avaliar potencial do meu imóvel</option>
+                                        <option value="Financiamento">Preciso de orientação sobre financiamento</option>
+                                        <option value="Outros">Consultoria personalizada</option>
                                     </select>
                                     {errors.assunto && (
                                         <p className="mt-1 text-sm text-red-600">{errors.assunto}</p>
@@ -284,10 +281,9 @@ export default function ContatoRefinadoIpe() {
                                         name="mensagem"
                                         value={form.mensagem}
                                         onChange={handleChange}
-                                        rows={4}
-                                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-opacity-50 transition-colors
+                                        rows={4} className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-opacity-50 transition-colors
                       ${errors.mensagem ? 'border-red-500 focus:ring-red-200' : 'border-gray-300 focus:ring-amber-200 focus:border-amber-500'}`}
-                                        placeholder="Como podemos ajudar você em Guararema?"
+                                        placeholder="Conte-nos sobre seu perfil, orçamento e objetivos de investimento..."
                                     />
                                     {errors.mensagem && (
                                         <p className="mt-1 text-sm text-red-600">{errors.mensagem}</p>
@@ -338,11 +334,10 @@ export default function ContatoRefinadoIpe() {
                                             </svg>
                                             Enviando...
                                         </>
-                                    ) : (
-                                        <>
-                                            Enviar mensagem
-                                            <ArrowRight className="w-5 h-5 ml-2" />
-                                        </>
+                                    ) : (<>
+                                        Garantir minha consultoria especializada
+                                        <ArrowRight className="w-5 h-5 ml-2" />
+                                    </>
                                     )}
                                 </button>
                             </form>

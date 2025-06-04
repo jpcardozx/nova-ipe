@@ -50,7 +50,7 @@ const DEFAULT_PLACEHOLDER = '/images/property-placeholder.jpg';
 // Declaração global para registro de problemas
 declare global {
     interface Window {
-        __imageIssues?: Array<{ timestamp: string, image: any }>;
+        __imageIssues?: Array<{ timestamp: string, image: any, issue?: string }>;
         __PROPERTY_COUNTER?: number;
     }
 }
@@ -78,11 +78,10 @@ export function getImageUrl(
         if (URL_CACHE.has(cacheKey)) {
             const cachedUrl = URL_CACHE.get(cacheKey);
             return cachedUrl !== undefined ? cachedUrl : fallbackUrl;
-        }
-
-        // Log detalhado para diagnóstico avançado
-        if (process.env.NODE_ENV === 'development') {
-            console.log('[getImageUrl] Analisando objeto de imagem:', {
+        }        // Log detalhado apenas para casos problemáticos (menos ruído no console)
+        const hasValidImageData = !!(image.url || image.imagemUrl || image.asset?.url || image.asset?._ref);
+        if (process.env.NODE_ENV === 'development' && !hasValidImageData) {
+            console.warn('[getImageUrl] Imagem sem dados válidos detectada:', {
                 hasUrl: !!image.url,
                 hasImagemUrl: !!image.imagemUrl,
                 hasAsset: !!image.asset,
@@ -108,21 +107,20 @@ export function getImageUrl(
         else if (image.asset?._ref) {
             // Garantir que _ref não é undefined antes de passar para buildSanityUrl
             url = buildSanityUrl(image.asset._ref || '');
-        }
-        // Estratégia 3: Tentativa de detecção de problemas comuns
+        }        // Estratégia 3: Detecção silenciosa de problemas comuns para reduzir ruído no console
         else if (Object.keys(image).length === 1 && image.alt) {
-            // Detectamos o caso problemático: objeto apenas com alt
-            console.warn('[getImageUrl] Objeto de imagem incompleto detectado, contém apenas alt:', image);
-
-            // Aqui caímos no fallback, mas registramos o problema para investigação
+            // Caso detectado: objeto apenas com alt (registrar silenciosamente)
             if (process.env.NODE_ENV === 'development') {
-                console.error('[getImageUrl] ALERTA: Imagem com apenas propriedade alt encontrada');
-                // No modo de desenvolvimento, podemos registrar esses problemas para posterior análise
+                // Registro silencioso para investigação posterior, sem poluir o console
                 if (typeof window !== 'undefined') {
                     if (!window.__imageIssues) {
                         window.__imageIssues = [];
                     }
-                    window.__imageIssues.push({ timestamp: new Date().toISOString(), image });
+                    window.__imageIssues.push({ 
+                        timestamp: new Date().toISOString(), 
+                        image,
+                        issue: 'alt-only-object'
+                    });
                 }
             }
         }

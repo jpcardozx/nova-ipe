@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nova Ipê Diagnostic Report</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      color: #2563eb;
+      border-bottom: 2px solid #2563eb;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #1e40af;
+      margin-top: 30px;
+    }
+    .card {
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .success { color: #16a34a; }
+    .warning { color: #ea580c; }
+    .error { color: #dc2626; }
+    .code {
+      font-family: monospace;
+      background: #f1f5f9;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+    ul, ol {
+      padding-left: 20px;
+    }
+    .timestamp {
+      color: #6b7280;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Nova Ipê Smart Diagnostic Report</h1>
+  <p class="timestamp">Generated on: 02/06/2025, 16:50:49</p>
+  
+  <div class="card">
+    <h2>Executive Summary</h2>
+    <p>This diagnostic report provides an analysis of the Nova Ipê codebase with a focus on webpack configuration issues and component duplication problems.</p>
+    
+    <h3>Key Findings:</h3>
+    <ul>
+      <li>Multiple component implementations causing consistency issues</li>
+      <li>Potential circular dependencies leading to webpack errors</li>
+      <li>Non-standardized import patterns across the codebase</li>
+      <li>Webpack configuration that needs optimization</li>
+    </ul>
+  </div>
+  
+  <div class="card">
+    <h2>Recommended Actions</h2>
+    <ol>
+      <li class="success">Run the comprehensive consolidation script to fix component duplication</li>
+      <li class="success">Apply the webpack fix to resolve hydration issues</li>
+      <li class="warning">Standardize imports to use unified components</li>
+      <li class="warning">Add explicit chunk names to dynamic imports for better code splitting</li>
+    </ol>
+  </div>
+  
+  <div class="card">
+    <h2>Execution Steps</h2>
+    <p>Run the following commands in your terminal to apply the recommended fixes:</p>
+    <pre class="code">
+# Clean the build directory
+npm run clean
+
+# Run the smart fix script
+npm run smart-fix
+
+# Build and start the application
+npm run build:smart && npm run start
+</pre>
+  </div>
+  
+  <div class="card">
+    <h2>Verification</h2>
+    <p>After applying fixes, verify by checking for these indicators:</p>
+    <ul>
+      <li>No webpack "Cannot read properties of undefined (reading 'call')" errors in console</li>
+      <li>No hydration warnings in the browser console</li>
+      <li>Consistent component rendering across pages</li>
+      <li>Improved build performance and chunk distribution</li>
+    </ul>
+  </div>
+</body>
+</html>

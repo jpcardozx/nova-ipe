@@ -17,33 +17,13 @@ import { LazyIcon } from '@/app/utils/icon-splitter';
 import { usePerformanceMonitor } from '@/app/utils/performance-monitor-advanced';
 import SuperOptimizedImage from './SuperOptimizedImage';
 import { CriticalCssLoader } from './CriticalCssLoader';
+import { type ImovelClientType } from '../../types/imovel';
 
-// Tipos
-interface ImovelSimplificado {
-    id: string;
-    titulo: string;
-    slug: string;
-    bairro?: string;
-    cidade?: string;
-    preco: number;
-    finalidade: 'Aluguel' | 'Venda';
-    areaUtil?: number;
-    dormitorios?: number;
-    banheiros?: number;
-    vagas?: number;
-    imagem?: {
-        url: string;
-        alt?: string;
-        blurDataUrl?: string;
-    };
-    destaque?: boolean;
-    dataPublicacao?: string;
-}
-
-interface SuperOptimizedPropertyPageProps {
+// Interface padronizada
+export interface SuperOptimizedPropertyPageProps {
     pageTitle: string;
     pageDescription: string;
-    fetchPropertiesFunction: () => Promise<ImovelSimplificado[]>;
+    fetchPropertiesFunction: () => Promise<ImovelClientType[]>;
     propertyType: 'rent' | 'sale';
     usingPreloadedData?: boolean;
 }
@@ -85,9 +65,8 @@ export default function SuperOptimizedPropertyPage({
     fetchPropertiesFunction,
     propertyType,
     usingPreloadedData = false
-}: SuperOptimizedPropertyPageProps) {
-    // Estado
-    const [properties, setProperties] = useState<ImovelSimplificado[]>([]);
+}: SuperOptimizedPropertyPageProps) {    // Estado
+    const [properties, setProperties] = useState<ImovelClientType[]>([]);
     const [isLoading, setIsLoading] = useState(!usingPreloadedData); // Se temos dados pré-carregados, começamos sem loading
     const [error, setError] = useState<Error | null>(null);
 
@@ -140,32 +119,28 @@ export default function SuperOptimizedPropertyPage({
         };
 
         loadProperties();
-    }, [fetchPropertiesFunction]);
-
-    // Processar propriedades para o formato necessário
+    }, [fetchPropertiesFunction]);    // Processar propriedades para o formato necessário
     const formattedProperties = useMemo(() => {
         return properties.map(property => ({
             id: property.id,
-            title: property.titulo,
+            title: property.title,
             slug: property.slug,
-            location: property.bairro,
-            city: property.cidade,
-            price: property.preco,
+            location: property.location,
+            city: property.city,
+            price: property.price,
             propertyType: propertyType,
-            area: property.areaUtil,
-            bedrooms: property.dormitorios,
-            bathrooms: property.banheiros,
-            parkingSpots: property.vagas,
+            area: property.area,
+            bedrooms: property.bedrooms,
+            bathrooms: property.bathrooms,
+            parkingSpots: property.parkingSpots,
             mainImage: {
-                url: property.imagem?.url || '/images/property-placeholder.jpg',
-                alt: property.imagem?.alt || property.titulo,
-                blurDataUrl: property.imagem?.blurDataUrl
+                url: property.mainImage?.url || '/images/property-placeholder.jpg',
+                alt: property.mainImage?.alt || property.title,
+                blurDataUrl: property.mainImage?.blurDataUrl
             },
-            isHighlight: Boolean(property.destaque),
-            isPremium: Boolean(property.destaque),
-            isNew: property.dataPublicacao ?
-                (new Date().getTime() - new Date(property.dataPublicacao).getTime() < 7 * 24 * 60 * 60 * 1000) :
-                false
+            isHighlight: Boolean(property.isHighlight),
+            isPremium: Boolean(property.isPremium),
+            isNew: Boolean(property.isNew)
         }));
     }, [properties, propertyType]);
 
@@ -200,9 +175,7 @@ export default function SuperOptimizedPropertyPage({
                         <p className="mt-4 text-neutral-600 text-lg">
                             {pageDescription}
                         </p>
-                    </div>
-
-                    <Suspense fallback={<PropertyListSkeleton />}>
+                    </div>                    <Suspense fallback={<PropertyListSkeleton />}>
                         <VirtualizedPropertiesGrid
                             properties={formattedProperties}
                             isLoading={isLoading}

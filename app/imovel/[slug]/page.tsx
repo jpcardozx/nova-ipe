@@ -2,13 +2,10 @@
 import React, { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { serverClient as sanityServer, serverFetch as sanityFetch } from '@/lib/sanity/sanity.server';
-import { formatarArea } from '@/lib/utils';
 import { queryImovelPorSlug, queryImoveisRelacionados } from '@lib/queries';
 import { getImovelPorSlug } from '@lib/sanity/fetchImoveis';
-
 import type { Metadata } from 'next';
-import type { ImovelProjetado, ImovelClient as ImovelDataType } from '@/types/imovel-client';
-
+import type { ImovelProjetado, ImovelClient as ImovelDataType } from '../../../src/types/imovel-client';
 import { mapImovelToClient } from '@lib/mapImovelToClient';
 
 // Importação simples e direta de componentes
@@ -100,11 +97,9 @@ async function ImovelPage({ slug }: { slug: string }) {
     }
 
     // Garantir que imagem existe para evitar o erro "imóvel indisponível"
-    if (!imovelClient.imagem || (!imovelClient.imagem.imagemUrl && !imovelClient.imagem.url)) {
+    if (!imovelClient.imagem || !imovelClient.imagem.imagemUrl) {
       console.warn(`Imóvel ${slug} sem imagem, adicionando placeholder`);
       imovelClient.imagem = {
-        _type: 'image',
-        url: '/images/og-image-2025.jpg',
         imagemUrl: '/images/og-image-2025.jpg',
         alt: imovelClient.titulo || 'Imóvel Nova Ipê',
         asset: {

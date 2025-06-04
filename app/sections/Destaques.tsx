@@ -28,9 +28,10 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePropertyData } from '@/app/hooks/usePropertyData';
-import { PropertyCard } from '@/components/ui/property/PropertyCard';
-import { Button } from '@/components/ui/button';
-import type { ImovelClient } from '@/types/imovel-client';
+import PropertyCardUnified from '@/app/components/ui/property/PropertyCardUnified';
+import ImoveisDestaqueProvider from '@/app/components/ImoveisDestaqueContext';
+import { Button } from '@/app/components/ui/button';
+import type { ImovelClient } from '../../src/types/imovel-client';
 
 // TIPOS
 interface GuararemaMetric {
@@ -84,19 +85,18 @@ const userProfiles = [
         id: 'profissional',
         title: 'Para Trabalhar',
         icon: <BriefcaseBusiness className="w-5 h-5" />
-    },
-    {
-        id: 'investidor',
+    }, {
+        id: 'segunda-casa',
         title: 'Para seu Futuro',
         icon: <TrendingUp className="w-5 h-5" />
     }
 ];
 
-// DADOS VERIFICÁVEIS - SP VS GUARAREMA
+// DADOS VERIFICÁVEIS - SP VS GUARAREMA (Simplificado)
 const comparativeData: Record<string, ComparativeData[]> = {
     familia: [
         {
-            category: 'Custo m² residencial',
+            category: 'Preço do imóvel',
             spValue: '12.500',
             guararemaValue: '5.800',
             difference: '54% menor',
@@ -105,7 +105,7 @@ const comparativeData: Record<string, ComparativeData[]> = {
             icon: <Home className="w-5 h-5" />
         },
         {
-            category: 'IPTU residencial (média)',
+            category: 'IPTU anual',
             spValue: '3.800',
             guararemaValue: '950',
             difference: '75% menor',
@@ -114,83 +114,45 @@ const comparativeData: Record<string, ComparativeData[]> = {
             icon: <Building className="w-5 h-5" />
         },
         {
-            category: 'Área verde per capita',
+            category: 'Área verde',
             spValue: '12',
             guararemaValue: '52',
-            difference: '333% maior',
-            unit: 'm²/hab.',
+            difference: '4x maior',
+            unit: 'm²/pessoa',
             isBetter: true,
             icon: <Trees className="w-5 h-5" />
-        },
-        {
-            category: 'Tempo ao ar livre (média)',
-            spValue: '4.2',
-            guararemaValue: '11.5',
-            difference: '174% maior',
-            unit: 'h/semana',
-            isBetter: true,
-            icon: <Mountain className="w-5 h-5" />
-        },
-        {
-            category: 'Índice de criminalidade',
-            spValue: '67.8',
-            guararemaValue: '24.2',
-            difference: '64% menor',
-            unit: 'pontos',
-            isBetter: true,
-            icon: <Shield className="w-5 h-5" />
         }
     ],
     profissional: [
         {
-            category: 'Aluguel escritório/casa',
+            category: 'Custo de moradia',
             spValue: '85',
             guararemaValue: '42',
             difference: '51% menor',
-            unit: 'R$/m²',
-            isBetter: true,
+            unit: 'R$/m²', isBetter: true,
             icon: <Home className="w-5 h-5" />
         },
         {
-            category: 'Velocidade média internet',
+            category: 'Internet fibra ótica',
             spValue: '350',
             guararemaValue: '500',
-            difference: '43% maior',
+            difference: '43% mais rápida',
             unit: 'Mbps',
             isBetter: true,
             icon: <Zap className="w-5 h-5" />
         },
         {
-            category: 'Disponibilidade coworking',
-            spValue: '12.2',
-            guararemaValue: '3.1',
-            difference: '75% menor',
-            unit: 'km²/espaço',
-            isBetter: false,
-            icon: <BriefcaseBusiness className="w-5 h-5" />
-        },
-        {
-            category: 'Custo de vida geral',
+            category: 'Custo de vida',
             spValue: '100',
             guararemaValue: '65',
             difference: '35% menor',
             unit: 'índice',
             isBetter: true,
             icon: <DollarSign className="w-5 h-5" />
-        },
-        {
-            category: 'Índice de distrações',
-            spValue: '78.5',
-            guararemaValue: '31.2',
-            difference: '60% menor',
-            unit: 'pontos',
-            isBetter: true,
-            icon: <AlertCircle className="w-5 h-5" />
         }
-    ],
-    investidor: [
+    ], 'segunda-casa': [
         {
-            category: 'Valorização imobiliária',
+            category: 'Crescimento regional',
             spValue: '4.8',
             guararemaValue: '9.2',
             difference: '92% maior',
@@ -199,40 +161,22 @@ const comparativeData: Record<string, ComparativeData[]> = {
             icon: <TrendingUp className="w-5 h-5" />
         },
         {
-            category: 'Rendimento aluguel',
+            category: 'Potencial de locação',
             spValue: '0.42',
             guararemaValue: '0.75',
             difference: '79% maior',
             unit: '%/mês',
             isBetter: true,
-            icon: <DollarSign className="w-5 h-5" />
+            icon: <Home className="w-5 h-5" />
         },
         {
-            category: 'Tempo médio de venda',
+            category: 'Facilidade de venda',
             spValue: '9.2',
             guararemaValue: '4.1',
-            difference: '55% menor',
+            difference: '55% mais rápido',
             unit: 'meses',
             isBetter: true,
             icon: <Clock className="w-5 h-5" />
-        },
-        {
-            category: 'IPTU/Preço do imóvel',
-            spValue: '0.42',
-            guararemaValue: '0.18',
-            difference: '57% menor',
-            unit: '%/ano',
-            isBetter: true,
-            icon: <Building className="w-5 h-5" />
-        },
-        {
-            category: 'Potencial turístico',
-            spValue: '35',
-            guararemaValue: '72',
-            difference: '106% maior',
-            unit: 'índice',
-            isBetter: true,
-            icon: <Mountain className="w-5 h-5" />
         }
     ]
 };
@@ -256,12 +200,11 @@ const guararemaMetrics: GuararemaMetric[] = [
         trend: 'neutral',
         icon: <Train className="w-6 h-6" />,
         source: 'CPTM - Horários 2025'
-    },
-    {
+    }, {
         id: 'valorizacao',
-        label: 'Seu patrimônio cresce',
+        label: 'Região em crescimento',
         value: '9.2% a.a.',
-        comparison: 'quase o dobro da média de SP',
+        comparison: 'desenvolvimento constante',
         trend: 'positive',
         icon: <TrendingUp className="w-6 h-6" />,
         source: 'DataZap Imóveis Q1 2025'
@@ -317,17 +260,16 @@ const locationAdvantages: LocationAdvantage[] = [
                 data: ['38% do território com mata nativa', '16 parques ecológicos acessíveis', 'Parte da Mata Atlântica preservada']
             }
         ]
-    },
-    {
-        id: 'investimento-inteligente',
-        title: 'Mercado imobiliário em expansão controlada',
-        description: 'Crescimento sustentável sem bolha especulativa',
-        metric: 'Valorização consistente acima da inflação',
+    }, {
+        id: 'desenvolvimento-sustentavel',
+        title: 'Desenvolvimento urbano planejado',
+        description: 'Crescimento organizado com preservação ambiental',
+        metric: 'Região em constante desenvolvimento',
         icon: <AreaChart className="w-7 h-7 text-amber-600" />,
         details: [
             {
-                title: 'Histórico de valorização',
-                description: 'Dados de valorização dos últimos 5 anos',
+                title: 'Histórico de crescimento',
+                description: 'Desenvolvimento da região nos últimos 5 anos',
                 data: ['2020: 7.2%', '2021: 8.5%', '2022: 8.9%', '2023: 10.1%', '2024: 9.2%']
             },
             {
@@ -338,7 +280,7 @@ const locationAdvantages: LocationAdvantage[] = [
             {
                 title: 'Equilíbrio oferta/demanda',
                 description: 'Mercado equilibrado sem excesso de estoque',
-                data: ['Vacância residencial: 3.2%', 'Tempo médio de venda: 4.1 meses', 'Desconto médio negociação: 5.8%']
+                data: ['Baixa vacância residencial: 3.2%', 'Tempo médio de venda: 4.1 meses', 'Negociações equilibradas']
             }
         ]
     }
@@ -409,38 +351,36 @@ const profileBenefits: Record<string, ProfileBenefit[]> = {
                 'Economia anual de R$12.500 em custos de deslocamento diário'
             ]
         }
-    ],
-    investidor: [
-        {
-            id: 'valorizacao-consistente',
-            title: 'Valorização consistente acima do mercado',
-            icon: <TrendingUp className="w-5 h-5" />,
-            benefits: [
-                'Apreciação média anual de 9.2% nos últimos 5 anos',
-                'Retorno 92% superior à média da Grande SP',
-                'Comportamento anticíclico durante recessões'
-            ]
-        },
-        {
-            id: 'retorno-aluguel',
-            title: 'Rendimento superior em locação',
-            icon: <DollarSign className="w-5 h-5" />,
-            benefits: [
-                'Yield médio de 0.75% ao mês vs. 0.42% em SP',
-                'Aluguel por temporada: até 1.2% ao mês',
-                'Vacância residencial de apenas 3.2%'
-            ]
-        },
-        {
-            id: 'potencial-turistico',
-            title: 'Mercado turístico em expansão',
-            icon: <Mountain className="w-5 h-5" />,
-            benefits: [
-                'Crescimento turístico de 28% ao ano desde 2021',
-                'Ocupação média de imóveis para temporada: 68%',
-                'Retorno sobre imóveis turísticos superior a 14% a.a.'
-            ]
-        }
+    ], 'segunda-casa': [{
+        id: 'valorizacao-consistente',
+        title: 'Região em crescimento constante',
+        icon: <TrendingUp className="w-5 h-5" />,
+        benefits: [
+            'Crescimento da região de 9.2% nos últimos 5 anos',
+            'Desenvolvimento acima da média da Grande SP',
+            'Estabilidade mesmo em momentos difíceis'
+        ]
+    },
+    {
+        id: 'retorno-aluguel',
+        title: 'Boa procura por imóveis para alugar',
+        icon: <DollarSign className="w-5 h-5" />,
+        benefits: [
+            'Boa demanda por casas para aluguel na região',
+            'Opção de aluguel por temporada para visitantes',
+            'Poucos imóveis vazios (apenas 3.2%)'
+        ]
+    },
+    {
+        id: 'potencial-turistico',
+        title: 'Turismo crescendo na região',
+        icon: <Mountain className="w-5 h-5" />,
+        benefits: [
+            'Crescimento turístico de 28% ao ano desde 2021',
+            'Boa ocupação de casas para temporada: 68%',
+            'Oportunidade para quem tem casa extra alugar'
+        ]
+    }
     ]
 };
 
@@ -652,10 +592,9 @@ function DestaquesEstrategicos() {
                     <h3 className="text-heading-1 text-gray-900">
                         São Paulo × Guararema: comparativo objetivo
                     </h3>
-                    <p className="text-body text-gray-600 mt-2">
-                        Dados específicos para {selectedProfile === 'familia' ? 'famílias' :
-                            selectedProfile === 'profissional' ? 'profissionais remotos' :
-                                'investidores'} com fontes verificáveis
+                    <p className="text-body text-gray-600 mt-2">                        Dados específicos para {selectedProfile === 'familia' ? 'famílias' :
+                        selectedProfile === 'profissional' ? 'profissionais remotos' :
+                            'segunda casa'} com fontes verificáveis
                     </p>
                 </div>
 
@@ -808,10 +747,9 @@ function DestaquesEstrategicos() {
                 {/* Benefícios específicos por perfil */}
                 <div className="mb-16">
                     <div className="text-center mb-8">
-                        <h3 className="text-2xl font-bold text-gray-900">
-                            Benefícios para {selectedProfile === 'familia' ? 'famílias' :
-                                selectedProfile === 'profissional' ? 'profissionais remotos' :
-                                    'investidores'}
+                        <h3 className="text-2xl font-bold text-gray-900">                        Benefícios para {selectedProfile === 'familia' ? 'famílias' :
+                            selectedProfile === 'profissional' ? 'profissionais remotos' :
+                                'segunda casa'}
                         </h3>
                         <p className="text-gray-600 mt-2">
                             Vantagens específicas baseadas em dados e experiências reais
@@ -1007,34 +945,27 @@ function DestaquesEstrategicos() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     className="text-center"
-                >                    <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm max-w-4xl mx-auto">
-                        <h3 className="text-heading-1 text-gray-900 mb-4">
-                            Compare na prática: visite Guararema
-                        </h3>
-
-                        <p className="text-body-large text-gray-600 mb-8 max-w-2xl mx-auto">
-                            A melhor maneira de confirmar estes dados é conhecer a cidade pessoalmente.
-                            Agende uma visita guiada personalizada conforme seu perfil e interesses.
+                >                    <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm max-w-4xl mx-auto">                        <h3 className="text-heading-1 text-gray-900 mb-4">
+                    Comprove na prática: conheça Guararema
+                </h3><p className="text-body-large text-gray-600 mb-8 max-w-2xl mx-auto">
+                            Confirme pessoalmente todos estes dados. Nossa equipe local organizará uma visita personalizada conforme seu perfil e principais interesses.
                         </p>
 
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <a
-                                href="/agendar-visita"
-                                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-amber-600 text-white rounded-lg font-medium hover:bg-amber-700 transition-colors shadow-sm"
-                            >
-                                Agendar visita guiada
-                                <ArrowRight className="w-4 h-4" />
-                            </a>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center">                            <a
+                            href="/agendar-visita"
+                            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-amber-600 text-white rounded-lg font-medium hover:bg-amber-700 transition-colors shadow-sm"
+                        >
+                            Reservar minha visita exclusiva
+                            <ArrowRight className="w-4 h-4" />
+                        </a>
                             <a
                                 href="/solicitar-material"
                                 className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
                             >
-                                Receber material detalhado
+                                Garantir análise personalizada
                             </a>
-                        </div>
-
-                        <p className="text-sm text-gray-500 mt-4">
-                            Todos os dados apresentados podem ser verificados durante sua visita
+                        </div>                        <p className="text-sm text-gray-500 mt-4">
+                            Validação completa com nossa equipe local durante sua visita
                         </p>
                     </div>
                 </motion.div>
@@ -1052,11 +983,11 @@ function DestaquesEstrategicos() {
 
                 <div className="relative">                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {visibleImoveis.map((imovel: ImovelClient) => (
-                        <PropertyCard key={imovel._id}
+                        <PropertyCardUnified key={imovel._id}
                             id={imovel._id}
                             title={imovel.titulo || ''}
                             slug={imovel.slug || ''}
-                            location={imovel.bairro}
+                            location={imovel.bairro || 'Localização não informada'}
                             city={imovel.cidade}
                             price={imovel.preco || 0}
                             propertyType={imovel.finalidade === 'Aluguel' ? 'rent' : 'sale'}
@@ -1065,7 +996,7 @@ function DestaquesEstrategicos() {
                             bathrooms={imovel.banheiros}
                             parkingSpots={imovel.vagas}
                             mainImage={{
-                                url: imovel.imagem?.url || '/placeholder-imovel.jpg',
+                                url: imovel.imagem?.imagemUrl || '/placeholder-imovel.jpg',
                                 alt: imovel.imagem?.alt || imovel.titulo || 'Imóvel'
                             }}
                             isHighlight={true}

@@ -25,45 +25,44 @@ import { cn } from "@/lib/utils";
 // Links para navegação do rodapé
 const footerLinks = [
     {
-        title: "Navegação",
+        title: "I M Ó V E I S",
         links: [
-            { name: "Home", href: "/" },
-            { name: "Comprar", href: "/comprar" },
-            { name: "Alugar", href: "/alugar" },
-            { name: "Bairros", href: "/bairros" },
-            { name: "Contato", href: "/contato" }
+            { name: "Casas à venda", href: "/" },
+            { name: "Apartamentos", href: "/comprar" },
+            { name: "Imóveis para alugar", href: "/alugar" },
+            { name: "Terrenos e lotes", href: "/bairros" },
+            { name: "Imóveis comerciais", href: "/contato" }
         ]
     },
     {
-        title: "Sobre nós",
+        title: "S E R V I Ç O S",
         links: [
-            { name: "Nossa história", href: "/sobre" },
-            { name: "Equipe", href: "/equipe" },
-            { name: "Avaliações", href: "/avaliacoes" },
-            { name: "Carreira", href: "/carreira" },
-            { name: "Blog", href: "/blog" }
+            { name: "Avaliação de imóveis", href: "/sobre" },
+            { name: "Documentação", href: "/equipe" },
+            { name: "Financiamento", href: "/avaliacoes" },
+            { name: "Consultoria imobiliária", href: "/carreira" },
+            { name: "Administração predial", href: "/blog" }
         ]
     },
     {
-        title: "Serviços",
+        title: "I N S T I T U C I O N A L",
         links: [
-            { name: "Compra e venda", href: "/servicos/compra-venda" },
-            { name: "Consultoria", href: "/servicos/consultoria" },
-            { name: "Avaliação de imóveis", href: "/servicos/avaliacao" },
-            { name: "Documentação", href: "/servicos/documentacao" }
+            { name: "Sobre a Ipê", href: "/servicos/compra-venda" },
+            { name: "Nossa equipe", href: "/servicos/consultoria" },
+            { name: "Casos de sucesso", href: "/servicos/avaliacao" },
+            { name: "Trabalhe conosco", href: "/servicos/documentacao" }
         ]
     }
 ];
 
 // Componente de link com animação
 const FooterLink = ({ href, children }: { href: string, children: React.ReactNode }) => (
-    <Link
-        href={href}
-        className="group flex items-center text-gray-300 hover:text-amber-300 transition-colors duration-300"
+    <span
+        className="group flex items-center text-gray-300 hover:text-amber-400 transition-colors duration-300 cursor-pointer hover:underline underline-offset-2"
     >
         <ChevronRight className="w-3 h-3 mr-1.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
         {children}
-    </Link>
+    </span>
 );
 
 // Componente de ícone social
@@ -139,15 +138,15 @@ export default function FooterAprimorado() {
                                     height={100}
                                     className="mb-6"
                                 />                                <p className="text-gray-300 mb-6 leading-relaxed max-w-md text-body">
-                                    Referência em soluções imobiliárias em Guararema desde 2010. Conhecimento local, atendimento personalizado e excelência em cada negociação.
+                                    Há mais de 15 anos realizando sonhos em Guararema. Oferecemos atendimento personalizado em compra, venda, locação e avaliação de imóveis, com conhecimento profundo do mercado local.
                                 </p>
 
                                 <div className="flex flex-col gap-4 mb-8">
                                     <div className="flex items-start">
                                         <MapPin className="w-5 h-5 text-amber-400 mr-3 mt-0.5" />
-                                        <div>                                            <h4 className="medium-text text-white text-body">Escritório Principal</h4>
+                                        <div>                                            <h4 className="medium-text text-white text-body">Nosso Endereço</h4>
                                             <address className="text-gray-300 not-italic text-body-small">
-                                                Av. Professor João Batista Gardelin, 1300<br />
+                                                Praça Nove de Julho, 65<br />
                                                 Centro, Guararema - SP, 08900-000
                                             </address>
                                         </div>
@@ -198,7 +197,7 @@ export default function FooterAprimorado() {
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.5, delay: idx * 0.1 }}
-                                >                                    <h4 className="text-white semibold-text mb-6 pb-2 border-b border-gray-700 text-heading-3">
+                                >                            <h4 className="text-amber-400 semibold-text mb-6 pb-2 border-b border-gray-700 text-heading-3">
                                         {column.title}
                                     </h4>
                                     <ul className="space-y-3">
@@ -223,25 +222,25 @@ export default function FooterAprimorado() {
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6 }}
-                        >                            <h4 className="text-white semibold-text mb-4 text-heading-3">
-                                Receba novidades e oportunidades
+                        >
+                            <h4 className="text-amber-400 bold mb-4 text-heading-2">
+                                Oportunidades Antecipadas
                             </h4>
                             <p className="text-gray-300 mb-6 text-body">
-                                Inscreva-se para receber as melhores oportunidades em primeira mão
+                                Receba em primeira mão as melhores ofertas e novidades da Ipê de maneira antecipada. Inscreva-se e fique por dentro das oportunidades exclusivas.
                             </p>
                             <form className="flex gap-2 max-w-md">
                                 <input
                                     type="email"
-                                    placeholder="Seu e-mail"
+                                    placeholder="Seu melhor e-mail"
                                     className="bg-gray-800 border border-gray-700 text-white px-4 py-2 rounded-md flex-grow focus:outline-none focus:border-amber-400"
                                     aria-label="Seu endereço de email"
                                     required
-                                />
-                                <button
+                                />                                <button
                                     type="submit"
                                     className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-md font-medium transition-colors"
                                 >
-                                    Inscrever
+                                    Inscrever-se
                                 </button>
                             </form>
                         </motion.div>
@@ -256,33 +255,28 @@ export default function FooterAprimorado() {
                         >
                             <h4 className="text-white font-semibold mb-4 text-xl">
                                 Confiança e credibilidade
-                            </h4>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="flex items-center gap-3 bg-gray-800 p-3 rounded-lg">
-                                    <Award className="text-amber-400 w-6 h-6" />
-                                    <div>                                        <h5 className="medium-text text-white text-body-small">CRECI-SP</h5>
-                                        <p className="text-gray-400 text-caption">Registro 12.345-J</p>
-                                    </div>
+                            </h4>                            <div className="grid grid-cols-2 gap-4">                                <div className="flex items-center gap-3 bg-gray-800 p-3 rounded-lg">
+                                <Award className="text-amber-400 w-6 h-6" />
+                                <div>                                        <h5 className="medium-text text-white text-body-small">CRECI-SP</h5>
+                                    <p className="text-gray-400 text-caption">Corretores habilitados</p>
                                 </div>
-                                <div className="flex items-center gap-3 bg-gray-800 p-3 rounded-lg">
+                            </div>                                <div className="flex items-center gap-3 bg-gray-800 p-3 rounded-lg">
                                     <CheckCircle className="text-amber-400 w-6 h-6" />
                                     <div>
-                                        <h5 className="font-medium text-white text-sm">Avaliações</h5>
-                                        <p className="text-gray-400 text-xs">4.9/5 - 230+ clientes</p>
+                                        <h5 className="font-medium text-white text-sm">Experiência</h5>
+                                        <p className="text-gray-400 text-xs">15+ anos no mercado</p>
                                     </div>
-                                </div>
-                                <div className="flex items-center gap-3 bg-gray-800 p-3 rounded-lg">
+                                </div>                                <div className="flex items-center gap-3 bg-gray-800 p-3 rounded-lg">
                                     <Home className="text-amber-400 w-6 h-6" />
                                     <div>
                                         <h5 className="font-medium text-white text-sm">Imóveis</h5>
-                                        <p className="text-gray-400 text-xs">200+ disponíveis</p>
+                                        <p className="text-gray-400 text-xs">500+ negócios realizados</p>
                                     </div>
-                                </div>
-                                <div className="flex items-center gap-3 bg-gray-800 p-3 rounded-lg">
+                                </div>                                <div className="flex items-center gap-3 bg-gray-800 p-3 rounded-lg">
                                     <Clock className="text-amber-400 w-6 h-6" />
                                     <div>
-                                        <h5 className="font-medium text-white text-sm">Experiência</h5>
-                                        <p className="text-gray-400 text-xs">13+ anos de atuação</p>
+                                        <h5 className="font-medium text-white text-sm">Atendimento</h5>
+                                        <p className="text-gray-400 text-xs">Segunda a sábado</p>
                                     </div>
                                 </div>
                             </div>

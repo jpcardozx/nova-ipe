@@ -8,7 +8,8 @@ import { formatarMoeda, cn } from '@/lib/utils';
 import WhatsAppShare from '@/app/components/WhatsAppShare';
 import SocialShareButtons from '@/app/components/SocialShareButtons';
 import PropertyMetadata from '@/app/components/PropertyMetadata';
-import type { ImovelClient as ImovelDataType } from '@/types/imovel-client';
+import type { ImovelClient as ImovelDataType } from '../../../src/types/imovel-client';
+import { motion } from 'framer-motion';
 
 /**
  * Componente de Card CTA para ações no imóvel
@@ -35,10 +36,9 @@ const CardCTAImovel: FC<CardCTAImovelProps> = ({
     tipoCTA = 'whatsapp',
     linkPersonalizado,
     onAgendar,
-}) => {
-    // Texto e ícone do CTA
+}) => {    // Texto e ícone do CTA
     const labelCTA = useMemo(
-        () => (tipoCTA === 'agendar' ? 'Agendar visita' : 'Falar com especialista'),
+        () => (tipoCTA === 'agendar' ? 'Reservar visita estratégica' : 'Análise de investimento'),
         [tipoCTA]
     );
     const iconCTA = tipoCTA === 'agendar' ? (
@@ -48,11 +48,9 @@ const CardCTAImovel: FC<CardCTAImovelProps> = ({
     );
 
     // Preço formatado
-    const precoFormatado = preco != null ? formatarMoeda(preco) : 'Sob consulta';
-
-    // URL para whatsapp
+    const precoFormatado = preco != null ? formatarMoeda(preco) : 'Sob consulta';    // URL para whatsapp
     const safeTitle = encodeURIComponent(titulo ?? '');
-    const defaultLink = `https://wa.me/5511981845016?text=Olá! Tenho interesse no imóvel (${finalidade}): ${safeTitle}`;
+    const defaultLink = `https://wa.me/5511981845016?text=Olá! Gostaria de uma análise financeira detalhada sobre este imóvel (${finalidade}): ${safeTitle} - Meu interesse é investir para obter retorno financeiro.`;
     const ctaUrl = linkPersonalizado?.trim() || defaultLink;
 
     return (

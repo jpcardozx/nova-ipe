@@ -6,6 +6,18 @@ Um site moderno e elegante para uma imobiliária de alto padrão, com foco em ex
 
 O Nova Ipê é um projeto de site imobiliário desenvolvido com tecnologias modernas como Next.js, React, TypeScript, Tailwind CSS e Framer Motion. O objetivo é oferecer uma experiência digital premium para clientes que buscam imóveis de alto padrão.
 
+## 🚀 Início Rápido (Atualizado Junho 2025)
+
+Para iniciar o servidor de desenvolvimento após a remediação arquitetural:
+
+```bash
+# Script de inicialização limpo (recomendado)
+./iniciar-dev-limpo.cmd
+
+# OU usando npm diretamente
+npm run dev
+```
+
 ## Características Principais
 
 - **Design Premium**: Interface elegante e sofisticada com animações suaves e micro-interações
@@ -55,143 +67,71 @@ cd nova-ipe
 
 # Instale as dependências
 npm install
-
-# Inicie o servidor de desenvolvimento
-npm run dev
 ```
 
-### Exemplos de Uso
+### 🛠️ Construir para Produção
 
-#### Button
-
-```tsx
-import { Button } from '@/components/ui/core/Button';
-
-export default function Example() {
-  return (
-    <div className="space-y-4">
-      <Button variant="primary">Botão Primário</Button>
-      <Button variant="premium" animation="float" leftIcon={<StarIcon />}>
-        Botão Premium
-      </Button>
-      <Button variant="outline" loading>
-        Carregando...
-      </Button>
-    </div>
-  );
-}
-```
-
-#### PropertyCard
-
-```tsx
-import { PropertyCard } from '@/components/ui/property';
-
-export default function Example() {
-  return (
-    <PropertyCard
-      id="1"
-      title="Apartamento de Luxo"
-      slug="apartamento-luxo"
-      location="Jardins"
-      city="São Paulo"
-      price={1250000}
-      propertyType="sale"
-      area={120}
-      bedrooms={3}
-      bathrooms={2}
-      parkingSpots={2}
-      mainImage={{
-        url: "/images/apartamento.jpg",
-        alt: "Apartamento de Luxo"
-      }}
-      isPremium={true}
-    />
-  );
-}
-```
-
-#### PropertyCarousel
-
-```tsx
-import { PropertyCarousel } from '@/components/ui/property';
-
-export default function Example() {
-  return (
-    <PropertyCarousel
-      properties={propertiesArray}
-      title="Imóveis em Destaque"
-      subtitle="Confira nossas melhores opções"
-      slidesToShow={3}
-      showControls={true}
-      autoplay={true}
-      viewAllLink="/imoveis"
-    />
-  );
-}
-```
-
-## Estrutura do Projeto
-
-```
-├── app/                  # Páginas e rotas do Next.js
-├── components/           # Componentes React
-│   ├── ui/               # Componentes de UI
-│   │   ├── core/         # Componentes base (Button, etc)
-│   │   └── property/     # Componentes específicos de imóveis
-├── lib/                  # Utilitários e configurações
-│   └── design-system.ts  # Sistema de design
-├── public/               # Arquivos estáticos
-└── styles/               # Estilos globais
-```
-
-## Tecnologias Utilizadas
-
-- **Next.js**: Framework React para renderização híbrida
-- **React**: Biblioteca para construção de interfaces
-- **TypeScript**: Tipagem estática para JavaScript
-- **Tailwind CSS**: Framework CSS utilitário
-- **Framer Motion**: Biblioteca de animações
-- **Lucide Icons**: Ícones modernos e consistentes
-
-## Testes e Build
-
-Para garantir que o projeto está saudável, execute:
+Para construir a versão de produção com todas as otimizações:
 
 ```bash
-pnpm lint
-pnpm typecheck   # roda tsc --noEmit
-pnpm build
-pnpm start
+# Script de validação de build (recomendado)
+./validar-build.cmd
+
+# OU usando npm diretamente
+npm run build
 ```
 
-## Test Script
+## 📝 Remediação Arquitetural (Junho 2025)
 
-To run tests, use the following command:
+O projeto passou por uma remediação arquitetural significativa em Junho de 2025 para reduzir a dívida técnica:
+
+### Principais Melhorias
+
+- **Redução de Dependências**: De 82+ para ~40 dependências essenciais
+- **Simplificação de Configuração**: Remoção de customizações webpack desnecessárias
+- **Consolidação CSS**: Padronização no Tailwind CSS
+- **Build Estável**: Eliminação de scripts de correção, aproveitando funcionalidades nativas do Next.js
+
+### Documentação Relacionada
+
+- [ACOMPANHAMENTO-REMEDICAO-ARQUITETURAL.md](./ACOMPANHAMENTO-REMEDICAO-ARQUITETURAL.md) - Detalhes do processo de remediação
+- [CSS-CONSOLIDATION-GUIDE.md](./CSS-CONSOLIDATION-GUIDE.md) - Guia para consolidação de CSS
+- [GUIA-RESOLUCAO-PROBLEMAS.md](./GUIA-RESOLUCAO-PROBLEMAS.md) - Soluções para problemas comuns
+- [NEXT-STEPS.md](./NEXT-STEPS.md) - Próximos passos para o projeto
+
+### Validação de Remediação
+
+Para verificar o estado da remediação:
 
 ```bash
-pnpm test
+# Execute o script de validação
+npm run validate-remediation
 ```
 
-## Contribuição
+A ferramenta de validação verifica:
 
-Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests.
+- Remoção de configurações webpack customizadas
+- Eliminação de dependências desnecessárias
+- Consolidação de abordagens CSS
 
-## Licença
+## 🧩 Padrões de Componentes
 
-Este projeto está licenciado sob a licença MIT.
+Todos os componentes de card de propriedade foram consolidados em `PropertyCardUnified` (em `components/ui/property/PropertyCardUnified.tsx`). Da mesma forma, todas as implementações de grade virtualizada usam `VirtualizedPropertiesGridUnified` (em `app/components/VirtualizedPropertiesGridUnified.tsx`).
 
-## Peer Dependency Warnings
+Arquivos de componentes legados foram substituídos por stubs de redirecionamento que apontam para as versões unificadas.
 
-Após a atualização das dependências, foram identificados os seguintes problemas de compatibilidade de pares:
+## ⚙️ Referência de Scripts
 
-1. **React e React-DOM**:
-   - Algumas bibliotecas esperam versões anteriores de `react` e `react-dom` (como `18.x`), mas o projeto está usando `19.x`.
-
-2. **@opentelemetry**:
-   - Algumas dependências esperam versões específicas de `@opentelemetry/api`.
-
-3. **ESLint**:
-   - Algumas dependências esperam versões mais antigas de `eslint`.
-
-Esses problemas não impedem o funcionamento do projeto, mas podem causar warnings ou comportamentos inesperados. Certifique-se de testar o projeto completamente antes de implantar em produção.
+| Script             | Descrição                                                         |
+| ------------------ | ----------------------------------------------------------------- |
+| `dev`              | Inicia o servidor de desenvolvimento                              |
+| `dev:clean`        | Limpa o diretório de build e inicia o servidor de desenvolvimento |
+| `dev:smart`        | Aplica todas as correções e inicia o servidor de desenvolvimento  |
+| `build`            | Compila a aplicação para produção                                 |
+| `build:clean`      | Limpa o diretório de build e compila a aplicação                  |
+| `build:smart`      | Aplica todas as correções e compila a aplicação para produção     |
+| `start:clean`      | Inicia o servidor de produção                                     |
+| `start:production` | Valida correções, compila e inicia o servidor de produção         |
+| `diagnostic`       | Executa a ferramenta de diagnóstico para identificar problemas    |
+| `smart-fix`        | Aplica todas as correções ao código-base                          |
+| `validate:fixes`   | Verifica se todas as correções foram aplicadas corretamente       |

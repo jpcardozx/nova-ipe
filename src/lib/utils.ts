@@ -1,6 +1,9 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import type { Imovel, SanityImageAsset, SanityReference } from '@/types/sanity-schema';
+import { differenceInYears, isValid, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Imovel } from '@/src/types/sanity-schema';
+import { sanityClient } from '@/lib/sanity/sanity.client';
 
 /**
  * Combina nomes de classes condicionalmente com suporte a Tailwind
