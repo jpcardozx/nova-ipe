@@ -76,9 +76,7 @@ export default function OptimizationProvider({ children }: OptimizationProviderP
         return () => {
             clearTimeout(timeout);
         };
-    }, []);
-
-    // Prevent hydration mismatch by rendering consistently
+    }, []);    // Prevent hydration mismatch by rendering consistently
     if (!isClient) {
         return <div suppressHydrationWarning>{children}</div>;
     }

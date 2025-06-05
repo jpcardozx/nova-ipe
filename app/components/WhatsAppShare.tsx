@@ -84,23 +84,25 @@ export default function WhatsAppShare({
                 content_type: 'property',
                 item_id: pathname,
             });
-        }
-        // Use Web Share API if available
-        if ('share' in navigator && imageUrl && typeof navigator.share === 'function') {
+        }        // Use Web Share API if available
+        if (typeof window !== 'undefined' && 'share' in navigator && typeof navigator.share === 'function') {
             navigator.share({
                 title: title || 'Nova Ipê Imobiliária',
                 text: message || 'Confira este imóvel',
                 url: getFullUrl(),
             })
-                .then(() => setShared(true))
-                .catch((error: Error) => {
+                .then(() => setShared(true)).catch((error: Error) => {
                     console.log('Error sharing:', error);
                     // Fallback to regular WhatsApp link
-                    window.open(buildShareUrl(), '_blank');
+                    if (typeof window !== 'undefined') {
+                        window.open(buildShareUrl(), '_blank');
+                    }
                 });
         } else {
             // Regular WhatsApp sharing
-            window.open(buildShareUrl(), '_blank');
+            if (typeof window !== 'undefined') {
+                window.open(buildShareUrl(), '_blank');
+            }
             setShared(true);
         }
     };

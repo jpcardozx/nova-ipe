@@ -64,12 +64,12 @@ export class PerformanceMonitor {
       }
     }
   }
-
   private observeFramePerformance() {
     if ('requestAnimationFrame' in window) {
       let lastTime = performance.now();
       let frameCount = 0;
       let droppedFrames = 0;
+      let animationId: number;
 
       const measureFrames = () => {
         const now = performance.now();
@@ -82,23 +82,30 @@ export class PerformanceMonitor {
           droppedFrames++;
         }
 
-        // Log frame performance every 60 frames
-        if (frameCount % 60 === 0) {
+        // Log frame performance less frequently (every 300 frames instead of 60)
+        if (frameCount % 300 === 0) {
           const fps = 1000 / delta;
           const dropRate = (droppedFrames / frameCount) * 100;
           
           this.addMetric('fps', fps);
           this.addMetric('dropped-frames-rate', dropRate);
           
-          if (dropRate > 5) {
+          if (dropRate > 10) { // Increased threshold to reduce noise
             console.warn(`⚠️ High frame drop rate: ${dropRate.toFixed(1)}%`);
           }
         }
 
-        requestAnimationFrame(measureFrames);
+        // Throttle the animation frame requests to reduce CPU usage
+        if (frameCount % 3 === 0) { // Only measure every 3rd frame
+          animationId = requestAnimationFrame(measureFrames);
+        } else {
+          setTimeout(() => {
+            animationId = requestAnimationFrame(measureFrames);
+          }, 16); // Wait one frame
+        }
       };
 
-      requestAnimationFrame(measureFrames);
+      animationId = requestAnimationFrame(measureFrames);
     }
   }
 
@@ -220,12 +227,21 @@ export function withPerformanceTracking<T extends Record<string, any>>(
   }, {} as T);
 }
 
-// Auto-initialize performance monitoring in development
+// Auto-initialize performance monitoring in development with throttling
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
   const monitor = PerformanceMonitor.getInstance();
   
-  // Log performance report every 30 seconds in development
-  setInterval(() => {
-    monitor.logPerformanceReport();
-  }, 30000);
+  // Log performance report less frequently to reduce Fast Refresh triggers
+  let reportInterval: NodeJS.Timeout;
+  
+  // Debounce to prevent multiple intervals
+  const startReporting = () => {
+    if (reportInterval) clearInterval(reportInterval);
+    reportInterval = setInterval(() => {
+      monitor.logPerformanceReport();
+    }, 60000); // Increased to 60 seconds
+  };
+  
+  // Start after a delay to avoid initial load interference
+  setTimeout(startReporting, 5000);
 }

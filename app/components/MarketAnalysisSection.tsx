@@ -12,7 +12,7 @@ interface MarketAnalysisProps {
     badge?: string;
 }
 
-export const MarketAnalysisSection: React.FC<MarketAnalysisProps> = ({ variant = 'default' }) => {
+const MarketAnalysisSection: React.FC<MarketAnalysisProps> = ({ variant = 'default' }) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [isVisible, setIsVisible] = useState(false);
 
@@ -194,3 +194,6 @@ export const MarketAnalysisSection: React.FC<MarketAnalysisProps> = ({ variant =
         </div>
     );
 };
+
+// Default export only for better dynamic import compatibility
+export default MarketAnalysisSection;

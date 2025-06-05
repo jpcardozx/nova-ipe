@@ -164,10 +164,8 @@ const FeaturedPropertyCard: FC<{ property: ImovelClientType }> = ({ property }) 
                             </div>
                         )}
                     </div>
-                </div>
-
-                <Link
-                    href={`/imovel/${property.slug}`}
+                </div>                <Link
+                    href={`/imovel/${typeof property.slug === 'string' ? property.slug : property.id}`}
                     className="inline-flex items-center justify-center w-full gap-2 p-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium shadow-md"
                 >
                     Quero conhecer este imóvel

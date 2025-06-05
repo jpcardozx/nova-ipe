@@ -288,39 +288,38 @@ export const QuickPropertySearch = memo(() => {
                         </div>
                     ) : (
                         <ul>
-                            {filteredProperties.slice(0, 5).map((property) => (
-                                <li key={property.id}>
-                                    <Link
-                                        href={`/imovel/${property.slug}`}
-                                        className="flex items-center p-3 hover:bg-neutral-50 transition-colors"
-                                    >
-                                        <div
-                                            className="h-12 w-12 rounded-md bg-center bg-cover mr-3 flex-shrink-0"
-                                            style={{
-                                                backgroundImage: `url(${property.mainImage.url})`,
-                                            }}
-                                        />
-                                        <div className="flex-grow">
-                                            <h4 className="font-medium text-neutral-900 line-clamp-1">
-                                                {property.title}
-                                            </h4>
-                                            <p className="text-sm text-neutral-500">
-                                                {property.location}
-                                                {property.city ? `, ${property.city}` : ''}
-                                            </p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="font-bold text-primary-600">
-                                                {property.propertyType === 'rent'
-                                                    ? `R$ ${property.price.toLocaleString('pt-BR')}/mês`
-                                                    : `R$ ${property.price.toLocaleString('pt-BR')}`}
-                                            </p>
-                                            <p className="text-xs text-neutral-400">
-                                                {property.propertyType === 'rent' ? 'Aluguel' : 'Venda'}
-                                            </p>
-                                        </div>
-                                    </Link>
-                                </li>
+                            {filteredProperties.slice(0, 5).map((property) => (<li key={property.id}>
+                                <Link
+                                    href={`/imovel/${typeof property.slug === 'string' ? property.slug : property.id}`}
+                                    className="flex items-center p-3 hover:bg-neutral-50 transition-colors"
+                                >
+                                    <div
+                                        className="h-12 w-12 rounded-md bg-center bg-cover mr-3 flex-shrink-0"
+                                        style={{
+                                            backgroundImage: `url(${property.mainImage.url})`,
+                                        }}
+                                    />
+                                    <div className="flex-grow">
+                                        <h4 className="font-medium text-neutral-900 line-clamp-1">
+                                            {property.title}
+                                        </h4>
+                                        <p className="text-sm text-neutral-500">
+                                            {property.location}
+                                            {property.city ? `, ${property.city}` : ''}
+                                        </p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="font-bold text-primary-600">
+                                            {property.propertyType === 'rent'
+                                                ? `R$ ${property.price.toLocaleString('pt-BR')}/mês`
+                                                : `R$ ${property.price.toLocaleString('pt-BR')}`}
+                                        </p>
+                                        <p className="text-xs text-neutral-400">
+                                            {property.propertyType === 'rent' ? 'Aluguel' : 'Venda'}
+                                        </p>
+                                    </div>
+                                </Link>
+                            </li>
                             ))}
                             {filteredProperties.length > 5 && (
                                 <li className="p-3 text-center border-t border-neutral-100">

@@ -178,8 +178,7 @@ const TestimonialSection: React.FC<ReferenciasProps> = (props) => {
                                 </div>
 
                                 {/* Informações do cliente */}
-                                <div className="w-full md:w-48 flex-shrink-0 flex flex-row md:flex-col gap-4 items-center md:items-start">
-                                    {/* Avatar discreto */}
+                                <div className="w-full md:w-48 flex-shrink-0 flex flex-row md:flex-col gap-4 items-center md:items-start">                                    {/* Avatar discreto */}
                                     <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-2 border-[#E6AA2C]/30">
                                         <Image
                                             src={currentTestimonial.image}
@@ -265,9 +264,9 @@ const TestimonialSection: React.FC<ReferenciasProps> = (props) => {
                         Mais de 150 ativos com ROI entre 7.2% e 12.5% ao ano
                     </p>
                 </div>
-            </div>
-        </section>
+            </div>        </section>
     );
 };
 
+// Export with the correct name for dynamic import
 export default TestimonialSection;

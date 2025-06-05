@@ -1,0 +1,31 @@
+/** @type {import('next').NextConfig} */
+
+// Essential SSR polyfill
+if (typeof globalThis !== 'undefined' && typeof globalThis.self === 'undefined') {
+  globalThis.self = globalThis;
+}
+
+const nextConfig = {
+  reactStrictMode: true,
+  swcMinify: true,
+  
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.sanity.io',
+      },
+    ],
+  },
+  
+  // Only add experimental features if absolutely necessary
+  experimental: {
+    serverComponentsExternalPackages: ['sanity'],
+  },
+};
+
+module.exports = nextConfig;

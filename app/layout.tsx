@@ -1,54 +1,24 @@
-import { Metadata } from 'next'
-import { Poppins, Inter, Raleway } from 'next/font/google'
-import './globals.css'
-import { ThemeProvider } from './providers/ThemeProvider'
-import { metadata } from './metadata' // Import metadata
+import { Inter } from 'next/font/google';
+import ClientLayout from './providers/ClientLayout';
+import './globals.css';
 
-const poppins = Poppins({
-  subsets: ['latin'],
-  display: 'swap',
-  weight: ['300', '400', '500', '600', '700', '800', '900'],
-  variable: '--font-poppins', // For headings
-});
+// Initialize Inter font
+const inter = Inter({ subsets: ['latin'] });
 
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-inter', // For body text
-});
+// Metadata is exported from a separate file
+export { metadata } from './metadata';
 
-const raleway = Raleway({
-  subsets: ['latin'],
-  display: 'swap',
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-raleway', // For accent text
-});
+interface RootLayoutProps {
+  children: React.ReactNode;
+}
 
-export { metadata }; // Export metadata to be used by Next.js
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="pt-BR" className={`${poppins.variable} ${inter.variable} ${raleway.variable} scroll-smooth`} suppressHydrationWarning>
-      <head>
-        {/* Metadata will be handled by Next.js through the exported object */}
-        {/* Removed direct preconnect/dns-prefetch for cdn.sanity.io, Next.js handles this with Image component usage */}
-        {/* Removed direct preconnect for fonts.googleapis.com, Next/Font handles this */}
-        {/* Any other critical, non-font/image preloads can be added here if necessary */}
-      </head>
-      <body className="font-body antialiased bg-background text-foreground transition-colors duration-300 dark:bg-neutral-charcoal dark:text-neutral-soft-white relative">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange={false}
-        >
+    <html lang="pt-BR">
+      <body className={inter.className}>
+        <ClientLayout>
           {children}
-        </ThemeProvider>
+        </ClientLayout>
       </body>
     </html>
   );

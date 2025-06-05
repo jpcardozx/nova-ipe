@@ -2,7 +2,7 @@ import type { ImovelProjetado , ImovelClient } from '../types/imovel-client'
 import { formatarMoeda, formatarArea, formatarEndereco } from "@/lib/utils";
 import { sanityClient } from '@/lib/sanity/sanity.client';
 
-export function mapImovelToClient(i: ImovelProjetado): ImovelClient {
+export function mapImovelToClient(i: any): ImovelClient {
   return {
     _id: i._id as string,
     slug: i.slug?.current ?? '',

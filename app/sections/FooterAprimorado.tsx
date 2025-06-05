@@ -100,8 +100,7 @@ export default function FooterAprimorado() {
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }; return (
-        <footer className="relative w-full bg-gradient-to-b from-gray-900 to-gray-950 text-white overflow-hidden font-body">
-            {/* Fundo com textura e gradiente */}
+        <footer className="relative w-full bg-gradient-to-b from-gray-900 to-gray-950 text-white overflow-hidden font-body">            {/* Fundo com textura e gradiente */}
             <div className="absolute inset-0">
                 <div className="relative w-full h-full">
                     <Image

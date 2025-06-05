@@ -1,93 +1,50 @@
 'use client';
 
 import { getImoveisParaAlugar } from '@lib/sanity/fetchImoveis';
-import SuperOptimizedPropertyPage from '../components/SuperOptimizedPropertyPage';
+import ProfessionalPropertyPage from '../components/ProfessionalPropertyPage';
 import type { ImovelClient } from '../../src/types/imovel-client';
-import type { ImovelClientType } from '../../types/imovel';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
 interface TurboAlugarPageProps {
     preloadedProperties?: ImovelClient[];
 }
 
 /**
- * Adapta os imóveis do formato ImovelClient para o formato ImovelClientType
- * necessário para o componente SuperOptimizedPropertyPage
- */
-const adaptImovelToClientType = (imoveis: ImovelClient[]): ImovelClientType[] => {
-    return imoveis.map(imovel => {
-        // Garante que propertyType seja apenas 'rent' ou 'sale'
-        const propertyType = imovel.finalidade === 'Venda' ? 'sale' : 'rent';
-
-        return {
-            id: imovel._id, // Mapeia _id para id
-            title: imovel.titulo || '',
-            slug: typeof imovel.slug === 'string' ? imovel.slug : '',
-            location: imovel.bairro || '',
-            city: imovel.cidade,
-            price: imovel.preco || 0,
-            propertyType, // Já garantido como 'rent' ou 'sale'
-            area: imovel.areaUtil,
-            bedrooms: imovel.dormitorios,
-            bathrooms: imovel.banheiros,
-            parkingSpots: imovel.vagas,
-            mainImage: {
-                url: imovel.imagem?.imagemUrl || '',
-                alt: imovel.imagem?.alt || imovel.titulo || '',
-                blurDataUrl: imovel.imagem?.imagemUrl
-            },
-            isHighlight: imovel.destaque,
-            status: 'available'
-        };
-    });
-};
-
-/**
- * TurboAlugarPage - Nova versão ultra otimizada da página de aluguel
+ * TurboAlugarPage - Professional version with enhanced UX
  * 
- * Implementa as melhores práticas de performance para resolver os problemas críticos:
- * - LCP (Largest Contentful Paint): 78056ms
- * - Bloqueio da thread principal: 57778ms
- * - Tempo de carregamento da página: ~6860ms
- * 
- * Melhorias v2:
- * - Suporte para dados pré-carregados do servidor
- * - Integração com React Server Components
- * - Suspense estratégico para streaming de UI
+ * Features:
+ * - Professional design system with consistent color palette
+ * - Enhanced search and filtering capabilities for rental properties
+ * - Optimized loading states and error handling
+ * - Responsive grid and list view modes
+ * - Improved accessibility and animations
  */
-export default function TurboAlugarPage({ preloadedProperties }: TurboAlugarPageProps) {    // Estado para armazenar os dados pré-carregados
-    const [fetchFunction, setFetchFunction] = useState(() => {
+export default function TurboAlugarPage({ preloadedProperties }: TurboAlugarPageProps) {
+    // Create fetch function that returns the preloaded properties or fetches them
+    const fetchFunction = async (): Promise<ImovelClient[]> => {
         if (preloadedProperties) {
-            // Se temos dados pré-carregados, usamos uma função que os retorna imediatamente
-            // e os adaptamos para o formato esperado
-            return () => Promise.resolve(adaptImovelToClientType(preloadedProperties));
-        } else {
-            // Caso contrário, usamos a função normal de fetch com adaptador
-            return async () => {
-                const imoveis = await getImoveisParaAlugar();
-                return adaptImovelToClientType(imoveis);
-            };
+            return preloadedProperties;
         }
-    });
+        return await getImoveisParaAlugar();
+    };
 
-    // Sempre log o status do pré-carregamento em desenvolvimento
+    // Log performance info in development
     useEffect(() => {
         if (process.env.NODE_ENV === 'development') {
             if (preloadedProperties) {
-                console.log(`[Performance] Usando ${preloadedProperties.length} imóveis pré-carregados do servidor`);
+                console.log(`[Performance] Using ${preloadedProperties.length} preloaded rental properties from server`);
             } else {
-                console.log('[Performance] Sem dados pré-carregados disponíveis, fazendo fetch no cliente');
+                console.log('[Performance] No preloaded rental data available, fetching on client');
             }
         }
     }, [preloadedProperties]);
 
     return (
-        <SuperOptimizedPropertyPage
+        <ProfessionalPropertyPage
             pageTitle="Imóveis para Alugar"
-            pageDescription="Confira imóveis disponíveis para aluguel com ótimas condições, localização privilegiada e segurança."
+            pageDescription="Encontre o imóvel ideal para alugar em Guararema e região com excelente localização, segurança e ótimo custo-benefício."
             fetchPropertiesFunction={fetchFunction}
             propertyType="rent"
-            usingPreloadedData={Boolean(preloadedProperties)}
         />
     );
 }

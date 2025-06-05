@@ -107,14 +107,17 @@ export default function PropertyHeroUnified({
     const handleFavoriteToggle = useCallback(() => {
         setIsFavoriteState(!isFavoriteState);
         onAddToFavorites?.();
-    }, [isFavoriteState, onAddToFavorites]);
+    }, [isFavoriteState, onAddToFavorites]); const handleShare = useCallback(async (platform?: string) => {
+        // SSR-safe browser check
+        if (typeof window === 'undefined') return;
 
-    const handleShare = useCallback(async (platform?: string) => {
         const url = window.location.href;
         const text = `Confira este imóvel: ${title} - ${formatarMoeda(price)}`;
 
         if (platform === 'copy') {
-            await navigator.clipboard.writeText(url);
+            if ('clipboard' in navigator) {
+                await navigator.clipboard.writeText(url);
+            }
             setIsShareOpen(false);
             return;
         }

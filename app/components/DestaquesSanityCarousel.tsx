@@ -9,16 +9,18 @@ import { processProperties, ProcessedPropertyData } from './PropertyProcessor';
 import type { PropertyType } from '@/app/components/ui/property/PropertyCardUnified';
 import { motion } from 'framer-motion';
 
-// Lazy load ícones para melhor performance
-const ArrowRight = dynamic(() => import('lucide-react').then(mod => ({ default: mod.ArrowRight })), { ssr: true });
-const ChevronRight = dynamic(() => import('lucide-react').then(mod => ({ default: mod.ChevronRight })), { ssr: true });
-const ChevronLeft = dynamic(() => import('lucide-react').then(mod => ({ default: mod.ChevronLeft })), { ssr: true });
-const Star = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Star })), { ssr: true });
-const FilterIcon = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Filter })), { ssr: true });
-const Home = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Home })), { ssr: true });
-const TrendingUp = dynamic(() => import('lucide-react').then(mod => ({ default: mod.TrendingUp })), { ssr: true });
-const BedDouble = dynamic(() => import('lucide-react').then(mod => ({ default: mod.BedDouble })), { ssr: true });
-const AreaChart = dynamic(() => import('lucide-react').then(mod => ({ default: mod.AreaChart })), { ssr: true });
+// Import icons directly for better compatibility
+import {
+    ArrowRight,
+    ChevronRight,
+    ChevronLeft,
+    Star,
+    Filter as FilterIcon,
+    Home,
+    TrendingUp,
+    BedDouble,
+    AreaChart
+} from 'lucide-react';
 
 // Componente principal otimizado com carregamento dinâmico
 const OptimizedPropertyCarousel = dynamic(() => import('@/app/components/OptimizedPropertyCarousel').then(mod => ({ default: mod.OptimizedPropertyCarousel })),

@@ -47,14 +47,13 @@ export interface SanityImageProps {
 }
 
 /**
- * Componente consolidado para renderizar imagens, com suporte a múltiplos formatos:
- * - Formatos Sanity { url, imagemUrl, asset }
+ * Componente consolidado para renderizar imagens, com suporte a múltiplos formatos: * - Formatos Sanity { url, imagemUrl, asset }
  * - Imagens convencionais
  * - Tratamento de erros e carregamento
  * - Animações e efeitos visuais
  * - Otimizações de performance
  */
-export default function SanityImage({
+function SanityImage({
   image,
   alt = '',
   width,
@@ -218,13 +217,15 @@ export default function SanityImage({
         {...imageProps}
         width={imageDimensions.width}
         height={imageDimensions.height}
-      />
-      {!isLoaded && (
+      />      {!isLoaded && (
         <div className="absolute inset-0 bg-gray-100 animate-pulse rounded-md" />
       )}
     </div>
   );
 }
+
+// Default export
+export default SanityImage;
 
 // Tipo export para compatibilidade
 export type { ClientImage as SanityImageType };

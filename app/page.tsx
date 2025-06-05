@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 
 // === FALLBACK COMPONENTS ===
 import { HeroLoadingFallback, PropertyLoadingFallback, ErrorFallback } from './components/ErrorBoundaryComponents';
+import { ProfessionalHeroLoading, ProfessionalNavbarLoading } from './components/ProfessionalLoadingComponents';
 
 // === DYNAMIC IMPORTS - NO FRAMER MOTION TO AVOID HYDRATION ISSUES ===
 const OptimizationProvider = dynamic(() => import('./components/OptimizationProvider'), {
@@ -14,12 +15,12 @@ const OptimizationProvider = dynamic(() => import('./components/OptimizationProv
 
 const ClientOnlyNavbar = dynamic(() => import('./components/ClientOnlyNavbar'), {
   ssr: false,
-  loading: () => <div className="h-16 bg-white border-b animate-pulse"></div>
+  loading: () => <ProfessionalNavbarLoading />
 });
 
-const ProfessionalHero = dynamic(() => import('./components/ProfessionalHero'), {
+const InstitutionalHero = dynamic(() => import('./components/InstitutionalHero'), {
   ssr: false,
-  loading: () => <HeroLoadingFallback />
+  loading: () => <ProfessionalHeroLoading />
 });
 
 const BlocoExploracaoGuararema = dynamic(() => import('./components/BlocoExploracaoSimbolica'), {
@@ -47,13 +48,13 @@ const Referencias = dynamic(() => import('./sections/Referencias'), {
   loading: () => <div className="min-h-[400px] bg-stone-100 animate-pulse"></div>
 });
 
-const MarketAnalysisSection = dynamic(() => import('./components/MarketAnalysisSection').then(mod => mod.MarketAnalysisSection), {
+const MarketAnalysisSection = dynamic(() => import('./components/MarketAnalysisSection'), {
   ssr: false,
   loading: () => <div className="min-h-[500px] bg-white animate-pulse"></div>
 });
 
-// IMPORTANT: Use the no-motion version to avoid framer-motion hydration issues
-const ClientProgressSteps = dynamic(() => import('./components/ClientProgressSteps-no-motion').then(mod => mod.default), {
+// Use the regular ClientProgressSteps component
+const ClientProgressSteps = dynamic(() => import('./components/ClientProgressSteps'), {
   ssr: false,
   loading: () => <div className="min-h-[600px] bg-gradient-to-br from-stone-50 to-amber-50 animate-pulse"></div>
 });
@@ -77,11 +78,9 @@ export default function Home() {
   return (
     <main className="min-h-screen flex flex-col">
       <OptimizationProvider>
-        <ClientOnlyNavbar />
-
-        {/* Hero Section - Premium */}
-        <Suspense fallback={<HeroLoadingFallback />}>
-          <ProfessionalHero />
+        <ClientOnlyNavbar />        {/* Hero Section - Institutional */}
+        <Suspense fallback={<ProfessionalHeroLoading />}>
+          <InstitutionalHero />
         </Suspense>
 
         {/* Seção de Exploração - Contextualização Premium */}

@@ -1,7 +1,7 @@
 'use client';
 
-import SimpleNavbar from './SimpleNavbar';
+import ProfessionalNavbar from './ProfessionalNavbar';
 
 export default function ClientOnlyNavbar() {
-    return <SimpleNavbar />;
+    return <ProfessionalNavbar />;
 }

@@ -100,7 +100,8 @@ export function PropertyHero({
             onAddToFavorites();
         }
     }; const handleShareClick = () => {
-        if ('share' in navigator) {
+        // SSR-safe navigator check
+        if (typeof window !== 'undefined' && 'share' in navigator) {
             (navigator as any).share({
                 title: title,
                 text: `Confira este imóvel: ${title}`,
@@ -114,42 +115,49 @@ export function PropertyHero({
             onShare();
         }
     }; const copyLinkToClipboard = () => {
-        if ('clipboard' in navigator) {
+        // SSR-safe navigator and clipboard check
+        if (typeof window !== 'undefined' && 'clipboard' in navigator) {
             (navigator as any).clipboard.writeText(window.location.href);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
             setShowShareMenu(false);
         }
-    };
-
-    const shareViaEmail = () => {
-        window.location.href = `mailto:?subject=Confira este imóvel: ${title}&body=Achei este imóvel que pode te interessar: ${window.location.href}`;
-        setShowShareMenu(false);
+    }; const shareViaEmail = () => {
+        if (typeof window !== 'undefined') {
+            window.location.href = `mailto:?subject=Confira este imóvel: ${title}&body=Achei este imóvel que pode te interessar: ${window.location.href}`;
+            setShowShareMenu(false);
+        }
     };
 
     const shareOnFacebook = () => {
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`);
-        setShowShareMenu(false);
+        if (typeof window !== 'undefined') {
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`);
+            setShowShareMenu(false);
+        }
     };
 
     const shareOnTwitter = () => {
-        window.open(`https://twitter.com/intent/tweet?text=Confira este imóvel: ${encodeURIComponent(title)}&url=${encodeURIComponent(window.location.href)}`);
-        setShowShareMenu(false);
-    };
-
-    const openFullGallery = (index: number = currentImageIndex) => {
+        if (typeof window !== 'undefined') {
+            window.open(`https://twitter.com/intent/tweet?text=Confira este imóvel: ${encodeURIComponent(title)}&url=${encodeURIComponent(window.location.href)}`);
+            setShowShareMenu(false);
+        }
+    }; const openFullGallery = (index: number = currentImageIndex) => {
         setGalleryImageIndex(index);
         setShowGalleryModal(true);
-        document.body.style.overflow = 'hidden'; // Prevenir rolagem do background
+        if (typeof window !== 'undefined') {
+            document.body.style.overflow = 'hidden'; // Prevenir rolagem do background
+        }
     };
 
     const closeGallery = () => {
         setShowGalleryModal(false);
-        document.body.style.overflow = ''; // Restaurar rolagem do background
-    };
-
-    // Fechar galeria ao pressionar Esc
+        if (typeof window !== 'undefined') {
+            document.body.style.overflow = ''; // Restaurar rolagem do background
+        }
+    };    // Fechar galeria ao pressionar Esc
     useEffect(() => {
+        if (typeof window === 'undefined') return;
+
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
                 closeGallery();

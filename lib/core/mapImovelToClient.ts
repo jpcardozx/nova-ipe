@@ -9,21 +9,21 @@ import { formatarMoeda, formatarArea, formatarEndereco } from '@/lib/utils';
  * - Usa transformação eficiente para reduzir operações de verificação redundantes
  * - Evita chamadas repetitivas às propriedades aninhadas
  */
-export function mapImovelToClient(imovel: Partial<Imovel>): ImovelClient {
+export function mapImovelToClient(imovel: any): ImovelClient {
   if (!imovel) return {} as ImovelClient;
 
   // Destructuring para evitar chamadas repetitivas às propriedades
   const {
-    _id = '',
-    titulo = '',
-    descricao = '',
+    _id,
+    titulo,
+    descricao,
     slug,
-    endereco = '',
-    preco = 0,
-    areaUtil = 0,
-    dormitorios = 0,
-    banheiros = 0,
-    vagas = 0,
+    endereco,
+    preco,
+    areaUtil,
+    dormitorios,
+    banheiros,
+    vagas,
     tipoImovel = 'Apartamento',
     destaque = false,
     status = 'disponivel',

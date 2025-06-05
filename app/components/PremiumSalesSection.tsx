@@ -200,11 +200,9 @@ const FeaturedProperty = ({ property }: { property: PropertyCardProps }) => (
                             </div>
                         )}
                     </div>
-                </div>
-
-                {/* CTA */}
+                </div>                {/* CTA */}
                 <Link
-                    href={`/imovel/${property.slug}`}
+                    href={`/imovel/${typeof property.slug === 'string' ? property.slug : property.id}`}
                     className="inline-flex items-center gap-2 px-6 py-3 bg-white text-amber-900 rounded-xl font-semibold hover:bg-amber-50 transition-colors group/cta"
                 >
                     <Eye size={18} />

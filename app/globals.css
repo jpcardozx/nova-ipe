@@ -8,19 +8,23 @@
  * @date 18/05/2025
  */
 
-/* Importações principais do Tailwind - ordem correta para Next.js & Tailwind v4 */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Importações principais do Tailwind v4 */
+@import './tailwind.css';
+
+/* Variáveis CSS do sistema de design */
+:root {
+  --color-brand-green: #1a6f5c;
+  --color-brand-green-dark: #145a49;
+  --color-brand-green-light: #3a8f7c;
+  --color-brand-dark: #0d1f2d;
+  --color-brand-dark-light: #1e3042;
+  --color-brand-light: #f8f4e3;
+  --color-accent-yellow: #ffcc00;
+  --color-accent-yellow-dark: #e6b800;
+}
 
 /* Reset e normalizações básicas */
 @layer base {
-  * {
-    /* border-color: var(--border); /* Uses the var from variables.css */
-    /* Updated to use the direct variable after consolidation */
-    border-color: var(--color-border);
-  }
-
   html {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
@@ -28,8 +32,6 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     height: 100%;
-    /* height: -webkit-fill-available; /* Consider if still needed */
-    /* height: 100%; /* Duplicate */
   }
 
   /* Scrollbar styling */
@@ -227,14 +229,7 @@ button {
 /* html.fonts-loaded body, body.fonts-loaded { */
 body {
   /* Simplified, assuming fonts are loaded via next/font or <link> */
-  font-family:
-    var(--font-sans),
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto,
-    Arial,
-    sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 }
 
 /* Typography Utilities (These should be primarily handled by Tailwind utilities or semantic classes in components.css) */
@@ -830,9 +825,7 @@ img:not([width]):not([height]) {
 }
 .hover-lift-premium:hover {
   transform: translateY(-4px);
-  box-shadow:
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 .hover-scale-premium {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -882,30 +875,219 @@ img:not([width]):not([height]) {
   animation: loading_premium_skeleton 1.5s infinite;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important; /* scroll-behavior: auto !important; /* This was in critical-styles.css, ensure it's desired */
+/* ========================================
+ * ENHANCED NAVBAR STYLES
+ * Professional, institutional navbar design
+ * ======================================== */
+
+@layer components {
+  /* Enhanced Navbar Layout */
+  .enhanced-navbar {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  .enhanced-navbar.scrolled {
+    @apply shadow-lg backdrop-blur-md bg-white/95;
+  }
+
+  /* Top Contact Bar */
+  .navbar-contact-bar {
+    @apply bg-stone-900 text-white transition-all duration-300;
+  }
+
+  .navbar-contact-bar.scrolled {
+    @apply py-1;
+  }
+  /* Navigation Links */
+  .nav-link {
+    @apply relative px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg;
+  }
+
+  .nav-link.active {
+    @apply text-amber-700 bg-amber-50;
+  }
+
+  .nav-link:not(.active) {
+    @apply text-stone-700 hover:text-amber-700 hover:bg-stone-50;
+  }
+
+  /* Active Navigation Indicator */
+  .nav-active-indicator {
+    @apply absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-amber-600 rounded-full;
+  }
+
+  /* CTA Button Enhancements */
+  .navbar-cta {
+    @apply bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 
+           text-white px-5 py-2.5 rounded-full text-sm font-semibold 
+           shadow-lg hover:shadow-xl transition-all duration-200;
+  }
+
+  /* Mobile Menu */
+  .mobile-menu-panel {
+    @apply fixed top-0 right-0 z-40 w-80 h-full bg-white shadow-2xl;
+  }
+
+  .mobile-nav-link {
+    @apply block px-4 py-3 text-base font-medium rounded-xl transition-all;
+  }
+
+  .mobile-nav-link.active {
+    @apply text-amber-700 bg-amber-50 border-l-4 border-amber-600;
+  }
+
+  .mobile-nav-link:not(.active) {
+    @apply text-stone-700 hover:text-amber-700 hover:bg-stone-50;
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .glass-premium {
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+/* ========================================
+ * INSTITUTIONAL HERO STYLES
+ * Clean, professional hero section design
+ * ======================================== */
+
+@layer components {
+  /* Hero Background */
+  .institutional-hero-bg {
+    @apply relative min-h-screen bg-gradient-to-br from-stone-50 to-stone-100 overflow-hidden;
+  }
+  /* Achievement Cards */
+  .achievement-card {
+    @apply bg-white rounded-2xl p-6 text-center shadow-lg border border-stone-200 
+           hover:shadow-xl transition-all duration-300;
+  }
+
+  .achievement-icon {
+    @apply w-12 h-12 bg-gradient-to-br from-amber-100 to-orange-100 rounded-xl 
+           flex items-center justify-center mx-auto mb-3 transition-all;
+  }
+
+  /* Search Form */
+  .hero-search-form {
+    @apply bg-white rounded-2xl shadow-xl border border-stone-200 p-8 max-w-5xl mx-auto;
+  }
+
+  .search-toggle {
+    @apply flex bg-stone-100 rounded-xl p-1;
+  }
+
+  .search-toggle-btn {
+    @apply px-8 py-3 rounded-lg font-semibold transition-all duration-300;
+  }
+
+  .search-toggle-btn.active {
+    @apply bg-white text-amber-700 shadow-md;
+  }
+
+  .search-toggle-btn:not(.active) {
+    @apply text-stone-600 hover:text-stone-900;
+  }
+
+  .search-input {
+    @apply w-full px-4 py-4 border border-stone-300 rounded-xl 
+           focus:ring-2 focus:ring-amber-500 focus:border-amber-500 
+           transition-all bg-white;
+  }
+
+  .search-input-with-icon {
+    @apply pl-12 pr-4;
+  }
+
+  /* CTA Section */
+  .hero-cta-section {
+    @apply bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-8 border border-amber-200;
+  }
+
+  .hero-cta-primary {
+    @apply inline-flex items-center gap-3 bg-gradient-to-r from-green-600 to-green-700 
+           hover:from-green-700 hover:to-green-800 text-white px-8 py-4 rounded-xl 
+           font-semibold shadow-lg hover:shadow-xl transition-all;
+  }
+
+  .hero-cta-secondary {
+    @apply inline-flex items-center gap-3 bg-white border-2 border-amber-600 
+           text-amber-700 hover:bg-amber-50 px-8 py-4 rounded-xl font-semibold transition-all;
+  }
+  /* Scroll Indicator */
+  .scroll-indicator {
+    @apply flex flex-col items-center text-stone-500 cursor-pointer;
+  }
+
+  .scroll-indicator-track {
+    @apply w-6 h-10 border-2 border-stone-300 rounded-full flex justify-center 
+           hover:border-stone-400 transition-colors;
+  }
+
+  .scroll-indicator-dot {
+    @apply w-1 h-3 bg-gradient-to-b from-amber-500 to-transparent rounded-full mt-2;
   }
 }
 
-@media (prefers-contrast: high) {
-  .glass-premium,
-  .glass-dark-premium {
-    background: rgba(255, 255, 255, 0.9);
-    border: 2px solid #000;
+/* ========================================
+ * PROFESSIONAL LOADING COMPONENTS
+ * Skeleton loading states for improved UX
+ * ======================================== */
+
+@layer components {
+  .loading-skeleton {
+    @apply bg-gray-200 animate-pulse rounded;
+  }
+
+  .loading-skeleton-text {
+    @apply loading-skeleton h-4;
+  }
+
+  .loading-skeleton-title {
+    @apply loading-skeleton h-8;
+  }
+
+  .loading-skeleton-button {
+    @apply loading-skeleton h-12 rounded-xl;
+  }
+
+  .loading-skeleton-card {
+    @apply bg-white rounded-2xl p-6 shadow-lg border border-stone-200;
+  }
+
+  .loading-skeleton-hero {
+    @apply relative min-h-screen bg-gradient-to-br from-stone-50 to-stone-100 overflow-hidden;
   }
 }
 
-/* --- END MERGED CONTENT --- */
+/* ========================================
+ * ACCESSIBILITY & PERFORMANCE OPTIMIZATIONS
+ * ======================================== */
+
+@layer utilities {
+  /* Reduced Motion Support */
+  @media (prefers-reduced-motion: reduce) {
+    .enhanced-navbar,
+    .achievement-card,
+    .hero-cta-primary,
+    .hero-cta-secondary {
+      @apply transition-none;
+    }
+  }
+
+  /* High Contrast Mode Support */
+  @media (prefers-contrast: high) {
+    .nav-link.active {
+      @apply border-2 border-amber-700;
+    }
+
+    .achievement-card {
+      @apply border-2 border-stone-400;
+    }
+  }
+
+  /* Focus Visible for Better Accessibility */
+  .nav-link:focus-visible,
+  .search-input:focus-visible,
+  .hero-cta-primary:focus-visible,
+  .hero-cta-secondary:focus-visible {
+    @apply outline-2 outline-offset-2 outline-amber-600;
+  }
+}
 
 /* Final review of imports in globals.css:
    - @import "styles/critical/critical.css"; -> Merged

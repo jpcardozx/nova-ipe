@@ -1,637 +1,391 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import Image from 'next/image';
-import {
-    MapPin,
-    Phone,
-    Clock,
-    ChevronRight,
-    Home,
-    TreePine,
-    Building2,
-    Users,
-    TrendingUp,
-    Award,
-    Shield,
-    Star,
-    Calendar,
-    FileCheck,
-    Sparkles,
-    Target,
-    HeartHandshake,
-    BarChart3,
-    Key,
-    Mountain,
-    Coffee,
-    Church,
-    Train,
-    GraduationCap,
-    ShoppingBag,
-    Leaf
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import Link from 'next/link';
+import { MapPin, TrendingUp, Clock, Target, BarChart3, Eye, ChevronRight, Shield, LucideIcon } from 'lucide-react';
 
-// Dados exclusivos sobre micro-regiões de Guararema
-const guararemasExclusiveData = {
-    microRegions: [
-        {
-            name: "Centro Histórico",
-            icon: <Church className="w-5 h-5" />,
-            avgPrice: "R$ 2.800/m²",
-            growth: "+15% ano",
-            inventory: "12 imóveis",
-            insight: "Casarões do século XIX. O último vendido foi por R$ 680.000 (Casa dos Azulejos, março/2024)",
-            opportunity: "3 proprietários considerando venda até dezembro",
-            bestMonths: "Março-Maio",
-            profile: "Investidores culturais e pousadas boutique"
-        },
-        {
-            name: "Nogueira / Freguesia",
-            icon: <Train className="w-5 h-5" />,
-            avgPrice: "R$ 1.950/m²",
-            growth: "+22% ano",
-            inventory: "28 imóveis",
-            insight: "Nova ciclovia até a estação aumentou procura em 40%. Loteamento Solar dos Lagos esgotou em 6 meses",
-            opportunity: "Construtora lançará 45 casas em agosto",
-            bestMonths: "Junho-Agosto",
-            profile: "Famílias jovens da capital (renda R$ 12-20k)"
-        },
-        {
-            name: "Parque Agrinco",
-            icon: <Mountain className="w-5 h-5" />,
-            avgPrice: "R$ 450/m²",
-            growth: "+18% ano",
-            inventory: "8 chácaras",
-            insight: "Chácaras com nascente valem 35% mais. Última venda: 2.500m² por R$ 1.1M (com 3 nascentes)",
-            opportunity: "2 chácaras de 5.000m² entrarão no mercado",
-            bestMonths: "Setembro-Novembro",
-            profile: "Executivos para casa de fim de semana"
-        },
-        {
-            name: "Luis Ayres / Itaoca",
-            icon: <Leaf className="w-5 h-5" />,
-            avgPrice: "R$ 1.200/m²",
-            growth: "+28% ano",
-            inventory: "35 lotes",
-            insight: "Novo acesso pela Rod. Pres. Dutra valorizou 30%. Walmart confirmou interesse na região",
-            opportunity: "Prefeitura aprovou 3 novos condomínios",
-            bestMonths: "Ano todo",
-            profile: "Classe média em ascensão"
-        }
-    ],
-
-    marketSecrets: [
-        {
-            title: "O Calendário Oculto de Guararema",
-            insights: [
-                "Festival de Inverno (julho): Vendas crescem 45% - melhor época para lançamentos",
-                "Volta às aulas Salesiana (fevereiro): Pais procuram casas para alugar - oportunidade de venda",
-                "Temporada de chuvas (dez-mar): Chácaras com erosão entram no mercado com desconto de até 25%",
-                "Festa do Divino (maio): Turistas se apaixonam pela cidade - conversão de 12% em compradores"
-            ]
-        },
-        {
-            title: "Informações que Valem Ouro",
-            insights: [
-                "Duplicação da Mogi-Dutra: 2.3km já aprovados - terrenos na rota valorizarão 80%",
-                "Nova escola internacional: Confirmada para 2025 no Itaocaia - preços subirão 30%",
-                "Restrição ambiental: 40% de Guararema é APA - terrenos edificáveis são escassos",
-                "Fibra óptica: Vivo instalará em toda zona rural até 2025 - chácaras remotas valorizarão"
-            ]
-        }
-    ],
-
-    hiddenGems: [
-        "Casa colonial de 1888 na Rua Major Diogo - proprietário aceita permuta",
-        "Terreno de 5.000m² com vista para Pedra Montada - dono mora no Japão, quer vender rápido",
-        "Chácara de 10.000m² com lago e pomar formado - viúva aceita parcelamento direto",
-        "Galpão de 800m² no centro - ideal para conversão em lofts (já tem projeto aprovado)"
-    ]
-};
-
-// Casos de sucesso com números reais
-const successMetrics = {
-    velocity: {
-        avg: "23 dias",
-        market: "74 dias",
-        record: "3 dias",
-        detail: "Casa no Itaocaia - já tínhamos o comprador ideal esperando"
-    },
-    pricing: {
-        accuracy: "96%",
-        overMarket: "+12%",
-        detail: "Nossa avaliação com 14 critérios exclusivos de Guararema"
-    },
-    satisfaction: {
-        nps: 89,
-        referrals: "73%",
-        repeat: "45%",
-        detail: "7 em 10 clientes indicam amigos e familiares"
-    }
-};
-
-// Componente de valor para cada fase da jornada
-const journeyPhases = [
-    {
-        phase: "Descoberta",
-        icon: <Sparkles className="w-5 h-5" />,
-        value: "Mostramos oportunidades que só nós conhecemos",
-        example: "Como a casa victoriana que não estava à venda, mas sabíamos que o dono consideraria ofertas"
-    },
-    {
-        phase: "Análise",
-        icon: <BarChart3 className="w-5 h-5" />,
-        value: "Revelamos dados que ninguém mais tem",
-        example: "Análise de 178 vendas em Guararema nos últimos 3 anos + fatores locais exclusivos"
-    },
-    {
-        phase: "Negociação",
-        icon: <Target className="w-5 h-5" />,
-        value: "Relacionamento de 15 anos abre portas",
-        example: "Conseguimos 18% de desconto na chácara do Sr. Tanaka porque éramos amigos da família"
-    },
-    {
-        phase: "Conclusão",
-        icon: <FileCheck className="w-5 h-5" />,
-        value: "Processo 3x mais rápido que o mercado",
-        example: "Parceria direta com Cartório do 1º Ofício economiza 10 dias no processo"
-    }
-];
-
-export interface GuararemasImobiliariaProps {
-    properties?: any[];
-    title?: string;
-    description?: string;
-    ctaLink?: string;
-    ctaText?: string;
+// Type definitions
+interface RegionMetrics {
+    price: number;
+    growth: number;
+    velocity: number;
+    inventory: number;
 }
 
-const GuararemasImobiliariaComponent: React.FC<GuararemasImobiliariaProps> = ({
-    properties = [],
-    title,
-    description,
-    ctaLink = "/contato",
-    ctaText = "Descubra as Oportunidades"
-}) => {
-    const [activeRegion, setActiveRegion] = useState(0);
-    const [hoveredMetric, setHoveredMetric] = useState<string | null>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start end", "end start"]
-    });
+interface Region {
+    id: string;
+    name: string;
+    metrics: RegionMetrics;
+    insight: string;
+}
 
-    const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-    const scale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.9, 1, 1, 0.9]);
+interface MetricCardProps {
+    label: string;
+    value: string | number;
+    comparison: string;
+    icon: LucideIcon;
+    delay?: number;
+}
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setActiveRegion((prev) => (prev + 1) % guararemasExclusiveData.microRegions.length);
-        }, 5000);
-        return () => clearInterval(interval);
-    }, []);
+interface RegionSelectorProps {
+    regions: Region[];
+    active: number;
+    onChange: (index: number) => void;
+}
 
-    return (
-        <section ref={containerRef} className="relative py-24 overflow-hidden">
-            {/* Background com gradiente premium */}
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-emerald-50/20" />
-            <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.02]" />
-
-            <motion.div style={{ opacity, scale }} className="container mx-auto px-4 md:px-6 max-w-7xl relative z-10">
-
-                {/* Header com proposta de valor clara */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="text-center mb-20"
-                >
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-full text-sm font-medium mb-6">
-                        <TreePine className="w-4 h-4" />
-                        <span>O Mapa Oculto de Guararema</span>
-                    </div>
-
-                    <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight">
-                        Sabemos onde estão as
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600"> próximas oportunidades</span>
-                    </h1>
-
-                    <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                        15 anos mapeando cada metro quadrado de Guararema. Conhecemos os proprietários,
-                        as tendências e os segredos que transformam bons negócios em
-                        <span className="font-semibold text-slate-800"> negócios extraordinários</span>.
-                    </p>
-                </motion.div>
-
-                {/* Micro-regiões com dados exclusivos */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    className="mb-24"
-                >
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold text-slate-900 mb-4">
-                            Inteligência Exclusiva por Região
-                        </h2>
-                        <p className="text-lg text-slate-600">
-                            Dados que você não encontra em nenhum portal imobiliário
-                        </p>
-                    </div>
-
-                    {/* Tabs das regiões */}
-                    <div className="flex flex-wrap justify-center gap-2 mb-8">
-                        {guararemasExclusiveData.microRegions.map((region, index) => (
-                            <button
-                                key={index}
-                                onClick={() => setActiveRegion(index)}
-                                className={cn(
-                                    "flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300",
-                                    activeRegion === index
-                                        ? "bg-emerald-600 text-white shadow-lg scale-105"
-                                        : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
-                                )}
-                            >
-                                {region.icon}
-                                <span className="font-medium">{region.name}</span>
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Conteúdo da região ativa */}
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={activeRegion}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            className="bg-white rounded-3xl shadow-xl p-8 md:p-12 border border-slate-100"
-                        >
-                            <div className="grid md:grid-cols-2 gap-8">
-                                <div className="space-y-6">
-                                    <div>
-                                        <h3 className="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-3">
-                                            {guararemasExclusiveData.microRegions[activeRegion].icon}
-                                            {guararemasExclusiveData.microRegions[activeRegion].name}
-                                        </h3>
-
-                                        <div className="grid grid-cols-2 gap-4 mb-6">
-                                            <div className="bg-slate-50 p-4 rounded-xl">
-                                                <p className="text-sm text-slate-600 mb-1">Preço médio</p>
-                                                <p className="text-xl font-bold text-slate-900">
-                                                    {guararemasExclusiveData.microRegions[activeRegion].avgPrice}
-                                                </p>
-                                            </div>
-                                            <div className="bg-emerald-50 p-4 rounded-xl">
-                                                <p className="text-sm text-emerald-700 mb-1">Valorização</p>
-                                                <p className="text-xl font-bold text-emerald-700">
-                                                    {guararemasExclusiveData.microRegions[activeRegion].growth}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <div className="flex items-start gap-3">
-                                            <div className="w-2 h-2 rounded-full bg-emerald-500 mt-2" />
-                                            <div>
-                                                <p className="font-semibold text-slate-800 mb-1">Insight Exclusivo</p>
-                                                <p className="text-slate-600">
-                                                    {guararemasExclusiveData.microRegions[activeRegion].insight}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-start gap-3">
-                                            <div className="w-2 h-2 rounded-full bg-amber-500 mt-2" />
-                                            <div>
-                                                <p className="font-semibold text-slate-800 mb-1">Oportunidade Iminente</p>
-                                                <p className="text-slate-600">
-                                                    {guararemasExclusiveData.microRegions[activeRegion].opportunity}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="bg-gradient-to-br from-slate-50 to-emerald-50/30 p-6 rounded-2xl">
-                                    <h4 className="font-semibold text-slate-800 mb-4">Dados Estratégicos</h4>
-
-                                    <div className="space-y-3">
-                                        <div className="flex items-center justify-between py-2 border-b border-slate-200">
-                                            <span className="text-slate-600">Estoque atual</span>
-                                            <span className="font-semibold text-slate-900">
-                                                {guararemasExclusiveData.microRegions[activeRegion].inventory}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center justify-between py-2 border-b border-slate-200">
-                                            <span className="text-slate-600">Melhor época</span>
-                                            <span className="font-semibold text-slate-900">
-                                                {guararemasExclusiveData.microRegions[activeRegion].bestMonths}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center justify-between py-2">
-                                            <span className="text-slate-600">Perfil comprador</span>
-                                            <span className="font-semibold text-slate-900 text-sm text-right max-w-[200px]">
-                                                {guararemasExclusiveData.microRegions[activeRegion].profile}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <button className="w-full mt-6 bg-emerald-600 text-white py-3 rounded-xl font-medium hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2">
-                                        Ver imóveis disponíveis
-                                        <ChevronRight className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </div>
-                        </motion.div>
-                    </AnimatePresence>
-                </motion.div>
-
-                {/* Segredos do Mercado */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="mb-24"
-                >
-                    <h2 className="text-3xl font-bold text-slate-900 text-center mb-12">
-                        Informações que Transformam Negócios
-                    </h2>
-
-                    <div className="grid md:grid-cols-2 gap-8">
-                        {guararemasExclusiveData.marketSecrets.map((secret, index) => (
-                            <motion.div
-                                key={index}
-                                whileHover={{ scale: 1.02 }}
-                                className="bg-gradient-to-br from-white to-slate-50 p-8 rounded-2xl shadow-lg border border-slate-100"
-                            >
-                                <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-                                    <Shield className="w-5 h-5 text-emerald-600" />
-                                    {secret.title}
-                                </h3>
-
-                                <div className="space-y-4">
-                                    {secret.insights.map((insight, idx) => (
-                                        <div key={idx} className="flex items-start gap-3">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                                            <p className="text-slate-700 leading-relaxed">{insight}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
-                </motion.div>
-
-                {/* Métricas de Performance */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    className="mb-24"
-                >
-                    <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl p-12 text-white relative overflow-hidden">
-                        <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10" />
-
-                        <div className="relative z-10">
-                            <h2 className="text-3xl font-bold mb-12 text-center">
-                                Resultados que Falam por Si
-                            </h2>
-
-                            <div className="grid md:grid-cols-3 gap-8">
-                                <motion.div
-                                    whileHover={{ scale: 1.05 }}
-                                    onHoverStart={() => setHoveredMetric('velocity')}
-                                    onHoverEnd={() => setHoveredMetric(null)}
-                                    className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/20 text-center cursor-pointer"
-                                >
-                                    <Clock className="w-8 h-8 mx-auto mb-4 text-emerald-200" />
-                                    <h3 className="text-4xl font-bold mb-2">{successMetrics.velocity.avg}</h3>
-                                    <p className="text-emerald-100 mb-2">Tempo médio de venda</p>
-                                    <AnimatePresence>
-                                        {hoveredMetric === 'velocity' && (
-                                            <motion.div
-                                                initial={{ opacity: 0, height: 0 }}
-                                                animate={{ opacity: 1, height: 'auto' }}
-                                                exit={{ opacity: 0, height: 0 }}
-                                                className="mt-4 text-sm text-emerald-100"
-                                            >
-                                                <p>Mercado: {successMetrics.velocity.market}</p>
-                                                <p>Recorde: {successMetrics.velocity.record}</p>
-                                                <p className="mt-2 text-xs">{successMetrics.velocity.detail}</p>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </motion.div>
-
-                                <motion.div
-                                    whileHover={{ scale: 1.05 }}
-                                    onHoverStart={() => setHoveredMetric('pricing')}
-                                    onHoverEnd={() => setHoveredMetric(null)}
-                                    className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/20 text-center cursor-pointer"
-                                >
-                                    <TrendingUp className="w-8 h-8 mx-auto mb-4 text-emerald-200" />
-                                    <h3 className="text-4xl font-bold mb-2">{successMetrics.pricing.overMarket}</h3>
-                                    <p className="text-emerald-100 mb-2">Acima do mercado</p>
-                                    <AnimatePresence>
-                                        {hoveredMetric === 'pricing' && (
-                                            <motion.div
-                                                initial={{ opacity: 0, height: 0 }}
-                                                animate={{ opacity: 1, height: 'auto' }}
-                                                exit={{ opacity: 0, height: 0 }}
-                                                className="mt-4 text-sm text-emerald-100"
-                                            >
-                                                <p>Precisão: {successMetrics.pricing.accuracy}</p>
-                                                <p className="mt-2 text-xs">{successMetrics.pricing.detail}</p>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </motion.div>
-
-                                <motion.div
-                                    whileHover={{ scale: 1.05 }}
-                                    onHoverStart={() => setHoveredMetric('satisfaction')}
-                                    onHoverEnd={() => setHoveredMetric(null)}
-                                    className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/20 text-center cursor-pointer"
-                                >
-                                    <Star className="w-8 h-8 mx-auto mb-4 text-emerald-200" />
-                                    <h3 className="text-4xl font-bold mb-2">{successMetrics.satisfaction.referrals}</h3>
-                                    <p className="text-emerald-100 mb-2">Indicações</p>
-                                    <AnimatePresence>
-                                        {hoveredMetric === 'satisfaction' && (
-                                            <motion.div
-                                                initial={{ opacity: 0, height: 0 }}
-                                                animate={{ opacity: 1, height: 'auto' }}
-                                                exit={{ opacity: 0, height: 0 }}
-                                                className="mt-4 text-sm text-emerald-100"
-                                            >
-                                                <p>NPS: {successMetrics.satisfaction.nps}</p>
-                                                <p>Recompra: {successMetrics.satisfaction.repeat}</p>
-                                                <p className="mt-2 text-xs">{successMetrics.satisfaction.detail}</p>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </motion.div>
-                            </div>
-                        </div>
-                    </div>
-                </motion.div>
-
-                {/* Jornada do Cliente com Valor Agregado */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="mb-24"
-                >
-                    <h2 className="text-3xl font-bold text-slate-900 text-center mb-12">
-                        Como Transformamos sua Jornada
-                    </h2>
-
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {journeyPhases.map((phase, index) => (
-                            <motion.div
-                                key={index}
-                                whileHover={{ y: -8 }}
-                                className="bg-white p-6 rounded-2xl shadow-lg border border-slate-100 relative overflow-hidden group"
-                            >
-                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
-
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
-                                        {phase.icon}
-                                    </div>
-                                    <h3 className="font-bold text-slate-900">{phase.phase}</h3>
-                                </div>
-
-                                <p className="text-slate-800 font-medium mb-3">{phase.value}</p>
-                                <p className="text-sm text-slate-600 italic">{phase.example}</p>
-                            </motion.div>
-                        ))}
-                    </div>
-                </motion.div>
-
-                {/* Hidden Gems - Oportunidades Exclusivas */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    className="mb-24"
-                >
-                    <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-8 md:p-12 rounded-3xl border border-amber-200">
-                        <div className="text-center mb-8">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-800 rounded-full text-sm font-medium mb-4">
-                                <Key className="w-4 h-4" />
-                                <span>Acesso Antecipado</span>
-                            </div>
-                            <h3 className="text-2xl font-bold text-slate-900 mb-2">
-                                Oportunidades Antes do Mercado
-                            </h3>
-                            <p className="text-slate-600">
-                                Imóveis que ainda nem entraram nos portais
-                            </p>
-                        </div>
-
-                        <div className="grid md:grid-cols-2 gap-4">
-                            {guararemasExclusiveData.hiddenGems.map((gem, index) => (
-                                <motion.div
-                                    key={index}
-                                    whileHover={{ scale: 1.02 }}
-                                    className="bg-white/80 backdrop-blur-sm p-4 rounded-xl flex items-start gap-3"
-                                >
-                                    <div className="w-2 h-2 rounded-full bg-amber-500 mt-2 flex-shrink-0" />
-                                    <p className="text-sm text-slate-700">{gem}</p>
-                                </motion.div>
-                            ))}
-                        </div>
-
-                        <div className="text-center mt-8">
-                            <p className="text-sm text-slate-600 mb-4">
-                                + outras 12 oportunidades exclusivas este mês
-                            </p>
-                            <button className="inline-flex items-center gap-2 px-6 py-3 bg-amber-600 text-white rounded-xl font-medium hover:bg-amber-700 transition-colors">
-                                Receber Lista Completa
-                                <ChevronRight className="w-4 h-4" />
-                            </button>
-                        </div>
-                    </div>
-                </motion.div>
-
-                {/* CTA Final Premium */}
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    className="relative"
-                >
-                    <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-12 md:p-16 text-white relative overflow-hidden">
-                        <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-5" />
-                        <div className="absolute -top-24 -right-24 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl" />
-                        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl" />
-
-                        <div className="relative z-10 max-w-3xl mx-auto text-center">
-                            <motion.div
-                                initial={{ scale: 0 }}
-                                whileInView={{ scale: 1 }}
-                                transition={{ type: "spring", delay: 0.2 }}
-                                className="inline-flex p-4 bg-emerald-500/20 rounded-full mb-6"
-                            >
-                                <HeartHandshake className="w-8 h-8 text-emerald-400" />
-                            </motion.div>
-
-                            <h2 className="text-3xl md:text-4xl font-bold mb-6 leading-tight">
-                                Pronto para Descobrir as Melhores
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400"> Oportunidades de Guararema?</span>
-                            </h2>
-
-                            <p className="text-xl text-slate-300 mb-8 leading-relaxed">
-                                Junte-se aos 400+ proprietários que já descobriram:
-                                informação exclusiva é a diferença entre um bom negócio e um negócio extraordinário.
-                            </p>
-
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                                <Link
-                                    href={ctaLink}
-                                    className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-2xl font-semibold hover:shadow-2xl hover:shadow-emerald-500/25 transition-all duration-300 transform hover:scale-105"
-                                >
-                                    <span>{ctaText}</span>
-                                    <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                </Link>
-
-                                <Link
-                                    href="https://wa.me/5511981845016"
-                                    target="_blank"
-                                    className="inline-flex items-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-2xl font-semibold hover:bg-white/20 transition-all border border-white/20"
-                                >
-                                    <Phone className="w-5 h-5" />
-                                    <span>WhatsApp Direto</span>
-                                </Link>
-                            </div>
-
-                            <div className="flex items-center justify-center gap-8 mt-12 text-sm text-slate-400">
-                                <div className="flex items-center gap-2">
-                                    <Shield className="w-4 h-4" />
-                                    <span>Sigilo Total</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Clock className="w-4 h-4" />
-                                    <span>Resposta em 2h</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Award className="w-4 h-4" />
-                                    <span>CRECI 123.456</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </motion.div>
-            </motion.div>
-        </section>
-    );
+// Consolidated market intelligence with strategic data architecture
+const marketData = {
+    regions: [
+        {
+            id: 'centro',
+            name: 'Centro Histórico',
+            metrics: { price: 2800, growth: 15.2, velocity: 18, inventory: 12 },
+            insight: 'Patrimônio histórico com liquidez premium. Últimas transações 22% acima da região.'
+        },
+        {
+            id: 'freguesias',
+            name: 'Freguesia/Nogueira',
+            metrics: { price: 1950, growth: 22.1, velocity: 25, inventory: 28 },
+            insight: 'Conectividade ferroviária impulsiona demanda residencial de alto padrão.'
+        },
+        {
+            id: 'rural',
+            name: 'Zona Rural Premium',
+            metrics: { price: 450, growth: 18.7, velocity: 35, inventory: 8 },
+            insight: 'Chácaras com recursos hídricos apresentam valorização 40% superior.'
+        }
+    ],
+    performance: {
+        velocity: { value: 23, benchmark: 74, unit: 'dias' },
+        precision: { value: 94.2, benchmark: 67.8, unit: '%' },
+        premium: { value: 18.3, benchmark: 0, unit: '%' }
+    }
 };
 
-export default GuararemasImobiliariaComponent;
+// Advanced UI state management
+const useMarketIntelligence = () => {
+    const [activeRegion, setActiveRegion] = useState(0);
+    const [viewportIntersection, setViewportIntersection] = useState(false);
+    const observerRef = useRef(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => setViewportIntersection(entry.isIntersecting),
+            { threshold: 0.2, rootMargin: '-50px' }
+        );
+
+        if (observerRef.current) observer.observe(observerRef.current);
+
+        const rotationTimer = setInterval(() => {
+            setActiveRegion(prev => (prev + 1) % marketData.regions.length);
+        }, 6000);
+
+        return () => {
+            observer.disconnect();
+            clearInterval(rotationTimer);
+        };
+    }, []);
+
+    return { activeRegion, setActiveRegion, viewportIntersection, observerRef };
+};
+
+// Professional metric component with advanced styling
+const MetricCard: React.FC<MetricCardProps> = ({ label, value, comparison, icon: Icon, delay = 0 }) => (
+    <div
+        className="group relative overflow-hidden"
+        style={{ animationDelay: `${delay}ms` }}
+    >
+        {/* Layered background system */}
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-50/80 via-white to-amber-50/40 backdrop-blur-sm" />
+        <div className="absolute inset-0 bg-gradient-to-t from-amber-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        <div className="absolute inset-0 border border-amber-200/60 group-hover:border-amber-300/80 transition-colors duration-500" />
+
+        {/* Content layer */}
+        <div className="relative z-10 p-8 h-full">
+            <div className="flex items-start justify-between mb-6">
+                <div className="p-3 bg-gradient-to-br from-amber-100 to-amber-50 border border-amber-200/50 group-hover:shadow-lg group-hover:shadow-amber-500/20 transition-all duration-500">
+                    <Icon className="w-6 h-6 text-amber-700" />
+                </div>
+                <div className="text-right">
+                    <div className="text-3xl font-bold text-slate-900 mb-1">{value}</div>
+                    <div className="text-sm text-amber-700 font-medium">{comparison}</div>
+                </div>
+            </div>
+
+            <div className="border-t border-slate-200/60 pt-4">
+                <p className="text-slate-700 font-medium leading-tight">{label}</p>
+            </div>
+        </div>
+    </div>
+);
+
+// Sophisticated region selector with professional interactions
+const RegionSelector: React.FC<RegionSelectorProps> = ({ regions, active, onChange }) => (
+    <div className="flex gap-1 p-1 bg-slate-100/80 backdrop-blur-sm border border-slate-200/60">
+        {regions.map((region: Region, index: number) => (
+            <button
+                key={region.id}
+                onClick={() => onChange(index)}
+                className={`
+          relative px-6 py-3 font-medium text-sm transition-all duration-300
+          ${active === index
+                        ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/30'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                    }
+        `}
+            >
+                <span className="relative z-10">{region.name}</span>
+                {active === index && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-amber-400/20 to-amber-600/20 blur-sm" />
+                )}
+            </button>
+        ))}
+    </div>
+);
+
+// Main component with enterprise-grade architecture
+function ValorAprimorado() {
+    const { activeRegion, setActiveRegion, viewportIntersection, observerRef } = useMarketIntelligence();
+    const currentRegion = marketData.regions[activeRegion];
+
+    return (
+        <section
+            ref={observerRef}
+            className="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-amber-50/30 overflow-hidden"
+        >
+            {/* Advanced background architecture */}
+            <div className="absolute inset-0">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(245,158,11,0.1),transparent_60%)]" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(120,53,15,0.05),transparent_60%)]" />
+                <svg className="absolute inset-0 w-full h-full opacity-[0.015]" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <pattern id="professional-grid" width="80" height="80" patternUnits="userSpaceOnUse">
+                            <path d="M 80 0 L 0 0 0 80" fill="none" stroke="currentColor" strokeWidth="1" />
+                            <circle cx="40" cy="40" r="1" fill="currentColor" opacity="0.3" />
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#professional-grid)" />
+                </svg>
+            </div>
+
+            <div className={`
+        relative z-10 container mx-auto px-6 py-32 max-w-7xl
+        transition-all duration-1000 ease-out
+        ${viewportIntersection ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}
+      `}>
+
+                {/* Strategic header with professional hierarchy */}
+                <header className="max-w-4xl mx-auto text-center mb-24">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-100 to-amber-50 border border-amber-200/60 text-amber-800 text-sm font-semibold mb-8">
+                        <MapPin className="w-4 h-4" />
+                        INTELIGÊNCIA DE MERCADO GUARAREMA
+                    </div>
+
+                    <h1 className="text-5xl md:text-7xl font-bold text-slate-900 mb-8 leading-[0.85] tracking-tight">
+                        Dados que definem
+                        <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-amber-500 to-amber-700">
+                            oportunidades reais
+                        </span>
+                    </h1>
+
+                    <p className="text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto">
+                        Quinze anos de mercado consolidados em análises preditivas e
+                        <strong className="text-slate-900"> inteligência proprietária de precificação</strong>.
+                    </p>
+                </header>
+
+                {/* Performance metrics with sophisticated design */}
+                <section className="grid md:grid-cols-3 gap-6 mb-24">
+                    <MetricCard
+                        label="Velocidade média de comercialização"
+                        value={`${marketData.performance.velocity.value} dias`}
+                        comparison={`${marketData.performance.velocity.benchmark - marketData.performance.velocity.value} dias menor que mercado`}
+                        icon={Clock}
+                        delay={0}
+                    />
+                    <MetricCard
+                        label="Precisão de avaliação patrimonial"
+                        value={`${marketData.performance.precision.value}%`}
+                        comparison={`+${(marketData.performance.precision.value - marketData.performance.precision.benchmark).toFixed(1)}% vs concorrência`}
+                        icon={Target}
+                        delay={150}
+                    />
+                    <MetricCard
+                        label="Valorização média obtida"
+                        value={`+${marketData.performance.premium.value}%`}
+                        comparison="acima do valor inicial"
+                        icon={TrendingUp}
+                        delay={300}
+                    />
+                </section>
+
+                {/* Market intelligence interface */}
+                <section className="mb-24">
+                    <div className="bg-white/70 backdrop-blur-xl border border-slate-200/60 shadow-2xl shadow-slate-900/5 overflow-hidden">
+                        <div className="p-12">
+                            <header className="text-center mb-12">
+                                <h2 className="text-3xl font-bold text-slate-900 mb-4">
+                                    Análise Territorial Estratégica
+                                </h2>
+                                <p className="text-slate-600 max-w-2xl mx-auto">
+                                    Segmentação micro-regional com dados de performance e tendências
+                                </p>
+                            </header>
+
+                            <div className="mb-12 flex justify-center">
+                                <RegionSelector
+                                    regions={marketData.regions}
+                                    active={activeRegion}
+                                    onChange={setActiveRegion}
+                                />
+                            </div>
+
+                            <div className="grid lg:grid-cols-2 gap-12 items-center">
+                                <div className="space-y-8">
+                                    <div>
+                                        <h3 className="text-2xl font-bold text-slate-900 mb-8">
+                                            {currentRegion.name}
+                                        </h3>
+
+                                        <div className="grid grid-cols-2 gap-4 mb-8">
+                                            <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 p-6 border border-slate-200/60">
+                                                <div className="text-2xl font-bold text-slate-900 mb-1">
+                                                    R$ {currentRegion.metrics.price.toLocaleString()}/m²
+                                                </div>
+                                                <div className="text-sm text-slate-600">Preço médio</div>
+                                            </div>
+                                            <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 p-6 border border-amber-200/60">
+                                                <div className="text-2xl font-bold text-amber-700 mb-1">
+                                                    +{currentRegion.metrics.growth}%
+                                                </div>
+                                                <div className="text-sm text-amber-700">Valorização anual</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-8 relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl" />
+                                        <div className="relative z-10">
+                                            <div className="flex items-start gap-3 mb-4">
+                                                <Shield className="w-5 h-5 text-amber-400 mt-1 flex-shrink-0" />
+                                                <div>
+                                                    <h4 className="font-semibold mb-2">Análise Estratégica</h4>
+                                                    <p className="text-slate-300 leading-relaxed text-sm">
+                                                        {currentRegion.insight}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Advanced data visualization */}
+                                <div className="relative">
+                                    <div className="bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 p-12 text-white relative overflow-hidden">
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+                                        <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
+
+                                        <div className="relative z-10">
+                                            <div className="flex items-center gap-3 mb-8">
+                                                <BarChart3 className="w-8 h-8" />
+                                                <div>
+                                                    <h4 className="text-xl font-bold">Performance Comparativa</h4>
+                                                    <p className="text-amber-100 text-sm">Últimos 12 meses</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-6">
+                                                <div className="bg-white/15 backdrop-blur-sm p-4 border border-white/20">
+                                                    <div className="text-2xl font-bold mb-1">{currentRegion.metrics.velocity}</div>
+                                                    <div className="text-amber-100 text-sm">Dias médios venda</div>
+                                                </div>
+                                                <div className="bg-white/15 backdrop-blur-sm p-4 border border-white/20">
+                                                    <div className="text-2xl font-bold mb-1">{currentRegion.metrics.inventory}</div>
+                                                    <div className="text-amber-100 text-sm">Oportunidades ativas</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Value proposition with professional messaging */}
+                <section className="max-w-4xl mx-auto text-center mb-24">
+                    <h2 className="text-3xl font-bold text-slate-900 mb-12">
+                        Diferencial Competitivo Estrutural
+                    </h2>
+
+                    <div className="grid md:grid-cols-3 gap-8">
+                        {[
+                            {
+                                icon: Eye,
+                                title: 'Acesso Antecipado',
+                                description: 'Pipeline exclusivo pré-mercado com propriedades qualificadas'
+                            },
+                            {
+                                icon: Target,
+                                title: 'Avaliação Técnica',
+                                description: 'Metodologia proprietária com variáveis de análise local'
+                            },
+                            {
+                                icon: TrendingUp,
+                                title: 'Network Qualificado',
+                                description: 'Base ativa de 400+ investidores com perfis segmentados'
+                            }
+                        ].map(({ icon: Icon, title, description }, index) => (
+                            <div key={index} className="relative group">
+                                <div className="absolute inset-0 bg-gradient-to-br from-amber-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                                <div className="relative p-8">
+                                    <div className="inline-flex p-4 bg-gradient-to-br from-amber-100 to-amber-50 border border-amber-200/60 mb-6 group-hover:shadow-lg group-hover:shadow-amber-500/20 transition-all duration-500">
+                                        <Icon className="w-8 h-8 text-amber-700" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-900 mb-4">{title}</h3>
+                                    <p className="text-slate-600 leading-relaxed">{description}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* Professional CTA with sophisticated design */}
+                <section className="relative">
+                    <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden relative">
+                        <div className="absolute inset-0 bg-gradient-to-r from-amber-600/10 via-transparent to-amber-600/10" />
+                        <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl" />
+                        <div className="absolute bottom-0 left-0 w-96 h-96 bg-amber-700/5 rounded-full blur-3xl" />
+
+                        <div className="relative z-10 p-16 text-center text-white">
+                            <h2 className="text-4xl font-bold mb-8 max-w-3xl mx-auto leading-tight">
+                                Acesse Inteligência de Mercado Proprietária
+                            </h2>
+
+                            <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto leading-relaxed">
+                                Análises exclusivas e oportunidades qualificadas para
+                                decisões patrimoniais estratégicas.
+                            </p>
+
+                            <button className="group inline-flex items-center gap-3 px-12 py-5 bg-gradient-to-r from-amber-500 to-amber-600 font-semibold text-lg hover:from-amber-600 hover:to-amber-700 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/30">
+                                Solicitar Análise Personalizada
+                                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                            </button>
+
+                            <div className="flex items-center justify-center mt-12 text-sm text-slate-400 gap-8">
+                                <div className="flex items-center gap-2">
+                                    <Shield className="w-4 h-4" />
+                                    Confidencialidade Garantida
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Clock className="w-4 h-4" />                        Resposta em 2h Úteis
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </section>);
+}
+
+export default ValorAprimorado;

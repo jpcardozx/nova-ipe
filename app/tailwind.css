@@ -1,0 +1,37 @@
+@import 'tailwindcss';
+
+/* Configuração personalizada para transformações */
+@theme {
+  --color-brand-green: #1a6f5c;
+  --color-brand-green-dark: #145a49;
+  --color-brand-green-light: #3a8f7c;
+  --color-brand-dark: #0d1f2d;
+  --color-brand-dark-light: #1e3042;
+  --color-brand-light: #f8f4e3;
+  --color-accent-yellow: #ffcc00;
+  --color-accent-yellow-dark: #e6b800;
+}
+
+/* Utilitários personalizados para transformações */
+@layer utilities {
+  .hover\:-translate-y-1:hover {
+    transform: translateY(-0.25rem);
+  }
+
+  .hover\:scale-105:hover {
+    transform: scale(1.05);
+  }
+
+  .hover\:-translate-y-1 {
+    transition-property: transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+
+  .hover\:-translate-y-1:hover {
+    --tw-translate-y: -0.25rem;
+    transform: translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0))
+      rotate(var(--tw-rotate, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0))
+      scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1));
+  }
+}

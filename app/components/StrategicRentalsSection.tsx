@@ -202,12 +202,10 @@ const StrategicRentalsSection: React.FC = () => {
                     } catch (error) {
                         console.warn('Erro ao carregar imagem:', error);
                         imageUrl = '/images/default-property.jpg';
-                    }
-
-                    return {
+                    } return {
                         id: property._id,
                         title: property.titulo || `${property.tipoImovel} em ${property.bairro}`,
-                        slug: property.slug,
+                        slug: extractSlugString(property.slug) || property._id,
                         price: property.preco || 0,
                         location: `${property.bairro}, ${property.cidade}`,
                         bedrooms: property.dormitorios || 0,
@@ -273,9 +271,7 @@ const StrategicRentalsSection: React.FC = () => {
                 </div>
             </section>
         );
-    }
-
-    return (
+    } return (
         <section className="py-20 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 relative overflow-hidden">
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-30">
@@ -290,6 +286,7 @@ const StrategicRentalsSection: React.FC = () => {
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, margin: "-100px" }}
+                style={{ position: 'relative' }}
             >
                 {/* Header */}
                 <motion.div
@@ -376,14 +373,13 @@ const StrategicRentalsSection: React.FC = () => {
                                                 className="border-0 shadow-none rounded-2xl"
                                             />
 
-                                            {/* Hover Overlay */}                                            <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end justify-center p-6">
-                                                <Link
-                                                    href={`/imovel/${property.slug}`}
-                                                    className="bg-white text-emerald-700 px-6 py-2 rounded-full font-semibold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 flex items-center space-x-2"
-                                                >
-                                                    <span>Ver Detalhes</span>
-                                                    <ArrowRight className="w-4 h-4" />
-                                                </Link>
+                                            {/* Hover Overlay */}                                            <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end justify-center p-6">                                                <Link
+                                                href={`/imovel/${typeof property.slug === 'string' ? property.slug : property.id}`}
+                                                className="bg-white text-emerald-700 px-6 py-2 rounded-full font-semibold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 flex items-center space-x-2"
+                                            >
+                                                <span>Ver Detalhes</span>
+                                                <ArrowRight className="w-4 h-4" />
+                                            </Link>
                                             </div>
                                         </div>
                                     </motion.div>

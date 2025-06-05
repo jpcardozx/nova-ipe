@@ -1,3 +1,0 @@
-# Minimal ESLint configuration for testing
-extends:
-  - 'eslint:recommended'

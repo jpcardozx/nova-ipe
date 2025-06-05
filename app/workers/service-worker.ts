@@ -22,7 +22,7 @@ const CRITICAL_ASSETS = [
     '/',
     '/fonts/critical-icons.woff2',
     '/images/logo.png',
-    '/manifest.webmanifest',
+    '/manifest.json',
 ];
 
 // Asset patterns with caching strategies

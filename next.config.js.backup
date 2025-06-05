@@ -1,0 +1,151 @@
+/** @type {import('next').NextConfig} */
+
+// Critical: Global polyfill for SSR
+if (typeof globalThis !== 'undefined' && typeof globalThis.self === 'undefined') {
+  globalThis.self = globalThis;
+}
+
+const nextConfig = {
+  reactStrictMode: true,
+  swcMinify: true,
+  
+  // Critical SSR fixes
+  env: {
+    CUSTOM_KEY: 'my-value',
+  },
+  
+  // Critical Performance Optimizations
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  
+  // Enhanced server components configuration
+  experimental: {
+    serverComponentsExternalPackages: ['sanity'],
+    optimizePackageImports: ['lucide-react', 'framer-motion', '@radix-ui/react-slot'],
+    optimizeServerReact: true,
+  },
+
+  // Critical webpack optimizations
+  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // SSR polyfills and exclusions
+    if (isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      };
+      
+      // Exclude service workers from server bundle
+      config.externals = config.externals || [];
+      config.externals.push(
+        /^.*\/workers\/.*$/,
+        /service-worker/,
+        /sw-types/
+      );
+    }
+
+    // Client-side optimizations
+    if (!isServer) {
+      // Add global polyfills for client
+      config.plugins.push(
+        new webpack.DefinePlugin({
+          'typeof window': JSON.stringify('object'),
+        })
+      );
+    }
+
+    // Bundle analyzer in production
+    if (!dev && !isServer) {
+      const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+      config.plugins.push(
+        new BundleAnalyzerPlugin({
+          analyzerMode: 'static',
+          openAnalyzer: false,
+          reportFilename: './analyze/client.html'
+        })
+      );
+    }
+
+    // Critical chunk splitting
+    config.optimization = {
+      ...config.optimization,
+      splitChunks: {
+        chunks: 'all',
+        cacheGroups: {
+          default: false,
+          vendors: false,
+          // Framework chunk
+          framework: {
+            chunks: 'all',
+            name: 'framework',
+            test: /(?<!node_modules.*)[\\/]node_modules[\\/](react|react-dom|scheduler|prop-types|use-subscription)[\\/]/,
+            priority: 40,
+            enforce: true,
+          },
+          // Lib chunk
+          lib: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'lib',
+            priority: 30,
+            minChunks: 1,
+            reuseExistingChunk: true,
+          },
+          // Commons chunk
+          commons: {
+            name: 'commons',
+            minChunks: 2,
+            priority: 20,
+            reuseExistingChunk: true,
+          },
+        },
+      },
+    };
+
+    return config;
+  },
+  
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.sanity.io',
+      },
+    ],
+  },
+  
+  // Simple redirects without problematic patterns
+  async redirects() {
+    return [];
+  },
+
+  // Add headers to fix CORS issues
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, POST, PUT, DELETE, OPTIONS',
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type, Authorization',
+          },
+        ],
+      },
+    ];
+  },
+};
+
+module.exports = nextConfig;
