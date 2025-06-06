@@ -81,12 +81,12 @@ export const metadata: Metadata = {
         languages: {
             'pt-BR': 'https://ipeimoveis.vercel.app',
         },
-    },
-    other: {
+    }, other: {
         'msapplication-TileColor': '#E6AA2C',
         'theme-color': '#E6AA2C',
         'mobile-web-app-capable': 'yes',
         'apple-mobile-web-app-status-bar-style': 'default',
         'format-detection': 'telephone=no',
     },
+    manifest: '/manifest.webmanifest',
 };

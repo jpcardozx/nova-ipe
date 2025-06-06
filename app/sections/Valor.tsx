@@ -180,7 +180,7 @@ export default function ApresentacaoInstitucional() {
                                 className="object-cover"
                                 sizes="(min-width: 1024px) 50vw, 100vw" // Added sizes prop
                                 priority
-                            />                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
+                            />                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-amber-900/70 to-transparent p-6">
                                 <h3 className="text-white text-xl font-bold mb-2">
                                     Escritório Central
                                 </h3>

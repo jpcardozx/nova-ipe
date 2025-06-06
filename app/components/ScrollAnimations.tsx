@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, type PropsWithChildren } from 'react';
 
-export default function ScrollAnimations() {
+export default function ScrollAnimations({ children }: PropsWithChildren) {
     useEffect(() => {
         const observerOptions = {
             threshold: 0.1,
@@ -20,7 +20,7 @@ export default function ScrollAnimations() {
         const fadeElements = document.querySelectorAll('.fade-in-section');
         fadeElements.forEach((el) => observer.observe(el));
 
-        // Smooth scroll seguro
+        // Smooth scroll management
         const smoothScrollLinks = document.querySelectorAll('a[href^="#"]');
         smoothScrollLinks.forEach((link) => {
             link.addEventListener('click', (e) => {
@@ -38,6 +38,7 @@ export default function ScrollAnimations() {
             });
         });
 
+        // Parallax effect handling
         const handleScroll = () => {
             const scrolled = window.pageYOffset;
             const parallaxElements = document.querySelectorAll('[data-parallax]');
@@ -53,10 +54,11 @@ export default function ScrollAnimations() {
         window.addEventListener('scroll', handleScroll, { passive: true });
 
         return () => {
+            fadeElements.forEach((el) => observer.unobserve(el));
             observer.disconnect();
             window.removeEventListener('scroll', handleScroll);
         };
     }, []);
 
-    return null;
+    return <div className="fade-in-section">{children}</div>;
 }

@@ -299,7 +299,7 @@ const FormularioContatoSubtil: React.FC<ContactFormProps> = ({ className = '' })
         {
             icon: <MapPin className="w-5 h-5" />,
             title: "Conhecimento Local",
-            description: "15 anos de experiência exclusiva em Guararema"
+            description: "15 anos de experiência especializada em Guararema"
         },
         {
             icon: <TrendingUp className="w-5 h-5" />,

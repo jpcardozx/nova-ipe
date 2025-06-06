@@ -124,7 +124,7 @@ const FeaturedPropertyCard: FC<{ property: ImovelClientType }> = ({ property }) 
                     fill
                     className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-amber-900/50 to-transparent"></div>
                 <div className="absolute bottom-4 left-4 bg-emerald-600 text-white px-4 py-2 rounded-lg font-semibold shadow-lg">
                     {formatarMoeda(property.price)}
                 </div>
@@ -347,9 +347,8 @@ export default function DestaquesVendaSection() {
                     <Building className="w-4 h-4 mr-2 text-emerald-600" />
                     <span className="text-sm font-medium text-emerald-600">Imóveis Selecionados</span>
                 </div>
-                <h2 className="text-3xl md:text-4xl font-bold text-emerald-800 mb-4">Encontre o Imóvel Perfeito para sua Família</h2>
-                <p className="text-stone-600 max-w-2xl mx-auto">
-                    Curadoria exclusiva de propriedades em Guararema e região, escolhidas com cuidado para atender às necessidades da sua família.
+                <h2 className="text-3xl md:text-4xl font-bold text-emerald-800 mb-4">Encontre o Imóvel Perfeito para sua Família</h2>                <p className="text-stone-600 max-w-2xl mx-auto">
+                    Seleção cuidadosa de propriedades em Guararema e região, escolhidas para atender às necessidades da sua família.
                 </p>
             </motion.div>
 
@@ -382,41 +381,37 @@ export default function DestaquesVendaSection() {
                     <NavButton direction="prev" onClick={prev} disabled={imoveis.length <= 1} />
                     <NavButton direction="next" onClick={next} disabled={imoveis.length <= 1} />
                 </div>
-            </div>
-
-            {/* Property grid */}
+            </div>            {/* Property grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                 {imoveis.slice(0, 6).map((imovel) => (
-                    <AnimatePresence key={imovel._id} mode="wait">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.6 }}
-                        >
-                            <PropertyCardUnified
-                                id={imovel._id}
-                                title={imovel.titulo || 'Imóvel para venda'}
-                                slug={imovel.slug as string || imovel._id}
-                                location={imovel.bairro || 'Localização não informada'}
-                                city={imovel.cidade}
-                                price={imovel.preco || 0}
-                                propertyType="sale"
-                                area={imovel.areaUtil}
-                                bedrooms={imovel.dormitorios}
-                                bathrooms={imovel.banheiros}
-                                parkingSpots={imovel.vagas}
-                                mainImage={{
-                                    url: imovel.imagem?.imagemUrl || '/images/placeholder-property.jpg',
-                                    alt: imovel.imagem?.alt || imovel.titulo || 'Imóvel para venda',
-                                    sanityImage: imovel.imagem
-                                }}
-                                isHighlight={imovel.destaque}
-                                isFavorite={isFavorite(imovel._id)}
-                                onFavoriteToggle={toggleFavorite}
-                            />
-                        </motion.div>
-                    </AnimatePresence>
+                    <motion.div
+                        key={imovel._id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.6 }}
+                    >
+                        <PropertyCardUnified
+                            id={imovel._id}
+                            title={imovel.titulo || 'Imóvel para venda'}
+                            slug={imovel.slug as string || imovel._id}
+                            location={imovel.bairro || 'Localização não informada'}
+                            city={imovel.cidade}
+                            price={imovel.preco || 0}
+                            propertyType="sale"
+                            area={imovel.areaUtil}
+                            bedrooms={imovel.dormitorios}
+                            bathrooms={imovel.banheiros}
+                            parkingSpots={imovel.vagas}
+                            mainImage={{
+                                url: imovel.imagem?.imagemUrl || '/images/placeholder-property.jpg',
+                                alt: imovel.imagem?.alt || imovel.titulo || 'Imóvel para venda',
+                                sanityImage: imovel.imagem
+                            }} isHighlight={imovel.destaque}
+                            isFavorite={isFavorite(imovel._id)}
+                            onFavoriteToggle={toggleFavorite}
+                        />
+                    </motion.div>
                 ))}
             </div>
 

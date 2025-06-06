@@ -22,7 +22,7 @@ export default function VisitaPage() {
     const heroFeatures = [
         {
             icon: <Building2 className="h-6 w-6 text-accent-yellow" />,
-            title: "Acesso exclusivo",
+            title: "Acesso especializado",
             desc: "Propriedades não disponíveis no mercado aberto"
         },
         {
@@ -140,7 +140,7 @@ export default function VisitaPage() {
                                 </h1>
 
                                 <p className="text-neutral-300 text-lg md:text-xl max-w-3xl mx-auto font-light leading-relaxed mb-12 font-body text-body-large md:text-lead">
-                                    Acesso exclusivo às propriedades mais desejadas da região, com análise detalhada de investimento e acompanhamento por especialistas de mercado.
+                                    Acesso especializado às propriedades mais desejadas da região, com análise detalhada de investimento e acompanhamento por especialistas de mercado.
                                 </p>
 
                                 <div className="flex flex-wrap justify-center gap-4 mb-16">
@@ -196,14 +196,14 @@ export default function VisitaPage() {
                                     sizes="(max-width: 768px) 100vw, 100vw"
                                     quality={90}
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-amber-900/70 via-amber-800/40 to-transparent"></div>
                                 <div className="absolute bottom-0 left-0 right-0 p-8">
                                     <div className="flex items-center justify-between">
                                         <div>
                                             <div className="flex items-center gap-3 mb-3">
                                                 <div className="bg-accent-yellow/90 text-brand-dark text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded text-caption font-body">Residencial premium</div>
                                                 <div className="bg-white/20 backdrop-blur-sm text-white text-xs px-3 py-1 rounded flex items-center text-caption font-body">
-                                                    <Lock className="h-3 w-3 mr-1" /> Acesso exclusivo
+                                                    <Lock className="h-3 w-3 mr-1" /> Acesso especializado
                                                 </div>
                                             </div>
                                             <p className="text-white text-xl font-semibold font-body text-heading-4">Condomínio Reserva dos Lagos</p>

@@ -31,7 +31,7 @@ const ContactSection = () => {
         setTimeout(() => {
             setIsSubmitting(false); setSubmitResult({
                 success: true,
-                message: 'Perfeito! Sua solicitação foi recebida. Nossa equipe entrará em contato em até 2 horas úteis com informações exclusivas para você.'
+                message: 'Perfeito! Sua solicitação foi recebida. Nossa equipe entrará em contato em até 2 horas úteis com informações personalizadas para você.'
             });
 
             // Reset form after successful submission

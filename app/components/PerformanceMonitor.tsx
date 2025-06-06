@@ -10,232 +10,222 @@
  * @date 23/05/2025
  */
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Interface for the performance metrics we track
 interface PerformanceMetrics {
-    LCP: number | null; // Largest Contentful Paint
-    FID: number | null; // First Input Delay
-    CLS: number | null; // Cumulative Layout Shift
-    TTI: number | null; // Time to Interactive
-    TTFB: number | null; // Time to First Byte
-    pageLoaded: number | null; // Total page load time
+    fcp: number | null; // First Contentful Paint
+    lcp: number | null; // Largest Contentful Paint
+    cls: number | null; // Cumulative Layout Shift
+    fid: number | null; // First Input Delay
+    ttfb: number | null; // Time to First Byte
 }
 
-export default function PerformanceMonitor() {
-    const [metrics, setMetrics] = useState<PerformanceMetrics>({
-        LCP: null,
-        FID: null,
-        CLS: null,
-        TTI: null,
-        TTFB: null,
-        pageLoaded: null
-    });
+interface PerformanceMonitorProps {
+    enabled?: boolean;
+    showMetrics?: boolean;
+}
 
-    // Only show the UI in development mode
-    const [showUI, setShowUI] = useState(false);
+const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
+    enabled = true,
+    showMetrics = false
+}) => {
+    const [metrics, setMetrics] = useState<PerformanceMetrics>({
+        fcp: null,
+        lcp: null,
+        cls: null,
+        fid: null,
+        ttfb: null
+    });
+    const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        // Initialize metrics tracking for all environments
-        const cleanup = initPerformanceTracking((newMetrics) => {
-            setMetrics(prev => ({ ...prev, ...newMetrics }));
+        if (!enabled || typeof window === 'undefined') return;
 
-            // Report to analytics in production
-            if (process.env.NODE_ENV === 'production' && window.dataLayer && newMetrics) {
-                for (const [key, value] of Object.entries(newMetrics)) {
-                    if (value !== null) {
-                        window.dataLayer.push({
-                            event: 'web-vital',
-                            metric: key,
-                            value: key === 'CLS' ? Number(value).toFixed(3) : Math.round(value as number)
-                        });
+        const collectMetrics = () => {
+            // Collect performance metrics
+            const navigation = performance.getEntriesByType('navigation')[0] as any;
+
+            if (navigation) {
+                setMetrics(prev => ({
+                    ...prev,
+                    ttfb: navigation.responseStart - navigation.requestStart
+                }));
+            }
+
+            // Observe Web Vitals
+            if ('PerformanceObserver' in window) {
+                // First Contentful Paint
+                const fcpObserver = new PerformanceObserver((list) => {
+                    const fcpEntry = list.getEntries().find(entry => entry.name === 'first-contentful-paint');
+                    if (fcpEntry) {
+                        setMetrics(prev => ({ ...prev, fcp: fcpEntry.startTime }));
                     }
-                }
-            }
-        });
+                });
+                fcpObserver.observe({ entryTypes: ['paint'] });
 
-        return cleanup;
-    }, []);
+                // Largest Contentful Paint
+                const lcpObserver = new PerformanceObserver((list) => {
+                    const lcpEntry = list.getEntries()[list.getEntries().length - 1];
+                    if (lcpEntry) {
+                        setMetrics(prev => ({ ...prev, lcp: lcpEntry.startTime }));
+                    }
+                });
+                lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
 
-    // Show the toggle button only in development
-    if (process.env.NODE_ENV !== 'development') {
-        return null;
-    }
-
-    return (
-        <>
-            <button
-                onClick={() => setShowUI(prev => !prev)}
-                style={{
-                    position: 'fixed',
-                    bottom: '20px',
-                    right: '20px',
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    backgroundColor: '#333',
-                    color: '#fff',
-                    border: 'none',
-                    fontSize: '16px',
-                    cursor: 'pointer',
-                    zIndex: 10000,
-                }}
-                title="Toggle Performance Monitor"
-            >
-                P
-            </button>
-
-            {showUI && (
-                <div
-                    style={{
-                        position: 'fixed',
-                        bottom: '70px',
-                        right: '20px',
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        color: '#0f0',
-                        fontFamily: 'monospace',
-                        padding: '15px',
-                        borderRadius: '8px',
-                        zIndex: 9999,
-                        maxWidth: '300px',
-                        fontSize: '12px',
-                        boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)',
-                    }}
-                >
-                    <h3 style={{ margin: '0 0 10px 0', borderBottom: '1px solid #333', paddingBottom: '5px' }}>
-                        Core Web Vitals
-                    </h3>
-                    <MetricDisplay name="LCP" value={metrics.LCP} unit="ms" good={2500} needsImprovement={4000} />
-                    <MetricDisplay name="FID" value={metrics.FID} unit="ms" good={100} needsImprovement={300} />
-                    <MetricDisplay name="CLS" value={metrics.CLS} unit="" good={0.1} needsImprovement={0.25} />
-
-                    <h3 style={{ margin: '10px 0', borderBottom: '1px solid #333', paddingBottom: '5px' }}>
-                        Other Metrics
-                    </h3>
-                    <MetricDisplay name="TTFB" value={metrics.TTFB} unit="ms" good={800} needsImprovement={1800} />
-                    <MetricDisplay name="Page Load" value={metrics.pageLoaded} unit="ms" good={2000} needsImprovement={4000} />
-                </div>
-            )}
-        </>
-    );
-}
-
-// Helper component to display a metric with color coding
-function MetricDisplay({
-    name,
-    value,
-    unit,
-    good,
-    needsImprovement
-}: {
-    name: string;
-    value: number | null;
-    unit: string;
-    good: number;
-    needsImprovement: number;
-}) {
-    if (value === null) {
-        return (
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                <span>{name}:</span>
-                <span>Measuring...</span>
-            </div>
-        );
-    }
-
-    let color = '#4caf50'; // Good (green)
-    if (value > needsImprovement) {
-        color = '#f44336'; // Poor (red)
-    } else if (value > good) {
-        color = '#ff9800'; // Needs improvement (orange)
-    }
-
-    const formattedValue = unit === '' ? value.toFixed(3) : Math.round(value);
-
-    return (
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-            <span>{name}:</span>
-            <span style={{ color }}>
-                {formattedValue}{unit}
-            </span>
-        </div>
-    );
-}
-
-// Initialize performance tracking
-function initPerformanceTracking(onMetricsUpdate: (metrics: Partial<PerformanceMetrics>) => void) {
-    if (typeof window === 'undefined' || typeof PerformanceObserver === 'undefined') {
-        return () => { }; // No-op cleanup function
-    }
-
-    const observers: PerformanceObserver[] = [];
-
-    try {
-        // LCP (Largest Contentful Paint)
-        const lcpObserver = new PerformanceObserver((entryList) => {
-            const entries = entryList.getEntries();
-            const lastEntry = entries[entries.length - 1];
-            const lcp = lastEntry.startTime;
-            onMetricsUpdate({ LCP: lcp });
-        });
-        lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
-        observers.push(lcpObserver);
-
-        // FID (First Input Delay)
-        const fidObserver = new PerformanceObserver((entryList) => {
-            const entries = entryList.getEntries();
-            entries.forEach((entry) => {
-                if ('processingStart' in entry && 'startTime' in entry) {
-                    const fid = (entry as any).processingStart - entry.startTime;
-                    onMetricsUpdate({ FID: fid });
-                }
-            });
-        });
-        fidObserver.observe({ type: 'first-input', buffered: true });
-        observers.push(fidObserver);
-
-        // CLS (Cumulative Layout Shift)
-        let clsValue = 0;
-        const clsObserver = new PerformanceObserver((entryList) => {
-            const entries = entryList.getEntries();
-            entries.forEach((entry) => {
-                if ('hadRecentInput' in entry && !(entry as any).hadRecentInput) {
-                    clsValue += (entry as any).value;
-                    onMetricsUpdate({ CLS: clsValue });
-                }
-            });
-        });
-        clsObserver.observe({ type: 'layout-shift', buffered: true });
-        observers.push(clsObserver);
-
-        // Basic navigation timing
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const perfData = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-                if (perfData) {
-                    onMetricsUpdate({
-                        TTFB: perfData.responseStart - perfData.requestStart,
-                        pageLoaded: perfData.loadEventEnd - perfData.fetchStart,
+                // Cumulative Layout Shift
+                const clsObserver = new PerformanceObserver((list) => {
+                    let clsValue = 0;
+                    list.getEntries().forEach((entry: any) => {
+                        if (!entry.hadRecentInput) {
+                            clsValue += entry.value;
+                        }
                     });
-                }
-            }, 0);
-        });
+                    setMetrics(prev => ({ ...prev, cls: clsValue }));
+                });
+                clsObserver.observe({ entryTypes: ['layout-shift'] });
 
-    } catch (error) {
-        console.error('Error setting up performance monitoring:', error);
-    }
+                // First Input Delay
+                const fidObserver = new PerformanceObserver((list) => {
+                    const fidEntry = list.getEntries()[0] as any;
+                    if (fidEntry) {
+                        setMetrics(prev => ({ ...prev, fid: fidEntry.processingStart - fidEntry.startTime }));
+                    }
+                });
+                fidObserver.observe({ entryTypes: ['first-input'] });
 
-    // Cleanup function
-    return () => {
-        observers.forEach(observer => {
-            try {
-                observer.disconnect();
-            } catch (e) {
-                // Ignore errors during cleanup
+                return () => {
+                    fcpObserver.disconnect();
+                    lcpObserver.disconnect();
+                    clsObserver.disconnect();
+                    fidObserver.disconnect();
+                };
             }
-        });
+        };
+
+        collectMetrics();
+    }, [enabled]);
+
+    const getMetricStatus = (metric: number | null, thresholds: { good: number; needs: number }) => {
+        if (metric === null) return 'loading';
+        if (metric <= thresholds.good) return 'good';
+        if (metric <= thresholds.needs) return 'needs-improvement';
+        return 'poor';
     };
-}
+
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case 'good': return 'text-green-600 bg-green-50 border-green-200';
+            case 'needs-improvement': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+            case 'poor': return 'text-red-600 bg-red-50 border-red-200';
+            default: return 'text-gray-600 bg-gray-50 border-gray-200';
+        }
+    };
+
+    if (!enabled || !showMetrics) return null;
+
+    return (
+        <AnimatePresence>
+            {isVisible && (
+                <motion.div
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 50 }}
+                    className="fixed bottom-4 right-4 z-50 bg-white rounded-xl shadow-lg border border-gray-200 p-4 max-w-sm"
+                >
+                    <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-sm font-semibold text-gray-900">Performance Metrics</h4>
+                        <button
+                            onClick={() => setIsVisible(false)}
+                            className="text-gray-400 hover:text-gray-600 transition-colors"
+                        >
+                            ×
+                        </button>
+                    </div>
+
+                    <div className="space-y-2 text-xs">
+                        {/*
+              { label: 'FCP', value: metrics.fcp, thresholds: { good: 1800, needs: 3000 }, unit: 'ms' },
+              { label: 'LCP', value: metrics.lcp, thresholds: { good: 2500, needs: 4000 }, unit: 'ms' },
+              { label: 'CLS', value: metrics.cls, thresholds: { good: 0.1, needs: 0.25 }, unit: '' },
+              { label: 'FID', value: metrics.fid, thresholds: { good: 100, needs: 300 }, unit: 'ms' },
+              { label: 'TTFB', value: metrics.ttfb, thresholds: { good: 800, needs: 1800 }, unit: 'ms' }
+            */}
+                        {Object.entries(metrics).map(([key, value]) => {
+                            const thresholds = { good: 0, needs: 0 };
+                            let unit = '';
+
+                            switch (key) {
+                                case 'fcp':
+                                    thresholds.good = 1800;
+                                    thresholds.needs = 3000;
+                                    unit = 'ms';
+                                    break;
+                                case 'lcp':
+                                    thresholds.good = 2500;
+                                    thresholds.needs = 4000;
+                                    unit = 'ms';
+                                    break;
+                                case 'cls':
+                                    thresholds.good = 0.1;
+                                    thresholds.needs = 0.25;
+                                    break;
+                                case 'fid':
+                                    thresholds.good = 100;
+                                    thresholds.needs = 300;
+                                    unit = 'ms';
+                                    break;
+                                case 'ttfb':
+                                    thresholds.good = 800;
+                                    thresholds.needs = 1800;
+                                    unit = 'ms';
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            const status = getMetricStatus(value, thresholds);
+                            const colorClass = getStatusColor(status);
+
+                            return (
+                                <div key={key} className="flex items-center justify-between">
+                                    <span className="text-gray-600">{key.toUpperCase()}:</span>
+                                    <span className={`px-2 py-1 rounded border text-xs font-medium ${colorClass}`}>
+                                        {value !== null
+                                            ? `${Math.round(value * 100) / 100}${unit}`
+                                            : 'Loading...'
+                                        }
+                                    </span>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    <div className="mt-3 pt-3 border-t border-gray-200">
+                        <div className="text-xs text-gray-500">
+                            Nova Ipê - Performance Optimized
+                        </div>
+                    </div>
+                </motion.div>
+            )}
+
+            {/* Toggle button */}
+            <motion.button
+                onClick={() => setIsVisible(!isVisible)}
+                className="fixed bottom-4 right-4 z-40 bg-amber-500 hover:bg-amber-600 text-white p-3 rounded-full shadow-lg transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+            >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 00-2-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+            </motion.button>
+        </AnimatePresence>
+    );
+};
+
+export default PerformanceMonitor;
 
 // Type declaration for window.dataLayer
 declare global {

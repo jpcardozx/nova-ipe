@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import Navbar from '../sections/NavBar';
 import Footer from '../sections/Footer';
 import Valor from '../sections/Valor';
-import ImovelCard from '@components/ImovelCard';
+import { PropertyCardUnified } from '@/app/components/ui/property/PropertyCardUnified';
 import { getImoveisParaVenda } from '@lib/sanity/fetchImoveis';
 import type { ImovelClient } from '../../src/types/imovel-client';
 import ContatoRefinadoIpe from '@app/components/ContatoIpe';

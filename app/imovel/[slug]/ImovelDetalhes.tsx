@@ -5,12 +5,6 @@ import { Phone, Calendar, UserCheck, Share2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { formatarMoeda } from '@/lib/utils';
-import WhatsAppShare from '@/app/components/WhatsAppShare';
-import SocialShareButtons from '@/app/components/SocialShareButtons';
-import PropertyMetadata from '@/app/components/PropertyMetadata';
-import { PortableText } from '@portabletext/react';
-import { ImageResponse } from 'next/og';
-import { urlFor } from '@/src/lib/sanity'; // Potential actual export from sanity.imageHelper.ts
 import type { ImovelClient as ImovelDataType } from '@/src/types/imovel-client';
 import { Button } from '@/app/components/ui/button';
 
@@ -93,16 +87,10 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
                     <h1 className="text-2xl font-bold">{imovel.titulo}</h1>
                     <p className="text-xl text-green-600 font-semibold">
                         {formatarMoeda(preco ?? imovel.preco ?? 0)}
-                    </p>
-                    <div className="flex space-x-2 my-4">
-                        <WhatsAppShare
-                            title={imovel.titulo}
-                            message={`Olá! Tenho interesse no imóvel: ${imovel.titulo}`}
-                            buttonText="WhatsApp"
-                            showLabel={true}
-                            fullWidth={false}
-                            size="md"
-                        />
+                    </p>                    <div className="flex space-x-2 my-4">
+                        <Button className="bg-green-500 text-white">
+                            Entrar em contato
+                        </Button>
                     </div>
                     <div className="flex flex-col space-y-2">
                         <div className="flex items-center">
@@ -112,17 +100,9 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
                         <div className="flex items-center">
                             <UserCheck className="w-5 h-5 mr-2" />
                             <span>Imóvel verificado pela Nova Ipê</span>
-                        </div>
-                        <div className="flex items-center">
+                        </div>                        <div className="flex items-center">
                             <Share2 className="w-5 h-5 mr-2" />
-                            <SocialShareButtons
-                                title={imovel.titulo}
-                                description={`Confira este imóvel: ${imovel.titulo}`}
-                                imageUrl={imovel.imagem?.imagemUrl}
-                                showLabel={false}
-                                compact={true}
-                                platforms={['facebook', 'twitter', 'linkedin']}
-                            />
+                            <span>Compartilhar imóvel</span>
                         </div>
                     </div>
                 </div>
@@ -138,36 +118,10 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
                         <li key={idx}>{caracteristica}</li>
                     ))}
                 </ul>
-            </div>
-            <div className="mt-4">
+            </div>            <div className="mt-4">
                 <h2 className="text-xl font-semibold">Localização</h2>
                 <p className="mt-2">{imovel.endereco}</p>
             </div>
-            <PropertyMetadata property={{
-                id: imovel._id || imovel.id || '',
-                title: imovel.titulo || '',
-                description: imovel.descricao || imovel.metaDescription || '',
-                price: typeof imovel.preco === 'number' ? imovel.preco : imovel.preco ? parseFloat(String(imovel.preco)) : 0,
-                address: imovel.endereco || '',
-                city: imovel.cidade || '',
-                location: imovel.bairro || imovel.cidade || '',
-                propertyType: imovel.finalidade?.toLowerCase() === 'venda' ? 'sale' : 'rent',
-                bedrooms: typeof imovel.dormitorios === 'number' ? imovel.dormitorios : imovel.dormitorios ? parseInt(String(imovel.dormitorios), 10) : undefined,
-                bathrooms: typeof imovel.banheiros === 'number' ? imovel.banheiros : imovel.banheiros ? parseInt(String(imovel.banheiros), 10) : undefined,
-                area: typeof imovel.areaUtil === 'number' ? imovel.areaUtil : imovel.areaUtil ? parseFloat(String(imovel.areaUtil)) : undefined,
-                features: imovel.caracteristicas || [],
-                mainImage: {
-                    url: imovel.imagem?.imagemUrl || '/images/og-image-2025.jpg',
-                    alt: imovel.imagem?.alt || imovel.titulo || 'Imóvel Nova Ipê'
-                },
-                images: imovel.galeria?.map((img) => ({
-                    url: img.imagemUrl || '',
-                    alt: img.alt || imovel.titulo || 'Imóvel Nova Ipê'
-                })),
-                latitude: undefined, // Add if available
-                longitude: undefined, // Add if available
-                slug: imovel.slug || '',
-            }} />
             {relacionados.length > 0 && (
                 <div className="mt-8">
                     <h2 className="text-xl font-semibold mb-4">Imóveis relacionados</h2>

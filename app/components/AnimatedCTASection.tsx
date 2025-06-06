@@ -7,7 +7,7 @@ import BlocoCTAConversao from './client/BlocoCTAConversao';
 
 export default function AnimatedCTASection() {
     return (
-        <section className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden py-20">
+        <section className="bg-slate-900 relative overflow-hidden py-20">
             {/* Enhanced background patterns */}
             <div className="absolute inset-0 bg-[url('/images/wood-pattern.svg')] opacity-5"></div>
             <div className="absolute top-0 left-0 w-full h-full">

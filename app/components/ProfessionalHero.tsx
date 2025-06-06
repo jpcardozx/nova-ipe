@@ -45,12 +45,11 @@ const ProfessionalHero = () => {
                         backgroundImage: 'url(/images/hero-bg.jpg)',
                         filter: 'brightness(0.7) contrast(1.1) saturate(1.2)'
                     }}
-                />
-                <motion.div
+                />                <motion.div
                     className="absolute inset-0 bg-gradient-to-br from-amber-900/80 via-orange-800/70 to-yellow-700/60"
                     style={{ opacity: overlayOpacity }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-amber-900/20 via-transparent to-transparent" />
             </motion.div>
 
             {/* Geometric Accent Elements */}

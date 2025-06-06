@@ -190,7 +190,7 @@ export default function PropertyHeroUnified({
                         </AnimatePresence>
 
                         {/* Overlay gradiente */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-amber-900/70 via-amber-800/20 to-transparent" />
                     </motion.div>
                 )}
 

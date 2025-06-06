@@ -145,7 +145,7 @@ export default function ContatoRefinadoIpe() {
     return (
         <section
             ref={sectionRef}
-            className={`py-16 md:py-20 bg-gradient-to-b from-amber-50/40 to-white ${montserrat.variable}`}
+            className={`py-16 md:py-20 bg-white ${montserrat.variable}`}
         >
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header da seção com copy engajante */}
@@ -179,8 +179,8 @@ export default function ContatoRefinadoIpe() {
                                     <Check className="w-6 h-6" />
                                 </div>                                    <h4 className="text-xl font-semibold text-gray-900 mb-2">
                                     Solicitação recebida com sucesso!
-                                </h4><p className="text-gray-700">
-                                    Obrigado pelo interesse! Nossa equipe de especialistas em investimentos imobiliários entrará em contato em até 2 horas úteis com análises exclusivas para você.
+                                </h4>                                <p className="text-gray-700">
+                                    Obrigado pelo interesse! Nossa equipe de especialistas em investimentos imobiliários entrará em contato em até 2 horas úteis com análise personalizada para você.
                                 </p>
                             </div>
                         ) : (
@@ -436,9 +436,8 @@ export default function ContatoRefinadoIpe() {
                                         src="/images/mapa-guararema.jpg"
                                         alt="Localização da Ipê Imobiliária em Guararema"
                                         fill
-                                        className="object-cover"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                                        className="object-cover" />
+                                    <div className="absolute inset-0 bg-black/40"></div>
                                 </div>
                             </div>
 

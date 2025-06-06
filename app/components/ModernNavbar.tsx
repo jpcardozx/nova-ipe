@@ -72,8 +72,8 @@ const ModernNavbar: React.FC = () => {
         <>
             <motion.nav
                 className={`modern-navbar fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled
-                        ? "bg-white/96 backdrop-blur-lg shadow-lg border-b border-gray-100 py-3 scrolled"
-                        : "bg-white/92 backdrop-blur-md border-b border-gray-50 py-4"
+                    ? "bg-white/96 backdrop-blur-lg shadow-lg border-b border-gray-100 py-3 scrolled"
+                    : "bg-white/92 backdrop-blur-md border-b border-gray-50 py-4"
                     }`}
                 initial={{ y: -100 }}
                 animate={{ y: 0 }}
@@ -105,8 +105,8 @@ const ModernNavbar: React.FC = () => {
                                         <li key={label}>                                            <Link
                                             href={href}
                                             className={`nav-link relative text-sm font-medium transition-colors duration-200 hover:text-amber-600 ${pathname === href
-                                                    ? "text-amber-600"
-                                                    : "text-gray-700"
+                                                ? "text-amber-600"
+                                                : "text-gray-700"
                                                 }`}
                                         >
                                             {label}
@@ -157,38 +157,25 @@ const ModernNavbar: React.FC = () => {
                         )}
 
                         {/* Mobile Menu Button */}
-                        {isMobile && (
-                            <motion.button
-                                onClick={() => setOpen(!open)}
-                                className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
-                                aria-label="Menu"
-                                aria-expanded={open}
-                                whileTap={{ scale: 0.95 }}
-                            >
-                                <AnimatePresence mode="wait">
-                                    {open ? (
-                                        <motion.div
-                                            key="close"
-                                            initial={{ rotate: -90, opacity: 0 }}
-                                            animate={{ rotate: 0, opacity: 1 }}
-                                            exit={{ rotate: 90, opacity: 0 }}
-                                            transition={{ duration: 0.2 }}
-                                        >
-                                            <X className="w-6 h-6" />
-                                        </motion.div>
-                                    ) : (
-                                        <motion.div
-                                            key="menu"
-                                            initial={{ rotate: 90, opacity: 0 }}
-                                            animate={{ rotate: 0, opacity: 1 }}
-                                            exit={{ rotate: -90, opacity: 0 }}
-                                            transition={{ duration: 0.2 }}
-                                        >
-                                            <Menu className="w-6 h-6" />
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </motion.button>
+                        {isMobile && (<motion.button
+                            onClick={() => setOpen(!open)}
+                            className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+                            aria-label="Menu"
+                            aria-expanded={open}
+                            whileTap={{ scale: 0.95 }}
+                        >
+                            <AnimatePresence mode="wait">
+                                <motion.div
+                                    key={open ? "close" : "menu"}
+                                    initial={{ rotate: open ? -90 : 90, opacity: 0 }}
+                                    animate={{ rotate: 0, opacity: 1 }}
+                                    exit={{ rotate: open ? 90 : -90, opacity: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                                </motion.div>
+                            </AnimatePresence>
+                        </motion.button>
                         )}
                     </div>
                 </div>
@@ -216,8 +203,8 @@ const ModernNavbar: React.FC = () => {
                                             href={href}
                                             onClick={() => setOpen(false)}
                                             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${pathname === href
-                                                    ? "bg-amber-50 text-amber-700"
-                                                    : "text-gray-700 hover:bg-gray-50"
+                                                ? "bg-amber-50 text-amber-700"
+                                                : "text-gray-700 hover:bg-gray-50"
                                                 }`}
                                         >
                                             <div className={`w-2 h-2 rounded-full ${pathname === href ? "bg-amber-500" : "bg-gray-300"

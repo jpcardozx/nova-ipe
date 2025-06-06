@@ -31,22 +31,23 @@ import PropertyCardUnified from '@/app/components/ui/property/PropertyCardUnifie
 // ---- Helpers ----
 const formatarArea = (m2?: number): string => m2 != null ? `${m2.toLocaleString()} m²` : '';
 
-// ---- Badge ----
+// ---- Badge Premium ----
 interface BadgeProps {
-    variant?: 'primary' | 'secondary';
+    variant?: 'primary' | 'secondary' | 'highlight';
     className?: string;
     children: React.ReactNode;
 }
 const Badge: FC<BadgeProps> = ({ variant = 'primary', children, className }) => {
-    const base = 'px-3 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1 transition';
+    const base = 'px-4 py-2 rounded-full text-sm font-semibold inline-flex items-center gap-2 transition-all duration-300';
     const styles = {
-        primary: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md hover:shadow-lg',
-        secondary: 'bg-gradient-to-r from-emerald-400 to-emerald-600 text-white shadow-md hover:shadow-lg',
+        primary: 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg hover:shadow-xl hover:scale-105',
+        secondary: 'bg-gradient-to-r from-emerald-400 to-emerald-600 text-white shadow-lg hover:shadow-xl hover:scale-105',
+        highlight: 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-amber-900 shadow-lg hover:shadow-xl hover:scale-105 animate-pulse',
     };
     return <span className={cn(base, styles[variant], className)}>{children}</span>;
 };
 
-// ---- Feature ----
+// ---- Feature Premium ----
 interface FeatureProps {
     icon: React.ReactNode;
     label: string;
@@ -56,22 +57,22 @@ const Feature: FC<FeatureProps> = ({ icon, label, value }) => {
     if (!value) return null;
     return (
         <motion.div
-            className="flex items-center gap-3 border-white/20 p-2 rounded-lg text-white"
-            whileHover={{ scale: 1.05 }}
+            className="flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/20 p-3 rounded-xl text-white transition-all duration-300 hover:bg-white/20"
+            whileHover={{ scale: 1.05, y: -2 }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         >
-            <div className="bg-white/20 p-2.5 rounded-lg">
+            <div className="bg-gradient-to-br from-amber-400 to-orange-500 p-2.5 rounded-lg shadow-lg">
                 {icon}
             </div>
             <div>
-                <div className="text-xs uppercase text-white/80">{label}</div>
-                <div className="text-sm font-medium text-white">{value}</div>
+                <div className="text-xs uppercase text-amber-100 font-medium tracking-wide">{label}</div>
+                <div className="text-lg font-bold text-white">{value}</div>
             </div>
         </motion.div>
     );
 };
 
-// ---- Navigation Buttons ----
+// ---- Navigation Buttons Premium ----
 interface NavButtonProps {
     direction: 'prev' | 'next';
     onClick: () => void;
@@ -83,12 +84,14 @@ const NavButton: FC<NavButtonProps> = ({ direction, onClick, disabled }) => (
         disabled={disabled}
         whileHover={{ scale: disabled ? 1 : 1.1 }}
         className={cn(
-            'p-3 rounded-full bg-white border shadow-sm transition-colors',
-            disabled ? 'opacity-40 cursor-not-allowed' : 'hover:bg-blue-50 hover:border-blue-200'
+            'p-4 rounded-full bg-gradient-to-r shadow-lg transition-all duration-300',
+            disabled
+                ? 'from-gray-100 to-gray-200 text-gray-400 cursor-not-allowed opacity-50'
+                : 'from-amber-500 to-orange-600 text-white hover:from-amber-600 hover:to-orange-700 hover:shadow-xl'
         )}
         aria-label={direction === 'prev' ? 'Imóvel anterior' : 'Próximo imóvel'}
     >
-        {direction === 'prev' ? <ChevronLeft /> : <ChevronRight />}
+        {direction === 'prev' ? <ChevronLeft className="w-6 h-6" /> : <ChevronRight className="w-6 h-6" />}
     </motion.button>
 );
 
@@ -161,50 +164,101 @@ const ImovelHero: FC<HeroProps> = ({ imovel, isFav, toggleFav, share }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="rounded-3xl overflow-hidden shadow-xl"
+        >            <motion.div
+            style={{ rotateX: sX, rotateY: sY }}
+            className="grid grid-cols-1 lg:grid-cols-2 bg-gradient-to-br from-amber-600 via-orange-600 to-orange-800 relative overflow-hidden"
         >
-            <motion.div
-                style={{ rotateX: sX, rotateY: sY }}
-                className="grid grid-cols-1 lg:grid-cols-2 bg-gradient-to-br from-blue-600 to-blue-800"
-            >
+                {/* Background Decorativo Premium */}
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-transparent" />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-yellow-400/20 to-transparent rounded-full blur-3xl" />
+
                 <div className="relative h-64 lg:h-full">
                     <SanityImage image={imovel.imagem} alt={imovel.titulo} fill className="object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-amber-900/70 via-amber-800/30 to-transparent" />
                     <div className="absolute top-4 left-4">
-                        <Badge variant="primary">Destaque</Badge>
-                    </div>
-                    <div className="absolute top-4 right-4 flex gap-2">
-                        <button onClick={toggleFav} className="p-2 bg-white rounded-full shadow hover:bg-white/90">
-                            <Heart className={cn('w-5 h-5', isFav ? 'fill-red-500 text-red-500' : 'text-gray-800')} />
-                        </button>
-                        <button onClick={share} className="p-2 bg-white rounded-full shadow hover:bg-white/90">
-                            <Share2 className="w-5 h-5 text-gray-800" />
-                        </button>
+                        <Badge variant="highlight">✨ Destaque Premium</Badge>
+                    </div>                    <div className="absolute top-4 right-4 flex gap-2">
+                        <motion.button
+                            onClick={toggleFav}
+                            className="p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all duration-300"
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                        >
+                            <Heart className={cn('w-5 h-5', isFav ? 'fill-red-500 text-red-500' : 'text-gray-700')} />
+                        </motion.button>
+                        <motion.button
+                            onClick={share}
+                            className="p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all duration-300"
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                        >
+                            <Share2 className="w-5 h-5 text-gray-700" />
+                        </motion.button>
                     </div>
                 </div>
-                <div className="p-6 space-y-4 text-white">
-                    <h2 className="text-3xl font-bold">{imovel.titulo}</h2>
-                    <div className="flex items-center gap-3">
-                        <MapPin className="opacity-80" />
-                        <span>{[imovel.bairro, imovel.cidade].filter(Boolean).join(', ')}</span>
+                <div className="p-8 space-y-6 text-white relative">
+                    {/* Background pattern sutil */}
+                    <div className="absolute inset-0 opacity-5">
+                        <div className="absolute top-0 left-0 w-32 h-32 bg-white rounded-full blur-2xl" />
+                        <div className="absolute bottom-0 right-0 w-24 h-24 bg-yellow-300 rounded-full blur-2xl" />
                     </div>
 
-                    <div className="text-2xl font-semibold text-white">
-                        {imovel.preco ? formatarMoeda(imovel.preco) : 'Sob consulta'}/mês
+                    <div className="relative">
+                        <motion.h2
+                            className="text-4xl font-bold mb-2 bg-gradient-to-r from-white to-amber-100 bg-clip-text text-transparent"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                        >
+                            {imovel.titulo}
+                        </motion.h2>
+                        <motion.div
+                            className="flex items-center gap-3 text-amber-100"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.3 }}
+                        >
+                            <MapPin className="opacity-80 w-5 h-5" />
+                            <span className="text-lg">{[imovel.bairro, imovel.cidade].filter(Boolean).join(', ')}</span>
+                        </motion.div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 mt-6">
+                    <motion.div
+                        className="text-3xl font-bold text-white flex items-center gap-3"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.4 }}
+                    >
+                        <span className="bg-gradient-to-r from-yellow-300 to-yellow-400 bg-clip-text text-transparent">
+                            {imovel.preco ? formatarMoeda(imovel.preco) : 'Sob consulta'}
+                        </span>
+                        <span className="text-xl text-amber-200">/mês</span>
+                    </motion.div>                    <motion.div
+                        className="grid grid-cols-2 gap-4 mt-8"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5, staggerChildren: 0.1 }}
+                    >
                         {imovel.areaUtil && <Feature icon={<Ruler className="h-5 w-5" />} label="Área" value={formatarArea(imovel.areaUtil)} />}
                         {imovel.dormitorios && <Feature icon={<BedDouble className="h-5 w-5" />} label="Dormitórios" value={imovel.dormitorios} />}
                         {imovel.banheiros && <Feature icon={<Bath className="h-5 w-5" />} label="Banheiros" value={imovel.banheiros} />}
                         {imovel.vagas && <Feature icon={<Car className="h-5 w-5" />} label="Vagas" value={imovel.vagas} />}
-                    </div>
+                    </motion.div>
 
-                    <Link
-                        href={`/imovel/${imovel.slug}`}
-                        className="inline-flex items-center gap-2 px-6 py-3 mt-6 bg-white text-blue-700 rounded-lg font-semibold hover:bg-blue-50 transition shadow-lg"
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.6 }}
                     >
-                        Quero conhecer este imóvel <ArrowRight />
-                    </Link>
+                        <Link
+                            href={`/imovel/${imovel.slug}`}
+                            className="group inline-flex items-center gap-3 px-8 py-4 mt-8 bg-gradient-to-r from-white to-amber-50 text-orange-700 rounded-xl font-bold hover:from-amber-50 hover:to-white transition-all shadow-xl hover:shadow-2xl hover:scale-105 duration-300"
+                        >
+                            <HomeIcon className="w-5 h-5" />
+                            Quero conhecer este imóvel
+                            <ArrowRight className="group-hover:translate-x-1 transition-transform duration-300" />
+                        </Link>
+                    </motion.div>
                 </div>
             </motion.div>
         </motion.div>
@@ -243,141 +297,262 @@ const DestaquesAluguelSection: FC = () => {
             navigator.clipboard.writeText(window.location.origin + `/imovel/${imovel.slug}`);
             alert('Link copiado para a área de transferência!');
         }
-    }, []);
-
-    if (loading) return (
-        <section ref={ref} className="py-20 bg-stone-50">
+    }, []); if (loading) return (
+        <section ref={ref} className="py-20 bg-gradient-to-br from-stone-50 via-amber-50/30 to-orange-50/40">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center space-y-4 mb-16">
-                    <div className="inline-block px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">
-                        Carregando destaques
+                    <motion.div
+                        className="h-8 bg-gradient-to-r from-amber-200 to-orange-200 rounded-lg mx-auto max-w-md animate-pulse"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                    />
+                    <motion.div
+                        className="h-16 bg-gradient-to-r from-amber-100 to-orange-100 rounded-lg mx-auto max-w-2xl animate-pulse"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                    />
+                </div>
+
+                {/* Skeleton Premium */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                    <motion.div
+                        className="h-96 bg-gradient-to-br from-amber-200 to-orange-200 rounded-3xl animate-pulse shadow-xl"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.3 }}
+                    />
+                    <div className="space-y-6">
+                        {[...Array(4)].map((_, i) => (
+                            <motion.div
+                                key={i}
+                                className="h-20 bg-gradient-to-r from-amber-100 to-orange-100 rounded-xl animate-pulse"
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.4 + i * 0.1 }}
+                            />
+                        ))}
                     </div>
-                    <h2 className="text-3xl md:text-4xl font-bold text-stone-800">
-                        Imóveis para alugar
-                    </h2>
-                    <p className="text-stone-600 max-w-3xl mx-auto">
-                        Carregando nossas melhores opções de aluguel para você e sua família.
-                    </p>
                 </div>
 
-                <div className="max-w-4xl mx-auto">
-                    <div className="animate-pulse bg-stone-200 h-96 rounded-3xl"></div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
-                    {[1, 2, 3, 4].map(i => (
-                        <div key={i} className="animate-pulse bg-stone-200 h-64 rounded-xl"></div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[...Array(6)].map((_, i) => (
+                        <motion.div
+                            key={i}
+                            className="h-80 bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl animate-pulse shadow-lg"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.6 + i * 0.1 }}
+                        />
                     ))}
-                </div>
-            </div>
+                </div>            </div>
         </section>
-    );
-
-    if (error) return (
-        <section ref={ref} className="py-20 bg-stone-50">
+    ); if (error) return (
+        <section ref={ref} className="py-20 bg-gradient-to-br from-red-50 via-orange-50 to-amber-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <div className="bg-red-50 text-red-700 p-6 rounded-lg max-w-2xl mx-auto">
-                    <h2 className="text-xl font-semibold mb-2">Erro ao carregar imóveis</h2>
-                    <p>{error}</p>
-                    <button
-                        className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                <motion.div
+                    className="bg-gradient-to-br from-red-50 to-orange-50 border border-red-200 text-red-700 p-8 rounded-2xl max-w-2xl mx-auto shadow-lg"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <motion.h2
+                        className="text-2xl font-bold mb-4 text-red-800"
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                    >
+                        Ops! Algo deu errado
+                    </motion.h2>
+                    <motion.p
+                        className="mb-6 text-red-600"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.3 }}
+                    >
+                        {error}
+                    </motion.p>
+                    <motion.button
+                        className="px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 font-medium shadow-lg hover:shadow-xl transition-all duration-300"
                         onClick={() => { setLoading(true); setError(null); }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 }}
                     >
                         Tentar novamente
-                    </button>
-                </div>
+                    </motion.button>
+                </motion.div>
             </div>
         </section>
-    );
-
-    if (!imoveis.length) return (
-        <section ref={ref} className="py-20 bg-stone-50">
+    ); if (!imoveis.length) return (
+        <section ref={ref} className="py-20 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <div className="bg-stone-50 p-6 rounded-lg max-w-2xl mx-auto">
-                    <h2 className="text-2xl font-semibold mb-2">Nenhum imóvel em destaque</h2>
-                    <p className="text-stone-600 mb-4">
-                        No momento não temos imóveis em destaque para alugar, mas você pode conferir todas as nossas opções.
-                    </p>
-                    <Link
-                        href="/alugar"
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                <motion.div
+                    className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 p-10 rounded-2xl max-w-2xl mx-auto shadow-lg"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6 }}
+                >
+                    <motion.div
+                        className="w-20 h-20 bg-gradient-to-br from-amber-100 to-orange-100 rounded-full flex items-center justify-center mx-auto mb-6"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.2, type: "spring", stiffness: 300 }}
                     >
-                        Ver todos os imóveis para alugar <ArrowRight className="w-4 h-4" />
-                    </Link>
-                </div>
+                        <HomeIcon className="w-10 h-10 text-amber-600" />
+                    </motion.div>
+                    <motion.h2
+                        className="text-3xl font-bold mb-4 bg-gradient-to-r from-amber-700 to-orange-600 bg-clip-text text-transparent"
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                    >
+                        Em Breve, Novos Destaques
+                    </motion.h2>
+                    <motion.p
+                        className="text-lg text-amber-700 mb-8 leading-relaxed"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.4 }}
+                    >
+                        No momento não temos imóveis em destaque para alugar, mas você pode conferir toda nossa seleção premium de propriedades disponíveis.
+                    </motion.p>
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 }}
+                    >
+                        <Link
+                            href="/alugar"
+                            className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl hover:from-amber-600 hover:to-orange-700 font-bold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                        >
+                            <HomeIcon className="w-6 h-6" />
+                            Explorar Todos os Imóveis
+                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                        </Link>
+                    </motion.div>
+                </motion.div>
             </div>
         </section>
-    );
-
-    const destaque = imoveis[activeIndex];
+    ); const destaque = imoveis[activeIndex];
 
     return (
-        <section ref={ref} className="py-24 bg-stone-50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
-                <div className="text-center space-y-4 mb-8">
-                    <div className="inline-block px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">
-                        Destaques
-                    </div>
-                    <h2 className="text-3xl md:text-4xl font-bold text-stone-800">
-                        Imóveis para alugar
-                    </h2>
-                    <p className="text-stone-600 max-w-3xl mx-auto">
-                        Espaços escolhidos a dedo para proporcionar conforto e qualidade de vida para você e sua família.
-                    </p>
-                </div>
+        <section ref={ref} className="py-24 bg-gradient-to-br from-stone-50 via-amber-50/30 to-orange-50/40 relative overflow-hidden">
+            {/* Background decorativo premium */}
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-100/20 via-orange-100/10 to-transparent" />
+            <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-yellow-400/10 to-transparent rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-amber-400/10 to-transparent rounded-full blur-3xl" />
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 relative">
+                <motion.div
+                    className="text-center space-y-6 mb-12"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8 }}
+                >
+                    <motion.div
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold shadow-lg"
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                    >
+                        <HomeIcon className="w-5 h-5" />
+                        Destaques Premium
+                    </motion.div>
+                    <motion.h2
+                        className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-amber-700 via-orange-600 to-orange-700 bg-clip-text text-transparent"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.2, duration: 0.8 }}
+                    >
+                        Imóveis Selecionados para Alugar
+                    </motion.h2>
+                    <motion.p
+                        className="text-xl text-stone-600 max-w-3xl mx-auto leading-relaxed"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4, duration: 0.8 }}
+                    >
+                        Espaços escolhidos a dedo para proporcionar <span className="font-semibold text-amber-700">conforto premium</span> e qualidade de vida excepcional para você e sua família.
+                    </motion.p>
+                </motion.div>
 
                 <ImovelHero
                     imovel={destaque}
                     isFav={isFav(destaque._id)}
                     toggleFav={() => toggleFav(destaque._id)}
                     share={() => share(destaque)}
-                />
-
-                <div className="flex justify-between items-center mb-8">
-                    <h3 className="text-2xl font-bold text-stone-800">
-                        Outras opções
+                />                <motion.div
+                    className="flex justify-between items-center mb-8"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                >
+                    <h3 className="text-3xl font-bold bg-gradient-to-r from-amber-700 to-orange-600 bg-clip-text text-transparent">
+                        Outras Opções Premium
                     </h3>
-                    <div className="flex gap-2">
-                        <NavButton direction="prev" onClick={prev} disabled={imoveis.length < 2} />
-                        <NavButton direction="next" onClick={next} disabled={imoveis.length < 2} />
+                    <div className="flex gap-3">
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                            <NavButton direction="prev" onClick={prev} disabled={imoveis.length < 2} />
+                        </motion.div>
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                            <NavButton direction="next" onClick={next} disabled={imoveis.length < 2} />
+                        </motion.div>
                     </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {imoveis.map((imovel) => (
-                        <PropertyCardUnified
+                </motion.div>                <motion.div
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8, staggerChildren: 0.1 }}
+                >
+                    {imoveis.map((imovel, index) => (
+                        <motion.div
                             key={imovel._id}
-                            id={imovel._id}
-                            title={imovel.titulo || 'Imóvel para alugar'}
-                            slug={imovel.slug as string || imovel._id}
-                            location={imovel.bairro || 'Localização não informada'}
-                            city={imovel.cidade}
-                            price={imovel.preco || 0}
-                            propertyType="rent"
-                            area={imovel.areaUtil}
-                            bedrooms={imovel.dormitorios}
-                            bathrooms={imovel.banheiros}
-                            parkingSpots={imovel.vagas}
-                            mainImage={{
-                                url: imovel.imagem?.imagemUrl || '/images/placeholder-property.jpg',
-                                alt: imovel.imagem?.alt || imovel.titulo || 'Imóvel para alugar',
-                                sanityImage: imovel.imagem
-                            }}
-                            isHighlight={imovel.destaque}
-                            isFavorite={isFav(imovel._id)}
-                            onFavoriteToggle={toggleFav}
-                        />
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.9 + index * 0.1 }}
+                        >
+                            <PropertyCardUnified
+                                id={imovel._id}
+                                title={imovel.titulo || 'Imóvel para alugar'}
+                                slug={imovel.slug as string || imovel._id}
+                                location={imovel.bairro || 'Localização não informada'}
+                                city={imovel.cidade}
+                                price={imovel.preco || 0}
+                                propertyType="rent"
+                                area={imovel.areaUtil}
+                                bedrooms={imovel.dormitorios}
+                                bathrooms={imovel.banheiros}
+                                parkingSpots={imovel.vagas}
+                                mainImage={{
+                                    url: imovel.imagem?.imagemUrl || '/images/placeholder-property.jpg',
+                                    alt: imovel.imagem?.alt || imovel.titulo || 'Imóvel para alugar',
+                                    sanityImage: imovel.imagem
+                                }}
+                                isHighlight={imovel.destaque}
+                                isFavorite={isFav(imovel._id)}
+                                onFavoriteToggle={toggleFav}
+                            />
+                        </motion.div>
                     ))}
-                </div>
+                </motion.div>
 
-                <div className="text-center mt-8">
+                <motion.div
+                    className="text-center mt-12"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.2 }}
+                >
                     <Link
                         href="/alugar"
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow font-medium"
+                        className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl font-bold hover:from-amber-600 hover:to-orange-700 transition-all shadow-xl hover:shadow-2xl hover:scale-105 duration-300"
                     >
-                        Ver todos os imóveis para alugar <ArrowRight className="w-4 h-4" />
+                        <HomeIcon className="w-6 h-6" />
+                        Ver Todos os Imóveis para Alugar
+                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                     </Link>
-                </div>
+                </motion.div>
             </div>
         </section>
     );

@@ -25,7 +25,7 @@ export default function HeroImovel({ imagem, titulo, cidade, tipo, metros, desta
                     priority
                     className="object-cover object-center"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-amber-900/85 via-amber-800/50 to-transparent" />
                 <div className="absolute bottom-0 w-full h-28 bg-[#fafaf9] clip-path-hero-mask" />
             </div>
 

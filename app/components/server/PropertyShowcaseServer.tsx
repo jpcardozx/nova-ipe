@@ -3,144 +3,138 @@ import React from 'react';
 import { Suspense } from 'react';
 import { getImoveisDestaque, getImoveisAluguel } from '@/lib/queries';
 import { normalizeDocuments } from '@/lib/sanity-utils';
-import { PropertyClient } from '../client/PropertyClient';
-import SectionHeader from '../ui/SectionHeader';
 import { UnifiedLoading } from '../ui/UnifiedComponents';
 import { transformPropertyData } from '@/lib/property-transformers';
 import { ensureNonNullProperties } from '@/app/PropertyTypeFix';
 import { PropertyType } from '../../../types/imovel';
+import PremiumPropertyCatalog from '../premium/PremiumPropertyCatalog';
+import { loadImage } from '@/lib/enhanced-image-loader';
+import { extractSlugString } from '@/app/PropertyTypeFix';
+import type { ImovelClient } from '@/src/types/imovel-client';
+import type { ProcessedProperty } from '@/app/page';
 
 /**
- * Componente Server para exibir propriedades
- * Usa Server Components para dados e Client Components para interatividade
+ * Enhanced Property transformer for premium catalog integration
  */
+function transformToProperty(imovel: ImovelClient, propertyType: PropertyType): ProcessedProperty | null {
+    try {
+        if (!imovel || !imovel._id) return null;
 
-// Wrapper para dados de venda
-export async function PropertiesSale() {
-    // Buscar dados do servidor diretamente
-    const imoveisDestaque = await getImoveisDestaque();
+        const processedImage = loadImage(
+            imovel.imagem,
+            '/images/property-placeholder.jpg',
+            imovel.titulo || 'Imóvel'
+        );
 
-    // Normalizar documentos
-    const destaqueNormalizados = normalizeDocuments(imoveisDestaque) || [];
+        const slug = extractSlugString(imovel.slug);
+        const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
 
-    // Transformar em formato legível para o cliente
-    const destaqueFormatados = ensureNonNullProperties(
-        destaqueNormalizados
-            .map(imovel => transformPropertyData(imovel, 'sale'))
-            .filter(Boolean)
-    );
-
-    return (
-        <PropertyShowcaseServer
-            properties={destaqueFormatados}
-            title="Encontre seu próximo lar"
-            subtitle="Imóveis selecionados para venda em Guararema e região"
-            badge="Imóveis à Venda"
-            badgeColor="blue"
-        />
-    );
-}
-
-// Wrapper para dados de aluguel
-export async function PropertiesRental() {
-    // Buscar dados do servidor diretamente
-    const imoveisAluguel = await getImoveisAluguel();
-
-    // Normalizar documentos
-    const aluguelNormalizados = normalizeDocuments(imoveisAluguel) || [];
-
-    // Transformar em formato legível para o cliente
-    const aluguelFormatados = ensureNonNullProperties(
-        aluguelNormalizados
-            .map(imovel => transformPropertyData(imovel, 'rent'))
-            .filter(Boolean)
-    );
-
-    return (
-        <PropertyShowcaseServer
-            properties={aluguelFormatados}
-            title="Imóveis para Alugar"
-            subtitle="As melhores opções de aluguel em Guararema"
-            badge="Para Alugar"
-            badgeColor="green"
-        />
-    );
-}
-
-// Definição da interface para as propriedades do componente
-interface Property {
-    id: string;
-    title: string;
-    slug: string;
-    location: string;
-    city: string;
-    price: number;
-    propertyType: PropertyType;
-    area?: number;
-    bedrooms?: number;
-    bathrooms?: number;
-    garage?: number;
-    isNew: boolean;
-}
-
-interface PropertyShowcaseProps {
-    properties: Property[];
-    title: string;
-    subtitle: string;
-    badge: string;
-    badgeColor: 'blue' | 'green' | 'amber' | 'purple' | 'emerald';
-    maxItems?: number;
-}
-
-// Componente base do showcase de propriedades
-export function PropertyShowcaseServer({
-    properties,
-    title,
-    subtitle,
-    badge,
-    badgeColor,
-    maxItems = 6
-}: PropertyShowcaseProps) {
-    // Se não há propriedades, não renderizar
-    if (!properties || properties.length === 0) {
+        return {
+            id: imovel._id,
+            title: imovel.titulo || 'Imóvel disponível', slug: slug || `imovel-${imovel._id}`,
+            location: imovel.bairro || 'Guararema',
+            city: 'Guararema',
+            price: imovel.preco || 0,
+            propertyType,
+            area: imovel.areaUtil,
+            bedrooms: imovel.dormitorios,
+            bathrooms: imovel.banheiros,
+            parkingSpots: imovel.vagas,
+            mainImage: {
+                url: processedImage.url,
+                alt: processedImage.alt
+            },
+            isPremium: Boolean(imovel.destaque),
+            isNew: Boolean(imovel.dataPublicacao && new Date(imovel.dataPublicacao) > new Date(thirtyDaysAgo)),
+            isHighlight: Boolean(imovel.destaque)
+        };
+    } catch (error) {
+        console.error(`Erro ao transformar imóvel: ${error}`);
         return null;
     }
+}
 
-    // Truncar para o máximo de itens
-    const displayProperties = properties.slice(0, maxItems);
+// Premium Wrapper para dados de venda - Usando PremiumPropertyCatalog
+export async function PropertiesSale() {
+    try {
+        // Buscar dados do servidor diretamente
+        const imoveisDestaque = await getImoveisDestaque();
 
-    return (
-        <section className="py-24 bg-white">
-            <div className="container mx-auto px-6 lg:px-8">
-                <SectionHeader
-                    badge={badge}
-                    badgeColor={badgeColor}
-                    title={title}
-                    description={subtitle}
-                    align="center"
-                    className="mb-16"
+        // Normalizar documentos
+        const destaqueNormalizados = normalizeDocuments(imoveisDestaque) || [];        // Transformar em formato ProcessedProperty para o PremiumPropertyCatalog
+        const propertiesFormatted: ProcessedProperty[] = destaqueNormalizados
+            .map(imovel => transformToProperty(imovel, 'sale'))
+            .filter((property): property is ProcessedProperty => property !== null);
+
+        return (
+            <Suspense fallback={<UnifiedLoading variant="property" height="600px" title="Carregando imóveis em destaque..." />}>
+                <PremiumPropertyCatalog
+                    title="Imóveis Premium para Venda"
+                    subtitle="Encontre o imóvel perfeito em Guararema com nossa seleção exclusiva de propriedades para venda"
+                    properties={propertiesFormatted}
+                    badge="Imóveis à Venda"
+                    viewAllLink="/comprar"
+                    viewAllText="Ver todos os imóveis à venda"
+                    variant="premium"
+                    accentColor="blue"
+                    maxItems={6}
+                    showFilters={true}
+                    className="bg-gradient-to-br from-neutral-50 to-blue-50/30"
                 />
-
-                <div className="max-w-7xl mx-auto">
-                    <div className="bg-gradient-to-br from-slate-50 to-white rounded-3xl shadow-2xl border border-slate-100 p-8 lg:p-12">
-                        <Suspense fallback={<UnifiedLoading variant="property" height="600px" />}>
-                            {/* Cliente recebe apenas os dados - separação de responsabilidades */}
-                            <PropertyClient properties={displayProperties} />
-                        </Suspense>
-
-                        {/* CTA para ver mais */}
-                        <div className="text-center mt-12">
-                            <a
-                                href="/comprar"
-                                className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
-                            >
-                                Ver Todos os Imóveis
-                                <span className="ml-2">→</span>
-                            </a>
-                        </div>
-                    </div>
+            </Suspense>
+        );
+    } catch (error) {
+        console.error('Erro ao carregar imóveis para venda:', error);
+        return (
+            <div className="py-24 bg-white">
+                <div className="container mx-auto px-6 text-center">
+                    <p className="text-gray-500">Erro ao carregar imóveis. Tente novamente mais tarde.</p>
                 </div>
             </div>
-        </section>
-    );
+        );
+    }
 }
+
+// Premium Wrapper para dados de aluguel - Usando PremiumPropertyCatalog
+export async function PropertiesRental() {
+    try {
+        // Buscar dados do servidor diretamente
+        const imoveisAluguel = await getImoveisAluguel();
+
+        // Normalizar documentos
+        const aluguelNormalizados = normalizeDocuments(imoveisAluguel) || [];        // Transformar em formato ProcessedProperty para o PremiumPropertyCatalog
+        const propertiesFormatted: ProcessedProperty[] = aluguelNormalizados
+            .map(imovel => transformToProperty(imovel, 'rent'))
+            .filter((property): property is ProcessedProperty => property !== null);
+
+        return (
+            <Suspense fallback={<UnifiedLoading variant="property" height="600px" title="Carregando imóveis para aluguel..." />}>
+                <PremiumPropertyCatalog
+                    title="Imóveis Premium para Aluguel"
+                    subtitle="Descubra as melhores opções de aluguel em Guararema com localização privilegiada e estrutura completa"
+                    properties={propertiesFormatted}
+                    badge="Para Alugar"
+                    viewAllLink="/alugar"
+                    viewAllText="Ver todos os imóveis para aluguel"
+                    variant="modern"
+                    accentColor="emerald"
+                    maxItems={6}
+                    showFilters={true}
+                    className="bg-gradient-to-br from-slate-50 to-emerald-50/50"
+                />
+            </Suspense>
+        );
+    } catch (error) {
+        console.error('Erro ao carregar imóveis para aluguel:', error);
+        return (
+            <div className="py-24 bg-white">
+                <div className="container mx-auto px-6 text-center">
+                    <p className="text-gray-500">Erro ao carregar imóveis. Tente novamente mais tarde.</p>
+                </div>
+            </div>
+        );
+    }
+}
+
+// Legacy interfaces and components removed - now using PremiumPropertyCatalog
+// All property display functionality has been modernized to use the premium catalog system

@@ -139,7 +139,7 @@ export default function BlocoCTAConversao({ titulo, subtitulo, ctaText, ctaLink 
                                     fill
                                     className="object-cover"
                                 />
-                                <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
+                                <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-amber-900 to-transparent">
                                     <div className="text-xs font-medium text-white flex items-center">
                                         <MapPin className="w-3 h-3 mr-1" /> Centro, Guararema
                                     </div>

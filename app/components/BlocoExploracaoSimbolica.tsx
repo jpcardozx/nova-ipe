@@ -77,7 +77,7 @@ export default function BlocoExploracaoGuararema() {
                                      hover:border-amber-200 transition-all duration-300"
                             onMouseEnter={() => setHoveredIndex(idx)}
                             onMouseLeave={() => setHoveredIndex(null)}                        >                            <div className="relative h-48 w-full">
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10" />
+                                <div className="absolute inset-0 bg-black/40 z-10" />
                                 <Image
                                     src={categoria.bgImage}
                                     alt={categoria.label}

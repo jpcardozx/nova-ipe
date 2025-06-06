@@ -98,7 +98,7 @@ const PremiumPropertyCard: React.FC<PropertyCardProps> = ({
 
                     {/* Efeito de gradiente no hover */}
                     <div
-                        className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60 group-hover:opacity-70 transition-opacity duration-300"
+                        className="absolute inset-0 bg-gradient-to-t from-amber-900/50 via-transparent to-transparent opacity-60 group-hover:opacity-70 transition-opacity duration-300"
                     />
 
                     {/* Badges */}

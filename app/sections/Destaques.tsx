@@ -955,7 +955,7 @@ function DestaquesEstrategicos() {
                             href="/agendar-visita"
                             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-amber-600 text-white rounded-lg font-medium hover:bg-amber-700 transition-colors shadow-sm"
                         >
-                            Reservar minha visita exclusiva
+                            Agendar visita personalizada
                             <ArrowRight className="w-4 h-4" />
                         </a>
                             <a

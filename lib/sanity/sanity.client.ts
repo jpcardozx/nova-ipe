@@ -10,8 +10,7 @@ export const sanityClient = createClient({
     dataset,
     apiVersion,
     useCdn: true, // Usa CDN para melhor performance
-    perspective: 'published',
-    stega: {
+    perspective: 'published',    stega: {
         enabled: false, // Desabilita stega em produção
     },
 })

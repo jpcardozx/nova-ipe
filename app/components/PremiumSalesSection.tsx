@@ -23,7 +23,7 @@ import { extractSlugString } from '@/app/PropertyTypeFix';
 import type { ImovelClient } from '@/src/types/imovel-client';
 import type { PropertyCardUnifiedProps as PropertyCardProps } from '@/app/components/ui/property/PropertyCardUnified';
 
-// Animações específicas para vendas
+// Animações específicas para vendas - Premium
 const heroVariants = {
     hidden: { opacity: 0, scale: 0.95 },
     visible: {
@@ -31,7 +31,7 @@ const heroVariants = {
         scale: 1,
         transition: {
             duration: 1.2,
-            ease: [0.25, 0.1, 0.25, 1.0]
+            ease: [0.22, 1, 0.36, 1]
         }
     }
 };
@@ -41,7 +41,7 @@ const gridVariants = {
     visible: {
         opacity: 1,
         transition: {
-            staggerChildren: 0.15,
+            staggerChildren: 0.12,
             delayChildren: 0.3
         }
     }
@@ -104,25 +104,21 @@ const LiveStats = ({ properties }: { properties: PropertyCardProps[] }) => {
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: index * 0.1 }}
-                            className={cn(
-                                "relative p-4 rounded-2xl border backdrop-blur-sm overflow-hidden group",
-                                `bg-gradient-to-br from-${stat.color}-50 to-${stat.color}-100`,
-                                `border-${stat.color}-200 hover:border-${stat.color}-300`
-                            )}
+                            className="relative p-4 rounded-2xl border bg-gradient-to-br from-amber-50 to-orange-100 border-amber-200 hover:border-amber-300 backdrop-blur-sm overflow-hidden group"
                         >
                             <div className="relative z-10">
                                 <div className="flex items-center justify-between mb-2">
-                                    <stat.icon size={20} className={`text-${stat.color}-600`} />
-                                    <div className={`w-2 h-2 rounded-full bg-${stat.color}-500 animate-pulse`} />
+                                    <stat.icon size={20} className="text-amber-600" />
+                                    <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                                 </div>
-                                <div className={`text-2xl font-bold text-${stat.color}-900 mb-1`}>
+                                <div className="text-2xl font-bold text-amber-900 mb-1">
                                     {stat.value}
                                 </div>
-                                <div className={`text-sm text-${stat.color}-700`}>
+                                <div className="text-sm text-amber-700">
                                     {stat.label}
                                 </div>
                             </div>
-                            <div className={`absolute inset-0 bg-gradient-to-br from-${stat.color}-500/5 to-${stat.color}-600/5 opacity-0 group-hover:opacity-100 transition-opacity`} />
+                            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-600/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </motion.div>
                     ))}
                 </motion.div>
@@ -200,9 +196,11 @@ const FeaturedProperty = ({ property }: { property: PropertyCardProps }) => (
                             </div>
                         )}
                     </div>
-                </div>                {/* CTA */}
+                </div>
+
+                {/* CTA */}
                 <Link
-                    href={`/imovel/${typeof property.slug === 'string' ? property.slug : property.id}`}
+                    href={`/imovel/${property.slug}`}
                     className="inline-flex items-center gap-2 px-6 py-3 bg-white text-amber-900 rounded-xl font-semibold hover:bg-amber-50 transition-colors group/cta"
                 >
                     <Eye size={18} />
@@ -228,7 +226,8 @@ const PropertyGrid = ({ properties }: { properties: PropertyCardProps[] }) => {
                     key={property.id}
                     variants={cardVariants}
                     className="group"
-                >                    <PropertyCardUnified
+                >
+                    <PropertyCardUnified
                         {...property}
                         className="h-full transform-gpu group-hover:scale-[1.02] transition-all duration-500 shadow-lg hover:shadow-2xl"
                     />
@@ -372,51 +371,62 @@ export function PremiumSalesSection() {
             </div>
 
             <div className="container mx-auto px-6 relative z-10">
-                {/* Header da seção */}
+                {/* Header da seção - Premium */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
                     className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16"
                 >
-                    <div className="space-y-6">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl text-white">
-                                <Building2 size={28} />
+                    <div className="space-y-8">
+                        <motion.div
+                            className="flex items-center gap-3 mb-6"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.2 }}
+                        >
+                            <div className="p-4 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl text-white shadow-lg">
+                                <Building2 size={32} />
                             </div>
-                            <div className="flex items-center gap-2 px-3 py-1 bg-amber-200/50 rounded-full text-sm font-medium text-amber-800">
-                                <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-                                <span>Mercado Aquecido</span>
+                            <div className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-full font-bold shadow-lg">
+                                Vendas Premium
                             </div>
-                        </div>
+                        </motion.div>                        <motion.h2
+                            className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-amber-700 via-orange-600 to-orange-700 bg-clip-text text-transparent leading-tight"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                        >
+                            Imóveis Selecionados para Investimento
+                        </motion.h2>
 
-                        <h2 className="text-4xl lg:text-5xl font-bold text-stone-900 leading-tight">
-                            Oportunidades
-                            <span className="block bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
-                                Exclusivas
-                            </span>
-                        </h2>
+                        <motion.p
+                            className="text-xl text-amber-800 leading-relaxed"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4 }}
+                        >
+                            Descubra imóveis cuidadosamente selecionados que combinam <span className="font-semibold text-orange-700">localização privilegiada</span>, design excepcional e potencial de valorização.
+                        </motion.p>
 
-                        <p className="text-xl text-stone-600 leading-relaxed">
-                            Descubra imóveis premium em Guararema com potencial de alta valorização.
-                            Investimentos estratégicos na Serra da Mantiqueira.
-                        </p>
-
-                        <div className="flex flex-col sm:flex-row gap-4">
+                        <motion.div
+                            className="flex gap-4"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.5 }}
+                        >
                             <Link
                                 href="/comprar"
-                                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-xl font-semibold hover:from-amber-700 hover:to-orange-700 transition-all shadow-lg hover:shadow-xl group"
+                                className="group inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-xl font-bold hover:from-amber-700 hover:to-orange-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
                             >
-                                <Eye size={20} />
                                 <span>Ver Todos</span>
-                                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                             </Link>
-
-                            <button className="inline-flex items-center gap-2 px-8 py-4 bg-white/80 backdrop-blur-sm text-stone-700 rounded-xl font-semibold hover:bg-white transition-all border border-amber-200">
-                                <Filter size={20} />
-                                <span>Filtrar</span>
+                            <button className="inline-flex items-center gap-2 px-6 py-3 border-2 border-amber-600 text-amber-700 rounded-xl font-bold hover:bg-amber-50 transition-colors">
+                                <Filter className="w-5 h-5" />
+                                Filtros
                             </button>
-                        </div>
+                        </motion.div>
                     </div>
 
                     {/* Stats em tempo real */}

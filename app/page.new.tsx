@@ -1,47 +1,48 @@
+import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { getImoveisDestaque, getImoveisDestaqueVenda, getImoveisAluguel } from '@/lib/queries';
 import { normalizeDocuments } from '@/lib/sanity-utils';
 import { loadImage } from '@/lib/enhanced-image-loader';
 import type { ImovelClient } from '@/src/types/imovel-client';
-import { PropertyType } from '@/app/components/ui/property/PropertyCardUnified';
+import { PropertyType } from './components/ui/property/PropertyCardUnified';
 import { extractSlugString, ensureNonNullProperties } from '@/app/PropertyTypeFix';
 
-// === CORE IMPORTS ===
+// Importações server-side otimizadas
 import SkipToContent from './components/SkipToContent';
-import OptimizationProvider from './components/OptimizationProvider';
-import ClientOnlyNavbar from './components/ClientOnlyNavbar';
 import SectionHeader from './components/ui/SectionHeader';
-import FormularioContatoSubtil from './components/FormularioContatoSubtil';
 import FooterAprimorado from './sections/FooterAprimorado';
-import WhatsAppButton from './components/WhatsAppButton';
-import NotificacaoBanner from './components/NotificacaoBanner';
-import { FeedbackBanner } from './components/FeedbackBanner';
 import { UnifiedLoading } from './components/ui/UnifiedComponents';
-import SafeSuspenseWrapper from './components/SafeSuspenseWrapper';
-import ScrollAnimations from './components/ScrollAnimations';
-import BlocoExploracaoGuararema from './components/BlocoExploracaoSimbolica';
 
-// === SECTION IMPORTS ===
-import ValorAprimorado from './sections/ValorAprimorado';
-import Referencias from './sections/Referencias';
-import ClientProgressSteps from './components/ClientProgressSteps';
-import { ExclusiveAnalysisOffer } from './sections/ExclusiveAnalysisOffer';
-import { MarketAnalysisSection } from './components/MarketAnalysisSection';
-import TrustAndCredibilitySection from './components/TrustAndCredibilitySection';
-import ConsolidatedHero from './components/ConsolidatedHero';
+// Importação do Client Component principal
+import HomePageClient from './page-client';
 
-// === PROFESSIONAL PROPERTY COMPONENTS ===
-import { DestaquesSanityCarousel } from './components/DestaquesSanityCarousel';
-import { PropertyCarousel } from '@/app/components/ui/property/PropertyCarousel';
-import { PropertyCard, PropertyCardProps } from '@/app/components/ui/property/PropertyCardUnified';
-
-// === UTILITY FUNCTIONS ===
-async function fetchAndTransformProperties(fetchFunction: () => Promise<ImovelClient[]>, propertyType: PropertyType): Promise<PropertyCardProps[]> {
-    const imoveis = await fetchFunction();
-    return imoveis.map(imovel => transformPropertyData(imovel, propertyType)).filter(Boolean) as PropertyCardProps[];
+// === ENHANCED INTERFACES ===
+interface ProcessedProperty {
+    id: string;
+    title: string;
+    slug: string;
+    location: string;
+    city: string;
+    price: number;
+    propertyType: PropertyType;
+    area?: number;
+    bedrooms?: number;
+    bathrooms?: number;
+    parkingSpots?: number;
+    mainImage: {
+        url: string;
+        alt: string;
+        blurDataURL?: string;
+    };
+    isHighlight: boolean;
+    isPremium: boolean;
+    isNew: boolean;
+    features?: string[];
+    virtualTour?: string;
 }
 
-function transformPropertyData(imovel: ImovelClient, propertyType: PropertyType): PropertyCardProps | null {
+// === SSR UTILITY FUNCTIONS ===
+function transformPropertyData(imovel: ImovelClient, propertyType: PropertyType): ProcessedProperty | null {
     try {
         if (!imovel || !imovel._id) return null;
 
@@ -70,10 +71,10 @@ function transformPropertyData(imovel: ImovelClient, propertyType: PropertyType)
                 url: processedImage.url,
                 alt: processedImage.alt
             },
-            status: 'available',
             isHighlight: Boolean(imovel.destaque),
             isPremium: Boolean(imovel.destaque),
-            isNew: Boolean(imovel.dataPublicacao && new Date(imovel.dataPublicacao) > new Date(thirtyDaysAgo))
+            isNew: Boolean(imovel.dataPublicacao && new Date(imovel.dataPublicacao) > new Date(thirtyDaysAgo)),
+            features: imovel.caracteristicas || []
         };
     } catch (error) {
         console.error(`Erro ao transformar imóvel: ${error}`);
@@ -81,132 +82,191 @@ function transformPropertyData(imovel: ImovelClient, propertyType: PropertyType)
     }
 }
 
-// === COMPONENTES PROFISSIONAIS ===
-// Hero Section Premium SSR - Usando ConsolidatedHero com Suspense boundary
-const HeroSection = () => (
-    <SafeSuspenseWrapper height="600px" title="Carregando hero premium...">
-        <ConsolidatedHero />
-    </SafeSuspenseWrapper>
-);
+// === SEO METADATA ===
+export const metadata: Metadata = {
+    title: 'Ipê Imóveis | Investimentos Imobiliários Premium em Guararema',
+    description: 'Há 15 anos criando legados familiares através de investimentos imobiliários inteligentes em Guararema. Assessoria especializada em propriedades de alto padrão.',
+    keywords: 'imóveis guararema, investimento imobiliário, casas alto padrão guararema, imobiliária premium, ipê imóveis',
+    openGraph: {
+        title: 'Ipê Imóveis - Investimentos Imobiliários Premium',
+        description: 'Assessoria especializada em propriedades de alto padrão em Guararema',
+        type: 'website',
+        locale: 'pt_BR',
+        siteName: 'Ipê Imóveis',
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'Ipê Imóveis - Investimentos Premium',
+        description: 'Encontre o imóvel perfeito em Guararema',
+    },
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            'max-video-preview': -1,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+        },
+    },
+};
 
-export default async function Home() {
-    // Fetch data for different sections concurrently
-    const [
-        destaqueVendaProperties,
-        destaqueAluguelProperties,
-        rawImoveisDestaque
-    ] = await Promise.all([
-        fetchAndTransformProperties(getImoveisDestaqueVenda, 'sale'),
-        fetchAndTransformProperties(getImoveisAluguel, 'rent'),
-        getImoveisDestaque() // Para o DestaquesSanityCarousel
-    ]);
+// === MAIN COMPONENT ===
+export default async function HomePage() {
+    // Busca de dados em paralelo com tratamento de erros
+    let imoveisDestaque: ImovelClient[] = [];
+    let imoveisAluguel: ImovelClient[] = [];
+    let imoveisDestaqueGeral: ImovelClient[] = [];
+
+    try {
+        const [destaqueResult, aluguelResult, destaqueGeralResult] = await Promise.allSettled([
+            getImoveisDestaqueVenda(),
+            getImoveisAluguel(),
+            getImoveisDestaque()
+        ]);
+
+        if (destaqueResult.status === 'fulfilled') {
+            imoveisDestaque = destaqueResult.value;
+        }
+        if (aluguelResult.status === 'fulfilled') {
+            imoveisAluguel = aluguelResult.value;
+        }
+        if (destaqueGeralResult.status === 'fulfilled') {
+            imoveisDestaqueGeral = destaqueGeralResult.value;
+        }
+    } catch (error) {
+        console.error('Erro ao buscar imóveis:', error);
+    }
+
+    // Processamento otimizado dos dados
+    const destaqueNormalizados = normalizeDocuments(imoveisDestaque) || [];
+    const aluguelNormalizados = normalizeDocuments(imoveisAluguel) || [];
+    const destaqueGeralNormalizados = normalizeDocuments(imoveisDestaqueGeral) || [];
+
+    const propertiesForSale = ensureNonNullProperties(
+        destaqueNormalizados
+            .map((imovel) => transformPropertyData(imovel, 'sale'))
+            .filter((item): item is ProcessedProperty => item !== null)
+    );
+
+    const propertiesForRent = ensureNonNullProperties(
+        aluguelNormalizados
+            .map((imovel) => transformPropertyData(imovel, 'rent'))
+            .filter((item): item is ProcessedProperty => item !== null)
+    );
+
+    const featuredProperties = ensureNonNullProperties(
+        destaqueGeralNormalizados
+            .map((imovel) => transformPropertyData(imovel, imovel.finalidade === 'Aluguel' ? 'rent' : 'sale'))
+            .filter((item): item is ProcessedProperty => item !== null)
+    );
 
     return (
-        <main className="min-h-screen flex flex-col">
-            <OptimizationProvider>
-                <ClientOnlyNavbar />
+        <>
+            {/* SEO Schema Markup */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "RealEstateAgent",
+                        "name": "Ipê Imóveis",
+                        "description": "Investimentos Imobiliários Premium em Guararema",
+                        "url": "https://www.ipeimoveis.com.br",
+                        "telephone": "+5511981845016",
+                        "address": {
+                            "@type": "PostalAddress",
+                            "addressLocality": "Guararema",
+                            "addressRegion": "SP",
+                            "addressCountry": "BR"
+                        },
+                        "geo": {
+                            "@type": "GeoCoordinates",
+                            "latitude": "-23.4123",
+                            "longitude": "-46.0312"
+                        },
+                        "openingHours": "Mo-Fr 09:00-18:00, Sa 09:00-13:00",
+                        "priceRange": "$$$",
+                        "aggregateRating": {
+                            "@type": "AggregateRating",
+                            "ratingValue": "4.9",
+                            "reviewCount": "523"
+                        }
+                    })
+                }}
+            />
 
-                {/* Hero Section - Premium */}
-                <HeroSection />
+            {/* Estrutura principal com SkipToContent para acessibilidade */}
+            <div className="font-sans antialiased bg-white text-gray-900 selection:bg-amber-200 selection:text-amber-900">
+                <SkipToContent />
 
-                {/* Seções de Destaque - Usando Suspense para carregamento otimizado */}
-                <Suspense fallback={<UnifiedLoading />}>
-                    <BlocoExploracaoGuararema />
-                </Suspense>
-
-                {/* === SEÇÃO DE DESTAQUES COM FILTROS - SANITY CAROUSEL === */}
-                <Suspense fallback={<UnifiedLoading />}>
-                    <DestaquesSanityCarousel
-                        rawProperties={rawImoveisDestaque}
-                        title="Imóveis em Destaque"
-                        subtitle="Propriedades exclusivamente selecionadas com filtros inteligentes e interface moderna"
+                {/* Client component com todos os dados necessários */}
+                <Suspense fallback={<UnifiedLoading height="100vh" title="Carregando Nova Ipê..." />}>
+                    <HomePageClient
+                        propertiesForSale={propertiesForSale}
+                        propertiesForRent={propertiesForRent}
+                        featuredProperties={featuredProperties}
                     />
                 </Suspense>
 
-                {/* === SEÇÃO DE IMÓVEIS À VENDA - PROPERTY CAROUSEL === */}
-                <Suspense fallback={<UnifiedLoading />}>
-                    <section className="py-16 bg-gradient-to-br from-neutral-50 via-white to-primary-50/30">
-                        <div className="container mx-auto px-6">
-                            <PropertyCarousel
-                                properties={destaqueVendaProperties}
-                                title="Imóveis à Venda em Destaque"
-                                subtitle="Oportunidades exclusivas de compra em Guararema"
-                                variant="featured"
-                                slidesToShow={3}
-                                showControls={true}
-                                autoplay={true}
-                                autoplayInterval={6000}
-                                viewAllLink="/comprar"
-                                viewAllLabel="Ver todos os imóveis à venda"
-                            />
-                        </div>
-                    </section>
-                </Suspense>
-
-                {/* === SEÇÃO DE IMÓVEIS PARA ALUGUEL - PROPERTY CAROUSEL === */}
-                <Suspense fallback={<UnifiedLoading />}>
-                    <section className="py-16 bg-gradient-to-br from-white via-neutral-50 to-secondary-50/30">
-                        <div className="container mx-auto px-6">
-                            <PropertyCarousel
-                                properties={destaqueAluguelProperties}
-                                title="Imóveis para Alugar em Destaque"
-                                subtitle="Opções selecionadas de aluguel com excelente localização"
-                                variant="featured"
-                                slidesToShow={3}
-                                showControls={true}
-                                autoplay={true}
-                                autoplayInterval={7000}
-                                viewAllLink="/alugar"
-                                viewAllLabel="Ver todos os imóveis para alugar"
-                            />
-                        </div>
-                    </section>
-                </Suspense>
-
-                {/* Seção de Valor Aprimorado - SSR com dados reais */}
-                <ValorAprimorado
-                    properties={[]}
-                    title="Valorizações Recentes em Guararema"
-                    description="Descubra como nossos imóveis têm se valorizado."
-                    ctaLink="/valorizar"
-                    ctaText="Saiba mais sobre valorização"
-                    badge="Destaque"
-                />
-
-                {/* Seção de Referências - SSR com dados reais */}
-                <Referencias
-                    title="O que dizem nossos clientes"
-                    description="Depoimentos reais de clientes satisfeitos."
-                    ctaLink="/depoimentos"
-                    ctaText="Veja todos os depoimentos"
-                    badge="Confiança"
-                />
-
-                {/* Seção de Análise de Mercado - SSR com dados reais */}
-                <MarketAnalysisSection
-                    title="Análise de Mercado Imobiliário"
-                    description="Entenda as tendências do mercado em Guararema."
-                    ctaLink="/download"
-                    ctaText="Acesse a análise completa"
-                    badge="Exclusivo"
-                />
-
-                {/* Client Progress Steps */}
-                <Suspense fallback={<UnifiedLoading />}>
-                    <ClientProgressSteps />
-                </Suspense>
-
-                {/* Seção de Contato - SSR com dados reais */}
-                <FormularioContatoSubtil
-                    title="Interessado em um imóvel?"
-                    description="Entre em contato conosco para uma consulta personalizada."
-                    ctaText="Fale conosco"
-                    badge="Atendimento"
-                />
-
-                {/* Rodapé Aprimorado - SSR com dados reais */}
+                {/* Footer - mantido no server component para melhor SEO */}
                 <FooterAprimorado />
-            </OptimizationProvider>
-        </main>
+            </div>
+
+            {/* Estilos globais premium */}
+            <style jsx global>{`
+        .animate-fade-in-up {
+          animation: premium-fade-in 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes premium-fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        /* Premium scrollbar */
+        ::-webkit-scrollbar {
+          width: 12px;
+          height: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+          background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background: linear-gradient(180deg, #d97706, #f59e0b);
+          border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(180deg, #b45309, #d97706);
+        }
+
+        /* Premium selection */
+        ::selection {
+          background: rgba(251, 191, 36, 0.2);
+          color: #92400e;
+        }
+
+        /* Focus styles for accessibility */
+        *:focus {
+          outline: 2px solid #f59e0b;
+          outline-offset: 2px;
+        }
+
+        /* Smooth scroll behavior */
+        html {
+          scroll-behavior: smooth;
+        }
+      `}</style>
+        </>
     );
 }

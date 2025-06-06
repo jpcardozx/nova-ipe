@@ -7,6 +7,7 @@ import { useInView } from 'react-intersection-observer';
 import type { ImovelClient } from '../../src/types/imovel-client';
 import { OptimizedIcons } from '@/app/utils/optimized-icons';
 import PropertyCardUnified from '@/app/components/ui/property/PropertyCardUnified';
+import RentalFeaturesUnified from '@/app/components/RentalFeaturesUnified';
 
 // Declare DOM types for this client component
 declare global {
@@ -26,7 +27,7 @@ const Footer = dynamic(() => import('@sections/Footer'), {
     loading: () => <div className="h-40 bg-neutral-100 animate-pulse" />
 });
 
-const Valor = dynamic(() => import('@sections/Valor'), {
+const ValorUnified = dynamic(() => import('@sections/ValorUnified'), {
     ssr: false, // Load after main content since it's below the fold
     loading: () => <div className="h-32 bg-neutral-50 animate-pulse" />
 });
@@ -141,14 +142,44 @@ export default function OptimizedAlugarPage() {
 
     return (
         <>
-            <NavBar />
-            <main className="pt-28 pb-20 bg-neutral-50 text-neutral-900 min-h-screen">
-                <section className="max-w-7xl mx-auto px-6">
-                    <div className="text-center mb-16">
-                        <h1 className="text-4xl font-extrabold text-blue-900">Imóveis para Alugar</h1>
-                        <p className="mt-4 text-neutral-600 text-lg">
-                            Confira os imóveis disponíveis com boa localização, segurança e excelente custo-benefício.
-                        </p>
+            <NavBar />            <main className="pt-32 pb-24 bg-gradient-to-b from-neutral-50 via-white to-neutral-50 text-neutral-900 min-h-screen">
+                <section className="max-w-7xl mx-auto px-6 lg:px-8">{/* Header Premium com Gradient */}
+                    <div className="text-center mb-20 relative">
+                        {/* Background decorativo */}
+                        <div className="absolute inset-0 -top-8 bg-gradient-to-b from-amber-50/30 via-orange-50/20 to-transparent rounded-3xl -z-10" />
+
+                        {/* Badge Premium */}
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-200 rounded-full text-amber-800 font-medium mb-6">
+                            <OptimizedIcons.MapPin className="w-4 h-4" />
+                            <span>Seleção Premium • Guararema & Região</span>
+                        </div>
+
+                        <h1 className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-700 bg-clip-text text-transparent mb-6">
+                            Imóveis para
+                            <span className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent block">
+                                Aluguel
+                            </span>
+                        </h1>
+
+                        <p className="mt-6 text-neutral-600 text-xl leading-relaxed max-w-3xl mx-auto">
+                            Imóveis cuidadosamente selecionados com excelente localização,
+                            <br className="hidden md:block" />
+                            infraestrutura completa e o melhor custo-benefício da região.
+                        </p>                        {/* Indicadores de Confiança */}
+                        <div className="flex flex-wrap justify-center gap-8 mt-12 text-sm text-neutral-600">
+                            <div className="flex items-center gap-2">
+                                <OptimizedIcons.Shield className="w-5 h-5 text-emerald-500" />
+                                <span>Documentação verificada</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <OptimizedIcons.Award className="w-5 h-5 text-amber-500" />
+                                <span>15 anos de experiência</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <OptimizedIcons.UserCheck className="w-5 h-5 text-blue-500" />
+                                <span>Suporte especializado</span>
+                            </div>
+                        </div>
                     </div>
 
                     {isLoading ? (
@@ -178,38 +209,12 @@ export default function OptimizedAlugarPage() {
                                 No momento não temos imóveis disponíveis para aluguel.
                                 Entre em contato conosco para verificar novas opções em breve.
                             </p>
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {imoveis.map(imovel => (
-                                <PropertyCardUnified
-                                    key={imovel._id}
-                                    id={imovel._id} title={imovel.titulo || 'Imóvel para alugar'}
-                                    slug={imovel.slug as string || imovel._id}
-                                    location={imovel.bairro || ''}
-                                    city={imovel.cidade}
-                                    price={imovel.preco || 0}
-                                    propertyType="rent"
-                                    area={imovel.areaUtil}
-                                    bedrooms={imovel.dormitorios}
-                                    bathrooms={imovel.banheiros}
-                                    parkingSpots={imovel.vagas} mainImage={{
-                                        url: imovel.imagem?.imagemUrl || '',
-                                        alt: imovel.imagem?.alt || imovel.titulo || 'Imóvel para alugar',
-                                        sanityImage: imovel.imagem
-                                    }}
-                                    isHighlight={imovel.destaque}
-                                    isFavorite={isFavorite(imovel._id)}
-                                    onFavoriteToggle={handleToggleFavorite}
-                                />
-                            ))}
-                        </div>
+                        </div>) : (
+                        <RentalFeaturesUnified imoveis={imoveis} />
                     )}
-                </section>
-
-                {/* Valor section loaded only when scrolled into view */}
+                </section>                {/* Valor section loaded only when scrolled into view */}
                 <div ref={valorRef} className="mt-24">
-                    {valorInView && <Valor />}
+                    {valorInView && <ValorUnified />}
                 </div>
             </main>
             <Footer />

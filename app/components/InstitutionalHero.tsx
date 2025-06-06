@@ -22,19 +22,19 @@ const InstitutionalHero = () => {
     const achievements = [
         {
             icon: Award,
-            number: '25+',
+            number: '15',
             label: 'Anos de Tradição',
             sublabel: 'No mercado imobiliário'
         },
         {
             icon: Home,
-            number: '2.500+',
+            number: '500+',
             label: 'Imóveis Negociados',
             sublabel: 'Com sucesso garantido'
         },
         {
             icon: Users,
-            number: '98%',
+            number: '+95%',
             label: 'Satisfação',
             sublabel: 'Dos nossos clientes'
         },
@@ -42,7 +42,7 @@ const InstitutionalHero = () => {
             icon: Shield,
             number: 'CRECI',
             label: 'Certificação',
-            sublabel: 'Regulamentação total'
+            sublabel: 'Corretores credenciados'
         }
     ];
 
@@ -51,27 +51,31 @@ const InstitutionalHero = () => {
         { icon: Shield, text: 'Segurança Jurídica Total' },
         { icon: TrendingUp, text: 'Avaliação de Mercado' },
         { icon: Clock, text: 'Agilidade no Processo' }
-    ];
-
-    return (
-        <section className="relative min-h-screen bg-gradient-to-br from-stone-50 to-stone-100 overflow-hidden">
-            {/* Background Elements */}
+    ]; return (
+        <section className="relative min-h-screen overflow-hidden">
+            {/* Background Image */}
             <div className="absolute inset-0">
-                {/* Subtle Pattern Overlay */}
                 <div
-                    className="absolute inset-0 opacity-[0.02]"
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                     style={{
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                        backgroundImage: `url('/images/hero-bg.jpg')`,
                     }}
                 />
 
-                {/* Geometric Accents */}
-                <div className="absolute top-20 right-10 w-72 h-72 bg-gradient-to-br from-amber-400/5 to-orange-400/5 rounded-full blur-3xl" />
-                <div className="absolute bottom-20 left-10 w-64 h-64 bg-gradient-to-br from-stone-400/5 to-amber-400/5 rounded-full blur-3xl" />
+                {/* Elegant Overlay with Depth */}
+                <div className="absolute inset-0 bg-gradient-to-br from-stone-900/85 via-stone-800/75 to-amber-900/80" />
+                <div className="absolute inset-0 bg-gradient-to-t from-amber-900/60 via-transparent to-amber-800/20" />
 
-                {/* Decorative Lines */}
-                <div className="absolute top-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-amber-200/30 to-transparent" />
-                <div className="absolute bottom-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-stone-300/30 to-transparent" />
+                {/* Subtle texture overlay */}
+                <div
+                    className="absolute inset-0 opacity-10"
+                    style={{
+                        backgroundImage: `url('/images/wood-pattern.png')`,
+                        backgroundSize: '200px 200px',
+                        backgroundRepeat: 'repeat',
+                        mixBlendMode: 'multiply'
+                    }}
+                />
             </div>
 
             {/* Main Content */}
@@ -82,28 +86,27 @@ const InstitutionalHero = () => {
                 <div className="max-w-7xl mx-auto">
 
                     {/* Header Section */}
-                    <div className="text-center mb-16">
-                        <motion.div
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 30 }}
-                            transition={{ duration: 0.8 }}
-                            className="mb-6"
-                        >
-                            <span className="inline-block px-4 py-2 bg-amber-100 text-amber-800 text-sm font-semibold rounded-full mb-4">
-                                Ipê Imobiliária - Tradição e Confiança
-                            </span>
-                        </motion.div>
+                    <div className="text-center mb-16">                        <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 30 }}
+                        transition={{ duration: 0.8 }}
+                        className="mb-6"
+                    >
+                        <span className="inline-block px-4 py-2 bg-amber-500/20 backdrop-blur-sm border border-amber-400/30 text-amber-200 text-sm font-semibold rounded-full mb-4">
+                            Ipê Imobiliária - Tradição e Confiança
+                        </span>
+                    </motion.div>
 
                         <motion.h1
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 30 }}
                             transition={{ duration: 0.8, delay: 0.2 }}
-                            className="text-4xl md:text-5xl lg:text-6xl font-bold text-stone-900 mb-6 leading-tight"
+                            className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight"
                         >
                             Encontre o Imóvel{' '}
-                            <span className="text-amber-600 relative">
+                            <span className="text-amber-400 relative">
                                 Ideal
-                                <div className="absolute bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-30" />
+                                <div className="absolute bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 to-yellow-400 rounded-full opacity-70" />
                             </span>
                             <br />
                             para Sua Família
@@ -113,7 +116,7 @@ const InstitutionalHero = () => {
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 30 }}
                             transition={{ duration: 0.8, delay: 0.4 }}
-                            className="text-xl text-stone-600 mb-4 max-w-3xl mx-auto leading-relaxed"
+                            className="text-xl text-gray-200 mb-4 max-w-3xl mx-auto leading-relaxed"
                         >
                             Há mais de duas décadas conectando pessoas aos seus sonhos imobiliários
                             com segurança, transparência e resultados excepcionais.
@@ -123,11 +126,11 @@ const InstitutionalHero = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
                             transition={{ duration: 0.8, delay: 0.6 }}
-                            className="flex flex-wrap justify-center items-center gap-6 text-stone-500"
+                            className="flex flex-wrap justify-center items-center gap-6 text-gray-300"
                         >
                             {differentials.map((item, index) => (
                                 <div key={index} className="flex items-center gap-2">
-                                    <item.icon className="h-4 w-4 text-amber-600" />
+                                    <item.icon className="h-4 w-4 text-amber-400" />
                                     <span className="text-sm font-medium">{item.text}</span>
                                 </div>
                             ))}
@@ -140,14 +143,13 @@ const InstitutionalHero = () => {
                         animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 40 }}
                         transition={{ duration: 0.8, delay: 0.8 }}
                         className="mb-16"
-                    >
-                        <div className="bg-white rounded-2xl shadow-xl border border-stone-200 p-8 max-w-5xl mx-auto">
+                    >                        <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-8 max-w-5xl mx-auto">
                             <div className="text-center mb-6">
                                 <h2 className="text-2xl font-bold text-stone-900 mb-2">
                                     Encontre Seu Próximo Imóvel
                                 </h2>
                                 <p className="text-stone-600">
-                                    Use nossa busca avançada para descobrir oportunidades exclusivas
+                                    Use nossa busca avançada para descobrir oportunidades selecionadas
                                 </p>
                             </div>
 
@@ -215,7 +217,7 @@ const InstitutionalHero = () => {
                                     <motion.button
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
-                                        className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white px-6 py-4 rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                                        className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white px-6 py-4 rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                                     >
                                         <Search className="h-5 w-5" />
                                         Buscar
@@ -237,25 +239,23 @@ const InstitutionalHero = () => {
                                 key={index}
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 0.6, delay: 1.2 + index * 0.1 }}
-                                whileHover={{ scale: 1.05, y: -5 }}
-                                className="bg-white rounded-2xl p-6 text-center shadow-lg border border-stone-200 hover:shadow-xl transition-all duration-300 group"
-                            >
-                                <div className="mb-4">
-                                    <div className="w-12 h-12 bg-gradient-to-br from-amber-100 to-orange-100 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:from-amber-200 group-hover:to-orange-200 transition-all">
-                                        <achievement.icon className="h-6 w-6 text-amber-600" />
+                                transition={{ duration: 0.6, delay: 1.2 + index * 0.1 }} whileHover={{ scale: 1.05, y: -5 }}
+                                className="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-center shadow-xl border border-white/20 hover:shadow-2xl hover:bg-white/15 transition-all duration-300 group"
+                            >                                <div className="mb-4">
+                                    <div className="w-12 h-12 bg-gradient-to-br from-amber-500/20 to-yellow-500/20 backdrop-blur-sm border border-amber-400/30 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:from-amber-400/30 group-hover:to-yellow-400/30 transition-all">
+                                        <achievement.icon className="h-6 w-6 text-amber-400" />
                                     </div>
                                 </div>
 
-                                <div className="text-3xl font-bold text-stone-900 mb-2">
+                                <div className="text-3xl font-bold text-white mb-2">
                                     {achievement.number}
                                 </div>
 
-                                <div className="text-stone-700 font-semibold mb-1">
+                                <div className="text-amber-200 font-semibold mb-1">
                                     {achievement.label}
                                 </div>
 
-                                <div className="text-sm text-stone-500">
+                                <div className="text-sm text-gray-300">
                                     {achievement.sublabel}
                                 </div>
                             </motion.div>
@@ -268,12 +268,11 @@ const InstitutionalHero = () => {
                         animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 30 }}
                         transition={{ duration: 0.8, delay: 1.4 }}
                         className="text-center"
-                    >
-                        <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-8 border border-amber-200">
-                            <h3 className="text-2xl font-bold text-stone-900 mb-4">
+                    >                        <div className="bg-gradient-to-r from-amber-500/20 to-yellow-500/20 backdrop-blur-md rounded-2xl p-8 border border-amber-400/30">
+                            <h3 className="text-2xl font-bold text-white mb-4">
                                 Pronto para Encontrar Seu Novo Lar?
                             </h3>
-                            <p className="text-stone-600 mb-6 max-w-2xl mx-auto">
+                            <p className="text-gray-200 mb-6 max-w-2xl mx-auto">
                                 Nossa equipe especializada está pronta para ajudá-lo em cada etapa
                                 do processo, desde a busca até a assinatura do contrato.
                             </p>
@@ -297,7 +296,7 @@ const InstitutionalHero = () => {
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                     href="#propriedades"
-                                    className="inline-flex items-center gap-3 bg-white border-2 border-amber-600 text-amber-700 hover:bg-amber-50 px-8 py-4 rounded-xl font-semibold transition-all"
+                                    className="inline-flex items-center gap-3 bg-white/20 backdrop-blur-sm border-2 border-amber-400/50 text-white hover:bg-white/30 px-8 py-4 rounded-xl font-semibold transition-all"
                                 >
                                     Ver Imóveis Disponíveis
                                     <ArrowRight className="w-5 h-5" />

@@ -191,13 +191,12 @@ const NavbarResponsive: React.FC = () => {
                             backfaceVisibility: 'hidden',
                             perspective: 1000
                         }}
-                    >
-                        <Image
+                    >                        <Image
                             src="/images/ipeLogoWritten.png"
                             alt="Ipê Imóveis"
                             width={140}
                             height={45}
-                            className="object-contain h-auto max-h-[45px] w-[140px]"
+                            className="object-contain w-auto h-[45px]"
                             priority
                             loading="eager"
                             fetchPriority="high"

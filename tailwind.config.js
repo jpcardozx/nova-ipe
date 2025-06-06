@@ -7,16 +7,25 @@ export default {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {
-      colors: {
+    extend: {      colors: {
         // Cores do sistema de design Ipê
         primary: {
           DEFAULT: '#1a6f5c',
           foreground: '#ffffff',
+          light: '#e8f5f2',
+          dark: '#145a49',
+          darkest: '#0d1f2d',
         },
         secondary: {
           DEFAULT: '#0E1F2D',
           foreground: '#ffffff',
+        },
+        neutral: {
+          lightest: '#f8f9fa',
+          light: '#e9ecef',
+          DEFAULT: '#6c757d',
+          charcoal: '#495057',
+          darkest: '#212529',
         },
         background: '#ffffff',
         foreground: '#333333',

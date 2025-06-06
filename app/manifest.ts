@@ -15,9 +15,9 @@ export default function manifest(): MetadataRoute.Manifest {
         description: "Encontre imóveis para comprar ou alugar em Guararema e região",
         start_url: "/",
         display: "standalone",
-        background_color: "#ffffff",
-        theme_color: "#13854E",
-        categories: ["real estate", "business"],        icons: [
+        background_color: "#ffffff",        theme_color: "#13854E",
+        categories: ["real estate", "business"],
+        icons: [
             {
                 src: "/images/ipeLogoWritten.png",
                 sizes: "any",

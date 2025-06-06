@@ -112,7 +112,7 @@ const FormularioContatoAprimorado: React.FC<ContactFormProps> = ({ className = '
                 </div>
 
                     <div>                        <div className="bg-white rounded-2xl p-8 shadow-lg border border-neutral-200">                            <div className="mb-6">                    <h3 className="text-heading-1 text-neutral-900 mb-2">
-                        Receba análises e oportunidades exclusivas
+                        Receba análises e oportunidades selecionadas
                     </h3>
                         <p className="text-body text-neutral-600">
                             Atendimento personalizado com nossa equipe especialista em Guararema

@@ -1,0 +1,85 @@
+/* Hero Background Gradients */
+.hero-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(146, 64, 14, 0.85) 0%,
+    rgba(146, 64, 14, 0.6) 30%,
+    rgba(146, 64, 14, 0.2) 100%
+  );
+}
+
+.hero-bottom-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30%;
+  background: linear-gradient(to top, rgba(146, 64, 14, 0.5) 0%, transparent 100%);
+}
+
+/* Hero Image Transitions */
+.hero-image {
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-image.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.hero-image.inactive {
+  opacity: 0;
+  transform: scale(1.1);
+}
+
+/* Premium Particles */
+.premium-particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(251, 191, 36, 0.6);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Content Transitions */
+.hero-content {
+  transition: opacity 0.4s ease-in-out, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-content.entering {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.hero-content.entered {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Search Panel Effects */
+.search-panel {
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.search-panel:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .hero-gradient-overlay {
+    background: linear-gradient(
+      to bottom,
+      rgba(146, 64, 14, 0.8) 0%,
+      rgba(146, 64, 14, 0.6) 50%,
+      rgba(146, 64, 14, 0.4) 100%
+    );
+  }
+}

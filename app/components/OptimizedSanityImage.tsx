@@ -128,42 +128,41 @@ const OptimizedSanityImage = memo(({
         imgClassName
     );
 
-    return (
-        <div className={containerClasses} style={{ aspectRatio: !fill && width && height ? width / height : undefined }}>            {!error ? (
-            <Image
-                src={imageUrl}
-                alt={imageAlt}
-                width={fill ? undefined : width}
-                height={fill ? undefined : height}
-                fill={fill}
-                sizes={sizes}
-                quality={quality}
-                priority={priority}
-                onLoad={handleLoad}
-                onError={handleError}
-                className={imageClasses}
-                style={{
-                    objectFit,
-                    objectPosition
-                }}
-                placeholder={placeholder}
-                blurDataURL={blurDataURL}
-                // @ts-ignore - Adicionar ref para tracking
-                ref={imgRef}
-            />
-        ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                <div className="flex flex-col items-center text-gray-400">
-                    <ImageOff size={24} className="mb-2" />
-                    <span className="text-xs">Imagem não disponível</span>
-                </div>
+    return (<div className={containerClasses} style={{ aspectRatio: !fill && width && height ? width / height : undefined }}>            {!error ? (
+        <Image
+            src={imageUrl}
+            alt={imageAlt}
+            width={fill ? undefined : width}
+            height={fill ? undefined : height || width ? 'auto' : undefined}
+            fill={fill}
+            sizes={sizes}
+            quality={quality}
+            priority={priority}
+            onLoad={handleLoad}
+            onError={handleError}
+            className={imageClasses}
+            style={{
+                objectFit,
+                objectPosition
+            }}
+            placeholder={placeholder}
+            blurDataURL={blurDataURL}
+            // @ts-ignore - Adicionar ref para tracking
+            ref={imgRef}
+        />
+    ) : (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+            <div className="flex flex-col items-center text-gray-400">
+                <ImageOff size={24} className="mb-2" />
+                <span className="text-xs">Imagem não disponível</span>
             </div>
-        )}
-
-            {loading && (
-                <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-300 animate-pulse" />
-            )}
         </div>
+    )}
+
+        {loading && (
+            <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-300 animate-pulse" />
+        )}
+    </div>
     );
 });
 

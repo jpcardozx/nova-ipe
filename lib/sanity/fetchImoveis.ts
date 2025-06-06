@@ -9,9 +9,9 @@ import {
     queryImovelEmDestaque,
     queryImoveisDestaqueVenda,
     queryImovelPorSlug,
-} from '@lib/queries'
+} from '../queries'
 import type { ImovelClient, ImovelProjetado } from '../../src/types/imovel-client'
-import { mapImovelToClient } from '@lib/mapImovelToClient'
+import { mapImovelToClient } from '../mapImovelToClient'
 
 
 // Server-side fetcher with caching

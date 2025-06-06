@@ -875,6 +875,49 @@ img:not([width]):not([height]) {
   animation: loading_premium_skeleton 1.5s infinite;
 }
 
+/* Animações personalizadas para performance */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(245, 158, 11, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.8);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s infinite;
+}
+
+.fade-in-section {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
 /* ========================================
  * ENHANCED NAVBAR STYLES
  * Professional, institutional navbar design
@@ -1034,15 +1077,15 @@ img:not([width]):not([height]) {
   }
 
   .loading-skeleton-text {
-    @apply loading-skeleton h-4;
+    @apply bg-gray-200 animate-pulse rounded h-4;
   }
 
   .loading-skeleton-title {
-    @apply loading-skeleton h-8;
+    @apply bg-gray-200 animate-pulse rounded h-8;
   }
 
   .loading-skeleton-button {
-    @apply loading-skeleton h-12 rounded-xl;
+    @apply bg-gray-200 animate-pulse rounded h-12 rounded-xl;
   }
 
   .loading-skeleton-card {

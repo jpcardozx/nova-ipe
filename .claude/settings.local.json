@@ -7,7 +7,14 @@
       "Bash(rm:*)",
       "Bash(timeout 10s npm run dev)",
       "Bash(npm install:*)",
-      "Bash(npx next build:*)"
+      "Bash(npx next build:*)",
+      "Bash(cp:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(grep:*)",
+      "Bash(pnpm build:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": []
   }

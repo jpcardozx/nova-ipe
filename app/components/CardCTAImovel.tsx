@@ -20,7 +20,7 @@ const CardCTAImovel: FC<CardCTAImovelProps> = ({
   destaque = true,
   linkPersonalizado,
 }) => {  // Texto e ícone dinâmico
-  const labelCTA = tipoCTA === "agendar" ? "Reservar minha visita exclusiva" : "Garantir atendimento prioritário";
+  const labelCTA = tipoCTA === "agendar" ? "Reservar minha visita personalizada" : "Garantir atendimento prioritário";
   const iconCTA = tipoCTA === "agendar" ? <Calendar className="w-5 h-5" /> : <Phone className="w-5 h-5" />;
 
   // Formata preço apenas uma vez

@@ -42,7 +42,7 @@ export default function HeroImovelSimbolico({
                     priority
                     className="object-cover object-center brightness-[0.4]"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/180 via-black/50 to-transparent z-0 backdrop-blur-sm" />
+                <div className="absolute inset-0 bg-gradient-to-t from-amber-900/80 via-amber-800/50 to-transparent z-0 backdrop-blur-sm" />
             </div>
 
             <motion.div

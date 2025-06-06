@@ -1,27 +1,39 @@
 import React from 'react';
-// Versão da página principal que deve ser incluída no page.tsx (Server Component)
-// Este arquivo deve ser incorporado ao page.tsx existente
+// Enhanced Server Components version using PremiumPropertyCatalog
+// This file demonstrates how to use the premium property catalog system in server components
 
-// Imports de Server Components para propriedades
+// Imports of Premium Server Components for properties
 import { PropertiesSale, PropertiesRental } from './PropertyShowcaseServer';
 import { Suspense } from 'react';
 import { UnifiedLoading } from '../ui/UnifiedComponents';
 
-// Adicionar dentro da função principal de página:
-// Substitua a seção de propriedades no arquivo page.tsx por este código
+// Example integration for server-side property sections
+// Replace property sections in page.tsx with this premium approach
 
-{/* === SHOWCASE DE IMÓVEIS === */ }
-<div className="py-16">
-    {/* Seção de imóveis para venda */}
-    <section id="properties-sale-container">
-        <Suspense fallback={<UnifiedLoading variant="property" height="600px" title="Carregando imóveis em destaque..." />}>
+{/* === PREMIUM PROPERTY SHOWCASE === */ }
+<div className="py-16 space-y-16">
+    {/* Premium property sections with enhanced design */}
+    <section id="properties-sale-container" className="relative">
+        <Suspense fallback={
+            <UnifiedLoading
+                variant="property"
+                height="600px"
+                title="Carregando imóveis premium para venda..."
+            />
+        }>
             <PropertiesSale />
         </Suspense>
     </section>
 
-    {/* Seção de imóveis para aluguel */}
-    <section id="properties-rental-container">
-        <Suspense fallback={<UnifiedLoading variant="property" height="600px" title="Carregando imóveis para aluguel..." />}>
+    {/* Premium rental properties section */}
+    <section id="properties-rental-container" className="relative">
+        <Suspense fallback={
+            <UnifiedLoading
+                variant="property"
+                height="600px"
+                title="Carregando imóveis premium para aluguel..."
+            />
+        }>
             <PropertiesRental />
         </Suspense>
     </section>

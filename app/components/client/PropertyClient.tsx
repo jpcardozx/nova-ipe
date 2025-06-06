@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
 'use client';
 
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
 interface Property {

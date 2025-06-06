@@ -103,9 +103,7 @@ export default function OptimizedImage({
                 </div>
             </div>
         );
-    }
-
-    // Renderizar a imagem com tratamento de erro
+    }    // Renderizar a imagem com tratamento de erro
     return (
         <div
             className={cn(
@@ -113,17 +111,12 @@ export default function OptimizedImage({
                 isLoading ? "bg-slate-100 animate-pulse" : "",
                 className
             )}
-            style={{
-                width: fill ? '100%' : width,
-                height: fill ? '100%' : height,
-                position: fill ? 'relative' : undefined,
-            }}
-        >
-            <Image
+            style={fill ? { position: 'relative', width: '100%', height: '100%' } : { width, height }}
+        >            <Image
                 src={imageUrl}
                 alt={altText || 'Imagem'}
                 width={fill ? undefined : width}
-                height={fill ? undefined : height}
+                height={fill ? undefined : height || width ? 'auto' : undefined}
                 fill={fill}
                 sizes={sizes}
                 quality={quality}
@@ -133,12 +126,9 @@ export default function OptimizedImage({
                     isLoading ? "opacity-0" : "opacity-100",
                     imgClassName
                 )}
-                style={{ objectFit: 'cover', objectPosition }}
-                onLoad={() => setIsLoading(false)}
-                onError={() => {
-                    setIsLoading(false);
-                    setHasError(true);
-                }}
+                style={fill ? {} : { objectFit: 'cover', objectPosition }}
+                onLoad={handleLoad}
+                onError={handleError}
             />
             {isLoading && (
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-200 to-transparent skeleton-loading" />

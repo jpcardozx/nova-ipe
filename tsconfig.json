@@ -68,11 +68,8 @@
     "temp",
     "public/api",
     "types/sanity-schema.js",
-    ".next/types/**/*.ts",
     "app/page.backup.tsx",
     "app/page.clean.tsx",
-    "app/page.new.tsx",
-    "app/page.restored.tsx",
-    "app/page-*.tsx"
+    "app/page.restored.tsx"
   ]
 }

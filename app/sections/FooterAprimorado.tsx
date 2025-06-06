@@ -221,12 +221,11 @@ export default function FooterAprimorado() {
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6 }}
-                        >
-                            <h4 className="text-amber-400 bold mb-4 text-heading-2">
-                                Oportunidades Antecipadas
+                        >                            <h4 className="text-amber-400 bold mb-4 text-heading-2">
+                                Novidades Selecionadas
                             </h4>
                             <p className="text-gray-300 mb-6 text-body">
-                                Receba em primeira mão as melhores ofertas e novidades da Ipê de maneira antecipada. Inscreva-se e fique por dentro das oportunidades exclusivas.
+                                Receba informações sobre as melhores oportunidades e novidades da Ipê. Inscreva-se e fique por dentro das novidades do mercado imobiliário em Guararema.
                             </p>
                             <form className="flex gap-2 max-w-md">
                                 <input

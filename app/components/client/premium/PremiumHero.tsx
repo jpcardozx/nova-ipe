@@ -111,9 +111,8 @@ const PremiumHero = () => {
                 </AnimatePresence>
             </motion.div>
 
-            {/* Gradient Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent z-10" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30 z-10" />
+            {/* Gradient Overlays */}            <div className="absolute inset-0 bg-gradient-to-r from-amber-900/70 via-amber-800/40 to-transparent z-10" />
+            <div className="absolute inset-0 bg-gradient-to-t from-amber-900/50 via-transparent to-amber-800/30 z-10" />
 
             {/* Floating Particles */}
             <div className="absolute inset-0 overflow-hidden z-15">

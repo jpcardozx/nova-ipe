@@ -28,11 +28,11 @@ import FooterAprimorado from "../sections/FooterAprimorado";
 import ClientProgressSteps from '../components/ClientProgressSteps';
 import BlocoExploracaoSimbolica from '../components/BlocoExploracaoSimbolica';
 import BlocoCTAConversao from '../components/client/BlocoCTAConversao';
-import DestaquesSanityCarousel from '../components/DestaquesSanityCarousel';
-import ValorAprimorado from '../sections/ValorAprimorado';
+import PremiumPropertyCatalog from '../components/premium/PremiumPropertyCatalog';
+import ValorAprimorado from '../sections/ValorAprimorado-improved';
 import FormularioContatoSubtil from '../components/FormularioContatoSubtil';
 import DestaquesEstrategicos from '../sections/Destaques';
-import { ExclusiveAnalysisOffer } from '../sections/ExclusiveAnalysisOffer';
+import { PropertyGuideOffer } from '../sections/ExclusiveAnalysisOffer-improved';
 
 /**
  * Transforma dados do Sanity para o formato esperado pelos componentes
@@ -137,7 +137,7 @@ export default async function NovaPaginaInicial() {
 
                     {/* Análise estrutural e estratégica do mercado */}
                     <section id="analise-mercado" className="py-24 bg-white">                        <div className="container mx-auto px-4">
-                        <ExclusiveAnalysisOffer variant="executive" />
+                        <PropertyGuideOffer variant="executive" />
                     </div>
                     </section>
 
@@ -146,15 +146,17 @@ export default async function NovaPaginaInicial() {
                         <div className="container mx-auto px-4">
                             <DestaquesEstrategicos />
                         </div>
-                    </section>
-
-                    {/* Imóveis em Destaque */}
+                    </section>                    {/* Imóveis em Destaque - Premium Catalog */}
                     <section id="imoveis-destaque" className="py-16 bg-gray-50">
                         <Suspense fallback={<PropertiesLoadingSkeleton />}>
-                            <DestaquesSanityCarousel
-                                rawProperties={[...destaqueFormatados]}
+                            <PremiumPropertyCatalog
+                                properties={destaqueFormatados}
                                 title="Imóveis em Destaque"
                                 subtitle="Selecionamos as melhores opções em Guararema para você conhecer"
+                                variant="premium"
+                                accentColor="emerald"
+                                showFilters={true}
+                                className="container mx-auto px-4"
                             />
                         </Suspense>
                     </section>

@@ -95,11 +95,10 @@ const FormularioContatoPremium: React.FC<ContactFormProps> = ({ className = '' }
         <section className={`py-20 bg-gradient-to-b from-neutral-50 via-white to-neutral-50 ${className}`}>
             <div className="container mx-auto px-4 max-w-7xl">
                 {/* Header Premium */}
-                <div className="text-center mb-16">
-                    <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-full text-amber-800 font-medium mb-6">
-                        <Award className="w-5 h-5" />
-                        <span>Consultoria Exclusiva de Investimentos</span>
-                    </div>
+                <div className="text-center mb-16">                    <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-full text-amber-800 font-medium mb-6">
+                    <Award className="w-5 h-5" />
+                    <span>Consultoria Especializada em Investimentos</span>
+                </div>
 
                     <h2 className="text-4xl md:text-5xl font-playfair text-neutral-900 mb-6 leading-tight">
                         Descubra oportunidades que podem
@@ -184,9 +183,8 @@ const FormularioContatoPremium: React.FC<ContactFormProps> = ({ className = '' }
                                     <div className="p-3 bg-gradient-to-r from-purple-100 to-violet-100 rounded-xl">
                                         <Award className="w-6 h-6 text-purple-700" />
                                     </div>
-                                    <div>
-                                        <h4 className="font-semibold text-neutral-900 mb-1">Exclusividade</h4>
-                                        <p className="text-neutral-600 text-sm">Acesso a oportunidades off-market antes do mercado geral</p>
+                                    <div>                                        <h4 className="font-semibold text-neutral-900 mb-1">Oportunidades Selecionadas</h4>
+                                        <p className="text-neutral-600 text-sm">Acesso a imóveis selecionados antes de chegarem ao mercado geral</p>
                                     </div>
                                 </div>
                             </div>
@@ -204,20 +202,18 @@ const FormularioContatoPremium: React.FC<ContactFormProps> = ({ className = '' }
                                 <CheckCircle className="w-4 h-4" />
                                 <span>100% sem compromisso</span>
                             </div>
-                        </div>
-
-                        {/* Urgência e Escassez */}
-                        <div className="bg-gradient-to-br from-red-50 to-orange-50 p-6 rounded-2xl border border-red-200">
+                        </div>                        {/* Atendimento Especializado */}
+                        <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-200">
                             <div className="flex items-center gap-3 mb-4">
-                                <Zap className="w-6 h-6 text-red-600" />
-                                <h4 className="font-semibold text-red-900">Oportunidade Limitada</h4>
+                                <Target className="w-6 h-6 text-amber-700" />
+                                <h4 className="font-semibold text-amber-900">Atendimento Especializado</h4>
                             </div>
-                            <p className="text-red-800 text-sm mb-4">
-                                Apenas <strong>12 vagas</strong> restantes para consultoria gratuita este mês.
+                            <p className="text-amber-800 text-sm mb-4">
+                                Nossa equipe oferece <strong>consultoria personalizada</strong> para encontrar a melhor oportunidade para seu perfil.
                             </p>
-                            <div className="flex items-center gap-2 text-red-700 text-sm">
-                                <Target className="w-4 h-4" />
-                                <span>Reserve sua vaga hoje</span>
+                            <div className="flex items-center gap-2 text-amber-700 text-sm">
+                                <CheckCircle className="w-4 h-4" />
+                                <span>Análise detalhada sem compromisso</span>
                             </div>
                         </div>
                     </div>
@@ -232,7 +228,7 @@ const FormularioContatoPremium: React.FC<ContactFormProps> = ({ className = '' }
                             <div className="relative z-10">
                                 <div className="text-center mb-8">
                                     <h3 className="text-3xl font-playfair text-neutral-900 mb-3">
-                                        Receba sua análise exclusiva
+                                        Receba sua análise personalizada
                                     </h3>
                                     <p className="text-neutral-600 text-lg">
                                         Oportunidades selecionadas com base no seu perfil e orçamento

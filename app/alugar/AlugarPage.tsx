@@ -5,8 +5,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 // Removed next-intl dependency - using simple text instead
 
-import ImovelCard from '@components/ImovelCard';
-import PropertyCardUnified from '@/app/components/ui/property/PropertyCardUnified';
+import { PropertyCardUnified } from '@/app/components/ui/property/PropertyCardUnified';
+import { PropertyCardUnified as PropertyCard } from '@/app/components/ui/property/PropertyCardUnified';
 import { ImovelClient } from '@/src/types/imovel-client'; // type import
 import { getImoveisParaAlugar } from '@lib/sanity/fetchImoveis';
 import Footer from '@sections/Footer';

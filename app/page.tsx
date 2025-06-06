@@ -1,136 +1,226 @@
-'use client';
+import { Metadata } from 'next';
+import { Suspense } from 'react';
+import { getImoveisDestaque, getImoveisDestaqueVenda, getImoveisAluguel } from '@/lib/queries';
+import { normalizeDocuments } from '@/lib/sanity-utils';
+import { loadImage } from '@/lib/enhanced-image-loader';
+import type { ImovelClient } from '@/src/types/imovel-client';
+import { PropertyType } from './components/ui/property/PropertyCardUnified';
+import { extractSlugString, ensureNonNullProperties } from '@/app/PropertyTypeFix';
 
-import React, { Suspense } from 'react';
-import dynamic from 'next/dynamic';
+// Importações server-side otimizadas
+import SkipToContent from './components/SkipToContent';
+import SectionHeader from './components/ui/SectionHeader';
+import FooterAprimorado from './sections/FooterAprimorado';
+import { UnifiedLoading } from './components/ui/UnifiedComponents';
 
-// === FALLBACK COMPONENTS ===
-import { HeroLoadingFallback, PropertyLoadingFallback, ErrorFallback } from './components/ErrorBoundaryComponents';
-import { ProfessionalHeroLoading, ProfessionalNavbarLoading } from './components/ProfessionalLoadingComponents';
+// Importação do Client Component principal
+import HomePageClient from './page-client';
 
-// === DYNAMIC IMPORTS - NO FRAMER MOTION TO AVOID HYDRATION ISSUES ===
-const OptimizationProvider = dynamic(() => import('./components/OptimizationProvider'), {
-  ssr: false,
-  loading: () => <div className="min-h-[60px] bg-amber-50 animate-pulse"></div>
-});
+// Importação do CSS Premium
+import './styles/premium-theme.css';
 
-const ClientOnlyNavbar = dynamic(() => import('./components/ClientOnlyNavbar'), {
-  ssr: false,
-  loading: () => <ProfessionalNavbarLoading />
-});
+// === ENHANCED INTERFACES ===
+export interface ProcessedProperty {
+  id: string;
+  title: string;
+  slug: string;
+  location: string;
+  city: string;
+  price: number;
+  propertyType: PropertyType;
+  area?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  parkingSpots?: number;
+  mainImage: {
+    url: string;
+    alt: string;
+    blurDataURL?: string;
+  };
+  isHighlight: boolean;
+  isPremium: boolean;
+  isNew: boolean;
+  features?: string[];
+  virtualTour?: string;
+}
 
-const InstitutionalHero = dynamic(() => import('./components/InstitutionalHero'), {
-  ssr: false,
-  loading: () => <ProfessionalHeroLoading />
-});
+// === SSR UTILITY FUNCTIONS ===
+function transformPropertyData(imovel: ImovelClient, propertyType: PropertyType): ProcessedProperty | null {
+  try {
+    if (!imovel || !imovel._id) return null;
 
-const BlocoExploracaoGuararema = dynamic(() => import('./components/BlocoExploracaoSimbolica'), {
-  ssr: false,
-  loading: () => <div className="min-h-[400px] bg-stone-50 animate-pulse"></div>
-});
+    const processedImage = loadImage(
+      imovel.imagem,
+      '/images/property-placeholder.jpg',
+      imovel.titulo || 'Imóvel'
+    );
 
-const PremiumSalesSection = dynamic(() => import('./components/PremiumSalesSection'), {
-  ssr: false,
-  loading: () => <div className="min-h-[800px] bg-gradient-to-br from-amber-50 to-orange-50 animate-pulse"></div>
-});
+    const slug = extractSlugString(imovel.slug);
+    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
 
-const StrategicRentalsSection = dynamic(() => import('./components/StrategicRentalsSection'), {
-  ssr: false,
-  loading: () => <div className="min-h-[800px] bg-gradient-to-br from-emerald-50 to-teal-50 animate-pulse"></div>
-});
+    return {
+      id: imovel._id,
+      title: imovel.titulo || 'Imóvel disponível',
+      slug: slug || `imovel-${imovel._id}`,
+      location: imovel.bairro || 'Guararema',
+      city: 'Guararema',
+      price: imovel.preco || 0,
+      propertyType,
+      area: imovel.areaUtil,
+      bedrooms: imovel.dormitorios,
+      bathrooms: imovel.banheiros,
+      parkingSpots: imovel.vagas,
+      mainImage: {
+        url: processedImage.url,
+        alt: processedImage.alt
+      },
+      isHighlight: Boolean(imovel.destaque),
+      isPremium: Boolean(imovel.destaque),
+      isNew: Boolean(imovel.dataPublicacao && new Date(imovel.dataPublicacao) > new Date(thirtyDaysAgo)),
+      features: imovel.caracteristicas || []
+    };
+  } catch (error) {
+    console.error(`Erro ao transformar imóvel: ${error}`);
+    return null;
+  }
+}
 
-const ValorAprimorado = dynamic(() => import('./sections/ValorAprimorado'), {
-  ssr: false,
-  loading: () => <div className="min-h-[300px] bg-gradient-to-br from-amber-50 to-stone-50 animate-pulse"></div>
-});
+// === SEO METADATA ===
+export const metadata: Metadata = {
+  title: 'Ipê Imóveis | Investimentos Imobiliários Premium em Guararema',
+  description: 'Há 15 anos criando legados familiares através de investimentos imobiliários inteligentes em Guararema. Assessoria especializada em propriedades de alto padrão.',
+  keywords: 'imóveis guararema, investimento imobiliário, casas alto padrão guararema, imobiliária premium, ipê imóveis',
+  openGraph: {
+    title: 'Ipê Imóveis - Investimentos Imobiliários Premium',
+    description: 'Assessoria especializada em propriedades de alto padrão em Guararema',
+    type: 'website',
+    locale: 'pt_BR',
+    siteName: 'Ipê Imóveis',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Ipê Imóveis - Investimentos Premium',
+    description: 'Encontre o imóvel perfeito em Guararema',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+};
 
-const Referencias = dynamic(() => import('./sections/Referencias'), {
-  ssr: false,
-  loading: () => <div className="min-h-[400px] bg-stone-100 animate-pulse"></div>
-});
+// === MAIN COMPONENT ===
+export default async function HomePage() {
+  // Busca de dados em paralelo com tratamento de erros
+  let imoveisDestaque: ImovelClient[] = [];
+  let imoveisAluguel: ImovelClient[] = [];
+  let imoveisDestaqueGeral: ImovelClient[] = [];
 
-const MarketAnalysisSection = dynamic(() => import('./components/MarketAnalysisSection'), {
-  ssr: false,
-  loading: () => <div className="min-h-[500px] bg-white animate-pulse"></div>
-});
+  try {
+    const [destaqueResult, aluguelResult, destaqueGeralResult] = await Promise.allSettled([
+      getImoveisDestaqueVenda(),
+      getImoveisAluguel(),
+      getImoveisDestaque()
+    ]);
 
-// Use the regular ClientProgressSteps component
-const ClientProgressSteps = dynamic(() => import('./components/ClientProgressSteps'), {
-  ssr: false,
-  loading: () => <div className="min-h-[600px] bg-gradient-to-br from-stone-50 to-amber-50 animate-pulse"></div>
-});
+    if (destaqueResult.status === 'fulfilled') {
+      imoveisDestaque = destaqueResult.value;
+    }
+    if (aluguelResult.status === 'fulfilled') {
+      imoveisAluguel = aluguelResult.value;
+    }
+    if (destaqueGeralResult.status === 'fulfilled') {
+      imoveisDestaqueGeral = destaqueGeralResult.value;
+    }
+  } catch (error) {
+    console.error('Erro ao buscar imóveis:', error);
+  }
 
-const FamilyStoriesSection = dynamic(() => import('./components/FamilyStoriesSection'), {
-  ssr: false,
-  loading: () => <div className="min-h-[400px] bg-amber-50 animate-pulse"></div>
-});
+  // Processamento otimizado dos dados
+  const destaqueNormalizados = normalizeDocuments(imoveisDestaque) || [];
+  const aluguelNormalizados = normalizeDocuments(imoveisAluguel) || [];
+  const destaqueGeralNormalizados = normalizeDocuments(imoveisDestaqueGeral) || [];
 
-const FormularioContatoSubtil = dynamic(() => import('./components/FormularioContatoSubtil'), {
-  ssr: false,
-  loading: () => <div className="min-h-[300px] bg-stone-100 animate-pulse"></div>
-});
+  const propertiesForSale = ensureNonNullProperties(
+    destaqueNormalizados
+      .map((imovel) => transformPropertyData(imovel, 'sale'))
+      .filter((item): item is ProcessedProperty => item !== null)
+  );
 
-const FooterAprimorado = dynamic(() => import('./sections/FooterAprimorado'), {
-  ssr: false,
-  loading: () => <div className="min-h-[200px] bg-stone-900 animate-pulse"></div>
-});
+  const propertiesForRent = ensureNonNullProperties(
+    aluguelNormalizados
+      .map((imovel) => transformPropertyData(imovel, 'rent'))
+      .filter((item): item is ProcessedProperty => item !== null)
+  );
 
-export default function Home() {
+  const featuredProperties = ensureNonNullProperties(
+    destaqueGeralNormalizados
+      .map((imovel) => transformPropertyData(imovel, imovel.finalidade === 'Aluguel' ? 'rent' : 'sale'))
+      .filter((item): item is ProcessedProperty => item !== null)
+  );
+
   return (
-    <main className="min-h-screen flex flex-col">
-      <OptimizationProvider>
-        <ClientOnlyNavbar />        {/* Hero Section - Institutional */}
-        <Suspense fallback={<ProfessionalHeroLoading />}>
-          <InstitutionalHero />
-        </Suspense>
+    <>
+      {/* SEO Schema Markup */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "RealEstateAgent",
+            "name": "Ipê Imóveis",
+            "description": "Investimentos Imobiliários Premium em Guararema",
+            "url": "https://www.ipeimoveis.com.br",
+            "telephone": "+5511981845016",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Guararema",
+              "addressRegion": "SP",
+              "addressCountry": "BR"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": "-23.4123",
+              "longitude": "-46.0312"
+            },
+            "openingHours": "Mo-Fr 09:00-18:00, Sa 09:00-13:00",
+            "priceRange": "$$$",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.9",
+              "reviewCount": "523"
+            }
+          })
+        }}
+      />
 
-        {/* Seção de Exploração - Contextualização Premium */}
-        <Suspense fallback={<div className="min-h-[400px] bg-stone-50 animate-pulse"></div>}>
-          <BlocoExploracaoGuararema />
-        </Suspense>        {/* === SEÇÃO DE VENDAS PREMIUM === */}
-        {/* Imóveis de destaque para venda - Logo após exploração de Guararema */}
-        <Suspense fallback={<div className="min-h-[800px] bg-gradient-to-br from-amber-50 to-orange-50 animate-pulse"></div>}>
-          <PremiumSalesSection />
-        </Suspense>
+      {/* Layout principal com classes de tema premium */}
+      <div className="font-sans antialiased bg-white">
+        <SkipToContent />
 
-        {/* === VALOR E MERCADO === */}
-        <Suspense fallback={<div className="min-h-[300px] bg-gradient-to-br from-amber-50 to-stone-50 animate-pulse"></div>}>
-          <ValorAprimorado />
-        </Suspense>
+        <main className="min-h-screen flex flex-col">
+          <Suspense fallback={
+            <div className="w-full h-screen flex items-center justify-center bg-white">
+              <UnifiedLoading height="100vh" title="Carregando Nova Ipê..." />
+            </div>
+          }>
+            <HomePageClient
+              propertiesForSale={propertiesForSale}
+              propertiesForRent={propertiesForRent}
+              featuredProperties={featuredProperties}
+            />
+          </Suspense>
+        </main>
 
-        {/* === ANÁLISE DE MERCADO PREMIUM === */}
-        <Suspense fallback={<div className="min-h-[500px] bg-white animate-pulse"></div>}>
-          <MarketAnalysisSection />
-        </Suspense>
-
-        {/* === PROCESSO DE TRABALHO COMPACTO === */}
-        <Suspense fallback={<div className="min-h-[600px] bg-gradient-to-br from-stone-50 to-amber-50 animate-pulse"></div>}>
-          <ClientProgressSteps />
-        </Suspense>        {/* === HISTÓRIAS DE FAMÍLIA === */}
-        <Suspense fallback={<div className="min-h-[400px] bg-amber-50 animate-pulse"></div>}>
-          <FamilyStoriesSection />
-        </Suspense>
-
-        {/* === SEÇÃO DE ALUGUÉIS ESTRATÉGICA === */}
-        {/* Posicionada após histórias familiares para criar conexão emocional */}
-        <Suspense fallback={<div className="min-h-[800px] bg-gradient-to-br from-emerald-50 to-teal-50 animate-pulse"></div>}>
-          <StrategicRentalsSection />
-        </Suspense>
-
-        {/* === REFERÊNCIAS E CREDIBILIDADE === */}
-        <Suspense fallback={<div className="min-h-[400px] bg-stone-100 animate-pulse"></div>}>
-          <Referencias />
-        </Suspense>
-
-        {/* === FORMULÁRIO SUTIL DE CONTATO === */}
-        <Suspense fallback={<div className="min-h-[300px] bg-stone-100 animate-pulse"></div>}>
-          <FormularioContatoSubtil />
-        </Suspense>
-
-        {/* === FOOTER APRIMORADO === */}
-        <Suspense fallback={<div className="min-h-[200px] bg-stone-900 animate-pulse"></div>}>
-          <FooterAprimorado />
-        </Suspense>
-      </OptimizationProvider>
-    </main>
-  )
+        {/* Footer aprimorado com SEO */}
+        <FooterAprimorado />
+      </div>
+    </>
+  );
 }

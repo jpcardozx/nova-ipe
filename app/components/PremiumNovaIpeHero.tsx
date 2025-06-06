@@ -294,10 +294,8 @@ export default function PremiumNovaIpeHero() {
                                 </span>
                                 <br />
                                 <span className="text-white">em Guararema</span>
-                            </h1>
-
-                            <p className="text-xl lg:text-2xl text-stone-200 leading-relaxed max-w-2xl">
-                                Imóveis <strong className="text-amber-400">exclusivos</strong> e
+                            </h1>                            <p className="text-xl lg:text-2xl text-stone-200 leading-relaxed max-w-2xl">
+                                Imóveis <strong className="text-amber-400">selecionados</strong> e
                                 oportunidades únicas com a <em className="text-yellow-300">confiança Nova Ipê</em>.
                                 Há mais de 15 anos realizando sonhos em Guararema.
                             </p>

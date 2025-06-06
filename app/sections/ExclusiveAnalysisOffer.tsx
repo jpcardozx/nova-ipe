@@ -28,14 +28,13 @@ export function ExclusiveAnalysisOffer({
                     <div className="max-w-6xl mx-auto grid lg:grid-cols-5 gap-10 items-start">
 
                         {/* Main Content - 3 cols */}
-                        <div className="lg:col-span-3 space-y-6">
-                            {/* Exclusivity Indicator */}
+                        <div className="lg:col-span-3 space-y-6">                            {/* Professional Indicator */}
                             <div className="flex items-center gap-4">
                                 <div className="h-px bg-gray-300 flex-1 max-w-[60px]" />
                                 <span className="text-sm tracking-wider text-gray-600 font-light">
-                                    ACESSO RESTRITO
+                                    RELATÓRIO ESPECIALIZADO
                                 </span>
-                            </div>                            {/* Headline */}                            <div>
+                            </div>{/* Headline */}                            <div>
                                 <h3 className="text-2xl md:text-3xl text-gray-900 font-light leading-tight">
                                     Guia Prático Guararema
                                     <span className="block text-gray-700 mt-1 font-medium">

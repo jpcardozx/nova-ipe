@@ -2,7 +2,7 @@
 
 import { type ReactNode } from 'react';
 import { ThemeProvider } from './theme-provider';
-import { Toaster } from '@/components/ui/toaster';
+import { Toaster } from '../../components/ui/toaster';
 import { NextContextProvider } from '@/lib/next-context-polyfills';
 
 interface ClientLayoutProps {

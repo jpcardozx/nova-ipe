@@ -7,7 +7,7 @@ export const sanityClient = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: true, // Enable CDN caching for production
+  useCdn: process.env.NODE_ENV === 'production', // Use CDN only in production
   perspective: 'published',
   stega: {
     enabled: false, // Disable stega in production to optimize response size
@@ -15,6 +15,10 @@ export const sanityClient = createClient({
   // Add retry mechanism and longer timeout
   requestTagPrefix: 'nova-ipe-site',
   timeout: 30000, // 30 second timeout
+  // Add token for authenticated requests (if needed)
+  token: process.env.NEXT_PUBLIC_SANITY_TOKEN,
+  // Ensure proper CORS handling
+  withCredentials: false,
 })
 
 // Basic client-side fetcher with improved error handling

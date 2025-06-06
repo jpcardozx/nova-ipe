@@ -32,7 +32,7 @@ interface PropertyMetadataProps {
     };
 }
 
-export function PropertyMetadata({ property }: PropertyMetadataProps) {
+function PropertyMetadata({ property }: PropertyMetadataProps) {
     // Validação de segurança para garantir que property está definido
     if (!property) {
         console.error('PropertyMetadata recebeu property undefined');
@@ -143,4 +143,6 @@ export function PropertyMetadata({ property }: PropertyMetadataProps) {
     );
 }
 
+// Export both named and default for maximum compatibility
+export { PropertyMetadata };
 export default PropertyMetadata;

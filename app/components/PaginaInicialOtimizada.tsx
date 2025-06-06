@@ -23,7 +23,7 @@ const ConsolidatedHero = dynamic(() => import('./ConsolidatedHero'), {
     )
 });
 
-const ValorAprimorado = dynamic(() => import('../sections/ValorAprimorado'), {
+const ValorAprimorado = dynamic(() => import('../sections/ValorAprimorado-improved'), {
     loading: () => <div className="h-96 bg-slate-50 animate-pulse rounded-2xl"></div>
 });
 
@@ -31,8 +31,8 @@ const Referencias = dynamic(() => import('../sections/Referencias'), {
     loading: () => <div className="h-64 bg-slate-50 animate-pulse rounded-2xl"></div>
 });
 
-const ExclusiveAnalysisOffer = dynamic(() => import('../sections/ExclusiveAnalysisOffer'), {
-    loading: () => <div className="h-80 bg-slate-50 animate-pulse rounded-2xl"></div>
+const PropertyGuideOffer = dynamic(() => import('../sections/ExclusiveAnalysisOffer-improved').then(mod => ({ default: mod.PropertyGuideOffer })), {
+    loading: () => <div className="h-80 bg-blue-50 animate-pulse rounded-2xl"></div>
 });
 
 // === COMPONENTES CORE (CARREGADOS IMEDIATAMENTE) ===
@@ -226,9 +226,8 @@ export default function PaginaInicialOtimizada({
                     <ValorAprimorado onLoad={() => markComponentLoaded('valor')} />
                 </Suspense>
 
-                {/* Ofertas Exclusivas */}
-                <Suspense fallback={<div className="h-80 bg-slate-50 animate-pulse"></div>}>
-                    <ExclusiveAnalysisOffer />
+                {/* Ofertas Especializadas */}                <Suspense fallback={<div className="h-80 bg-blue-50 animate-pulse"></div>}>
+                    <PropertyGuideOffer />
                 </Suspense>
 
                 {/* Referências e Credibilidade */}

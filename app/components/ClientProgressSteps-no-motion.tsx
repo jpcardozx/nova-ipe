@@ -555,7 +555,7 @@ const ValorAprimoradoComponent: React.FC<ValorAprimoradoProps> = ({
     }, []);
 
     return (
-        <section className="py-16 bg-gradient-to-b from-white via-stone-50 to-white">
+        <section className="py-16 bg-white">
             <div className="container mx-auto px-4 md:px-6 max-w-7xl">
                 {/* Header institucional */}
                 <div className="text-center mb-20">
@@ -655,7 +655,7 @@ const ValorAprimoradoComponent: React.FC<ValorAprimoradoProps> = ({
                         viewport={{ once: true }}
                         className="relative"
                     >
-                        <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-amber-500 to-stone-600 p-1">
+                        <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-amber-500 p-1">
                             <div className="bg-white rounded-xl overflow-hidden">
                                 <Image
                                     src="/images/predioIpe.png"
@@ -767,7 +767,7 @@ const ValorAprimoradoComponent: React.FC<ValorAprimoradoProps> = ({
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="bg-gradient-to-r from-gray-900 via-stone-800 to-gray-900 rounded-3xl p-12 text-white shadow-2xl relative overflow-hidden"
+                    className="bg-gray-900 rounded-3xl p-12 text-white shadow-2xl relative overflow-hidden"
                 >
                     <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
 
