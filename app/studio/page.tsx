@@ -23,7 +23,7 @@ const NextStudio = dynamic(
 
 // Import config dynamically to avoid Sentry conflicts during build
 const StudioConfig = dynamic(
-    () => import('../../sanity.config').then(mod => ({ default: () => <NextStudio config={mod.sanityConfig} /> })),
+    () => import('../../sanity.config').then(mod => ({ default: () => <NextStudio config={mod.default} /> })),
     {
         ssr: false,
         loading: () => <div>Loading Studio Configuration...</div>

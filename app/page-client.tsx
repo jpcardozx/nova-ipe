@@ -53,10 +53,9 @@ export default function HomePageClient({
     const [isLoaded, setIsLoaded] = useState(false);
     useEffect(() => {
         setIsLoaded(true);
-    }, []);
-
-    return (
-        <OptimizationProvider>            {/* Navbar e Hero */}
+    }, []); return (
+        <OptimizationProvider>
+            {/* Navbar e Hero */}
             <header className="relative">
                 <ClientOnlyNavbar />
                 <EnhancedNotificationBanner
@@ -68,7 +67,9 @@ export default function HomePageClient({
                 />
             </header>
             <PremiumHeroImproved />
-            <BlocoExploracaoGuararema />            {/* Conteúdo principal */}
+            <BlocoExploracaoGuararema />
+
+            {/* Conteúdo principal */}
             <main>
                 <ScrollAnimations>
                     {/* Imóveis em Destaque - Nova experiência premium */}
@@ -93,23 +94,20 @@ export default function HomePageClient({
                         variant="sales"
                         title="Imóveis para Venda"
                         showViewAll={true}
-                    />
-
-                    {/* 2. Apresentação Institucional */}
+                    />                    {/* 2. Apresentação Institucional */}
                     <IpeConcept />
-                    <MarketAnalysisSection />{/* 3. Seção de Precificação */}
-                    <ValorAprimorado />                    {/* Banner de depoimentos para aumentar a confiança */}
-                    <EnhancedTestimonials
-                        title="O que nossos clientes dizem"
-                        subtitle="Histórias reais de clientes satisfeitos com nossos serviços de alta qualidade em Guararema"
-                        mode="cards"
-                        theme="light"
-                    />                    {/* 4. Formulário de Contato */}
-                    <FormularioContatoModerno /></ScrollAnimations>
+                    <MarketAnalysisSection />
+
+                    {/* 3. Seção de Precificação */}
+                    <ValorAprimorado />
+
+                    {/* Banner de depoimentos para aumentar a confiança */}
+                    <EnhancedTestimonials />
+                </ScrollAnimations>
             </main>
 
             {/* Botão do WhatsApp fixo */}
-            <WhatsAppButton phoneNumber="+5511999999999" />
+            <WhatsAppButton phoneNumber="+5511981845016" />
 
             {/* Footer - Era o componente que estava faltando na página inicial */}
             <FooterAprimorado />

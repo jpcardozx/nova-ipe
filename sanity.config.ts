@@ -1,57 +1,28 @@
-// sanity.config.ts - Configuração SENIOR com fallbacks robustos
-// SOLUÇÃO SENIOR: Importações condicionais baseadas no ambiente
+import { defineConfig } from 'sanity'
+import { deskTool } from 'sanity/desk'
+import schemaTypes from './studio/schemas'
 
-// sanity.config.ts - Simplified config without refractor preload
-// Refractor dependency removed as part of architectural optimization
-
-let defineConfig: any;
-let deskTool: any;
-let visionTool: any;
-
-// Detectar se estamos em build de produção
-const isProductionBuild = process.env.NODE_ENV === 'production' && !process.env.SANITY_STUDIO_BUILD;
-
-try {
-  const sanityImports = require("sanity");
-  defineConfig = sanityImports.defineConfig;
-  deskTool = sanityImports.deskTool || require("sanity/desk").deskTool;
-} catch (error) {
-  console.warn('Sanity import failed, using fallback:', error);
-  // Fallback robusto para build issues
-  defineConfig = (config: any) => config;
-  deskTool = () => ({ name: 'desk', title: 'Content' });
-}
-
-// SOLUÇÃO SENIOR: Só importar visionTool em desenvolvimento ou studio build
-if (!isProductionBuild) {
+// Only import visionTool in development to avoid build issues
+let visionTool: any = null;
+if (process.env.NODE_ENV === 'development') {
   try {
-    const visionImports = require("@sanity/vision");
-    visionTool = visionImports.visionTool;
+    const { visionTool: vision } = require('@sanity/vision');
+    visionTool = vision;
   } catch (error) {
-    console.warn('Vision tool import failed:', error);
-    visionTool = () => ({ name: 'vision', title: 'Vision' });
+    console.warn('Vision tool not available:', (error as Error).message);
   }
-} else {
-  // Em produção, não carregamos o vision tool
-  visionTool = null;
-  console.log('🎯 Vision tool excluído do build de produção');
 }
 
-import schemaTypes from "./studio/schemas";
-import { structure } from "./studio/sanity/customStructure";
-import { projectId, dataset, apiVersion } from "./studio/env";
-
-export const sanityConfig = defineConfig({
-  basePath: "/studio",
-  projectId,
-  dataset,
-  apiVersion,
-  schema: { types: schemaTypes },
+export default defineConfig({
+  name: 'nova-ipe-studio',
+  title: 'Nova Ipê - CMS',
+  projectId: 'wux5bqxn',
+  dataset: 'production',
   plugins: [
-    deskTool({ structure }),
-    // Só incluir visionTool se não estivermos em build de produção
-    ...(visionTool && !isProductionBuild ? [visionTool({ defaultApiVersion: apiVersion })] : [])
-  ].filter(Boolean), // Remove any undefined plugins
-});
-
-export default sanityConfig;
+    deskTool(),
+    ...(visionTool ? [visionTool()] : [])
+  ].filter(Boolean),
+  schema: {
+    types: schemaTypes,
+  },
+})
