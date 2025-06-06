@@ -35,7 +35,7 @@ interface PropertyCarouselModernProps {
 }
 
 // Usando uma constante com 'const' em vez de 'function' para o componente
-export const PropertyCarouselModern = ({
+const PropertyCarouselModern = ({
     properties,
     variant,
     title,
