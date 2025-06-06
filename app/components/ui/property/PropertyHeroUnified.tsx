@@ -467,8 +467,7 @@ export default function PropertyHeroUnified({
                                 )}
                             </div>
                         )}
-                    </motion.div>)}
-            </AnimatePresence>
+                    </motion.div>)}        </AnimatePresence>
         </>
     );
 }

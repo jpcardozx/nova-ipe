@@ -91,7 +91,7 @@ const formatPrice = (price: number, propertyType: PropertyType): string => {
     return propertyType === 'rent' ? `${formattedPrice}/mês` : formattedPrice;
 };
 
-export const PropertyCardUnified: React.FC<PropertyCardUnifiedProps> = ({
+const PropertyCardUnified: React.FC<PropertyCardUnifiedProps> = ({
     id,
     title,
     slug,
@@ -337,7 +337,11 @@ export const PropertyCardUnified: React.FC<PropertyCardUnifiedProps> = ({
     );
 };
 
+// Default export
 export default PropertyCardUnified;
+
+// Named export for both import patterns
+export { PropertyCardUnified };
 
 // Exports de compatibilidade
 export { PropertyCardUnified as PropertyCard };
