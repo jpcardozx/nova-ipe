@@ -17,12 +17,11 @@ export function mapImovelToClient(imovel: any): ImovelClient {
         const imageUrl = imageData.imagemUrl || assetData.url || '';
 
         imagem = {
-            imagemUrl: imageUrl,
-            alt: imageData.alt || imovel.titulo || 'Imagem do imóvel',
+            imagemUrl: imageUrl,            alt: imageData.alt || imovel.titulo || 'Imagem do imóvel',
             asset: {
                 ...assetData,
                 _type: assetData._type || 'sanity.imageAsset',
-                _ref: assetData._ref || ''
+                ...(assetData._ref && assetData._ref.trim() !== '' && { _ref: assetData._ref })
             }
         };
     } else {

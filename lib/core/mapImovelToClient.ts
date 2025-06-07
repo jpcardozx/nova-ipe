@@ -68,13 +68,12 @@ export function mapImovelToClient(imovel: any): ImovelClient {
     cidade,
     estado,
     galeria: galeriaProcessada,
-    caracteristicas,
-    imagem: imagem ? {
+    caracteristicas,    imagem: imagem ? {
       imagemUrl: imagem.asset?._ref || '',
       alt: hasAltProperty(imagem) ? imagem.alt : titulo || '',
       asset: {
         _type: 'sanity.imageAsset',
-        _ref: imagem.asset?._ref || ''
+        ...(imagem.asset?._ref && imagem.asset._ref.trim() !== '' && { _ref: imagem.asset._ref })
       }
     } : undefined
   };

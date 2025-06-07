@@ -46,10 +46,9 @@ export class PerformanceMonitor {
           const value = entry.startTime || (entry as any).value;
           
           this.addMetric(metricName, value);
-          
-          // Log significant metrics
+            // Log significant metrics
           if (['largest-contentful-paint', 'first-input-delay', 'cumulative-layout-shift'].includes(metricName)) {
-            console.log(`🚀 ${metricName}: ${value.toFixed(2)}ms`);
+            // console.log(`🚀 ${metricName}: ${value.toFixed(2)}ms`);
           }
         });
       });
@@ -112,9 +111,8 @@ export class PerformanceMonitor {
   private observePaintMetrics() {
     if ('PerformanceObserver' in window) {
       const observer = new PerformanceObserver((list) => {
-        list.getEntries().forEach((entry) => {
-          this.addMetric(entry.name, entry.startTime);
-          console.log(`🎨 ${entry.name}: ${entry.startTime.toFixed(2)}ms`);
+        list.getEntries().forEach((entry) => {          this.addMetric(entry.name, entry.startTime);
+          // console.log(`🎨 ${entry.name}: ${entry.startTime.toFixed(2)}ms`);
         });
       });
 
@@ -179,9 +177,8 @@ export class PerformanceMonitor {
   public logPerformanceReport() {
     const summary = this.getMetricsSummary();
     console.group('📊 Performance Report');
-    
-    Object.entries(summary).forEach(([metric, stats]) => {
-      console.log(`${metric}:`, stats);
+      Object.entries(summary).forEach(([metric, stats]) => {
+      // console.log(`${metric}:`, stats);
     });
     
     console.groupEnd();

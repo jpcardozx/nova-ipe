@@ -54,22 +54,18 @@ export function fixSanityImageReferences(obj: any): any {
         // Preserva hotspot se existir
         if (obj.hotspot) {
             fixedImage.hotspot = { ...obj.hotspot };
-        }
-
-        // Conserta especificamente o asset para garantir serialização correta
+        }        // Conserta especificamente o asset para garantir serialização correta
         if (obj.asset) {
             fixedImage.asset = {
                 _type: obj.asset._type || 'sanity.imageAsset',
-                _ref: obj.asset._ref || '',
-            };
-
-            // Se o asset tiver URL, preserva
-            if (obj.asset.url) {
+                ...(obj.asset._ref && obj.asset._ref.trim() !== '' && { _ref: obj.asset._ref })
+            };            // Se o asset tiver URL, preserva
+            if (obj.asset.url && fixedImage.asset) {
                 fixedImage.asset.url = obj.asset.url;
             }
 
             // Se não tiver URL definida mas tiver ref, extrai a URL
-            if (!fixedImage.url && fixedImage.asset._ref) {
+            if (!fixedImage.url && fixedImage.asset?._ref) {
                 try {
                     const extractedUrl = extractImageUrl({
                         asset: { _ref: fixedImage.asset._ref }

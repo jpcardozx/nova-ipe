@@ -51,8 +51,7 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
                 imagemUrl: '', // Provide a default or placeholder URL
                 alt: 'Imagem não disponível',
                 asset: {
-                    _type: 'sanity.imageAsset',
-                    _ref: ''
+                    _type: 'sanity.imageAsset'
                 }
             }
         };

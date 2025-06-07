@@ -103,8 +103,7 @@ async function ImovelPage({ slug }: { slug: string }) {
         imagemUrl: '/images/og-image-2025.jpg',
         alt: imovelClient.titulo || 'Imóvel Nova Ipê',
         asset: {
-          _type: 'sanity.imageAsset',
-          _ref: ''
+          _type: 'sanity.imageAsset'
         }
       };
     }

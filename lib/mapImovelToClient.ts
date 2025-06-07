@@ -5,19 +5,23 @@ import { formatarMoeda, formatarArea, formatarEndereco } from "@/lib/utils";
  * Mapeia um imóvel do formato Sanity para o formato cliente
  */
 export function mapImovelToClient(imovel: any): ImovelClient {
-    if (!imovel) return {} as ImovelClient;
-
-    // Log para depurar a estrutura do objeto imagem recebido do Sanity
-    console.log("mapImovelToClient - Object received:", {
-        id: imovel._id,
-        titulo: imovel.titulo,
-        hasImagem: !!imovel.imagem,
-        imagemType: imovel.imagem ? typeof imovel.imagem : 'undefined',
-        imagemHasUrl: imovel.imagem?.url ? true : false,
-        imagemHasAsset: imovel.imagem?.asset ? true : false,
-        assetRef: imovel.imagem?.asset?._ref,
-    });    // Converte a imagem para o formato esperado
-    let imagem: ImagemClient;
+    if (!imovel) return {} as ImovelClient;    // Log para depurar a estrutura do objeto imagem recebido do Sanity
+    // console.log("mapImovelToClient - Object received:", {
+    //     id: imovel._id,
+    //     titulo: imovel.titulo,
+    //     hasImagem: !!imovel.imagem,
+    //     imagemType: imovel.imagem ? typeof imovel.imagem : 'undefined',
+    //     imagemHasUrl: imovel.imagem?.url ? true : false,
+    //     imagemHasAsset: imovel.imagem?.asset ? true : false,
+    //     assetRef: imovel.imagem?.asset?._ref,
+    // });    // Converte a imagem para o formato esperado
+    let imagem: ImagemClient = {
+        imagemUrl: '',
+        alt: 'Imagem não disponível',
+        asset: {
+            _type: 'sanity.imageAsset'
+        }
+    };
 
     if (imovel.imagem) {
         // Extração robusta dos dados da imagem
@@ -29,37 +33,25 @@ export function mapImovelToClient(imovel: any): ImovelClient {
             imageData.imagemUrl ||
             imageData.url ||
             assetData.url ||
-            '';
-
-        // Se tem imagem, cria objeto com as propriedades necessárias
+            '';        // Se tem imagem, cria objeto com as propriedades necessárias
         imagem = {
             imagemUrl: imageUrl,
             alt: imageData.alt || imovel.titulo || 'Imagem do imóvel',
             asset: {
                 ...assetData,
                 _type: assetData._type || 'sanity.imageAsset',
-                _ref: assetData._ref || ''
+                // Só inclui _ref se ele existir e não for vazio
+                ...(assetData._ref && assetData._ref.trim() !== '' && { _ref: assetData._ref })
             }
-        };
-
-        console.log("mapImovelToClient - Created image object:", {
-            imagemUrl: imagem.imagemUrl,
-            hasAsset: !!imagem.asset,
-            assetRef: imagem.asset?._ref,
-            imageHasAsset: !!imageData.asset,
-            completeObject: !!imageUrl && !!imagem.asset
-        });
-    } else {
-        // Sem imagem, usa valores padrão
-        imagem = {
-            imagemUrl: '',
-            alt: 'Imagem não disponível',
-            asset: {
-                _type: 'sanity.imageAsset',
-                _ref: ''
-            }
-        };
-        console.log("mapImovelToClient - No image provided, using defaults");
+        };// console.log("mapImovelToClient - Created image object:", {
+        //     imagemUrl: imagem.imagemUrl,
+        //     hasAssetet: !!imagem.asset,
+        //     assetRef: imagem.asset?._ref,
+        //     imageHasAsset: !!imageData.asset,
+        //     completeObject: !!imageUrl && !!imagem.asset
+        // });    } else {
+        // Sem imagem, mantém valores padrão já definidos
+        // console.log("mapImovelToClient - No image provided, using defaults");
     }
 
     // Formata o endereço como string
