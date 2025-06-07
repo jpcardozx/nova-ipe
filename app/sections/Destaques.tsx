@@ -30,7 +30,7 @@ import { cn } from '@/lib/utils';
 import { usePropertyData } from '@/app/hooks/usePropertyData';
 import PropertyCardUnified from '@/app/components/ui/property/PropertyCardUnified';
 import ImoveisDestaqueProvider from '@/app/components/ImoveisDestaqueContext';
-import { Button } from '@/app/components/ui/button';
+import { Button } from '@/components/ui/button';
 import type { ImovelClient } from '../../src/types/imovel-client';
 
 // TIPOS

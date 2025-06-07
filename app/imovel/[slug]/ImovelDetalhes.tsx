@@ -1,12 +1,28 @@
 "use client";
 
 import React, { FC, useState, useEffect } from 'react';
-import { Phone, Calendar, UserCheck, Share2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { formatarMoeda } from '@/lib/utils';
 import type { ImovelClient as ImovelDataType } from '@/src/types/imovel-client';
-import { Button } from '@/app/components/ui/button';
+import { Button } from '@/components/ui/button';
+
+// Importação segura de ícones com fallback
+let Phone: any, Calendar: any, UserCheck: any, Share2: any;
+try {
+    const lucideIcons = require('lucide-react');
+    Phone = lucideIcons.Phone || (() => <span>📞</span>);
+    Calendar = lucideIcons.Calendar || (() => <span>📅</span>);
+    UserCheck = lucideIcons.UserCheck || (() => <span>✓</span>);
+    Share2 = lucideIcons.Share2 || (() => <span>📤</span>);
+} catch (error) {
+    console.error('Erro ao importar ícones do Lucide:', error);
+    // Fallback para ícones simples
+    Phone = () => <span>📞</span>;
+    Calendar = () => <span>📅</span>;
+    UserCheck = () => <span>✓</span>;
+    Share2 = () => <span>📤</span>;
+}
 
 interface ImovelDetalhesProps {
     imovel: ImovelDataType;

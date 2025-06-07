@@ -302,7 +302,6 @@ export default function PremiumHeroImproved() {
                         </div>
                     </motion.div>
                 </div>
-            </div>
-        </section>
+            </div>        </section>
     );
 }

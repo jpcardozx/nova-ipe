@@ -45,15 +45,14 @@ export default function AnuncioNovaVersao() {
                         <h3 className="text-white font-semibold text-sm">Experimente nossa nova versão</h3>
                         <p className="text-amber-100 text-xs">Design aprimorado e novas funcionalidades</p>
                     </div>
-                </div>
-                <div className="flex items-center gap-2">
+                </div>                <div className="flex items-center gap-2">
                     <Link
-                        href="/nova-versao"
+                        href="/showcase"
                         className="inline-flex items-center px-3 py-1.5 bg-white rounded-md text-sm text-amber-600 font-medium hover:bg-amber-50 transition-colors"
                     >
                         Ver agora
                         <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-                    </Link>                    <button
+                    </Link><button
                         onClick={handleClose}
                         className="p-1 text-amber-100 hover:text-white hover:bg-amber-600/30 rounded-full transition-colors"
                         aria-label="Fechar"

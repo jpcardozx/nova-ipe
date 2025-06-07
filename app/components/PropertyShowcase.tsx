@@ -6,8 +6,8 @@ import { motion, useAnimation, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Bookmark, ChevronLeft } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 import type { ProcessedProperty } from '@/app/page';
-import PropertyCard from '@/app/components/layouts/PropertyCard';
 import { cn } from '@/lib/utils';
+import PropertyAdapter from '@/app/components/adapters/PropertyAdapter';
 
 interface PropertySectionProps {
     title: string;
@@ -187,7 +187,7 @@ export default function PropertyShowcase({
         >
             {displayItems.map((property, index) => (
                 <motion.div key={property.id || index} variants={itemVariants}>
-                    <PropertyCard property={property} variant="grid" />
+                    <PropertyAdapter property={property} variant="grid" />
                 </motion.div>
             ))}
 
@@ -221,12 +221,11 @@ export default function PropertyShowcase({
                                 .slice(activeIndex * 3, activeIndex * 3 + 3)
                                 .map((property, index) => (
                                     <div key={property.id || index}>
-                                        <PropertyCard property={property} variant="compact" />
+                                        <PropertyAdapter property={property} variant="compact" />
                                     </div>
                                 ))
-                        ) : (
-                            // Renderiza 1 propriedade por slide para carousel normal
-                            <PropertyCard
+                        ) : (                            // Renderiza 1 propriedade por slide para carousel normal
+                            <PropertyAdapter
                                 property={filteredProperties[activeIndex]}
                                 variant={variant === 'featured' ? 'featured' : 'carousel'}
                             />
@@ -298,7 +297,7 @@ export default function PropertyShowcase({
                         variants={itemVariants}
                         className="lg:col-span-8"
                     >
-                        <PropertyCard property={filteredProperties[0]} variant="featured" />
+                        <PropertyAdapter property={filteredProperties[0]} variant="featured" />
                     </motion.div>
                 )}
 
@@ -306,7 +305,7 @@ export default function PropertyShowcase({
                 <div className="lg:col-span-4 space-y-4">
                     {filteredProperties.slice(1, 4).map((property, index) => (
                         <motion.div key={property.id || index} variants={itemVariants}>
-                            <PropertyCard property={property} variant="horizontal" />
+                            <PropertyAdapter property={property} variant="horizontal" />
                         </motion.div>
                     ))}
                 </div>

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PropertyCard as ImprovedPropertyCard } from '@/app/components/ui/property/PropertyCardUnified';
+import PropertyCardUnified from '@/app/components/ui/property/PropertyCardUnified';
 import PropertyDebugger from './PropertyDebugger';
 import { XCircle } from 'lucide-react';
 
@@ -67,7 +67,7 @@ export default function ImprovedPropertiesGrid({
                             }}
                             layout
                             className="flex"
-                        >              <ImprovedPropertyCard
+                        >              <PropertyCardUnified
                                 id={property.id}
                                 title={property.title}
                                 slug={property.slug}

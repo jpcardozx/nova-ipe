@@ -136,10 +136,9 @@ const FeaturedProperty = ({ property }: { property: PropertyCardProps }) => (
         {/* Background gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-amber-900/60 via-transparent to-orange-900/60 z-10" />
 
-        {/* Property image */}
-        <div
+        {/* Property image */}        <div
             className="absolute inset-0 bg-cover bg-center transform group-hover:scale-105 transition-transform duration-700"
-            style={{ backgroundImage: `url(${property.mainImage.url})` }}
+            style={{ backgroundImage: property.mainImage?.url ? `url(${property.mainImage.url})` : 'none' }}
         />
 
         {/* Content overlay */}

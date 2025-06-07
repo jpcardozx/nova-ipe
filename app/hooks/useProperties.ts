@@ -125,11 +125,10 @@ function sortProperties(properties: PropertyCardProps[], sort: string): Property
 // Search properties
 function searchProperties(properties: PropertyCardProps[], query: string): PropertyCardProps[] {
   if (!query.trim()) return properties;
-  
-  const lowerQuery = query.toLowerCase();
+    const lowerQuery = query.toLowerCase();
   return properties.filter(p => 
     p.title.toLowerCase().includes(lowerQuery) ||
-    p.location.toLowerCase().includes(lowerQuery) ||
+    (p.location && p.location.toLowerCase().includes(lowerQuery)) ||
     (p.city && p.city.toLowerCase().includes(lowerQuery))
   );
 }

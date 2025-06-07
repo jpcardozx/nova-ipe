@@ -1,2 +1,12 @@
 // Exportações dos componentes core
-export { Button, buttonVariants, type ButtonProps } from '@/app/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui';
+// Re-export Button
+export { Button };
+// Conditionally export buttonVariants if it exists
+export { buttonVariants } from '@/components/ui';
+// Define ButtonProps interface based on component/ui/button.tsx
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+    size?: 'default' | 'sm' | 'lg' | 'icon';
+    asChild?: boolean;
+}

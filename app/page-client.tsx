@@ -12,7 +12,10 @@ import EnhancedTestimonials from './components/EnhancedTestimonials';
 import PremiumHeroImproved from './components/PremiumHero-improved';
 import { ProcessedProperty } from './page';
 // Importando os novos componentes modernos para catálogo de imóveis
-import PropertyCarouselModern from '@/components/modern/PropertyCarouselModern';
+const PropertyCarouselModern = dynamic(() => import('../components/modern/PropertyCarouselModern'), {
+    ssr: true,
+    loading: () => <UnifiedLoading height="500px" title="Carregando imóveis..." />
+});
 
 const ValorAprimorado = dynamic(() => import('./sections/ValorAprimoradoV4'), {
     loading: () => <UnifiedLoading height="500px" title="Carregando..." />,

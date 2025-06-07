@@ -1,17 +1,18 @@
 "use client"
 
 import * as React from 'react';
-import { ProcessedProperty } from '@/app/page';
+import { ProcessedProperty } from '../../app/page';
 import {
     Carousel,
     CarouselContent,
     CarouselItem,
     CarouselNext,
-    CarouselPrevious
-} from '@/components/ui/carousel';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+    CarouselPrevious,
+    Card,
+    CardContent,
+    Badge,
+    Button
+} from '../../components/ui/ui';
 import {
     MapPin,
     Bed,
@@ -23,7 +24,7 @@ import {
     Heart
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 import Link from 'next/link';
 import Image from 'next/image';
 

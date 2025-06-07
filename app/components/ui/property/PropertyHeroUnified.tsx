@@ -19,9 +19,11 @@ import {
     Copy
 } from 'lucide-react';
 import { cn, formatarMoeda } from '@/lib/utils';
-import { Button } from '@/app/components/ui/button';
+import { Button } from '@/components/ui';
 import SanityImage from '@/app/components/SanityImage';
-import { PropertyType, PropertyStatus, PropertyImage, BasePropertyProps } from './types';
+import { PropertyType, PropertyStatus, PropertyImage } from './types';
+
+export * from './types';
 
 export interface PropertyHeroUnifiedProps {
     title: string;
@@ -181,9 +183,8 @@ export default function PropertyHeroUnified({
                                         fill
                                         priority
                                         className="object-cover"
-                                        sizes="100vw"
-                                        placeholder={normalizedImages[currentImageIndex].blurDataUrl ? "blur" : "empty"}
-                                        blurDataURL={normalizedImages[currentImageIndex].blurDataUrl}
+                                        sizes="100vw" placeholder={normalizedImages[currentImageIndex].blurDataURL ? "blur" : "empty"}
+                                        blurDataURL={normalizedImages[currentImageIndex].blurDataURL}
                                     />
                                 )}
                             </motion.div>
@@ -314,11 +315,11 @@ export default function PropertyHeroUnified({
                                     "px-3 py-1 rounded-full text-xs font-medium",
                                     status === 'sold' && "bg-red-500",
                                     status === 'rented' && "bg-blue-500",
-                                    status === 'pending' && "bg-yellow-500"
+                                    status === 'reserved' && "bg-yellow-500"
                                 )}>
                                     {status === 'sold' && 'Vendido'}
                                     {status === 'rented' && 'Alugado'}
-                                    {status === 'pending' && 'Reservado'}
+                                    {status === 'reserved' && 'Reservado'}
                                 </span>
                             )}
 
@@ -410,7 +411,7 @@ export default function PropertyHeroUnified({
                                                 variant="ghost"
                                                 size="icon"
                                                 className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10"
-                                                onClick={(e) => {
+                                                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                                                     e.stopPropagation();
                                                     prevImage();
                                                 }}
@@ -421,7 +422,7 @@ export default function PropertyHeroUnified({
                                                 variant="ghost"
                                                 size="icon"
                                                 className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10"
-                                                onClick={(e) => {
+                                                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                                                     e.stopPropagation();
                                                     nextImage();
                                                 }}

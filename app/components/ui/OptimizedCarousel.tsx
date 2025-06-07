@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 // Import only what's needed from framer-motion
 import { motion, AnimatePresence } from 'framer-motion';
 import useEmblaCarousel, { type UseEmblaCarouselType } from 'embla-carousel-react';
-import { Button } from '@/app/components/ui/button';
+import { Button } from '@/components/ui';
 
 // Import needed types from embla-carousel main package
 import type { CreatePluginType } from 'embla-carousel';

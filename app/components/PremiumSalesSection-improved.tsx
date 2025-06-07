@@ -131,12 +131,10 @@ const FeaturedProperty = ({ property }: { property: PropertyCardProps }) => (
         className="relative h-96 lg:h-[500px] rounded-2xl overflow-hidden group cursor-pointer"
     >
         {/* Background overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/50 via-transparent to-gray-900/30 z-10" />
-
-        {/* Property image */}
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/50 via-transparent to-gray-900/30 z-10" />        {/* Property image */}
         <div
             className="absolute inset-0 bg-cover bg-center transform group-hover:scale-105 transition-transform duration-700"
-            style={{ backgroundImage: `url(${property.mainImage.url})` }}
+            style={{ backgroundImage: `url(${property.mainImage?.url || '/images/property-placeholder.jpg'})` }}
         />
 
         {/* Content overlay */}

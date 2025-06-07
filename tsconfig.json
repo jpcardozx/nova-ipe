@@ -52,6 +52,9 @@
       ],
       "@legacy-types/*": [
         "types/*"
+      ],
+      "@property-types/*": [
+        "app/components/ui/property/types"
       ]
     }
   },

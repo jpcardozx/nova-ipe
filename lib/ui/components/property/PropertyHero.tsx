@@ -14,7 +14,7 @@ import {
     X
 } from 'lucide-react';
 import { cn, formatarMoeda } from '../../../../lib/utils';
-import { Button } from '@/app/components/ui/button';
+import { Button } from '@/components/ui';
 import { PropertyStatus, PropertyType } from '@/app/components/ui/property/PropertyCardUnified';
 
 interface PropertyImageType {
@@ -78,20 +78,17 @@ export function PropertyHero({
             day: '2-digit',
             month: '2-digit',
             year: 'numeric'
-        }) : null;
-
-    // Status config
+        }) : null;    // Status config
     const statusConfig: Record<PropertyStatus, { color: string; text: string }> = {
         available: { color: 'bg-accent-emerald-500', text: 'Disponível' },
         sold: { color: 'bg-accent-red-500', text: 'Vendido' },
         rented: { color: 'bg-blue-500', text: 'Alugado' },
-        pending: { color: 'bg-yellow-500', text: 'Pendente' },
-    };
-
-    // Property type config
+        reserved: { color: 'bg-yellow-500', text: 'Reservado' },
+    };// Property type config
     const propertyTypeConfig: Record<PropertyType, { text: string }> = {
         sale: { text: 'Venda' },
         rent: { text: 'Aluguel' },
+        investment: { text: 'Investimento' },
     };
 
     // Navegação de imagens
@@ -341,4 +338,4 @@ export function PropertyHero({
     );
 }
 
-export default PropertyHero; 
+export default PropertyHero;

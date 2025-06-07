@@ -1,14 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: false,
-  swcMinify: false,
+  reactStrictMode: false, // Desativado temporariamente para evitar problemas durante debugging
+  swcMinify: false, // Desativado temporariamente para obter erros mais claros
   
-  // Disable static export for now
+  // Desativa exportação estática temporariamente
   output: undefined,
-  
-  // Simplified image config
+
   images: {
-    unoptimized: true,
+    unoptimized: true, // Desativa otimização temporariamente para evitar problemas
     remotePatterns: [
       {
         protocol: 'https',
@@ -20,36 +19,38 @@ const nextConfig = {
       },
     ],
   },
-  
-  // Webpack configuration to fix Sanity UI issues
+
   webpack: (config, { isServer }) => {
-    // Ignore specific problematic modules
+    // Ignora módulos Node.js que causam problemas no browser
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
       net: false,
       tls: false,
+      crypto: false,
+      stream: false,
+      util: false,
+      url: false,
+      querystring: false,
     };
-    
-    // Replace problematic Sanity UI chunks with empty module
+
+    // Substitui chunks problemáticos do Sanity
     config.resolve.alias = {
       ...config.resolve.alias,
       '@sanity/ui/dist/_chunks-cjs/_visual-editing.js$': false,
     };
-    
-    // Add module replacement rule
+
+    // Adiciona regra para ignorar arquivos problemáticos
     config.module.rules.push({
       test: /_visual-editing\.js$/,
-      use: 'null-loader'
+      use: 'null-loader',
     });
-    
+
     return config;
   },
-  
-  // Remove experimental features
-  experimental: {
-    serverComponentsExternalPackages: ['sanity'],
-  },
+
+  // Configuração experimental mínima
+  experimental: {},
 };
 
 module.exports = nextConfig;
