@@ -7,8 +7,8 @@ import { ProcessedProperty } from './types/property';
 import { transformImovelToProcessedProperty } from '../lib/transformers/imovelToProcessedProperty';
 
 export const metadata: Metadata = {
-  title: 'Nova Ipê Imóveis - Sua Casa dos Sonhos Te Espera | Guararema, SP',
-  description: 'Há mais de 15 anos conectando famílias aos imóveis perfeitos em Guararema e região. Casas, apartamentos e terrenos com transparência e profissionalismo.',
+  title: 'Ipê Imóveis',
+  description: 'Temos o imóvel que você procura em Guararema e região. Entre em contato conosco e descubra as melhores opções de compra e aluguel.',
   keywords: 'imóveis Guararema, casas venda, apartamentos aluguel, terrenos, Nova Ipê, imobiliária',
   openGraph: {
     title: 'Nova Ipê Imóveis - Imobiliária Premium em Guararema',
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Nova Ipê Imóveis - Guararema, SP',
-    description: 'Sua casa dos sonhos te espera. Mais de 15 anos conectando famílias aos imóveis perfeitos.',
+    description: ' te espera. Mais de 15 anos conectando famílias aos imóveis perfeitos.',
     images: ['/images/ipeLogoWritten.png']
   }
 };
@@ -37,7 +37,7 @@ async function getProperties() {
   try {
     const imoveis = await fetchProperties();
     const properties = imoveis.map(transformImovelToProcessedProperty);
-    
+
     const propertiesForSale = properties.filter(p => p.categoria === 'venda').slice(0, 6);
     const propertiesForRent = properties.filter(p => p.categoria === 'aluguel').slice(0, 6);
     const featuredProperties = properties.filter(p => p.destaque).slice(0, 4);
@@ -61,7 +61,7 @@ export default async function HomePage() {
   const { propertiesForSale, propertiesForRent, featuredProperties } = await getProperties();
 
   return (
-    <Suspense 
+    <Suspense
       fallback={
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
           <UnifiedLoading height="100vh" title="Carregando Nova Ipê Imóveis..." />

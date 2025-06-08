@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { TrendingUp, MapPin, Clock, Calculator, Home, DollarSign, BarChart3, AlertCircle, Calendar } from 'lucide-react';
+import { TrendingUp, MapPin, Clock, Calculator, Home, DollarSign, BarChart3, AlertCircle, Calendar, ChevronRight, Target, Globe } from 'lucide-react';
+import { motion } from 'framer-motion';
+import SectionWrapper from './ui/SectionWrapper';
 
 // Define TypeScript types for our data structures
 type ServiceKey = 'comprador' | 'vendedor' | 'investidor';
@@ -40,7 +42,7 @@ interface Insight {
     relevancia: RelevanciaType;
 }
 
-export default function InsightsPersonalizados() {
+export default function MarketAnalysisSection() {
     const [tipoLead, setTipoLead] = useState<ServiceKey>('comprador'); // comprador, vendedor, investidor
     const [leadForm, setLeadForm] = useState({ name: '', email: '', regiao: 'centro' });
     const [insightAtivo, setInsightAtivo] = useState(0);
@@ -115,24 +117,22 @@ export default function InsightsPersonalizados() {
             tempo: "89 dias",
             destaque: false
         }
-    ];
-
-    const insights: Insight[] = [
+    ]; const insights: Insight[] = [
         {
-            titulo: "Melhores meses para negociar",
-            conteudo: "Março a junho: 23% mais vendas. Setembro a novembro: melhores preços para compradores.",
-            icone: <Calendar className="w-5 h-5" />,
-            relevancia: { comprador: "alta", vendedor: "alta", investidor: "média" }
+            titulo: "Momento ideal para investir",
+            conteudo: "Crescimento de 18% no último ano com perspectivas positivas. Mercado aquecido favorece negociações rápidas.",
+            icone: <TrendingUp className="w-5 h-5" />,
+            relevancia: { comprador: "alta", vendedor: "alta", investidor: "alta" }
         },
         {
-            titulo: "Impacto da nova rodovia",
-            conteudo: "Duplicação prevista para 2026 pode valorizar Itapema em até 40%. Oportunidade de entrada agora.",
-            icone: <TrendingUp className="w-5 h-5" />,
+            titulo: "Infraestrutura em expansão",
+            conteudo: "Novos investimentos em mobilidade urbana e equipamentos públicos aumentam atratividade da região.",
+            icone: <Globe className="w-5 h-5" />,
             relevancia: { comprador: "alta", vendedor: "média", investidor: "alta" }
         },
         {
-            titulo: "Financiamento vs pagamento à vista",
-            conteudo: "Desconto médio de 12% para pagamento à vista. Financiamento: entrada de 20% é suficiente.",
+            titulo: "Oportunidades de financiamento",
+            conteudo: "Taxas competitivas e facilidades de crédito com parcerias bancárias exclusivas.",
             icone: <Calculator className="w-5 h-5" />,
             relevancia: { comprador: "alta", vendedor: "baixa", investidor: "média" }
         }
@@ -140,193 +140,239 @@ export default function InsightsPersonalizados() {
 
     const insightsRelevantes = insights.filter(insight =>
         insight.relevancia[tipoLead] === "alta" || insight.relevancia[tipoLead] === "média"
-    );
+    ); return (
+        <SectionWrapper
+            title="Análise do Mercado Imobiliário"
+            subtitle="Insights estratégicos para sua decisão de investimento em Guararema"
+            badge="Dados Atualizados"
+            background="amber"
+            id="analise-mercado"
+        >
+            {/* Seletor de público */}
+            <motion.div
+                className="flex justify-center mb-12"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+            >
+                <div className="inline-flex bg-white/80 backdrop-blur-sm rounded-xl p-1 shadow-lg border border-amber-200">
+                    {Object.entries(configuracoes).map(([key, config]) => (
+                        <button
+                            key={key}
+                            onClick={() => setTipoLead(key as ServiceKey)}
+                            className={`px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-300 ${tipoLead === key
+                                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg transform scale-105'
+                                : 'text-gray-600 hover:text-amber-600 hover:bg-amber-50'
+                                }`}
+                        >
+                            {config.label}
+                        </button>
+                    ))}
+                </div>
+            </motion.div>
 
-    return (
-        <div className="bg-gray-50 min-h-screen">
-            {/* Header com seletor de público */}
-            <section className="bg-white border-b border-gray-200">
-                <div className="container mx-auto px-6 py-8">
-                    <div className="max-w-4xl mx-auto">
-                        <div className="text-center mb-8">
-                            <h1 className="text-3xl font-light text-gray-900 mb-4">
-                                Insights do mercado imobiliário
-                            </h1>
-                            <p className="text-gray-600">
-                                Informações atualizadas para orientar sua decisão
+            <div className="grid lg:grid-cols-3 gap-8">
+                {/* Coluna principal - Análise */}
+                <div className="lg:col-span-2 space-y-8">
+                    {/* Pergunta principal */}
+                    <motion.div
+                        className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-amber-200 shadow-lg"
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.7, delay: 0.2 }}
+                    >
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="p-3 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl">
+                                <Target className="w-6 h-6 text-white" />
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-bold text-gray-900">
+                                    {configuracoes[tipoLead].titulo}
+                                </h2>
+                                <p className="text-gray-600 mt-1">
+                                    {configuracoes[tipoLead].subtitulo}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Análise por região */}
+                        <div className="space-y-4">
+                            <h3 className="font-semibold text-gray-900 text-lg mb-4 flex items-center gap-2">
+                                <MapPin className="w-5 h-5 text-amber-600" />
+                                {configuracoes[tipoLead].pergunta}
+                            </h3>
+
+                            {regioes.map((regiao, index) => (
+                                <motion.div
+                                    key={index}
+                                    className={`p-6 rounded-xl border-2 transition-all duration-300 hover:shadow-lg cursor-pointer group ${regiao.destaque
+                                        ? 'border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 shadow-md'
+                                        : 'border-gray-200 hover:border-amber-200 bg-white/50'
+                                        }`}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.6, delay: 0.1 * index }}
+                                    whileHover={{ scale: 1.02 }}
+                                >
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className={`p-2 rounded-lg ${regiao.destaque ? 'bg-amber-200' : 'bg-gray-100'}`}>
+                                                <Home className="w-5 h-5 text-gray-700" />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-semibold text-gray-900">{regiao.nome}</h4>
+                                                <p className="text-sm text-gray-600">{regiao.valor} • {regiao.tempo}</p>
+                                            </div>
+                                        </div>
+                                        {regiao.destaque && (
+                                            <span className="px-3 py-1 bg-gradient-to-r from-amber-400 to-orange-400 text-white text-xs font-semibold rounded-full">
+                                                ⭐ Destaque
+                                            </span>
+                                        )}
+                                        <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-amber-600 transition-colors" />
+                                    </div>
+                                    <p className="text-sm text-gray-700 mb-3 font-medium">{regiao.tendencia}</p>
+                                    <div className="bg-white/60 rounded-lg p-3 border border-gray-100">
+                                        <p className="text-sm text-gray-600">
+                                            <span className="font-semibold text-amber-700">Oportunidade:</span> {regiao.oportunidade[tipoLead]}
+                                        </p>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </motion.div>
+
+                    {/* Insights relevantes */}
+                    <motion.div
+                        className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-amber-200 shadow-lg"
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.7, delay: 0.4 }}
+                    >
+                        <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                            <BarChart3 className="w-6 h-6 text-amber-600" />
+                            Insights Estratégicos
+                        </h3>
+
+                        <div className="space-y-4">
+                            {insightsRelevantes.map((insight, index) => (
+                                <motion.div
+                                    key={index}
+                                    className="flex items-start space-x-4 p-5 rounded-xl hover:bg-amber-50/50 transition-all duration-300 cursor-pointer border border-transparent hover:border-amber-200"
+                                    onClick={() => setInsightAtivo(index)}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.6, delay: 0.1 * index }}
+                                    whileHover={{ scale: 1.01 }}
+                                >
+                                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-amber-100 to-orange-100 rounded-xl flex items-center justify-center text-amber-600 border border-amber-200">
+                                        {insight.icone}
+                                    </div>
+                                    <div className="flex-1">
+                                        <h4 className="font-semibold text-gray-900 mb-2">{insight.titulo}</h4>
+                                        <p className="text-sm text-gray-600 leading-relaxed">{insight.conteudo}</p>
+                                    </div>
+                                    <div className={`px-3 py-1 rounded-full text-xs font-semibold ${insight.relevancia[tipoLead] === 'alta'
+                                        ? 'bg-green-100 text-green-700 border border-green-200'
+                                        : 'bg-amber-100 text-amber-700 border border-amber-200'
+                                        }`}>
+                                        {insight.relevancia[tipoLead] === 'alta' ? 'Prioridade' : 'Relevante'}
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </motion.div>
+                </div>
+
+                {/* Sidebar com captura */}
+                <motion.div
+                    className="space-y-6"
+                    initial={{ opacity: 0, x: 30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.7, delay: 0.3 }}
+                >
+                    {/* Formulário principal */}
+                    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-amber-200 shadow-lg sticky top-6">
+                        <div className="text-center mb-6">
+                            <div className="w-16 h-16 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <Calculator className="w-8 h-8 text-white" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                                Análise Personalizada
+                            </h3>
+                            <p className="text-gray-600 text-sm">
+                                Receba dados detalhados da região que te interessa
                             </p>
                         </div>
 
-                        {/* Seletor de público */}
-                        <div className="flex justify-center">
-                            <div className="inline-flex bg-gray-100 rounded-lg p-1">
-                                {Object.entries(configuracoes).map(([key, config]) => (
-                                    <button
-                                        key={key}
-                                        onClick={() => setTipoLead(key as ServiceKey)}
-                                        className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${tipoLead === key
-                                            ? 'bg-white text-gray-900 shadow-sm'
-                                            : 'text-gray-600 hover:text-gray-900'
-                                            }`}
-                                    >
-                                        {config.label}
-                                    </button>
-                                ))}
+                        <div className="space-y-4">
+                            <input
+                                type="text"
+                                placeholder="Seu nome"
+                                value={leadForm.name}
+                                onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
+                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all bg-white/80 backdrop-blur-sm"
+                            />
+
+                            <input
+                                type="email"
+                                placeholder="Seu e-mail"
+                                value={leadForm.email}
+                                onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
+                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all bg-white/80 backdrop-blur-sm"
+                            />
+
+                            <select
+                                value={leadForm.regiao}
+                                onChange={(e) => setLeadForm({ ...leadForm, regiao: e.target.value })}
+                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all bg-white/80 backdrop-blur-sm"
+                            >
+                                <option value="centro">Centro</option>
+                                <option value="itapema">Itapema</option>
+                                <option value="portal">Portal das Colinas</option>
+                                <option value="todas">Todas as regiões</option>
+                            </select>
+
+                            <motion.button
+                                onClick={handleSubmit}
+                                className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg"
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                {configuracoes[tipoLead].cta}
+                            </motion.button>
+                        </div>
+
+                        <p className="text-xs text-gray-500 mt-4 text-center">
+                            📊 Análise gratuita • ⚡ Resposta em 24 horas
+                        </p>
+                    </div>
+
+                    {/* Contato direto */}
+                    <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200">
+                        <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                            <AlertCircle className="w-5 h-5 text-amber-600" />
+                            Atendimento Direto
+                        </h4>
+                        <div className="space-y-3 text-sm text-gray-600">
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <span>(11) 98184-5016</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                                <span>contato@ipeimoveis.com.br</span>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
-
-            {/* Conteúdo principal */}
-            <section className="py-12">
-                <div className="container mx-auto px-6">
-                    <div className="max-w-7xl mx-auto">
-                        <div className="grid lg:grid-cols-3 gap-12">
-                            {/* Coluna principal */}
-                            <div className="lg:col-span-2 space-y-8">
-                                {/* Pergunta principal */}
-                                <div className="bg-white rounded-lg p-8 border border-gray-200">
-                                    <h2 className="text-2xl font-medium text-gray-900 mb-6">
-                                        {configuracoes[tipoLead].titulo}
-                                    </h2>
-                                    <p className="text-lg text-gray-600 mb-8">
-                                        {configuracoes[tipoLead].subtitulo}
-                                    </p>
-
-                                    {/* Análise por região */}
-                                    <div className="space-y-4">
-                                        <h3 className="font-medium text-gray-900 mb-4">
-                                            {configuracoes[tipoLead].pergunta}
-                                        </h3>
-
-                                        {regioes.map((regiao, index) => (
-                                            <div
-                                                key={index}
-                                                className={`p-6 rounded-lg border-2 transition-all hover:shadow-md ${regiao.destaque
-                                                    ? 'border-yellow-300 bg-yellow-50'
-                                                    : 'border-gray-200 hover:border-gray-300'
-                                                    }`}
-                                            >
-                                                <div className="flex justify-between items-start mb-3">
-                                                    <div>
-                                                        <h4 className="font-medium text-gray-900">{regiao.nome}</h4>
-                                                        <p className="text-sm text-gray-600">{regiao.valor} • {regiao.tempo} para venda</p>
-                                                    </div>
-                                                    {regiao.destaque && (
-                                                        <span className="px-2 py-1 bg-yellow-200 text-yellow-800 text-xs font-medium rounded">
-                                                            Recomendado
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <p className="text-sm text-gray-700 mb-2">{regiao.tendencia}</p>
-                                                <p className="text-sm text-gray-600">
-                                                    <span className="font-medium">Para você:</span> {regiao.oportunidade[tipoLead]}
-                                                </p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Insights relevantes */}
-                                <div className="bg-white rounded-lg p-8 border border-gray-200">
-                                    <h3 className="text-xl font-medium text-gray-900 mb-6">
-                                        Informações importantes para sua decisão
-                                    </h3>
-
-                                    <div className="space-y-6">
-                                        {insightsRelevantes.map((insight, index) => (
-                                            <div
-                                                key={index}
-                                                className="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-                                                onClick={() => setInsightAtivo(index)}
-                                            >
-                                                <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
-                                                    {insight.icone}
-                                                </div>
-                                                <div className="flex-1">
-                                                    <h4 className="font-medium text-gray-900 mb-1">{insight.titulo}</h4>
-                                                    <p className="text-sm text-gray-600 leading-relaxed">{insight.conteudo}</p>
-                                                </div>
-                                                <div className={`px-2 py-1 rounded text-xs font-medium ${insight.relevancia[tipoLead] === 'alta'
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-yellow-100 text-yellow-800'
-                                                    }`}>
-                                                    {insight.relevancia[tipoLead] === 'alta' ? 'Importante' : 'Útil'}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Sidebar com captura */}
-                            <div className="space-y-6">
-                                {/* Formulário principal */}
-                                <div className="bg-white rounded-lg p-6 border border-gray-200 sticky top-6">
-                                    <h3 className="text-lg font-medium text-gray-900 mb-4">
-                                        Quer uma análise específica?
-                                    </h3>
-                                    <p className="text-gray-600 text-sm mb-6">
-                                        Enviaremos dados detalhados da região que te interessa
-                                    </p>
-
-                                    <div className="space-y-4">
-                                        <input
-                                            type="text"
-                                            placeholder="Seu nome"
-                                            value={leadForm.name}
-                                            onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                                        />
-
-                                        <input
-                                            type="email"
-                                            placeholder="Seu e-mail"
-                                            value={leadForm.email}
-                                            onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                                        />
-
-                                        <select
-                                            value={leadForm.regiao}
-                                            onChange={(e) => setLeadForm({ ...leadForm, regiao: e.target.value })}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                                        >
-                                            <option value="centro">Centro</option>
-                                            <option value="itapema">Itapema</option>
-                                            <option value="portal">Portal das Colinas</option>
-                                            <option value="todas">Todas as regiões</option>
-                                        </select>
-
-                                        <button
-                                            onClick={handleSubmit}
-                                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-                                        >
-                                            {configuracoes[tipoLead].cta}
-                                        </button>
-                                    </div>
-
-                                    <p className="text-xs text-gray-500 mt-4 text-center">
-                                        Análise gratuita • Resposta em 24 horas
-                                    </p>
-                                </div>
-
-                                {/* Contato direto */}
-                                <div className="bg-gray-100 rounded-lg p-6">
-                                    <h4 className="font-medium text-gray-900 mb-3">
-                                        Prefere conversar diretamente?
-                                    </h4>
-                                    <div className="space-y-2 text-sm text-gray-600">
-                                        <div>(11) 99999-9999</div>
-                                        <div>contato@ipeimóveis.com.br</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
+                </motion.div>
+            </div>
+        </SectionWrapper>
     );
 }

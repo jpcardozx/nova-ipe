@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Phone, Mail, MapPin, Clock, Send } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, Send, Calendar } from 'lucide-react';
 
 const ContactSection = () => {
     const [formData, setFormData] = useState({
@@ -48,142 +48,216 @@ const ContactSection = () => {
                 setSubmitResult(null);
             }, 5000);
         }, 1500);
-    };
+    }; return (
+        <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-900/20 via-transparent to-orange-900/20"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-amber-100/10 via-transparent to-transparent"></div>
 
-    return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <div>
-                <div className="space-y-6">
-                    <div className="flex items-start">                        <div className="bg-primary-50 p-3 rounded-full mr-4">
-                        <Phone className="h-5 w-5 text-primary-600" />
-                    </div>
-                        <div>
-                            <h3 className="font-semibold text-lg mb-1">Telefone</h3>
-                            <p className="text-neutral-600">(11) 99999-9999</p>
-                            <p className="text-neutral-600">(11) 5555-5555</p>
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Contact Methods Cards */}
+                <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Phone Card */}
+                    <div className="group relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all duration-300">
+                        <div className="flex items-center mb-4">
+                            <div className="bg-gradient-to-br from-green-400 to-green-600 p-3 rounded-xl shadow-lg">
+                                <Phone className="h-6 w-6 text-white" />
+                            </div>
                         </div>
-                    </div>
-
-                    <div className="flex items-start">
-                        <div className="bg-primary-50 p-3 rounded-full mr-4">
-                            <Mail className="h-5 w-5 text-primary-600" />
+                        <h3 className="font-bold text-lg text-white mb-2">Telefone</h3>
+                        <div className="space-y-1 text-white/80">
+                            <p className="hover:text-green-300 cursor-pointer transition-colors">(11) 99999-9999</p>
+                            <p className="hover:text-green-300 cursor-pointer transition-colors">(11) 5555-5555</p>
                         </div>
-                        <div>
-                            <h3 className="font-semibold text-lg mb-1">Email</h3>
-                            <p className="text-neutral-600">contato@novaiperimoveis.com.br</p>
-                        </div>
+                        <p className="text-xs text-white/60 mt-2">Disponível 24h via WhatsApp</p>
                     </div>
 
-                    <div className="flex items-start">
-                        <div className="bg-primary-50 p-3 rounded-full mr-4">
-                            <MapPin className="h-5 w-5 text-primary-600" />
+                    {/* Email Card */}
+                    <div className="group relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all duration-300">
+                        <div className="flex items-center mb-4">
+                            <div className="bg-gradient-to-br from-blue-400 to-blue-600 p-3 rounded-xl shadow-lg">
+                                <Mail className="h-6 w-6 text-white" />
+                            </div>
                         </div>
-                        <div>
-                            <h3 className="font-semibold text-lg mb-1">Endereço</h3>
-                            <p className="text-neutral-600">Rua Principal, 123 - Centro</p>
-                            <p className="text-neutral-600">Guararema - SP</p>
-                        </div>
+                        <h3 className="font-bold text-lg text-white mb-2">Email</h3>
+                        <p className="text-white/80 hover:text-blue-300 cursor-pointer transition-colors break-all">
+                            contato@novaiperimoveis.com.br
+                        </p>
+                        <p className="text-xs text-white/60 mt-2">Resposta em até 2h úteis</p>
                     </div>
 
-                    <div className="flex items-start">
-                        <div className="bg-primary-50 p-3 rounded-full mr-4">
-                            <Clock className="h-5 w-5 text-primary-600" />
+                    {/* Location Card */}
+                    <div className="group relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all duration-300">
+                        <div className="flex items-center mb-4">
+                            <div className="bg-gradient-to-br from-amber-400 to-orange-600 p-3 rounded-xl shadow-lg">
+                                <MapPin className="h-6 w-6 text-white" />
+                            </div>
                         </div>
-                        <div>
-                            <h3 className="font-semibold text-lg mb-1">Horário de Atendimento</h3>
-                            <p className="text-neutral-600">Segunda a Sexta: 9h às 18h</p>
-                            <p className="text-neutral-600">Sábados: 9h às 13h</p>
+                        <h3 className="font-bold text-lg text-white mb-2">Localização</h3>
+                        <div className="space-y-1 text-white/80">
+                            <p>Rua Principal, 123 - Centro</p>
+                            <p>Guararema - SP</p>
                         </div>
+                        <p className="text-xs text-white/60 mt-2">Atendimento presencial</p>
                     </div>
+                </div>
+
+                {/* Contact Form */}
+                <div className="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-2xl">
+                    <h3 className="font-bold text-2xl text-slate-800 mb-6">Garanta atendimento prioritário</h3>
+
+                    {submitResult && (
+                        <div className={`p-4 rounded-xl mb-6 ${submitResult.success
+                                ? 'bg-green-50 text-green-800 border border-green-200'
+                                : 'bg-red-50 text-red-800 border border-red-200'
+                            }`}>
+                            {submitResult.message}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label htmlFor="name" className="block mb-2 text-sm font-semibold text-slate-700">
+                                    Nome Completo
+                                </label>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 bg-white/50 focus:bg-white transition-all duration-300"
+                                    placeholder="Seu nome completo"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="email" className="block mb-2 text-sm font-semibold text-slate-700">
+                                    Email
+                                </label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 bg-white/50 focus:bg-white transition-all duration-300"
+                                    placeholder="seu.email@exemplo.com"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label htmlFor="phone" className="block mb-2 text-sm font-semibold text-slate-700">
+                                    WhatsApp
+                                </label>
+                                <input
+                                    type="tel"
+                                    id="phone"
+                                    name="phone"
+                                    value={formData.phone}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 bg-white/50 focus:bg-white transition-all duration-300"
+                                    placeholder="(11) 99999-9999"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="interest" className="block mb-2 text-sm font-semibold text-slate-700">
+                                    Interesse
+                                </label>
+                                <select
+                                    id="interest"
+                                    name="interest"
+                                    value={formData.interest}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 bg-white/50 focus:bg-white transition-all duration-300"
+                                >
+                                    <option value="compra">Quero investir em imóvel</option>
+                                    <option value="venda">Preciso vender com rapidez</option>
+                                    <option value="aluguel">Busco renda passiva</option>
+                                    <option value="outro">Consultoria personalizada</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label htmlFor="message" className="block mb-2 text-sm font-semibold text-slate-700">
+                                Mensagem
+                            </label>
+                            <textarea
+                                id="message"
+                                name="message"
+                                value={formData.message}
+                                onChange={handleChange}
+                                rows={4}
+                                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 bg-white/50 focus:bg-white transition-all duration-300 resize-none"
+                                placeholder="Conte-nos mais sobre seus objetivos..."
+                                required
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="w-full inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-all duration-300 disabled:opacity-70 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                        >
+                            {isSubmitting ? (
+                                <>
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3"></div>
+                                    Garantindo seu atendimento...
+                                </>
+                            ) : (
+                                <>
+                                    Receber consultoria especializada
+                                    <Send className="ml-2 h-5 w-5" />
+                                </>
+                            )}
+                        </button>
+                    </form>
                 </div>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="font-semibold text-xl mb-4">Garanta atendimento prioritário</h3>
-
-                {submitResult && (
-                    <div className={`p-4 rounded-md mb-4 ${submitResult.success ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
-                        {submitResult.message}
+            {/* Hours Section */}
+            <div className="relative z-10 mt-12 bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8">
+                <div className="flex items-center mb-6">
+                    <div className="bg-gradient-to-br from-purple-400 to-purple-600 p-3 rounded-xl shadow-lg mr-4">
+                        <Calendar className="h-6 w-6 text-white" />
                     </div>
-                )}
+                    <div>
+                        <h3 className="font-bold text-xl text-white">Horários de Atendimento</h3>
+                        <p className="text-white/70">Estamos aqui para ajudar você</p>
+                    </div>
+                </div>
 
-                <form onSubmit={handleSubmit}>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label htmlFor="name" className="block mb-1 text-sm font-medium">Nome</label>                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 border border-neutral-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-neutral-50 focus:bg-white transition-all"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="email" className="block mb-1 text-sm font-medium">Email</label>                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 border border-neutral-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-neutral-50 focus:bg-white transition-all"
-                                required
-                            />
-                        </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <h4 className="font-semibold text-white mb-2">Segunda a Sexta</h4>
+                        <p className="text-white/80 text-sm">9h às 18h</p>
+                        <p className="text-green-300 text-xs mt-1">● Online</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label htmlFor="phone" className="block mb-1 text-sm font-medium">Telefone</label>                            <input
-                                type="tel"
-                                id="phone"
-                                name="phone"
-                                value={formData.phone}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 border border-neutral-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-neutral-50 focus:bg-white transition-all"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="interest" className="block mb-1 text-sm font-medium">Interesse</label>                            <select
-                                id="interest"
-                                name="interest"
-                                value={formData.interest}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 border border-neutral-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-neutral-50 focus:bg-white transition-all"
-                            >
-                                <option value="compra">Quero investir em imóvel</option>
-                                <option value="venda">Preciso vender com rapidez</option>
-                                <option value="aluguel">Busco renda passiva</option>
-                                <option value="outro">Consultoria personalizada</option>
-                            </select>
-                        </div>
+                    <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <h4 className="font-semibold text-white mb-2">Sábados</h4>
+                        <p className="text-white/80 text-sm">9h às 13h</p>
+                        <p className="text-green-300 text-xs mt-1">● Online</p>
                     </div>
 
-                    <div className="mb-4">
-                        <label htmlFor="message" className="block mb-1 text-sm font-medium">Mensagem</label>                        <textarea
-                            id="message"
-                            name="message"
-                            value={formData.message}
-                            onChange={handleChange}
-                            rows={4}
-                            className="w-full px-3 py-2 border border-neutral-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-neutral-50 focus:bg-white transition-all"
-                            required
-                        ></textarea>
-                    </div>                    <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-md hover:from-primary-700 hover:to-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all disabled:opacity-70 shadow-md hover:shadow-lg"
-                    >
-                        {isSubmitting ? 'Garantindo seu atendimento...' : (
-                            <>
-                                Receber consultoria especializada
-                                <Send className="ml-2 h-4 w-4" />
-                            </>
-                        )}
-                    </button>
-                </form>
+                    <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <h4 className="font-semibold text-white mb-2">WhatsApp</h4>
+                        <p className="text-white/80 text-sm">24h por dia</p>
+                        <p className="text-green-300 text-xs mt-1">● Sempre disponível</p>
+                    </div>
+
+                    <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <h4 className="font-semibold text-white mb-2">Emergências</h4>
+                        <p className="text-white/80 text-sm">24h por dia</p>
+                        <p className="text-amber-300 text-xs mt-1">● Suporte prioritário</p>
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -3,54 +3,28 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Script from 'next/script';
 import { ClientOnly } from './ClientComponents';
-import ClientWebVitals from './ClientWebVitals';
 import dynamic from 'next/dynamic';
-import { safeDynamic } from './DynamicImportWrapper';
+import { safeDynamicImport } from '../utils/dynamic-import-fix';
 import { OrganizationSchema, WebsiteSchema, LocalBusinessSchema } from './StructuredData';
-import DataPrefetcher from './DataPrefetcher';
 import OfflineSupportProvider from '../providers/OfflineSupportProvider';
-import LucidePreloader from './LucidePreloader';
-import ChunkRecoveryService from './ChunkRecoveryService';
+// Removed LucidePreloader to improve performance
 
 // Importações dinâmicas para reduzir bundle inicial com tratamento de erros aprimorado
-const WebVitalsMonitor = safeDynamic(() => import('./WebVitalsMonitor'), {
-    componentName: 'WebVitalsMonitor',
-    retries: 2
-});
+const WebVitalsMonitor = dynamic(
+    () => safeDynamicImport(import('./WebVitalsMonitor'), 'WebVitalsMonitor'),
+    { ssr: false }
+);
 
-// Componentes não-críticos com carregamento dinâmico
-const ClientPerformanceMonitor = safeDynamic(() => import('./ClientPerformanceMonitor'), {
-    componentName: 'ClientPerformanceMonitor',
-    loading: () => <div className="perf-monitor-placeholder" />,
-    retries: 2
-});
+// Optimized performance monitoring - single debugger in development
+const WebVitalsDebuggerWrapper = process.env.NODE_ENV === 'development'
+    ? dynamic(() => safeDynamicImport(import('./WebVitalsDebuggerWrapper'), 'WebVitalsDebuggerWrapper'), { ssr: false })
+    : null;
 
-const WebVitalsDebuggerWrapper = safeDynamic(() => import('./WebVitalsDebuggerWrapper'), {
-    componentName: 'WebVitalsDebuggerWrapper',
-    retries: 2
-});
-
-const WebVitalsDebugger = safeDynamic(() => import('./WebVitalsDebugger'), {
-    componentName: 'WebVitalsDebugger',
-    retries: 2
-});
-
-const PerformanceDiagnostics = safeDynamic(() => import('./PerformanceAnalytics'), {
-    componentName: 'PerformanceAnalytics',
-    retries: 2
-});
-
-// O LoadingStateManager foi identificado como causador de ChunkLoadError
-// Utilizamos configuração extra de retentativas
-// const LoadingStateManager = safeDynamic(() => import('./LoadingStateManager'), {
-//     componentName: 'LoadingStateManager',
-//     retries: 3 // Mais retentativas para este componente problemático
-// });
-
-const PerformanceAnalytics = safeDynamic(() => import('./PerformanceAnalytics'), {
-    componentName: 'PerformanceAnalytics',
-    retries: 2
-});
+// Use WebVitals component instead of ClientWebVitals
+const WebVitals = dynamic(
+    () => safeDynamicImport(import('./WebVitals'), 'WebVitals'),
+    { ssr: false }
+);
 
 export default function LayoutClient({ children }: { children: React.ReactNode }) {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -92,80 +66,65 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                     }
                 }, { timeout: 1000 });
             }
-        }
-
-        // Executa a função otimizadora conforme a prontidão do documento
+        }        // Executa a função otimizadora conforme a prontidão do documento
         if (document.readyState === 'interactive' || document.readyState === 'complete') {
             optimizeInitialRender();
         } else {
-            document.addEventListener('DOMContentLoaded', optimizeInitialRender);
+            document.addEventListener('DOMContentLoaded', optimizeInitialRender, { once: true });
         }
 
-        // Fallbacks progressivos
-        window.addEventListener('load', optimizeInitialRender);
-        const timer1 = setTimeout(optimizeInitialRender, 800);
-        const timer2 = setTimeout(optimizeInitialRender, 2000);
-
-        // Último recurso - força visibilidade após 3 segundos
-        const timer3 = setTimeout(optimizeInitialRender, 3000);
+        // Single fallback for load event
+        window.addEventListener('load', optimizeInitialRender, { once: true });
 
         // Cleanup
         return () => {
-            clearTimeout(timer1);
-            clearTimeout(timer2);
-            clearTimeout(timer3);
             document.removeEventListener('DOMContentLoaded', optimizeInitialRender);
             window.removeEventListener('load', optimizeInitialRender);
         };
     }, []);
 
-    return (
-                <OfflineSupportProvider>
-                    {/* Serviço de recuperação para ChunkLoadError */}
-                    <ChunkRecoveryService />
+    return (<OfflineSupportProvider>
+        {/* Removed LucidePreloader to improve performance */}
 
-                    {/* Precarrega ícones lucide-react para evitar ChunkLoadError */}
-                    <LucidePreloader />
-
-                    {/* Fix hydration issues with visibility */}
-                    {/* Script otimizado para WhatsApp via Next.js Script */}
-                    <Script
-                        id="whatsapp-optimizer"
-                        strategy="afterInteractive"
-                        dangerouslySetInnerHTML={{
-                            __html: `
+        {/* Fix hydration issues with visibility */}
+        {/* Script otimizado para WhatsApp via Next.js Script */}
+        <Script
+            id="whatsapp-optimizer"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+                __html: `
             (function() {
               if(/WhatsApp/.test(navigator.userAgent) || document.referrer.includes('whatsapp')) {
                 document.body.classList.add('from-whatsapp');
               }
             })();
           `
-                        }}
-                    />
+            }}
+        />
 
-                    {/* Structured Data for SEO and Social Sharing */}
-                    <ClientOnly>
-                        <Suspense fallback={null}>
-                            {/* Individual structured data components for better SEO */}
-                            <OrganizationSchema />
-                            <WebsiteSchema />
-                            <LocalBusinessSchema />
-                        </Suspense>
-                    </ClientOnly>
+        {/* Structured Data for SEO and Social Sharing */}
+        <ClientOnly>
+            <Suspense fallback={null}>
+                {/* Individual structured data components for better SEO */}
+                <OrganizationSchema />
+                <WebsiteSchema />
+                <LocalBusinessSchema />
+            </Suspense>
+        </ClientOnly>
 
-                    {/* Main content */}
-                    <Suspense fallback={
-                        <div className="flex items-center justify-center min-h-screen">
-                            <div className="w-12 h-12 rounded-full border-4 border-primary-200 border-t-primary-600 animate-spin"></div>
-                        </div>
-                    }>
-                        {children}
-                    </Suspense>
-                    
-                    {/* Script de fallback para garantir página visível em caso de erro */}
-                    <script
-                        dangerouslySetInnerHTML={{
-                            __html: `
+        {/* Main content */}
+        <Suspense fallback={
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="w-12 h-12 rounded-full border-4 border-primary-200 border-t-primary-600 animate-spin"></div>
+            </div>
+        }>
+            {children}
+        </Suspense>
+
+        {/* Script de fallback para garantir página visível em caso de erro */}
+        <script
+            dangerouslySetInnerHTML={{
+                __html: `
                             // Garantir que página fica visível mesmo com erros
                             (function() {
                                 document.documentElement.removeAttribute('data-loading-state');
@@ -174,51 +133,24 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                                 document.body.style.visibility = 'visible';
                             })();
                         `
-                        }}
-                    />
+            }} />
 
-                    {/* Data prefetcher para otimização de performance */}
-                    <ClientOnly>
-                        <DataPrefetcher prefetchHome={true} prefetchListings={true} />
-                    </ClientOnly>
-
-                    <Suspense fallback={null}>
-                        <ClientWebVitals />
-                        {/* Adicionamos uma div vazia para auxiliar no debugging */}
-                        <div id="web-vitals-mount-point" style={{ display: 'none' }} data-debug="true" />
-                    </Suspense>
-
-                    {/* Web Vitals Monitor e ferramentas de otimização/diagnóstico */}                    {process.env.NODE_ENV === 'production' ? (
-                        <>
-                            <Suspense fallback={null}>
-                                <WebVitalsMonitor />
-                            </Suspense>
-                        </>
-                    ) : (
-                        <>
-                            {/* Performance Debugging Tools - Development Only */}                            <WebVitalsDebuggerWrapper />
-                            {/* Adiciona o WebVitalsDebugger para análise imediata de métricas */}
-                            <Suspense fallback={null}>
-                                <WebVitalsDebugger />
-                            </Suspense>
-                            <Suspense fallback={null}>
-                                <ClientPerformanceMonitor />
-                            </Suspense>
-                            {/* Botão de depuração para ativar ferramentas de diagnóstico */}
-                            <Suspense fallback={null}>
-                            </Suspense>
-                            <Suspense fallback={null}>
-                            </Suspense>
-                            <PerformanceDiagnostics />
-                        </>
-                    )}{/* Ferramentas de diagnóstico que podem ser habilitadas via URL com ?debug=performance */}
-                    <Suspense fallback={null}>
-                        <PerformanceDiagnostics />
-                    </Suspense>
-
-                    {/* Performance analytics tool - accessible via Ctrl+Alt+P or ?debug=performance */}
-                    <Suspense fallback={null}>
-                        <PerformanceAnalytics />                </Suspense>
-                </OfflineSupportProvider>
+        <Suspense fallback={null}>
+            <WebVitals />
+            {/* Adicionamos uma div vazia para auxiliar no debugging */}
+            <div id="web-vitals-mount-point" style={{ display: 'none' }} data-debug="true" />
+        </Suspense>            {/* Optimized Web Vitals Monitor */}
+        {process.env.NODE_ENV === 'production' ? (
+            <Suspense fallback={null}>
+                <WebVitalsMonitor />
+            </Suspense>
+        ) : (
+            WebVitalsDebuggerWrapper && (
+                <Suspense fallback={null}>
+                    <WebVitalsDebuggerWrapper />
+                </Suspense>
+            )
+        )}
+    </OfflineSupportProvider>
     );
 }

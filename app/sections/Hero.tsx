@@ -113,8 +113,7 @@ const ModernHero: React.FC = () => {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.8 }}
                         className="space-y-8"
-                    >
-                        {/* Trust Badge */}
+                    >                        {/* Trust Badge */}
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -122,7 +121,7 @@ const ModernHero: React.FC = () => {
                             className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-full text-emerald-700 text-sm font-medium"
                         >
                             <Shield className="w-4 h-4" />
-                            Imobiliária Confiável desde 2009
+                            Especialistas em Guararema desde 2009
                         </motion.div>
 
                         {/* Main Headline */}
@@ -132,8 +131,8 @@ const ModernHero: React.FC = () => {
                             transition={{ duration: 0.8, delay: 0.3 }}
                         >
                             <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                                Encontre o
-                                <span className="block text-emerald-600">imóvel perfeito</span>
+                                Seu próximo
+                                <span className="block text-emerald-600">lar está aqui</span>
                                 em Guararema
                             </h1>
                         </motion.div>
@@ -145,8 +144,8 @@ const ModernHero: React.FC = () => {
                             transition={{ duration: 0.8, delay: 0.4 }}
                             className="text-lg text-gray-600 leading-relaxed max-w-xl"
                         >
-                            Mais de 15 anos conectando pessoas aos melhores imóveis da região.
-                            Especialistas em compra, venda e locação com transparência total e resultados garantidos.
+                            Descubra casas, terrenos e oportunidades únicas na região que mais cresce no Vale do Paraíba.
+                            Qualidade de vida, natureza e proximidade à capital.
                         </motion.p>
 
                         {/* CTA Buttons */}

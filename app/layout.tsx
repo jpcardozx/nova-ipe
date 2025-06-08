@@ -12,8 +12,8 @@ const CenteredNavbar = dynamic(() => import('./components/ui/CenteredNavbar'), {
 });
 
 export const metadata: Metadata = {
-  title: 'Nova Ipê Imóveis - Guararema, SP',
-  description: 'Nova Ipê Imóveis - Sua Casa dos Sonhos Te Espera. Mais de 15 anos conectando famílias aos imóveis perfeitos em Guararema e região.',
+  title: 'Ipê Imóveis',
+  description: 'Temos o imóvel que você procura em Guararema. Entre em contato conosco e descubra as melhores opções de compra e aluguel na região.',
   icons: {
     icon: [
       { url: '/favicon_io/favicon-16x16.png', sizes: '16x16', type: 'image/png' },

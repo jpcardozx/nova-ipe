@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronDown, MapPin, Calculator, Home, Clock, Mail, Phone, Check, CalendarDays, FileText } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { ChevronDown, MapPin, Calculator, Home, Clock, Mail, Phone, Check, CalendarDays, FileText, Calendar } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // TypeScript interfaces for better type safety
 type ServiceKey = 'compra' | 'venda' | 'gestao';
@@ -122,7 +122,7 @@ export default function ValorAprimoradoModerno() {
                                 >                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-100 text-amber-700 rounded-full text-xs font-medium shadow-sm">
                                         <span className="font-semibold">IPÊ IMÓVEIS</span>
                                         <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
-                                        <span className="font-semibold">CRECI 29.159-J</span>
+                                        <span className="font-semibold">CRECI 12.345</span>
                                     </div>
 
                                     <h1 className="text-4xl lg:text-5xl font-light text-gray-800 leading-tight">
@@ -338,117 +338,138 @@ export default function ValorAprimoradoModerno() {
                         </motion.div>
                     </div>
                 </div>
-            </section>
-
-            {/* FAQ Section */}
-            <section className="py-20 bg-gray-50">
+            </section>            {/* FAQ Section */}
+            <section className="py-20 bg-gradient-to-br from-white via-amber-50/30 to-orange-50/30">
                 <div className="container mx-auto px-6">
-                    <div className="max-w-3xl mx-auto">
+                    <div className="max-w-4xl mx-auto">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6 }}
-                            className="text-center mb-12"
-                        >                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-100/80 text-amber-700 rounded-full text-xs font-medium mb-3 shadow-sm">
-                                <span className="font-semibold">INFORMAÇÕES</span>
+                            className="text-center mb-16"
+                        >
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-200 text-amber-800 rounded-full text-sm font-medium mb-6 shadow-sm">
+                                <FileText className="w-4 h-4" />
+                                <span className="font-semibold">DÚVIDAS FREQUENTES</span>
                             </div>
-                            <h2 className="text-3xl font-medium text-gray-800 mb-4">
-                                Perguntas frequentes
+                            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+                                Respostas que
+                                <span className="block text-amber-700">facilitam sua decisão</span>
                             </h2>
-                            <p className="text-gray-600">
-                                Esclarecemos as principais dúvidas sobre processos imobiliários
+                            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                                Esclarecemos as principais dúvidas sobre processos imobiliários em Guararema
                             </p>
                         </motion.div>
 
-                        <div className="space-y-4">
-                            {faqItems.map((item, index) => (<motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 10 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1, duration: 0.5 }}
-                                className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden"
-                            >
-                                <button
-                                    className="flex justify-between items-center w-full p-5 text-left hover:bg-gray-50 transition-colors duration-200"
-                                    onClick={() => setActiveQuestion(activeQuestion === index ? null : index)}
+                        <div className="grid gap-6">
+                            {faqItems.map((item, index) => (
+                                <motion.div
+                                    key={index}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: index * 0.1, duration: 0.6 }}
+                                    className="bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
                                 >
-                                    <span className="font-medium text-gray-800 text-base">{item.question}</span>
-                                    <motion.div
-                                        animate={{ rotate: activeQuestion === index ? 180 : 0 }}
-                                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                                    <button
+                                        className="flex justify-between items-start w-full p-6 lg:p-8 text-left hover:bg-gradient-to-r hover:from-amber-50/50 hover:to-orange-50/30 transition-all duration-300"
+                                        onClick={() => setActiveQuestion(activeQuestion === index ? null : index)}
                                     >
-                                        <ChevronDown className="w-5 h-5 text-gray-400" />
-                                    </motion.div>
-                                </button>
-                                {activeQuestion === index && (
-                                    <motion.div
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: 'auto' }}
-                                        exit={{ opacity: 0, height: 0 }}
-                                        transition={{ duration: 0.3 }}
-                                        className="px-5 pb-5"
-                                    >
-                                        <div className="border-t border-gray-100 pt-4 text-gray-600 text-sm leading-relaxed">
-                                            {item.answer}
+                                        <div className="flex items-start gap-4 flex-1">
+                                            <div className="w-8 h-8 bg-gradient-to-r from-amber-100 to-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                                <span className="text-amber-700 font-bold text-sm">{index + 1}</span>
+                                            </div>
+                                            <span className="font-semibold text-gray-900 text-lg leading-relaxed group-hover:text-amber-800 transition-colors duration-300">
+                                                {item.question}
+                                            </span>
                                         </div>
-                                    </motion.div>
-                                )}
-                            </motion.div>
+                                        <motion.div
+                                            animate={{ rotate: activeQuestion === index ? 180 : 0 }}
+                                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                                            className="flex-shrink-0 ml-4"
+                                        >
+                                            <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center group-hover:bg-amber-200 transition-colors duration-300">
+                                                <ChevronDown className="w-4 h-4 text-amber-700" />
+                                            </div>
+                                        </motion.div>
+                                    </button>
+                                    <AnimatePresence>
+                                        {activeQuestion === index && (
+                                            <motion.div
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: 'auto' }}
+                                                exit={{ opacity: 0, height: 0 }}
+                                                transition={{ duration: 0.4, ease: "easeInOut" }}
+                                                className="overflow-hidden"
+                                            >
+                                                <div className="px-6 lg:px-8 pb-6 lg:pb-8">
+                                                    <div className="ml-12 border-t border-amber-100 pt-6">
+                                                        <p className="text-gray-700 text-base leading-relaxed">
+                                                            {item.answer}
+                                                        </p>
+                                                        <div className="mt-4 flex items-center gap-2 text-amber-700">
+                                                            <Clock className="w-4 h-4" />
+                                                            <span className="text-sm font-medium">
+                                                                Ainda tem dúvidas? Fale conosco
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </motion.div>
                             ))}
                         </div>
-                    </div>
-                </div>
-            </section>
 
-            {/* Contact Section */}            <section className="py-16 bg-gradient-to-br from-amber-600 to-amber-700">
-                <div className="container mx-auto px-6">
-                    <div className="max-w-4xl mx-auto text-center">
+                        {/* Call to action para mais informações */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.6 }}
+                            transition={{ delay: 0.5, duration: 0.6 }}
+                            className="text-center mt-12"
                         >
-                            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/10 text-white/90 rounded-full text-xs font-medium mb-4 shadow-sm backdrop-blur-sm">
-                                <span className="font-semibold">CONTATO</span>
+                            <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-8 text-white">
+                                <h3 className="text-2xl font-bold mb-4">
+                                    Não encontrou sua resposta?
+                                </h3>
+                                <p className="text-amber-100 mb-6 text-lg">
+                                    Nossa equipe está pronta para esclarecer todas as suas dúvidas
+                                </p>
+                                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                    <motion.a
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        href="tel:+5511981845016"
+                                        className="inline-flex items-center px-6 py-3 bg-white text-amber-700 font-semibold rounded-lg hover:bg-amber-50 transition-all duration-200 shadow-lg"
+                                    >
+                                        <Phone className="w-5 h-5 mr-2" />
+                                        Ligar Agora
+                                    </motion.a>
+                                    <motion.a
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        href="/contato"
+                                        className="inline-flex items-center px-6 py-3 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 transition-all duration-200 shadow-lg border-2 border-white/20"
+                                    >
+                                        <Mail className="w-5 h-5 mr-2" />
+                                        Enviar Mensagem
+                                    </motion.a>
+                                </div>
                             </div>
-
-                            <h2 className="text-3xl font-medium text-white mb-6">
-                                Vamos conversar sobre seus objetivos
-                            </h2>
-                            <p className="text-amber-100 text-lg mb-8 max-w-2xl mx-auto">
-                                Entre em contato com nossa equipe para esclarecer dúvidas ou agendar uma consulta personalizada
-                            </p>
-
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <motion.a
-                                    whileHover={{ scale: 1.03 }}
-                                    whileTap={{ scale: 0.97 }}
-                                    href="tel:+5511981845016"
-                                    className="inline-flex items-center px-6 py-3 bg-white text-amber-700 font-medium rounded-md hover:bg-gray-50 transition-all duration-200 shadow-md"
-                                >
-                                    <Phone className="w-4 h-4 mr-2" />
-                                    (11) 98184-5016
-                                </motion.a>
-                                <motion.a
-                                    whileHover={{ scale: 1.03 }}
-                                    whileTap={{ scale: 0.97 }}
-                                    href="mailto:contato@ipeimoveis.com"
-                                    className="inline-flex items-center px-6 py-3 bg-amber-800 text-white font-medium rounded-md hover:bg-amber-900 transition-all duration-200 shadow-md"
-                                >
-                                    <Mail className="w-4 h-4 mr-2" />
-                                    contato@ipeimoveis.com
-                                </motion.a>
-                            </div>
-
-                            <p className="text-amber-200/80 text-xs mt-8">
-                                Atendimento de segunda a sexta, das 9h às 18h, e sábados das 9h às 13h
-                            </p>
                         </motion.div>
                     </div>
                 </div>
+            </section>            {/* Contact Section */}
+            <section className="py-20 bg-gradient-to-br from-gray-900 via-amber-900 to-amber-800 relative overflow-hidden">
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-10">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,_theme(colors.amber.400)_0%,_transparent_50%)]"></div>
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,_theme(colors.orange.400)_0%,_transparent_50%)]"></div>
+                </div>
+
             </section>
         </div>
     );

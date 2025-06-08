@@ -9,9 +9,9 @@ import { Phone, MessageCircle, X, Menu, Home, Building, Key, Mail } from 'lucide
 
 const navItems = [
   { label: 'Início', href: '/', icon: Home },
-  { label: 'Comprar', href: '/comprar', icon: Building },
-  { label: 'Alugar', href: '/alugar', icon: Key },
-  { label: 'Contato', href: '#contato', icon: Mail },
+  { label: 'Comprar', href: '/catalogo', icon: Building },
+  { label: 'Alugar', href: '/catalogo', icon: Key },
+  { label: 'Contato', href: '/contato', icon: Mail },
 ];
 
 interface CenteredNavbarProps {
@@ -91,18 +91,17 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
   return (
     <>
       <motion.nav
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
-          isScrolled
-            ? 'bg-white/98 backdrop-blur-xl shadow-lg border-b border-gray-200/80'
-            : 'bg-white/95 backdrop-blur-lg border-b border-gray-100/60'
-        } ${className || ''}`}
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${isScrolled
+          ? 'bg-white/98 backdrop-blur-xl shadow-lg border-b border-gray-200/80'
+          : 'bg-white/95 backdrop-blur-lg border-b border-gray-100/60'
+          } ${className || ''}`}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className={`transition-all duration-500 ${isScrolled ? 'h-16' : 'h-20'} flex items-center`}>
-            
+
             {/* Mobile Layout */}
             {isMobile ? (
               <div className="flex items-center justify-between w-full">
@@ -142,7 +141,7 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
             ) : (
               /* Desktop Layout - Centered Navigation */
               <div className="grid grid-cols-3 items-center w-full gap-8">
-                
+
                 {/* Left: Logo */}
                 <div className="flex justify-start">
                   <Link href="/" aria-label="Ir para página inicial" className="group">
@@ -166,19 +165,18 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
                     <ul className="flex items-center gap-1">
                       {navItems.map(({ label, href }) => {
                         const isActive = pathname === href || (href !== '/' && pathname.startsWith(href));
-                        
+
                         return (
                           <li key={label}>
                             <Link
                               href={href}
-                              className={`relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 group ${
-                                isActive
-                                  ? 'text-amber-700 bg-amber-50/80 shadow-sm'
-                                  : 'text-gray-700 hover:text-amber-600 hover:bg-amber-50/40'
-                              }`}
+                              className={`relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 group ${isActive
+                                ? 'text-amber-700 bg-amber-50/80 shadow-sm'
+                                : 'text-gray-700 hover:text-amber-600 hover:bg-amber-50/40'
+                                }`}
                             >
                               <span className="relative z-10">{label}</span>
-                              
+
                               {/* Active indicator */}
                               {isActive && (
                                 <motion.div
@@ -188,7 +186,7 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
                                   transition={{ type: 'spring', bounce: 0.15, duration: 0.6 }}
                                 />
                               )}
-                              
+
                               {/* Hover indicator */}
                               <div className="absolute inset-0 bg-gradient-to-r from-amber-50/40 to-orange-50/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                             </Link>
@@ -203,13 +201,13 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
                 <div className="flex justify-end items-center gap-3">
                   {/* Phone CTA */}
                   <motion.a
-                    href="tel:+551146932350"
+                    href="tel:+551146933003"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-amber-600 transition-colors group"
                   >
                     <Phone className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                    <span className="text-sm font-medium hidden xl:block">(11) 4693-2350</span>
+                    <span className="text-sm font-medium hidden xl:block">(11) 4693-3003</span>
                   </motion.a>
 
                   {/* WhatsApp CTA */}
@@ -222,7 +220,7 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
                     className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:from-green-700 hover:to-green-600 transition-all shadow-md hover:shadow-lg"
                   >
                     <MessageCircle className="w-4 h-4" />
-                    <span className="hidden xl:block">Falar com especialista</span>
+                    <span className="hidden xl:block">Atendimento via WhatsApp</span>
                     <span className="xl:hidden">WhatsApp</span>
                   </motion.a>
                 </div>
@@ -259,7 +257,7 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
                     <ul className="space-y-2">
                       {navItems.map(({ label, href, icon: Icon }, index) => {
                         const isActive = pathname === href || (href !== '/' && pathname.startsWith(href));
-                        
+
                         return (
                           <motion.li
                             key={label}
@@ -270,11 +268,10 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
                             <Link
                               href={href}
                               onClick={() => setIsOpen(false)}
-                              className={`flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 ${
-                                isActive
-                                  ? 'bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 border border-amber-200/40'
-                                  : 'text-gray-700 hover:bg-gray-50 border border-transparent hover:border-gray-200'
-                              }`}
+                              className={`flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 ${isActive
+                                ? 'bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 border border-amber-200/40'
+                                : 'text-gray-700 hover:bg-gray-50 border border-transparent hover:border-gray-200'
+                                }`}
                             >
                               <div className={`p-2 rounded-xl ${isActive ? 'bg-amber-100 text-amber-600' : 'bg-gray-100 text-gray-500'}`}>
                                 <Icon className="w-5 h-5" />
@@ -310,11 +307,11 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
 
                     {/* Phone Button */}
                     <a
-                      href="tel:+551146932350"
+                      href="tel:+551146933003"
                       className="flex items-center justify-center gap-3 w-full border-2 border-gray-200 text-gray-700 px-6 py-4 rounded-2xl font-semibold text-lg hover:bg-gray-50 hover:border-gray-300 transition-all"
                     >
                       <Phone className="w-5 h-5" />
-                      <span>(11) 4693-2350</span>
+                      <span>(11) 4693-3003</span>
                     </a>
                   </motion.div>
                 </div>

@@ -8,10 +8,12 @@ import OptimizationProvider from './components/OptimizationProvider';
 import WhatsAppButton from './components/WhatsAppButton';
 import EnhancedNotificationBanner from './components/EnhancedNotificationBanner';
 import EnhancedTestimonials from './components/EnhancedTestimonials';
-import PremiumHeroImproved from './components/PremiumHero-improved';
+import LuxuryHero from './components/LuxuryHero';
 import { ProcessedProperty } from './types/property';
-// Importando os novos componentes modernos para catálogo de imóveis
-const PropertyCarouselModern = dynamic(() => import('../components/modern/PropertyCarouselModern'), {
+import { transformPropertiesArrayToPremium } from './utils/property-transformer';
+
+// Importando os novos componentes premium otimizados
+const PremiumPropertyCarouselOptimized = dynamic(() => import('./components/premium/PremiumPropertyCarouselOptimized'), {
     ssr: true,
     loading: () => <UnifiedLoading height="500px" title="Carregando imóveis..." />
 });
@@ -60,38 +62,57 @@ export default function HomePageClient({
             {/* Navbar e Hero */}
             <header className="relative">
                 <EnhancedNotificationBanner
-                    message="Novos imóveis disponíveis! Confira nosso catálogo e consulte nossa equipe."
+                    message="Novos imóveis disponíveis! Confira nosso catálogo atualizado"
                     link="/contato"
                     linkText="Entre em contato"
                     variant="promotional"
                     storageKey="home_notification_dismissed"
                 />
             </header>
-            <PremiumHeroImproved />
+            <LuxuryHero />
             <BlocoExploracaoGuararema />
 
             {/* Conteúdo principal */}
             <main>
-                <ScrollAnimations>
-
-                    {/* Imóveis para Venda - Carrossel Moderno */}
-                    <PropertyCarouselModern
-                        properties={propertiesForSale}
-                        variant="sales"
+                <ScrollAnimations>                    {/* Imóveis para Venda - Carrossel Premium Otimizado */}
+                    <PremiumPropertyCarouselOptimized
+                        properties={transformPropertiesArrayToPremium(propertiesForSale)}
                         title="Imóveis para Venda"
-                        showViewAll={true}
+                        subtitle="Encontre a casa dos seus sonhos em Guararema"
+                        badge="Vendas"
+                        viewAllLink="/imoveis/venda"
+                        viewAllText="Ver todos para venda"
+                        cardVariant="featured"
+                        slidesToShow={{
+                            desktop: 3,
+                            tablet: 2,
+                            mobile: 1
+                        }}
+                        autoplay={true}
+                        autoplayDelay={6000}
+                        className="mb-16"
                     />
 
 
                     {/* 2. Apresentação Institucional - IpeConcept original */}
-                    <IpeConcept />
-                    {/* 1. Imóveis para Aluguel (principal) - Carrossel Moderno */}
-                    <PropertyCarouselModern
-                        properties={propertiesForRent}
-                        variant="rentals"
+                    <IpeConcept />                    {/* Imóveis para Aluguel (principal) - Carrossel Premium Otimizado */}
+                    <PremiumPropertyCarouselOptimized
+                        properties={transformPropertiesArrayToPremium(propertiesForRent)}
                         title="Imóveis para Aluguel"
-                        showViewAll={true}
-                    /> <MarketAnalysisSection />
+                        subtitle="Encontre o imóvel ideal para locação em Guararema"
+                        badge="Locações"
+                        viewAllLink="/imoveis/aluguel"
+                        viewAllText="Ver todos para aluguel"
+                        cardVariant="default"
+                        slidesToShow={{
+                            desktop: 3,
+                            tablet: 2,
+                            mobile: 1
+                        }}
+                        autoplay={true}
+                        autoplayDelay={7000}
+                        className="mb-16"
+                    /><MarketAnalysisSection />
 
                     {/* 3. Seção de Precificação */}
                     <ValorAprimorado />
