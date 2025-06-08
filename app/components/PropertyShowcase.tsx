@@ -7,7 +7,7 @@ import { ChevronRight, Bookmark, ChevronLeft } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 import type { ProcessedProperty } from '@/app/page';
 import { cn } from '@/lib/utils';
-import PropertyAdapter from '@/app/components/adapters/PropertyAdapter';
+import PropertyAdapter from './adapters/PropertyAdapter';
 
 interface PropertySectionProps {
     title: string;

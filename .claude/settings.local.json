@@ -14,8 +14,17 @@
       "Bash(pnpm build:*)",
       "Bash(git checkout:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(npx tsc:*)",
+      "Bash(timeout 60 npm run build)",
+      "Bash(chmod:*)",
+      "Bash(./cleanup-script.sh:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm update:*)",
+      "Bash(npx browserslist:*)",
+      "Bash(./fix-imports.sh)"
     ],
     "deny": []
-  }
+  },
+  "enableAllProjectMcpServers": false
 }

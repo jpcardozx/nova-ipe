@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import { Suspense } from 'react';
 import { getPreloadedPropertiesForRent, isFreshData } from '../utils/data-prefetcher';
 import { PerformanceMonitorInitializer } from '../utils/performance-monitor-advanced';
-import { CriticalCssLoader } from '../components/CriticalCssLoader';
 
 // VERSÃO TURBO: Usa o componente super otimizado para correção dos problemas de performance 
 // - LCP (Largest Contentful Paint): 78056ms (ideal <2500ms)

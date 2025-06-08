@@ -88,7 +88,6 @@ async function ImovelPage({ slug }: { slug: string }) {
   try {
     // Usa a função getImovelPorSlug que já deve estar configurada para servidor
     const imovelClient = await getImovelPorSlug(slug);
-    console.log('DEBUG: imovelClient', JSON.stringify(imovelClient, null, 2));
 
     // Verificação robusta - se não tem dados ou falta ID, retorna 404
     if (!imovelClient || !imovelClient._id) {
@@ -132,12 +131,19 @@ async function ImovelPage({ slug }: { slug: string }) {
     // Mapeia os imóveis relacionados para o formato de cliente
     const relacionadosClient = relacionados.map(mapImovelToClient);
 
-    // Usar diretamente o Client Component wrapper
+    // Serializar dados para garantir compatibilidade com SSG
+    const serializedData = {
+      imovel: JSON.parse(JSON.stringify(imovelClient)),
+      relacionados: JSON.parse(JSON.stringify(relacionadosClient)),
+      preco: typeof imovelClient.preco === 'number' ? imovelClient.preco : 0
+    };
+
+    // Usar diretamente o Client Component wrapper com dados serializados
     return (
       <ImovelDetalhesClient
-        imovel={imovelClient}
-        relacionados={relacionadosClient}
-        preco={imovelClient.preco}
+        imovel={serializedData.imovel}
+        relacionados={serializedData.relacionados}
+        preco={serializedData.preco}
       />
     );
   } catch (error) {

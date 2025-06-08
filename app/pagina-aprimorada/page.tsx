@@ -30,7 +30,6 @@ import BlocoExploracaoSimbolica from '../components/BlocoExploracaoSimbolica';
 import BlocoCTAConversao from '../components/client/BlocoCTAConversao';
 import PremiumPropertyCatalog from '../components/premium/PremiumPropertyCatalog';
 import ValorAprimorado from '../sections/ValorAprimorado-improved';
-import FormularioContatoSubtil from '../components/FormularioContatoSubtil';
 import DestaquesEstrategicos from '../sections/Destaques';
 import { PropertyGuideOffer } from '../sections/ExclusiveAnalysisOffer-improved';
 
@@ -179,7 +178,6 @@ export default async function NovaPaginaInicial() {
                             <ClientProgressSteps />
                         </div>
                     </section>                    {/* Formulário de Contato Sutil e Profissional */}
-                    <FormularioContatoSubtil />
 
                     {/* CTA Final de Conversão */}
                     <section className="bg-[#0D1F2D] relative overflow-hidden py-16">

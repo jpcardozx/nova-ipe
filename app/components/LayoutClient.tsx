@@ -7,14 +7,10 @@ import ClientWebVitals from './ClientWebVitals';
 import dynamic from 'next/dynamic';
 import { safeDynamic } from './DynamicImportWrapper';
 import { OrganizationSchema, WebsiteSchema, LocalBusinessSchema } from './StructuredData';
-import HydrationLoadingFix from './HydrationLoadingFix';
-import HydrationGuard from './HydrationGuard';
 import DataPrefetcher from './DataPrefetcher';
 import OfflineSupportProvider from '../providers/OfflineSupportProvider';
-import ChunkErrorBoundary from './ChunkErrorBoundary';
 import LucidePreloader from './LucidePreloader';
 import ChunkRecoveryService from './ChunkRecoveryService';
-import ChunkErrorRecovery from './ChunkErrorRecovery';
 
 // Importações dinâmicas para reduzir bundle inicial com tratamento de erros aprimorado
 const WebVitalsMonitor = safeDynamic(() => import('./WebVitalsMonitor'), {
@@ -22,8 +18,6 @@ const WebVitalsMonitor = safeDynamic(() => import('./WebVitalsMonitor'), {
     retries: 2
 });
 
-const JavaScriptOptimizer = safeDynamic(() => import('./JavaScriptOptimizer'), {
-    componentName: 'JavaScriptOptimizer',
     retries: 2
 });
 
@@ -49,13 +43,9 @@ const PerformanceDiagnostics = safeDynamic(() => import('./PerformanceDiagnostic
     retries: 2
 });
 
-const DiagnosticTool = safeDynamic(() => import('./DiagnosticTool'), {
-    componentName: 'DiagnosticTool',
     retries: 2
 });
 
-const DebugButton = safeDynamic(() => import('./DebugButton'), {
-    componentName: 'DebugButton',
     retries: 2
 });
 
@@ -139,8 +129,6 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
     }, []);
 
     return (
-        <ChunkErrorBoundary>
-            <ChunkErrorRecovery>
                 <OfflineSupportProvider>
                     {/* Serviço de recuperação para ChunkLoadError */}
                     <ChunkRecoveryService />
@@ -149,8 +137,6 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                     <LucidePreloader />
 
                     {/* Fix hydration issues with visibility */}
-                    <HydrationLoadingFix />
-                    <HydrationGuard />
                     {/* Script otimizado para WhatsApp via Next.js Script */}
                     <Script
                         id="whatsapp-optimizer"
@@ -184,7 +170,6 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                     }>
                         {children}
                     </Suspense>            {/* Gerenciador de estado de carregamento com boundary específico para evitar ChunkLoadError */}
-                    <ChunkErrorBoundary
                         fallback={
                             <script
                                 dangerouslySetInnerHTML={{
@@ -202,7 +187,6 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                     >
                         {/* LoadingStateManager was removed during consolidation */}
                         <></>
-                    </ChunkErrorBoundary>
 
                     {/* Data prefetcher para otimização de performance */}
                     <ClientOnly>
@@ -220,7 +204,6 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                             <Suspense fallback={null}>
                                 <WebVitalsMonitor />
                             </Suspense>
-                            <JavaScriptOptimizer priority={true} />
                         </>
                     ) : (
                         <>
@@ -234,10 +217,8 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                             </Suspense>
                             {/* Botão de depuração para ativar ferramentas de diagnóstico */}
                             <Suspense fallback={null}>
-                                <DebugButton />
                             </Suspense>
                             <Suspense fallback={null}>
-                                <DiagnosticTool />
                             </Suspense>
                             <PerformanceDiagnostics />
                         </>
@@ -250,7 +231,5 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                     <Suspense fallback={null}>
                         <PerformanceAnalytics />                </Suspense>
                 </OfflineSupportProvider>
-            </ChunkErrorRecovery>
-        </ChunkErrorBoundary>
     );
 }

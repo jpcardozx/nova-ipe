@@ -26,7 +26,6 @@ const ClientProgressSteps = dynamic(() => import('./components/ClientProgressSte
     loading: () => <UnifiedLoading height="500px" title="Carregando..." />,
 });
 
-const FormularioContatoSubtil = dynamic(() => import('./components/FormularioContatoSubtil'), {
     loading: () => <UnifiedLoading height="400px" title="Carregando formulário..." />,
 });
 
@@ -119,7 +118,6 @@ export default function HomePageClient({
 
                     {/* Seção de Referências e Contato */}
                     <ReferencesSection />
-                    <FormularioContatoSubtil />
                 </ScrollAnimations>
             </main>
 

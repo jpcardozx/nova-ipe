@@ -34,7 +34,6 @@ const ClientProgressSteps = dynamic(() => import('./components/ClientProgressSte
     loading: () => <UnifiedLoading height="500px" title="Carregando..." />,
 });
 
-const FormularioContatoSubtil = dynamic(() => import('./components/FormularioContatoSubtil'), {
     loading: () => <UnifiedLoading height="400px" title="Carregando formulário..." />,
 });
 
@@ -333,7 +332,6 @@ export default function HomePageClient({
 
                 <ValorAprimorado />
                 <Referencias />
-                <FormularioContatoSubtil />
             </ScrollAnimations>
 
             <WhatsAppButton phoneNumber="5511981845016" message="Olá! Gostaria de informações sobre os imóveis da Nova Ipê." />

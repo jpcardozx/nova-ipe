@@ -6,7 +6,6 @@ import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 
 // === IMPORTS DINÂMICOS OTIMIZADOS ===
-const FormularioContatoSubtil = dynamic(() => import('./FormularioContatoSubtil'), {
     loading: () => (
         <div className="min-h-[600px] bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl animate-pulse flex items-center justify-center">
             <div className="text-slate-600">Carregando formulário premium...</div>
@@ -15,7 +14,6 @@ const FormularioContatoSubtil = dynamic(() => import('./FormularioContatoSubtil'
     ssr: false
 });
 
-const ConsolidatedHero = dynamic(() => import('./ConsolidatedHero'), {
     loading: () => (
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 flex items-center justify-center">
             <div className="text-white text-xl">Carregando hero premium...</div>
@@ -212,7 +210,6 @@ export default function PaginaInicialOtimizada({
                         <div className="text-white text-xl">Carregando hero premium...</div>
                     </div>
                 }>
-                    <ConsolidatedHero
                         imoveisDestaque={imoveisDestaque}
                         onLoad={() => markComponentLoaded('hero')}
                     />
@@ -258,7 +255,6 @@ export default function PaginaInicialOtimizada({
                                 <div className="text-slate-600">Carregando formulário premium...</div>
                             </div>
                         }>
-                            <FormularioContatoSubtil
                                 className="max-w-4xl mx-auto"
                                 onLoad={() => markComponentLoaded('form')}
                             />

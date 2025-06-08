@@ -2,32 +2,33 @@ import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { getImoveisDestaque, getImoveisDestaqueVenda, getImoveisAluguel } from '@/lib/queries';
 import { normalizeDocuments } from '@/lib/sanity-utils';
-import { loadImage } from '@/lib/enhanced-image-loader';
 import type { ImovelClient } from '@/src/types/imovel-client';
-import { PropertyType } from './components/ui/property/PropertyCardUnified';
-import { extractSlugString, ensureNonNullProperties } from '@/app/PropertyTypeFix';
 
-// Importações server-side otimizadas
+// Modern Formal Components
+import FormalHero from './components/FormalHero';
+import ElegantPropertyCard from './components/ElegantPropertyCard';
+import FormalContactForm from './components/FormalContactForm';
 import SkipToContent from './components/SkipToContent';
-import SectionHeader from './components/ui/SectionHeader';
 import FooterAprimorado from './sections/FooterAprimorado';
-import { UnifiedLoading } from './components/ui/UnifiedComponents';
 
-// Importação do Client Component principal
-import HomePageClient from './page-client';
-
-// Importação do CSS Premium
-import './styles/premium-theme.css';
-
-// === ENHANCED INTERFACES ===
-export interface ProcessedProperty {
+// === INTERFACES ===
+interface PropertyData {
   id: string;
-  title: string;
+  titulo: string;
   slug: string;
-  location: string;
-  city: string;
-  price: number;
-  propertyType: PropertyType;
+  preco: number;
+  finalidade: 'venda' | 'aluguel';
+  bairro?: string;
+  cidade?: string;
+  dormitorios?: number;
+  banheiros?: number;
+  vagas?: number;
+  areaUtil?: number;
+  imagem?: {
+    imagemUrl: string;
+    alt?: string;
+  };
+  destaque?: boolean;
   area?: number;
   bedrooms?: number;
   bathrooms?: number;

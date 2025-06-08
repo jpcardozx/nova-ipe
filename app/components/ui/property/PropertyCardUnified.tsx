@@ -114,10 +114,10 @@ const PropertyCardUnified: React.FC<PropertyCardUnifiedProps> = ({
                     {bedrooms !== undefined && <span>{bedrooms} {bedrooms === 1 ? 'quarto' : 'quartos'}</span>}
                     {bathrooms !== undefined && <span>{bathrooms} {bathrooms === 1 ? 'banho' : 'banhos'}</span>}
                 </div>
-            </div>
-        </div>
+            </div>        </div>
     );
 };
 
+// Export both as default and named for compatibility
 export { PropertyCardUnified };
 export default PropertyCardUnified;
