@@ -160,24 +160,22 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
                         </div>
                     }>
                         {children}
-                    </Suspense>            {/* Gerenciador de estado de carregamento com boundary específico para evitar ChunkLoadError */}
-                        fallback={
-                            <script
-                                dangerouslySetInnerHTML={{
-                                    __html: `
-                                // Script de fallback para garantir página visível em caso de erro
-                                (function() {
-                                    document.documentElement.removeAttribute('data-loading-state');
-                                    document.documentElement.setAttribute('data-loaded', 'true');
-                                    document.body.style.opacity = '1';
-                                    document.body.style.visibility = 'visible';
-                                })();
-                            `
-                                }}
-                            />}
-                    >
-                        {/* LoadingStateManager was removed during consolidation */}
-                        <></>
+                    </Suspense>
+                    
+                    {/* Script de fallback para garantir página visível em caso de erro */}
+                    <script
+                        dangerouslySetInnerHTML={{
+                            __html: `
+                            // Garantir que página fica visível mesmo com erros
+                            (function() {
+                                document.documentElement.removeAttribute('data-loading-state');
+                                document.documentElement.setAttribute('data-loaded', 'true');
+                                document.body.style.opacity = '1';
+                                document.body.style.visibility = 'visible';
+                            })();
+                        `
+                        }}
+                    />
 
                     {/* Data prefetcher para otimização de performance */}
                     <ClientOnly>
