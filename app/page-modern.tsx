@@ -42,7 +42,7 @@ export const metadata: Metadata = {
 const transformImovelToCardProps = (imovel: ImovelClient) => ({
   id: imovel._id || '',
   titulo: imovel.titulo || 'Imóvel Disponível',
-  slug: imovel.slug?.current || imovel.slug || '',
+  slug: typeof imovel.slug === 'object' ? imovel.slug?.current || '' : imovel.slug || '',
   preco: imovel.preco || 0,
   finalidade: (imovel.finalidade?.toLowerCase() === 'venda' ? 'venda' : 'aluguel') as 'venda' | 'aluguel',
   bairro: imovel.bairro,
@@ -95,7 +95,6 @@ const FeaturedProperties = async () => {
                 key={property.id}
                 {...property}
                 className="animate-fade-in-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
               />
             ))}
           </div>

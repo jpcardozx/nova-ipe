@@ -90,8 +90,6 @@ const ComponentShowcase: React.FC = () => {
                         <p className="text-neutral-600">Componente com ainda mais recursos visuais e persuasivos</p>
                     </div>
                     <FormularioContatoEnhanced
-                        variant="premium"
-                        showInvestmentFields={true}
                         title="Experiência Premium Completa"
                         subtitle="Versão com máximo apelo visual e persuasivo"
                     />

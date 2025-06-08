@@ -4,6 +4,7 @@ import HomePageClient from './page-client';
 import { fetchProperties } from '../lib/sanity/fetchImoveis';
 import { UnifiedLoading } from './components/ui/UnifiedComponents';
 import { ProcessedProperty } from './types/property';
+import { transformImovelToProcessedProperty } from '../lib/transformers/imovelToProcessedProperty';
 
 export const metadata: Metadata = {
   title: 'Nova Ipê Imóveis - Sua Casa dos Sonhos Te Espera | Guararema, SP',
@@ -34,7 +35,8 @@ export const metadata: Metadata = {
 
 async function getProperties() {
   try {
-    const properties = await fetchProperties();
+    const imoveis = await fetchProperties();
+    const properties = imoveis.map(transformImovelToProcessedProperty);
     
     const propertiesForSale = properties.filter(p => p.categoria === 'venda').slice(0, 6);
     const propertiesForRent = properties.filter(p => p.categoria === 'aluguel').slice(0, 6);

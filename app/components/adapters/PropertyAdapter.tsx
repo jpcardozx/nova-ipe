@@ -4,7 +4,7 @@ import React from 'react';
 import PropertyCard from '../build-safe/PropertyCard';
 import FallbackPropertyCard from '../build-safe/FallbackPropertyCard';
 import type { PropertyType } from '../build-safe/PropertyCard';
-import { ProcessedProperty } from '@/app/page';
+import { ProcessedProperty } from '@/app/types/property';
 
 interface PropertyAdapterProps {
     property: ProcessedProperty;
@@ -24,10 +24,10 @@ export default function PropertyAdapter({ property, variant = 'default' }: Prope
             console.error('PropertyCard is undefined or not a function! Using fallback...');
             return (
                 <FallbackPropertyCard
-                    title={property.title}
-                    slug={property.slug}
-                    location={property.location}
-                    price={property.price}
+                    title={property.title || property.titulo}
+                    slug={typeof property.slug === 'object' ? property.slug.current : property.slug}
+                    location={property.location || property.localizacao}
+                    price={property.price || property.preco}
                     mainImage={property.mainImage}
                 />
             );
@@ -35,20 +35,20 @@ export default function PropertyAdapter({ property, variant = 'default' }: Prope
 
         return (
             <PropertyCard
-                id={property.id}
-                title={property.title}
-                slug={property.slug}
-                location={property.location || ''}
-                price={property.price}
+                id={property.id || property._id}
+                title={property.title || property.titulo}
+                slug={typeof property.slug === 'object' ? property.slug.current : property.slug}
+                location={property.location || property.localizacao || ''}
+                price={property.price || property.preco || 0}
                 propertyType={adaptedPropertyType}
                 area={property.area}
-                bedrooms={property.bedrooms}
-                bathrooms={property.bathrooms}
+                bedrooms={property.bedrooms || property.quartos}
+                bathrooms={property.bathrooms || property.banheiros}
                 parkingSpots={property.parkingSpots}
                 status={'available'}
                 mainImage={property.mainImage}
-                isHighlight={property.isHighlight}
-                isPremium={property.isPremium}
+                isHighlight={property.featured || property.destaque}
+                isPremium={property.isPremium || property.destaque}
                 className={variant === 'carousel' ? 'h-full' : ''}
             />
         );
@@ -56,10 +56,10 @@ export default function PropertyAdapter({ property, variant = 'default' }: Prope
         console.error('Error rendering PropertyCard:', error);
         return (
             <FallbackPropertyCard
-                title={property.title}
-                slug={property.slug}
-                location={property.location}
-                price={property.price}
+                title={property.title || property.titulo}
+                slug={typeof property.slug === 'object' ? property.slug.current : property.slug}
+                location={property.location || property.localizacao}
+                price={property.price || property.preco}
                 mainImage={property.mainImage}
             />
         );

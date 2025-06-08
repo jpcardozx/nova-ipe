@@ -30,7 +30,7 @@ import {
     SlidersHorizontal
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { ProcessedProperty } from '@/app/page';
+import { ProcessedProperty } from '@/app/types/property';
 
 interface PremiumPropertyCatalogProps {
     title: string;

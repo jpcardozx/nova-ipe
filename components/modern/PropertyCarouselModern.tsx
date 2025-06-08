@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from 'react';
-import { ProcessedProperty } from '../../app/page';
+import { ProcessedProperty } from '../../app/types/property';
 import {
     Carousel,
     CarouselContent,

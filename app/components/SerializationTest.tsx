@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { getImoveisDestaque } from '@/lib/queries';
-import { DiagnosticImage } from './DiagnosticImage';
+// import { DiagnosticImage } from './DiagnosticImage'; // Component not found
 
 // Função para serializar e desserializar um objeto
 // Isso simula o que acontece quando os objetos passam do servidor para o cliente
@@ -130,7 +130,10 @@ export default function SerializationTest() {
                   <div>
                     <h4 className="font-semibold mb-1">Pre-visualização:</h4>
                     <div className="aspect-video relative">
-                      <DiagnosticImage image={obj} fill />
+                      {/* <DiagnosticImage image={obj} fill /> */}
+                      <div className="bg-gray-200 flex items-center justify-center">
+                        Image preview unavailable
+                      </div>
                     </div>
                   </div>
 

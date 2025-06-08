@@ -11,7 +11,7 @@ import PremiumPropertyCatalog from '../premium/PremiumPropertyCatalog';
 import { loadImage } from '@/lib/enhanced-image-loader';
 import { extractSlugString } from '@/app/PropertyTypeFix';
 import type { ImovelClient } from '@/src/types/imovel-client';
-import type { ProcessedProperty } from '@/app/page';
+import type { ProcessedProperty } from '@/app/types/property';
 
 /**
  * Enhanced Property transformer for premium catalog integration

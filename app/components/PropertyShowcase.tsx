@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { motion, useAnimation, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Bookmark, ChevronLeft } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
-import type { ProcessedProperty } from '@/app/page';
+import type { ProcessedProperty } from '@/app/types/property';
 import { cn } from '@/lib/utils';
 import PropertyAdapter from './adapters/PropertyAdapter';
 
@@ -102,7 +102,7 @@ export default function PropertyShowcase({
     };
 
     // Obter tipos únicos de propriedade para o filtro
-    const propertyTypes = ['all', ...new Set(properties.filter(p => p.propertyType).map(p => p.propertyType.toLowerCase()))];
+    const propertyTypes = ['all', ...new Set(properties.filter(p => p.propertyType).map(p => p.propertyType!.toLowerCase()))];
 
     // Configurações de variantes
     const containerVariants = {
