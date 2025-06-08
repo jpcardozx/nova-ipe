@@ -4,9 +4,12 @@
  * Sistema de design unificado para garantir consistência visual em toda a aplicação,
  * otimizado para performance e Core Web Vitals.
  * 
- * @version 2.0.0
- * @date 18/05/2025
+ * @version 2.1.0
+ * @date 08/06/2025
  */
+
+/* Import centered navbar styles */
+@import './centered-navbar.css';
 
 /* Importações principais do Tailwind v4 */
 @import './tailwind.css';

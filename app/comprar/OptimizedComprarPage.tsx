@@ -16,10 +16,6 @@ declare global {
 }
 
 // Dynamic imports for performance optimization
-const NavBar = dynamic(() => import('@/app/sections/NavBar'), {
-    ssr: true,
-    loading: () => <div className="h-24 bg-white shadow animate-pulse" />
-});
 
 const Footer = dynamic(() => import('@/app/sections/Footer'), {
     ssr: false, // Load footer after main content
@@ -207,7 +203,6 @@ export default function OptimizedComprarPage() {
 
     return (
         <>
-            <NavBar />
             <main className="bg-gradient-to-b from-white to-emerald-50/30 text-neutral-800 pt-24 pb-32">                {/* Hero da seção */}
                 <section className="max-w-4xl mx-auto px-6 text-center mb-20">
                     <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-tight">

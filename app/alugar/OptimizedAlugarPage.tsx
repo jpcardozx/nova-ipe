@@ -17,10 +17,6 @@ declare global {
 }
 
 // Dynamic imports for performance optimization
-const NavBar = dynamic(() => import('@sections/NavBar'), {
-    ssr: true,
-    loading: () => <div className="h-24 bg-white shadow animate-pulse" />
-});
 
 const Footer = dynamic(() => import('@sections/Footer'), {
     ssr: false, // Load footer after main content
@@ -142,7 +138,7 @@ export default function OptimizedAlugarPage() {
 
     return (
         <>
-            <NavBar />            <main className="pt-32 pb-24 bg-gradient-to-b from-neutral-50 via-white to-neutral-50 text-neutral-900 min-h-screen">
+            <main className="pt-32 pb-24 bg-gradient-to-b from-neutral-50 via-white to-neutral-50 text-neutral-900 min-h-screen">
                 <section className="max-w-7xl mx-auto px-6 lg:px-8">{/* Header Premium com Gradient */}
                     <div className="text-center mb-20 relative">
                         {/* Background decorativo */}

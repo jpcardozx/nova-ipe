@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic';
 import { UnifiedLoading } from './components/ui/UnifiedComponents';
 import ScrollAnimations from './components/ScrollAnimations';
 import OptimizationProvider from './components/OptimizationProvider';
-import ClientOnlyNavbar from './components/ClientOnlyNavbar';
 import WhatsAppButton from './components/WhatsAppButton';
 import EnhancedNotificationBanner from './components/EnhancedNotificationBanner';
 import EnhancedTestimonials from './components/EnhancedTestimonials';
@@ -60,7 +59,6 @@ export default function HomePageClient({
         <OptimizationProvider>
             {/* Navbar e Hero */}
             <header className="relative">
-                <ClientOnlyNavbar />
                 <EnhancedNotificationBanner
                     message="Novos imóveis disponíveis! Confira nosso catálogo e consulte nossa equipe."
                     link="/contato"
