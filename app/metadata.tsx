@@ -33,14 +33,14 @@ export const metadata: Metadata = {
         siteName: 'Ipê Imóveis',
         images: [
             {
-                url: '/preview.png',
+                url: '/images/ipeLogoWritten.png',
                 width: 1200,
                 height: 630,
                 alt: 'Ipê Imóveis - Imóveis selecionados em Guararema',
                 type: 'image/png',
             },
             {
-                url: '/preview.png',
+                url: '/images/ipeLogoWritten.png',
                 width: 800,
                 height: 800,
                 alt: 'Ipê Imóveis - Logo',
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: 'Ipê Imóveis - Imóveis Selecionados em Guararema',
         description: 'Especialistas e corretores imobiliários em Guararema e região. Encontre seu novo endereço com atendimento personalizado e eficiente.',
-        images: ['/preview.png'],
+        images: ['/images/ipeLogoWritten.png'],
         creator: '@ipeimoveisguararema',
         site: '@ipeimoveisguararema',
     },

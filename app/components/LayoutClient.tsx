@@ -35,8 +35,8 @@ const WebVitalsDebugger = safeDynamic(() => import('./WebVitalsDebugger'), {
     retries: 2
 });
 
-const PerformanceDiagnostics = safeDynamic(() => import('./PerformanceDiagnostics'), {
-    componentName: 'PerformanceDiagnostics',
+const PerformanceDiagnostics = safeDynamic(() => import('./PerformanceAnalytics'), {
+    componentName: 'PerformanceAnalytics',
     retries: 2
 });
 

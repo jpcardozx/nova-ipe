@@ -27,7 +27,7 @@ const Footer = dynamic(() => import('@sections/Footer'), {
     loading: () => <div className="h-40 bg-neutral-100 animate-pulse" />
 });
 
-const ValorUnified = dynamic(() => import('@sections/ValorUnified'), {
+const ValorUnified = dynamic(() => import('@sections/ValorAprimoradoV4'), {
     ssr: false, // Load after main content since it's below the fold
     loading: () => <div className="h-32 bg-neutral-50 animate-pulse" />
 });

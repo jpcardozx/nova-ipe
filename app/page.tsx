@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     description: 'Encontre seu imóvel ideal com a Nova Ipê. 15+ anos de experiência, 500+ imóveis vendidos.',
     images: [
       {
-        url: '/images/og-image-2025.jpg',
+        url: '/images/ipeLogoWritten.png',
         width: 1200,
         height: 630,
         alt: 'Nova Ipê Imóveis - Guararema'
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Nova Ipê Imóveis - Guararema, SP',
     description: 'Sua casa dos sonhos te espera. Mais de 15 anos conectando famílias aos imóveis perfeitos.',
-    images: ['/images/og-image-2025.jpg']
+    images: ['/images/ipeLogoWritten.png']
   }
 };
 

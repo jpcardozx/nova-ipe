@@ -24,7 +24,9 @@
       "Bash(npx browserslist:*)",
       "Bash(./fix-imports.sh)",
       "Bash(timeout 30s npm run build)",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Bash(true)",
+      "Bash(npm uninstall:*)"
     ],
     "deny": []
   },

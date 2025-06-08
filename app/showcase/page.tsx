@@ -3,7 +3,7 @@
 import React from 'react';
 import FormularioContatoUnified from '@/app/components/FormularioContatoUnified';
 import FormularioContatoEnhanced from '@/app/components/FormularioContatoEnhanced';
-import ValorUnified from '@/app/sections/ValorUnified';
+import ValorUnified from '@/app/sections/ValorAprimoradoV4';
 import { motion } from 'framer-motion';
 
 const ComponentShowcase: React.FC = () => {
