@@ -13,11 +13,8 @@ const nextConfig = {
     },
   },
 
-  // Basic compiler config
-  compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
-  },
-
+  // Compiler config moved to conditional application below
+  
   images: {
     remotePatterns: [
       {
@@ -31,7 +28,7 @@ const nextConfig = {
     ],
   },
 
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, dev }) => {
     // Basic fallbacks for client-side only
     if (!isServer) {
       config.resolve.fallback = {
@@ -61,5 +58,12 @@ const nextConfig = {
     return config;
   },
 };
+
+// Apply removeConsole only in production
+if (process.env.NODE_ENV === 'production') {
+  nextConfig.compiler = {
+    removeConsole: true,
+  };
+}
 
 module.exports = nextConfig;
