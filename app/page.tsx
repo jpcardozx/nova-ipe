@@ -11,14 +11,14 @@ export const metadata: Metadata = {
   description: 'Temos o imóvel que você procura em Guararema e região. Entre em contato conosco e descubra as melhores opções de compra e aluguel.',
   keywords: 'imóveis Guararema, casas venda, apartamentos aluguel, terrenos, Nova Ipê, imobiliária',
   openGraph: {
-    title: 'Nova Ipê Imóveis - Imobiliária Premium em Guararema',
-    description: 'Encontre seu imóvel ideal com a Nova Ipê. 15+ anos de experiência, 500+ imóveis vendidos.',
+    title: 'Ipê Imóveis - Compra, Venda e Locação em Guararema',
+    description: 'Encontre seu imóvel ideal com a Ipê Imóveis. 15+ anos de experiência, 500+ imóveis vendidos.',
     images: [
       {
         url: '/images/ipeLogoWritten.png',
         width: 1200,
         height: 630,
-        alt: 'Nova Ipê Imóveis - Guararema'
+        alt: 'Ipê Imóveis - Guararema'
       }
     ],
     locale: 'pt_BR',
@@ -26,8 +26,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Nova Ipê Imóveis - Guararema, SP',
-    description: ' te espera. Mais de 15 anos conectando famílias aos imóveis perfeitos.',
+    title: 'Ipê Imóveis - Guararema, SP',
+    description: 'Ipê Imóveis te espera. Mais de 15 anos ajudando famílias a encontrar os imóveis perfeitos.',
     images: ['/images/ipeLogoWritten.png']
   }
 };

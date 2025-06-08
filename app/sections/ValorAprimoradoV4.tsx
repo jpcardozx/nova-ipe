@@ -146,11 +146,11 @@ export default function ValorAprimoradoModerno() {
                                         <div className="text-sm text-gray-600">Fundação</div>
                                     </div>
                                     <div className="rounded-lg bg-white p-4 border border-gray-100 shadow-sm">
-                                        <div className="text-2xl font-medium text-amber-600 mb-1">300+</div>
+                                        <div className="text-2xl font-medium text-amber-600 mb-1">150+</div>
                                         <div className="text-sm text-gray-600">Propriedades</div>
                                     </div>
                                     <div className="rounded-lg bg-white p-4 border border-gray-100 shadow-sm">
-                                        <div className="text-2xl font-medium text-amber-600 mb-1">15+</div>
+                                        <div className="text-2xl font-medium text-amber-600 mb-1">14+</div>
                                         <div className="text-sm text-gray-600">Anos</div>
                                     </div>
                                 </motion.div>
@@ -462,14 +462,6 @@ export default function ValorAprimoradoModerno() {
                         </motion.div>
                     </div>
                 </div>
-            </section>            {/* Contact Section */}
-            <section className="py-20 bg-gradient-to-br from-gray-900 via-amber-900 to-amber-800 relative overflow-hidden">
-                {/* Background Pattern */}
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,_theme(colors.amber.400)_0%,_transparent_50%)]"></div>
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,_theme(colors.orange.400)_0%,_transparent_50%)]"></div>
-                </div>
-
             </section>
         </div>
     );

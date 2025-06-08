@@ -31,18 +31,6 @@ interface EnhancedTestimonialsProps {
 // Depoimentos padrão em caso de não serem fornecidos
 const DEFAULT_TESTIMONIALS: Testimonial[] = [
     {
-        id: '1',
-        name: 'Carolina Mendes',
-        role: 'Proprietária',
-        content: 'A equipe da Ipê Imóveis cuidou de cada detalhe na venda do meu imóvel, superando minhas expectativas com um atendimento verdadeiramente premium. Recomendo para quem busca profissionalismo e resultados.',
-        rating: 5,
-        avatarUrl: '/images/testimonials/carolina.jpg',
-        neighborhood: 'Centro',
-        propertyType: 'Apartamento',
-        featured: true,
-        transactionType: 'venda'
-    },
-    {
         id: '2',
         name: 'Ricardo Oliveira',
         role: 'Investidor',

@@ -27,13 +27,6 @@ const testimonials: TestimonialProps[] = [
         content: 'Processo conduzido com excelência e transparência. A comercialização foi concluída dentro do prazo estipulado e com rentabilidade superior à projetada inicialmente.',
         rating: 5,
         image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e'
-    },
-    {
-        name: 'Carolina Mendes',
-        role: 'Cliente corporativo',
-        content: 'A Nova Ipê identificou uma propriedade alinhada às nossas necessidades corporativas. O suporte na documentação e negociação foi impecável.',
-        rating: 4,
-        image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956'
     }
 ];
 

@@ -14,7 +14,7 @@ const categoriasDestaque = [
         label: "Casas",
         icone: <Home className="w-6 h-6" />,
         href: "/buscar?tipo=casa&bairro=centro",
-        descricao: "Residências premium em localização estratégica",
+        descricao: "Imóveis residenciais em localização estratégica",
         bgImage: "/houses.jpg",
         quantidadeMedia: "Catálogo exclusivo",
         highlightColor: "from-emerald-500 to-teal-600",
@@ -54,9 +54,9 @@ const filtrosBairros = [
 
 // Buscas mais procuradas com informações de tendência
 const buscasFrequentes = [
-    { label: "Até R$ 500 mil", href: "/buscar?preco=ate-500k", trend: "+23% procura" },
-    { label: "Casas com quintal", href: "/buscar?caracteristica=quintal", trend: "Alta demanda" },
-    { label: "Próximo à estação", href: "/buscar?proximo=estacao", trend: "+15% interesse" },
+    { label: "Até R$ 500 mil", href: "/catalogo?preco=ate-500k", trend: "Custo x Benefício" },
+    { label: "Casas com quintal", href: "/catalogo?caracteristica=quintal", trend: "Alta demanda" },
+    { label: "Próximo à estação", href: "/catalogo?proximo=estacao", trend: "Região em crescimento" },
 ]
 
 export default function BlocoExploracaoGuararema() {
