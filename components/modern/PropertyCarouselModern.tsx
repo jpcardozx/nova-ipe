@@ -215,7 +215,7 @@ const PropertyCarouselModern = ({
 
                                     {/* CTA Button */}                                            <div className="pt-3">
                                         <Link
-                                            href={`/imovel/${property.slug}`}
+                                            href={`/imovel/${typeof property.slug === 'object' ? property.slug?.current : property.slug}`}
                                             className={cn(
                                                 "w-full inline-flex items-center justify-center gap-2 px-5 py-2 rounded-md transition-all",
                                                 "border font-medium text-sm",

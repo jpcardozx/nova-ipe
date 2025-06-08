@@ -9,7 +9,7 @@
  */
 
 /* Import centered navbar styles */
-@import './centered-navbar.css';
+@import './styles/centered-navbar.css';
 
 /* Importações principais do Tailwind v4 */
 @import './tailwind.css';
