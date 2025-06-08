@@ -1,19 +1,24 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {  reactStrictMode: true, // Re-enabled for better performance and debugging
-  swcMinify: true, // Re-enabled for better performance
+const nextConfig = {
+  reactStrictMode: true,
+  swcMinify: true,
   
-  // Performance optimizations (Turbopack compatible)
+  // Minimal experimental config for Vercel compatibility
   experimental: {
-    optimizeCss: true,
+    // Remove optimizeCss to prevent critters issues
     turbo: {
-      loaders: {
-        '.svg': ['@svgr/webpack'],
+      rules: {
+        '*.svg': ['@svgr/webpack'],
       },
     },
   },
 
+  // Basic compiler config
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+
   images: {
-    unoptimized: false, // Re-enabled image optimization for better performance
     remotePatterns: [
       {
         protocol: 'https',
@@ -27,7 +32,7 @@ const nextConfig = {  reactStrictMode: true, // Re-enabled for better performanc
   },
 
   webpack: (config, { isServer }) => {
-    // Bundle size optimization
+    // Basic fallbacks for client-side only
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
@@ -42,41 +47,18 @@ const nextConfig = {  reactStrictMode: true, // Re-enabled for better performanc
       };
     }
 
-    // Optimize chunk loading
-    config.optimization = {
-      ...config.optimization,
-      splitChunks: {
-        ...config.optimization.splitChunks,
-        chunks: 'all',
-        cacheGroups: {
-          ...config.optimization.splitChunks?.cacheGroups,
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all',
-            enforce: true,
-          },
-          common: {
-            name: 'common',
-            minChunks: 2,
-            chunks: 'all',
-            enforce: true,
-          },
-        },
-      },
-    };
-
-    // Substitui chunks problemáticos do Sanity
+    // Handle Sanity chunks
     config.resolve.alias = {
       ...config.resolve.alias,
       '@sanity/ui/dist/_chunks-cjs/_visual-editing.js$': false,
     };
 
-    // Adiciona regra para ignorar arquivos problemáticos
     config.module.rules.push({
       test: /_visual-editing\.js$/,
       use: 'null-loader',
-    });    return config;
+    });
+
+    return config;
   },
 };
 
