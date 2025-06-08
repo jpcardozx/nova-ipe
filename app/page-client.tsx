@@ -29,7 +29,7 @@ const BlocoExploracaoGuararema = dynamic(() => import('./components/BlocoExplora
     loading: () => <UnifiedLoading height="500px" title="Carregando..." />,
 });
 
-const IpeConcept = dynamic(() => import('./components/TestEnhancedIpeConcept'), {
+const IpeConcept = dynamic(() => import('./components/ipeConcept'), {
     loading: () => <UnifiedLoading height="550px" title="Carregando..." />,
 });
 
@@ -73,21 +73,6 @@ export default function HomePageClient({
             {/* Conteúdo principal */}
             <main>
                 <ScrollAnimations>
-                    {/* Imóveis em Destaque - Nova experiência premium */}
-                    <PropertyCarouselModern
-                        properties={featuredProperties}
-                        variant="sales"
-                        title="Imóveis em Destaque"
-                        showViewAll={true}
-                    />
-
-                    {/* 1. Imóveis para Aluguel (principal) - Carrossel Moderno */}
-                    <PropertyCarouselModern
-                        properties={propertiesForRent}
-                        variant="rentals"
-                        title="Imóveis para Aluguel"
-                        showViewAll={true}
-                    />
 
                     {/* Imóveis para Venda - Carrossel Moderno */}
                     <PropertyCarouselModern
@@ -95,9 +80,18 @@ export default function HomePageClient({
                         variant="sales"
                         title="Imóveis para Venda"
                         showViewAll={true}
-                    />                    {/* 2. Apresentação Institucional */}
+                    />
+
+
+                    {/* 2. Apresentação Institucional - IpeConcept original */}
                     <IpeConcept />
-                    <MarketAnalysisSection />
+                    {/* 1. Imóveis para Aluguel (principal) - Carrossel Moderno */}
+                    <PropertyCarouselModern
+                        properties={propertiesForRent}
+                        variant="rentals"
+                        title="Imóveis para Aluguel"
+                        showViewAll={true}
+                    /> <MarketAnalysisSection />
 
                     {/* 3. Seção de Precificação */}
                     <ValorAprimorado />

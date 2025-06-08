@@ -53,6 +53,7 @@
     "sanity": "3.91.0",
     "sanity-codegen": "0.9.8",
     "sonner": "2.0.5",
+    "styled-components": "6.1.18",
     "tailwind-merge": "3.3.0",
     "web-vitals": "5.0.2",
     "zod": "3.25.51"
