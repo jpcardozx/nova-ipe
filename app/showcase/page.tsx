@@ -89,10 +89,7 @@ const ComponentShowcase: React.FC = () => {
                         <h3 className="text-2xl font-semibold text-neutral-800 mb-2">Versão Enhanced (Alternativa)</h3>
                         <p className="text-neutral-600">Componente com ainda mais recursos visuais e persuasivos</p>
                     </div>
-                    <FormularioContatoEnhanced
-                        title="Experiência Premium Completa"
-                        subtitle="Versão com máximo apelo visual e persuasivo"
-                    />
+                    <FormularioContatoEnhanced />
                 </div>
             </section>            {/* Comparação Antes/Depois */}
             <section className="py-20 bg-gradient-to-b from-amber-50 via-orange-50/30 to-amber-50">

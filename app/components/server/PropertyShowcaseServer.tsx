@@ -30,22 +30,36 @@ function transformToProperty(imovel: ImovelClient, propertyType: PropertyType): 
         const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
 
         return {
+            _id: imovel._id,
             id: imovel._id,
-            title: imovel.titulo || 'Imóvel disponível', slug: slug || `imovel-${imovel._id}`,
-            location: imovel.bairro || 'Guararema',
-            city: 'Guararema',
-            price: imovel.preco || 0,
+            titulo: imovel.titulo || 'Imóvel disponível',
+            title: imovel.titulo || 'Imóvel disponível',
+            tipo: propertyType,
             propertyType,
-            area: imovel.areaUtil,
+            preco: imovel.preco || 0,
+            price: imovel.preco || 0,
+            descricao: imovel.descricao || '',
+            description: imovel.descricao || '',
+            localizacao: imovel.bairro || 'Guararema',
+            location: imovel.bairro || 'Guararema',
+            imagens: [],
+            quartos: imovel.dormitorios,
             bedrooms: imovel.dormitorios,
+            banheiros: imovel.banheiros,
             bathrooms: imovel.banheiros,
+            area: imovel.areaUtil,
+            garagem: Boolean(imovel.vagas),
             parkingSpots: imovel.vagas,
+            slug: { current: slug || `imovel-${imovel._id}` },
+            categoria: propertyType === 'sale' ? 'venda' : 'aluguel',
+            destaque: Boolean(imovel.destaque),
+            featured: Boolean(imovel.destaque),
+            isPremium: Boolean(imovel.destaque),
+            isNew: Boolean(imovel.dataPublicacao && new Date(imovel.dataPublicacao) > new Date(thirtyDaysAgo)),
             mainImage: {
                 url: processedImage.url,
                 alt: processedImage.alt
             },
-            isPremium: Boolean(imovel.destaque),
-            isNew: Boolean(imovel.dataPublicacao && new Date(imovel.dataPublicacao) > new Date(thirtyDaysAgo)),
             isHighlight: Boolean(imovel.destaque)
         };
     } catch (error) {

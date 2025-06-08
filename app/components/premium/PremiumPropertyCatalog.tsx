@@ -255,7 +255,7 @@ const PremiumPropertyCard = ({
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className={`text-2xl font-bold ${colors.text}`}>
-                                    {formatPrice(property.price)}
+                                    {formatPrice(property.price || property.preco || 0)}
                                 </p>
                                 {property.propertyType === 'rent' && (
                                     <p className="text-sm text-gray-600">/mês</p>
@@ -317,7 +317,7 @@ const PremiumPropertyCard = ({
                 <div className="flex items-center justify-between">
                     <div>
                         <p className={`text-2xl font-bold ${colors.text}`}>
-                            {formatPrice(property.price)}
+                            {formatPrice(property.price || property.preco || 0)}
                         </p>
                         {property.propertyType === 'rent' && (
                             <p className="text-sm text-gray-500">/mês</p>

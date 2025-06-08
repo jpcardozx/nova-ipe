@@ -123,8 +123,8 @@ const PropertyCarouselModern = ({
                                 {/* Image Container */}
                                 <div className="relative h-64 overflow-hidden">
                                     <Image
-                                        src={property.mainImage.url}
-                                        alt={property.mainImage.alt}
+                                        src={property.mainImage?.url || '/images/property-placeholder.jpg'}
+                                        alt={property.mainImage?.alt || property.title || property.titulo || 'Imóvel'}
                                         fill
                                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -136,12 +136,12 @@ const PropertyCarouselModern = ({
                                     {/* Heart Icon */}
                                     <div className="absolute top-3 right-3 flex gap-2">
                                         <button
-                                            onClick={() => toggleFavorite(property.id)}
+                                            onClick={() => toggleFavorite(property.id || property._id || '')}
                                             className="p-2 rounded-full bg-white/80 hover:bg-white transition-colors shadow-sm"
                                         >
                                             <Heart className={cn(
                                                 "h-4 w-4",
-                                                favorites.has(property.id)
+                                                favorites.has(property.id || property._id || '')
                                                     ? 'fill-red-500 text-red-500'
                                                     : 'text-gray-600'
                                             )} />
@@ -164,7 +164,7 @@ const PropertyCarouselModern = ({
                                     {/* Price */}
                                     <div className="flex items-baseline gap-2">
                                         <span className={cn("text-xl font-medium", colorScheme.text)}>
-                                            {formatPrice(property.price)}
+                                            {formatPrice(property.price || property.preco || 0)}
                                         </span>
                                         {variant === 'rentals' && (
                                             <span className="text-gray-500 text-sm ml-1">/mês</span>

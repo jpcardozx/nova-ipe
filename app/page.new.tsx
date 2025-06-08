@@ -6,6 +6,7 @@ import { loadImage } from '@/lib/enhanced-image-loader';
 import type { ImovelClient } from '@/src/types/imovel-client';
 import { PropertyType } from './components/ui/property/PropertyCardUnified';
 import { extractSlugString, ensureNonNullProperties } from '@/app/PropertyTypeFix';
+import { ProcessedProperty } from './types/property';
 
 // Importações server-side otimizadas
 import SkipToContent from './components/SkipToContent';
@@ -15,31 +16,6 @@ import { UnifiedLoading } from './components/ui/UnifiedComponents';
 
 // Importação do Client Component principal
 import HomePageClient from './page-client';
-
-// === ENHANCED INTERFACES ===
-interface ProcessedProperty {
-    id: string;
-    title: string;
-    slug: string;
-    location: string;
-    city: string;
-    price: number;
-    propertyType: PropertyType;
-    area?: number;
-    bedrooms?: number;
-    bathrooms?: number;
-    parkingSpots?: number;
-    mainImage: {
-        url: string;
-        alt: string;
-        blurDataURL?: string;
-    };
-    isHighlight: boolean;
-    isPremium: boolean;
-    isNew: boolean;
-    features?: string[];
-    virtualTour?: string;
-}
 
 // === SSR UTILITY FUNCTIONS ===
 function transformPropertyData(imovel: ImovelClient, propertyType: PropertyType): ProcessedProperty | null {
@@ -56,25 +32,37 @@ function transformPropertyData(imovel: ImovelClient, propertyType: PropertyType)
         const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
 
         return {
+            _id: imovel._id,
             id: imovel._id,
+            titulo: imovel.titulo || 'Imóvel disponível',
             title: imovel.titulo || 'Imóvel disponível',
-            slug: slug || `imovel-${imovel._id}`,
-            location: imovel.bairro || 'Guararema',
-            city: 'Guararema',
-            price: imovel.preco || 0,
+            tipo: propertyType,
             propertyType,
-            area: imovel.areaUtil,
+            preco: imovel.preco || 0,
+            price: imovel.preco || 0,
+            descricao: imovel.descricao || '',
+            description: imovel.descricao || '',
+            localizacao: imovel.bairro || 'Guararema',
+            location: imovel.bairro || 'Guararema',
+            imagens: [],
+            quartos: imovel.dormitorios,
             bedrooms: imovel.dormitorios,
+            banheiros: imovel.banheiros,
             bathrooms: imovel.banheiros,
+            area: imovel.areaUtil,
+            garagem: Boolean(imovel.vagas),
             parkingSpots: imovel.vagas,
+            slug: { current: slug || `imovel-${imovel._id}` },
+            categoria: propertyType === 'sale' ? 'venda' : 'aluguel',
+            destaque: Boolean(imovel.destaque),
+            featured: Boolean(imovel.destaque),
+            isPremium: Boolean(imovel.destaque),
+            isNew: Boolean(imovel.dataPublicacao && new Date(imovel.dataPublicacao) > new Date(thirtyDaysAgo)),
             mainImage: {
                 url: processedImage.url,
                 alt: processedImage.alt
             },
-            isHighlight: Boolean(imovel.destaque),
-            isPremium: Boolean(imovel.destaque),
-            isNew: Boolean(imovel.dataPublicacao && new Date(imovel.dataPublicacao) > new Date(thirtyDaysAgo)),
-            features: imovel.caracteristicas || []
+            isHighlight: Boolean(imovel.destaque)
         };
     } catch (error) {
         console.error(`Erro ao transformar imóvel: ${error}`);

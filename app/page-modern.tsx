@@ -42,7 +42,7 @@ export const metadata: Metadata = {
 const transformImovelToCardProps = (imovel: ImovelClient) => ({
   id: imovel._id || '',
   titulo: imovel.titulo || 'Imóvel Disponível',
-  slug: typeof imovel.slug === 'object' ? imovel.slug?.current || '' : imovel.slug || '',
+  slug: typeof imovel.slug === 'object' && imovel.slug && 'current' in imovel.slug ? (imovel.slug as { current: string }).current || '' : (typeof imovel.slug === 'string' ? imovel.slug : '') || '',
   preco: imovel.preco || 0,
   finalidade: (imovel.finalidade?.toLowerCase() === 'venda' ? 'venda' : 'aluguel') as 'venda' | 'aluguel',
   bairro: imovel.bairro,
