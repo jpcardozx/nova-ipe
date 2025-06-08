@@ -40,12 +40,6 @@ const PerformanceDiagnostics = safeDynamic(() => import('./PerformanceDiagnostic
     retries: 2
 });
 
-    retries: 2
-});
-
-    retries: 2
-});
-
 // O LoadingStateManager foi identificado como causador de ChunkLoadError
 // Utilizamos configuração extra de retentativas
 // const LoadingStateManager = safeDynamic(() => import('./LoadingStateManager'), {
