@@ -10,7 +10,7 @@ import WhatsAppButton from './components/WhatsAppButton';
 import EnhancedNotificationBanner from './components/EnhancedNotificationBanner';
 import EnhancedTestimonials from './components/EnhancedTestimonials';
 import PremiumHeroImproved from './components/PremiumHero-improved';
-import { ProcessedProperty } from './page';
+import { ProcessedProperty } from './types/property';
 // Importando os novos componentes modernos para catálogo de imóveis
 const PropertyCarouselModern = dynamic(() => import('../components/modern/PropertyCarouselModern'), {
     ssr: true,

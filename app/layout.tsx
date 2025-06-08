@@ -1,24 +1,20 @@
-import { Inter } from 'next/font/google';
-import ClientLayout from './providers/ClientLayout';
+import type { Metadata } from 'next';
 import './globals.css';
 
-// Initialize Inter font
-const inter = Inter({ subsets: ['latin'] });
+export const metadata: Metadata = {
+  title: 'Nova Ipê Imóveis - Guararema, SP',
+  description: 'Nova Ipê Imóveis - Sua Casa dos Sonhos Te Espera. Mais de 15 anos conectando famílias aos imóveis perfeitos em Guararema e região.',
+};
 
-// Metadata is exported from a separate file
-export { metadata } from './metadata';
-
-interface RootLayoutProps {
+export default function RootLayout({
+  children,
+}: {
   children: React.ReactNode;
-}
-
-export default function RootLayout({ children }: RootLayoutProps) {
+}) {
   return (
     <html lang="pt-BR">
-      <body className={inter.className}>
-        <ClientLayout>
-          {children}
-        </ClientLayout>
+      <body className="font-sans antialiased">
+        {children}
       </body>
     </html>
   );

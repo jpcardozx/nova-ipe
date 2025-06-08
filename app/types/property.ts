@@ -28,6 +28,31 @@ export interface Property {
     transactionType?: 'sale' | 'rent' | 'featured';
 }
 
+export interface ProcessedProperty {
+  _id: string;
+  titulo: string;
+  tipo: string;
+  preco: number;
+  descricao: string;
+  localizacao: string;
+  imagens: Array<{
+    asset: {
+      _ref: string;
+      url?: string;
+    };
+    alt?: string;
+  }>;
+  quartos?: number;
+  banheiros?: number;
+  area?: number;
+  garagem?: boolean;
+  slug: {
+    current: string;
+  };
+  categoria: 'venda' | 'aluguel';
+  destaque?: boolean;
+}
+
 export interface PropertySectionProps {
     title: string;
     description?: string;

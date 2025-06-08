@@ -472,6 +472,7 @@ const FormularioContatoUnified: React.FC<ContactFormProps> = ({
             </div>
         </section>
     );
-};
+}
 
+export { FormularioContatoUnified };
 export default FormularioContatoUnified;
