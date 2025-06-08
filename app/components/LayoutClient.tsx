@@ -18,9 +18,6 @@ const WebVitalsMonitor = safeDynamic(() => import('./WebVitalsMonitor'), {
     retries: 2
 });
 
-    retries: 2
-});
-
 // Componentes não-críticos com carregamento dinâmico
 const ClientPerformanceMonitor = safeDynamic(() => import('./ClientPerformanceMonitor'), {
     componentName: 'ClientPerformanceMonitor',

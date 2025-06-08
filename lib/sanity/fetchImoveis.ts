@@ -141,3 +141,6 @@ export async function getImoveisDestaqueAluguel(): Promise<ImovelClient[]> {
     )
     return mapMany(data)
 }
+
+// Alias para compatibilidade
+export const fetchProperties = getTodosImoveis;

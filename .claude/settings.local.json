@@ -23,7 +23,8 @@
       "Bash(npm update:*)",
       "Bash(npx browserslist:*)",
       "Bash(./fix-imports.sh)",
-      "Bash(timeout 30s npm run build)"
+      "Bash(timeout 30s npm run build)",
+      "Bash(git config:*)"
     ],
     "deny": []
   },
