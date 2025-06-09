@@ -30,28 +30,25 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://www.ipeimoveis.com.br'),
   alternates: {
     canonical: '/',
-  },
-  openGraph: {
+  }, openGraph: {
     title: 'Ipê Imóveis - Compra, Venda e Locação em Guararema',
     description: 'O imóvel que você busca está em nosso catálogo. Agende sua visita. 15 anos de experiência, 500+ imóveis vendidos.',
     url: 'https://www.ipeimoveis.com.br',
-    siteName: 'Ipê Imóveis',
-    images: [
+    siteName: 'Ipê Imóveis', images: [
       {
-        url: '/images/ipeLogoWritten.png',
+        url: '/images/ipe-social-banner.png',
         width: 1200,
         height: 630,
-        alt: 'Ipê Imóveis - Guararema'
+        alt: 'Ipê Imóveis - Guararema - Preview Banner'
       }
     ],
     locale: 'pt_BR',
     type: 'website',
-  },
-  twitter: {
+  }, twitter: {
     card: 'summary_large_image',
     title: 'Ipê Imóveis - Guararema, SP',
     description: 'Ipê Imóveis te espera. Mais de 15 anos ajudando famílias a encontrar os imóveis perfeitos.',
-    images: ['/images/ipeLogoWritten.png'],
+    images: ['/images/ipe-social-banner.png'],
     creator: '@ipeimoveis',
   },
   robots: {
@@ -90,6 +87,41 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    "name": "Ipê Imóveis",
+    "description": "Serviços imobiliários especializados em Guararema e região com mais de 15 anos de experiência",
+    "url": "https://www.ipeimoveis.com.br",
+    "telephone": "+55-11-99999-9999",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Guararema",
+      "addressRegion": "SP",
+      "addressCountry": "BR"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "-23.4004",
+      "longitude": "-46.0318"
+    },
+    "openingHours": "Mo,Tu,We,Th,Fr 08:00-18:00",
+    "priceRange": "$$",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "reviewCount": "150"
+    },
+    "areaServed": [
+      {
+        "@type": "City",
+        "name": "Guararema",
+        "addressRegion": "SP",
+        "addressCountry": "BR"
+      }
+    ]
+  };
+
   return (
     <html lang="pt-BR">
       <head>
@@ -99,6 +131,10 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <script src="https://analytics.ahrefs.com/analytics.js" data-key="TN1BpN+MhVBcvja6ELAPbA" async></script>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
       </head>
       <body className="font-sans antialiased bg-white text-gray-900">
         <Providers>

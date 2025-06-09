@@ -2,14 +2,17 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-    // Minimal experimental config for Vercel compatibility
+  // Minimal experimental config for Vercel compatibility
   experimental: {
     // Remove optimizeCss to prevent critters issues
-    // turbo: {
-    //   rules: {
-    //     '*.svg': ['@svgr/webpack'],
-    //   },
-    // },
+    // Turbo disabled for production builds to prevent issues
+    ...(process.env.NODE_ENV === 'development' && {
+      turbo: {
+        rules: {
+          '*.svg': ['@svgr/webpack'],
+        },
+      },
+    }),
   },
 
   // Compiler config moved to conditional application below

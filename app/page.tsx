@@ -20,28 +20,25 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://www.ipeimoveis.com.br'),
   alternates: {
     canonical: '/',
-  },
-  openGraph: {
+  }, openGraph: {
     title: 'Ipê Imóveis - Compra, Venda e Locação em Guararema',
     description: 'O imóvel que você busca está em nosso catálogo. Agende sua visita. 15 anos de experiência, 500+ imóveis vendidos.',
     url: 'https://www.ipeimoveis.com.br',
-    siteName: 'Ipê Imóveis',
-    images: [
+    siteName: 'Ipê Imóveis', images: [
       {
-        url: '/images/ipeLogoWritten.png',
+        url: '/images/ipe-social-banner.png',
         width: 1200,
         height: 630,
-        alt: 'Ipê Imóveis - Guararema'
+        alt: 'Ipê Imóveis - Guararema - Preview Banner'
       }
     ],
     locale: 'pt_BR',
     type: 'website',
-  },
-  twitter: {
+  }, twitter: {
     card: 'summary_large_image',
     title: 'Ipê Imóveis - Guararema, SP',
     description: 'Ipê Imóveis te espera. Mais de 15 anos ajudando famílias a encontrar os imóveis perfeitos.',
-    images: ['/images/ipeLogoWritten.png'],
+    images: ['/images/ipe-social-banner.png'],
     creator: '@ipeimoveis',
   },
   robots: {
