@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
+import { Providers } from './providers/QueryProvider';
 import './globals.css';
 
 const CenteredNavbar = dynamic(() => import('./components/ui/CenteredNavbar'), {
@@ -38,8 +39,10 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className="font-sans antialiased">
-        <CenteredNavbar />
-        {children}
+        <Providers>
+          <CenteredNavbar />
+          {children}
+        </Providers>
       </body>
     </html>
   );

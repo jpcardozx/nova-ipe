@@ -30,6 +30,8 @@
     "@sanity/next-loader": "1.6.2",
     "@sanity/types": "3.91.0",
     "@sanity/vision": "3.91.0",
+    "@tanstack/react-query": "5.80.6",
+    "@tanstack/react-virtual": "3.13.10",
     "caniuse-lite": "1.0.30001721",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",

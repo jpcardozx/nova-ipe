@@ -79,3 +79,62 @@ export interface PropertySectionProps {
     viewAllText?: string;
     backgroundColor?: string;
 }
+
+// Additional types for PropertyCatalog
+export interface PropertySearchParams {
+    q?: string;
+    tipo?: string;
+    local?: string;
+    precoMin?: string;
+    precoMax?: string;
+    dormitorios?: string;
+    banheiros?: string;
+    area?: string;
+    comodidades?: string[];
+    ordem?: string;
+}
+
+export interface PropertyData {
+    _id: string;
+    id?: string;
+    titulo?: string;
+    title?: string;
+    slug: string;
+    preco?: number;
+    price?: number;
+    finalidade?: 'Venda' | 'Aluguel' | 'Temporada';
+    tipoImovel?: 'Casa' | 'Apartamento' | 'Terreno' | 'Comercial' | 'Outro';
+    destaque?: boolean;
+    featured?: boolean;
+    bairro?: string;
+    cidade?: string;
+    estado?: string;
+    descricao?: string;
+    description?: string;
+    dormitorios?: number;
+    bedrooms?: number;
+    banheiros?: number;
+    bathrooms?: number;
+    areaUtil?: number;
+    area?: number;
+    vagas?: number;
+    parkingSpots?: number;
+    galeria?: Array<{
+        imagemUrl?: string;
+        alt?: string;
+        asset?: {
+            _ref?: string;
+            _type?: string;
+        };
+    }>;
+    imagem?: {
+        imagemUrl?: string;
+        alt?: string;
+        asset?: {
+            _ref?: string;
+            _type?: string;
+        };
+    };
+    caracteristicas?: string[];
+    amenities?: string[];
+}
