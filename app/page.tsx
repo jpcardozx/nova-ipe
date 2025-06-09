@@ -40,6 +40,9 @@ export const metadata: Metadata = {
     images: ['/images/og-banner-optimized.png'],
     creator: '@ipeimoveis',
   },
+  other: {
+    'fb:app_id': '1234567890123456', // Add your Facebook App ID here
+  },
   robots: {
     index: true,
     follow: true,

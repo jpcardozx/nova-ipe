@@ -17,19 +17,18 @@ export default function MobileFirstHero() {
 
     const handleSearch = () => {
         const params = new URLSearchParams();
-        if (searchQuery) params.append('q', searchQuery);
-        if (propertyType) params.append('tipo', propertyType);
+        if (searchQuery) params.append('q', searchQuery); if (propertyType) params.append('tipo', propertyType);
         if (location) params.append('local', location);
         window.location.href = `/catalogo?${params.toString()}`;
     }
 
     const handleQuickCall = () => {
-        window.open('https://wa.me/5511981845016?text=Olá! Tenho interesse em conhecer mais sobre os imóveis disponíveis.', '_blank');
+        window.open('https://wa.me/5511981845016?text=Olá! Gostaria de uma consultoria especializada sobre imóveis em Guararema.', '_blank');
     }
 
     return (
-        <section className="relative min-h-screen flex flex-col overflow-hidden bg-slate-900">
-            {/* Mobile-optimized background */}
+        <section className="relative min-h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+            {/* Enhanced background with geometric patterns */}
             <div
                 className="absolute inset-0 bg-cover bg-center"
                 style={{
@@ -37,13 +36,17 @@ export default function MobileFirstHero() {
                     backgroundPosition: 'center 30%'
                 }}
             >
-                <div className="absolute inset-0 bg-gradient-to-b from-slate-900/70 via-slate-900/80 to-slate-900/90" />
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-900/85 via-slate-900/90 to-slate-900/95" />
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-900/15 via-transparent to-blue-900/15" />
+                {/* Subtle geometric overlay */}
+                <div className="absolute inset-0 opacity-10">
+                    <div className="absolute top-1/4 left-1/4 w-32 h-32 border border-white/20 rotate-45 rounded-lg"></div>
+                    <div className="absolute bottom-1/3 right-1/4 w-24 h-24 border border-amber-400/30 rotate-12 rounded-lg"></div>
+                </div>
             </div>
 
             {/* Content Container - Mobile First */}
-            <div className="relative z-10 flex-1 flex flex-col justify-center px-4 py-20 max-w-md mx-auto sm:max-w-2xl lg:max-w-4xl">
-
-                {/* Main Headline - Mobile Optimized */}
+            <div className="relative z-10 flex-1 flex flex-col justify-center px-4 py-20 max-w-md mx-auto sm:max-w-2xl lg:max-w-4xl">                {/* Main Headline - Mobile Optimized */}
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 30 }}
@@ -51,9 +54,9 @@ export default function MobileFirstHero() {
                     className="text-center mb-8"
                 >
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light text-white mb-4 leading-tight">
-                        Seu novo
+                        Imóveis
                         <span className="block font-medium bg-gradient-to-r from-amber-400 to-amber-500 bg-clip-text text-transparent mt-2">
-                            endereço
+                            selecionados
                         </span>
                         <span className="block font-light text-2xl sm:text-3xl lg:text-4xl mt-2 text-white/90">
                             em Guararema
@@ -61,27 +64,25 @@ export default function MobileFirstHero() {
                     </h1>
 
                     <p className="text-lg sm:text-xl text-white/80 mb-6 font-light max-w-lg mx-auto">
-                        15 anos conectando pessoas aos seus sonhos
-                    </p>
-
-                    {/* Mobile CTA Buttons */}
+                        Consultoria imobiliária especializada há 15 anos
+                    </p>                    {/* Mobile CTA Buttons */}
                     <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-8">
                         <motion.button
                             onClick={handleQuickCall}
                             whileTap={{ scale: 0.95 }}
-                            className="w-full sm:w-auto bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-8 py-4 rounded-xl font-medium text-lg flex items-center justify-center gap-2 shadow-lg"
+                            className="w-full sm:w-auto bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-8 py-4 rounded-xl font-medium text-lg flex items-center justify-center gap-2 shadow-lg transition-all duration-300"
                         >
                             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M20.5 3.5c-2.6-2.6-6.9-2.6-9.5 0-2.2 2.2-2.5 5.6-1 8.2L3 21l9.3-7c2.6 1.5 6 .8 8.2-1 2.6-2.6 2.6-6.9 0-9.5z" />
                             </svg>
-                            Falar com Especialista
+                            Consulta Especializada
                         </motion.button>
 
                         <Link
                             href="/catalogo"
-                            className="w-full sm:w-auto bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-xl font-medium text-lg flex items-center justify-center gap-2 hover:bg-white/20 transition-all"
+                            className="w-full sm:w-auto bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-xl font-medium text-lg flex items-center justify-center gap-2 hover:bg-white/20 transition-all duration-300"
                         >
-                            Ver Portfólio
+                            Explorar Imóveis
                             <ArrowRight className="w-5 h-5" />
                         </Link>
                     </div>
@@ -93,10 +94,9 @@ export default function MobileFirstHero() {
                     animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 30 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
                     className="mb-12"
-                >
-                    <div className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-white/20">
+                >                    <div className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-white/20">
                         <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">
-                            Encontre seu imóvel ideal
+                            Busque seu imóvel ideal
                         </h3>
 
                         <div className="space-y-4">
@@ -171,49 +171,47 @@ export default function MobileFirstHero() {
                     animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 30 }}
                     transition={{ duration: 0.8, delay: 0.4 }}
                     className="grid grid-cols-1 sm:grid-cols-3 gap-4"
-                >
-                    {[
-                        {
-                            icon: <Award className="w-6 h-6" />,
-                            value: "15+",
-                            label: "Anos de Experiência",
-                            color: "from-amber-400 to-amber-500"
-                        },
-                        {
-                            icon: <Building2 className="w-6 h-6" />,
-                            value: "250+",
-                            label: "Imóveis Vendidos",
-                            color: "from-blue-400 to-blue-500"
-                        },
-                        {
-                            icon: <Star className="w-6 h-6" />,
-                            value: "98%",
-                            label: "Clientes Satisfeitos",
-                            color: "from-green-400 to-green-500"
-                        }
-                    ].map((stat, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
-                            transition={{ duration: 0.6, delay: 0.5 + index * 0.1 }}
-                            className="text-center"
-                        >
-                            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                                <div className="flex justify-center mb-3">
-                                    <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${stat.color} flex items-center justify-center text-white`}>
-                                        {stat.icon}
-                                    </div>
-                                </div>
-                                <div className="text-2xl sm:text-3xl font-bold text-white mb-1">
-                                    {stat.value}
-                                </div>
-                                <div className="text-sm text-white/80 font-medium">
-                                    {stat.label}
+                >                        {[
+                    {
+                        icon: <Award className="w-6 h-6" />,
+                        value: "15+",
+                        label: "Anos no Mercado",
+                        color: "from-amber-400 to-amber-500"
+                    },
+                    {
+                        icon: <Building2 className="w-6 h-6" />,
+                        value: "500+",
+                        label: "Transaçõe ss",
+                        color: "from-blue-400 to-blue-500"
+                    },
+                    {
+                        icon: <Star className="w-6 h-6" />,
+                        value: "4.9★",
+                        label: "Avaliação Clientes",
+                        color: "from-green-400 to-green-500"
+                    }
+                ].map((stat, index) => (
+                    <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
+                        transition={{ duration: 0.6, delay: 0.5 + index * 0.1 }}
+                        className="text-center"
+                    >                            <div className="bg-white/15 backdrop-blur-lg rounded-2xl p-6 border border-white/30 hover:bg-white/20 transition-all duration-300">
+                            <div className="flex justify-center mb-3">
+                                <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${stat.color} flex items-center justify-center text-white shadow-lg`}>
+                                    {stat.icon}
                                 </div>
                             </div>
-                        </motion.div>
-                    ))}
+                            <div className="text-2xl sm:text-3xl font-bold text-white mb-1">
+                                {stat.value}
+                            </div>
+                            <div className="text-sm text-white/90 font-medium">
+                                {stat.label}
+                            </div>
+                        </div>
+                    </motion.div>
+                ))}
                 </motion.div>
             </div>
 

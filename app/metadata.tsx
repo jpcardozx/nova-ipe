@@ -27,32 +27,25 @@ export const metadata: Metadata = {
             { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
         ],
     }, openGraph: {
-        title: 'Ipê - Imóveis Selecionados em Guararema',
-        description: 'Encontre o imóvel ideal em Guararema com nossa curadoria especializada. Vendas, locações e investimentos com a melhor imobiliária da região. Atendimento personalizado e exclusividade garantida.',
+        title: 'Ipê Imóveis - Imóveis Selecionados em Guararema',
+        description: 'Consultoria imobiliária especializada há 15 anos. Encontre o imóvel ideal em Guararema com nossa expertise em vendas, locações e investimentos de alto padrão.',
         url: 'https://ipeimoveis.vercel.app',
-        siteName: 'Ipê Imóveis', images: [
+        siteName: 'Ipê Imóveis',
+        images: [
             {
                 url: '/images/ipe-social-banner.png',
-                width: 1202,
+                width: 1200,
                 height: 630,
-                alt: 'Ipê Imóveis - Imóveis selecionados em Guararema',
-                type: 'image/png',
-            },
-            {
-                url: '/images/ipe-social-banner.png',
-                width: 1202,
-                height: 630,
-                alt: 'Ipê Imóveis - Logo',
+                alt: 'Ipê Imóveis - Consultoria Imobiliária Especializada em Guararema',
                 type: 'image/png',
             },
         ],
         locale: 'pt_BR',
         type: 'website',
-    },
-    twitter: {
+    }, twitter: {
         card: 'summary_large_image',
-        title: 'Ipê Imóveis - Imóveis Selecionados em Guararema',
-        description: 'Especialistas e corretores imobiliários em Guararema e região. Encontre seu novo endereço com atendimento personalizado e eficiente.',
+        title: 'Ipê Imóveis - Consultoria Imobiliária em Guararema',
+        description: 'Especialistas em imóveis selecionados em Guararema e região. 15 anos de experiência em vendas, locações e investimentos.',
         images: ['/images/ipe-social-banner.png'],
         creator: '@ipeimoveisguararema',
         site: '@ipeimoveisguararema',
@@ -85,8 +78,10 @@ export const metadata: Metadata = {
         'theme-color': '#E6AA2C',
         'mobile-web-app-capable': 'yes',
         'apple-mobile-web-app-status-bar-style': 'default',
-        'format-detection': 'telephone=no', 'og:image:width': '1202',
+        'format-detection': 'telephone=no',
+        'og:image:width': '1200',
         'og:image:height': '630',
+        'fb:app_id': '1234567890123456', // Replace with your actual Facebook App ID
     },
     manifest: '/manifest.webmanifest',
 };
