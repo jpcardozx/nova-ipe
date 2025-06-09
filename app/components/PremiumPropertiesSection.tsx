@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Filter, SlidersHorizontal, Search } from 'lucide-react';
-import PremiumPropertyCard from './PremiumPropertyCard';
+import PremiumPropertyCardOptimized from './premium/PremiumPropertyCardOptimized';
 import { novaIpeColors, novaIpeGradients } from '../utils/nova-ipe-gradients';
 
 interface Property {
@@ -22,6 +22,27 @@ interface Property {
     exclusive?: boolean;
     type: 'sale' | 'rent';
 }
+
+// Transform to PremiumPropertyCardOptimized format
+const transformToPremiumCard = (property: Property) => ({
+    id: property.id,
+    title: property.title,
+    price: typeof property.price === 'string' ? parseFloat(property.price.replace(/[^\d]/g, '')) : property.price,
+    address: property.address,
+    location: property.address,
+    images: property.images.map(url => ({ url, alt: property.title })),
+    mainImage: { url: property.images[0] || '/images/property-placeholder.jpg', alt: property.title },
+    bedrooms: property.bedrooms || undefined,
+    bathrooms: property.bathrooms || undefined,
+    area: property.area || undefined,
+    parkingSpots: property.parkingSpots || undefined,
+    type: property.type,
+    tags: property.tags || [],
+    featured: property.featured,
+    isNew: property.new,
+    isPremium: property.featured,
+    exclusive: property.exclusive,
+});
 
 interface PremiumPropertiesSectionProps {
     title: string;
@@ -247,9 +268,8 @@ const PremiumPropertiesSection: React.FC<PremiumPropertiesSectionProps> = ({
                                 key={property.id}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
-                            >
-                                <PremiumPropertyCard {...property} />
+                                transition={{ duration: 0.5, delay: index * 0.1 }}                            >
+                                <PremiumPropertyCardOptimized {...transformToPremiumCard(property)} />
                             </motion.div>
                         ))}
                     </div>
@@ -265,9 +285,8 @@ const PremiumPropertiesSection: React.FC<PremiumPropertiesSectionProps> = ({
                                 transition={{ duration: 0.5 }}
                             >
                                 {filteredProperties
-                                    .slice(currentSlide * 3, (currentSlide + 1) * 3)
-                                    .map((property) => (
-                                        <PremiumPropertyCard key={property.id} {...property} />
+                                    .slice(currentSlide * 3, (currentSlide + 1) * 3).map((property) => (
+                                        <PremiumPropertyCardOptimized key={property.id} {...transformToPremiumCard(property)} />
                                     ))
                                 }
                             </motion.div>

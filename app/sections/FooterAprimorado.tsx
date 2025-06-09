@@ -41,7 +41,6 @@ const footerLinks = [
             { name: "Documentação", href: "/equipe" },
             { name: "Financiamento", href: "/avaliacoes" },
             { name: "Consultoria imobiliária", href: "/carreira" },
-            { name: "Administração predial", href: "/blog" }
         ]
     },
     {
@@ -164,7 +163,7 @@ export default function FooterAprimorado() {
 
                                 <div className="flex gap-3">
                                     <SocialIcon
-                                        href="https://instagram.com/ipe.imoveis"
+                                        href="https://instagram.com/ipe_imoveis_guararema"
                                         icon={<Instagram className="w-5 h-5" />}
                                         label="Instagram da Ipê Imóveis"
                                     />

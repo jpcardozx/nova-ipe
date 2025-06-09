@@ -17,200 +17,32 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ImovelClient } from '../../../src/types/imovel-client';
+import MobilePropertyCard from '../MobilePropertyCard';
 
-// Tipos simplificados
-interface SimplePropertyData {
-    id: string;
-    title: string;
-    slug: string;
-    price: number;
-    location: string;
-    image: string;
-    bedrooms?: number;
-    bathrooms?: number;
-    area?: number;
-    parkingSpots?: number;
-    type: 'sale' | 'rent';
-    isNew?: boolean;
-    isFeatured?: boolean;
-}
-
-// Função para transformar dados
-const transformProperty = (imovel: ImovelClient, type: 'sale' | 'rent'): SimplePropertyData => ({
+// Função para transformar dados para MobilePropertyCard
+const transformToMobileCard = (imovel: ImovelClient, type: 'sale' | 'rent') => ({
     id: imovel._id,
     title: imovel.titulo || 'Imóvel disponível',
-    slug: imovel.slug || imovel._id,
     price: imovel.preco || 0,
+    address: imovel.endereco || '',
     location: imovel.bairro || imovel.cidade || 'Guararema',
-    image: imovel.imagem?.imagemUrl || imovel.galeria?.[0]?.imagemUrl || '/images/placeholder-property.jpg',
+    images: imovel.galeria?.map(img => ({
+        url: img.imagemUrl || '/images/placeholder-property.jpg',
+        alt: imovel.titulo || 'Imóvel'
+    })) || [],
+    mainImage: imovel.imagem ? {
+        url: imovel.imagem.imagemUrl || '/images/placeholder-property.jpg',
+        alt: imovel.titulo || 'Imóvel'
+    } : undefined,
     bedrooms: imovel.dormitorios,
     bathrooms: imovel.banheiros,
     area: imovel.areaUtil,
     parkingSpots: imovel.vagas,
     type,
     isNew: Boolean(imovel.dataPublicacao && new Date(imovel.dataPublicacao) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)),
-    isFeatured: Boolean(imovel.destaque)
+    featured: Boolean(imovel.destaque),
+    isPremium: false // We'll default this to false for now
 });
-
-// Formatação de preço
-const formatPrice = (price: number, type: 'sale' | 'rent') => {
-    if (price === 0) return 'Consulte';
-
-    const formatted = new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    }).format(price);
-
-    return type === 'rent' ? `${formatted}/mês` : formatted;
-};
-
-// Card de Propriedade Limpo
-const CleanPropertyCard: React.FC<{
-    property: SimplePropertyData;
-    className?: string;
-}> = ({ property, className }) => {
-    const [isLiked, setIsLiked] = useState(false);
-    const [imageLoaded, setImageLoaded] = useState(false);
-
-    const colorScheme = property.type === 'sale'
-        ? 'from-emerald-500 to-green-600'
-        : 'from-blue-500 to-indigo-600';
-
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            whileHover={{ y: -4 }}
-            className={cn(
-                "bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300",
-                "border border-slate-100 overflow-hidden group",
-                className
-            )}
-        >
-            {/* Imagem */}
-            <div className="relative h-48 sm:h-52 bg-slate-100 overflow-hidden">
-                <Image
-                    src={property.image}
-                    alt={property.title}
-                    fill
-                    className={cn(
-                        "object-cover transition-all duration-500 group-hover:scale-105",
-                        imageLoaded ? "opacity-100" : "opacity-0"
-                    )}
-                    onLoad={() => setImageLoaded(true)}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
-
-                {/* Badges */}
-                <div className="absolute top-3 left-3 flex gap-2">
-                    {property.isNew && (
-                        <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-md font-medium">
-                            Novo
-                        </span>
-                    )}
-                    {property.isFeatured && (
-                        <span className={cn(
-                            "bg-gradient-to-r text-white text-xs px-2 py-1 rounded-md font-medium",
-                            colorScheme
-                        )}>
-                            Destaque
-                        </span>
-                    )}
-                </div>
-
-                {/* Ações */}
-                <div className="absolute top-3 right-3 flex gap-2">
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            setIsLiked(!isLiked);
-                        }}
-                        className={cn(
-                            "w-8 h-8 rounded-full flex items-center justify-center transition-all",
-                            "bg-white/90 backdrop-blur-sm hover:bg-white",
-                            isLiked ? "text-red-500" : "text-slate-600"
-                        )}
-                    >
-                        <Heart size={14} className={isLiked ? "fill-current" : ""} />
-                    </button>
-                </div>
-
-                {/* Overlay no hover */}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300" />
-            </div>
-
-            {/* Conteúdo */}
-            <div className="p-4">
-                {/* Preço */}
-                <div className="mb-3">
-                    <span className={cn(
-                        "text-xl font-bold bg-gradient-to-r bg-clip-text text-transparent",
-                        colorScheme
-                    )}>
-                        {formatPrice(property.price, property.type)}
-                    </span>
-                </div>
-
-                {/* Título */}
-                <h3 className="text-slate-800 font-semibold text-base mb-2 line-clamp-2 leading-tight">
-                    {property.title}
-                </h3>
-
-                {/* Localização */}
-                <div className="flex items-center text-slate-500 text-sm mb-4">
-                    <MapPin size={14} className="mr-1.5 flex-shrink-0" />
-                    <span className="truncate">{property.location}</span>
-                </div>
-
-                {/* Características */}
-                <div className="flex items-center gap-4 text-slate-600 text-sm">
-                    {property.bedrooms && (
-                        <div className="flex items-center gap-1">
-                            <BedDouble size={14} />
-                            <span>{property.bedrooms}</span>
-                        </div>
-                    )}
-                    {property.bathrooms && (
-                        <div className="flex items-center gap-1">
-                            <Bath size={14} />
-                            <span>{property.bathrooms}</span>
-                        </div>
-                    )}
-                    {property.area && (
-                        <div className="flex items-center gap-1">
-                            <Ruler size={14} />
-                            <span>{property.area}m²</span>
-                        </div>
-                    )}
-                    {property.parkingSpots && (
-                        <div className="flex items-center gap-1">
-                            <Car size={14} />
-                            <span>{property.parkingSpots}</span>
-                        </div>
-                    )}
-                </div>
-
-                {/* Botão Ver Mais */}
-                <div className="mt-4 pt-3 border-t border-slate-100">
-                    <Link
-                        href={`/imovel/${property.slug}`}
-                        className={cn(
-                            "w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg",
-                            "bg-gradient-to-r text-white font-medium text-sm transition-all",
-                            "hover:shadow-md active:scale-[0.98]",
-                            colorScheme
-                        )}
-                    >
-                        <Eye size={14} />
-                        Ver Detalhes
-                    </Link>
-                </div>
-            </div>
-        </motion.div>
-    );
-};
 
 // Carrossel Mobile-First
 const ResponsiveCarousel: React.FC<{
@@ -338,7 +170,7 @@ const CleanPropertySection: React.FC<CleanPropertySectionProps> = ({
     className
 }) => {
     const displayProperties = properties.slice(0, maxItems);
-    const transformedProperties = displayProperties.map(p => transformProperty(p, type));
+    const transformedProperties = displayProperties.map(p => transformToMobileCard(p, type));
 
     const colorScheme = type === 'sale'
         ? 'from-emerald-500 to-green-600'
@@ -401,14 +233,12 @@ const CleanPropertySection: React.FC<CleanPropertySectionProps> = ({
                             Ver Todos
                         </Link>
                     )}
-                </div>
-
-                {/* Carrossel de Cards */}
+                </div>                {/* Carrossel de Cards */}
                 <ResponsiveCarousel>
                     {transformedProperties.map((property) => (
-                        <CleanPropertyCard
+                        <MobilePropertyCard
                             key={property.id}
-                            property={property}
+                            {...property}
                         />
                     ))}
                 </ResponsiveCarousel>

@@ -2,41 +2,69 @@
 
 import { useState, useEffect } from 'react';
 import type { ImovelClient } from '../../src/types/imovel-client';
+import MobilePropertyCard from '../components/MobilePropertyCard';
 
 interface TurboComprarPageProps {
     preloadedProperties?: ImovelClient[];
 }
 
+// Transform Sanity data to MobilePropertyCard format
+const transformToMobileCard = (imovel: ImovelClient) => ({
+    id: imovel._id,
+    title: imovel.titulo || 'Imóvel disponível',
+    price: imovel.preco || 0,
+    address: imovel.endereco || '',
+    location: imovel.bairro || imovel.cidade || 'Guararema',
+    image: imovel.imagem?.imagemUrl || '/images/property-placeholder.jpg',
+    bedrooms: imovel.dormitorios,
+    bathrooms: imovel.banheiros,
+    area: imovel.areaUtil,
+    type: 'sale' as const,
+    featured: imovel.destaque || false,
+});
+
 /**
- * TurboComprarPage - Simplified version for build stability
+ * TurboComprarPage - Mobile-first optimized version
  */
 export default function TurboComprarPage({ preloadedProperties }: TurboComprarPageProps) {
     const [properties, setProperties] = useState<ImovelClient[]>(preloadedProperties || []);
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-8">Imóveis à Venda</h1>
-            <p className="text-gray-600 mb-8">
-                Encontre o imóvel dos seus sonhos para comprar em Guararema e região com excelente valorização e localização premium.
-            </p>
+        <div className="min-h-screen bg-gray-50 pt-20 pb-16">
+            <div className="container mx-auto px-4 py-8">
+                {/* Header */}
+                <div className="text-center mb-8">
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                        Imóveis à Venda
+                    </h1>
+                    <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto">
+                        Encontre o imóvel dos seus sonhos para comprar em Guararema e região com excelente valorização e localização premium.
+                    </p>
+                </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {properties.map((property) => (
-                    <div key={property._id} className="bg-white rounded-lg shadow-md p-4">
-                        <h3 className="font-semibold text-lg">{property.titulo}</h3>
-                        <p className="text-gray-600">{property.endereco}</p>
-                        <p className="text-green-600 font-bold">
-                            R$ {property.preco?.toLocaleString('pt-BR')}
+                {/* Properties Grid - Mobile First */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    {properties.map((property) => (
+                        <MobilePropertyCard
+                            key={property._id}
+                            {...transformToMobileCard(property)}
+                        />
+                    ))}
+                </div>
+
+                {/* Empty State */}
+                {properties.length === 0 && (
+                    <div className="text-center text-gray-500 py-12">
+                        <div className="text-4xl mb-4">🏠</div>
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            Nenhum imóvel disponível
+                        </h3>
+                        <p className="text-gray-600">
+                            Nenhum imóvel disponível para venda no momento.
                         </p>
                     </div>
-                ))}
+                )}
             </div>
-
-            {properties.length === 0 && (
-                <div className="text-center text-gray-500 py-12">
-                    Nenhum imóvel disponível para venda no momento.
-                </div>
-            )}
         </div>
     );
 }

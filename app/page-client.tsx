@@ -8,7 +8,7 @@ import OptimizationProvider from './components/OptimizationProvider';
 import WhatsAppButton from './components/WhatsAppButton';
 import EnhancedNotificationBanner from './components/EnhancedNotificationBanner';
 import EnhancedTestimonials from './components/EnhancedTestimonials';
-import LuxuryHero from './components/LuxuryHero';
+import MobileFirstHero from './components/MobileFirstHero';
 import { ProcessedProperty } from './types/property';
 import { transformPropertiesArrayToPremium } from './utils/property-transformer';
 import type { ImovelClient } from '../src/types/imovel-client';
@@ -75,7 +75,7 @@ export default function HomePageClient({
                     storageKey="home_notification_dismissed"
                 />
             </header>
-            <LuxuryHero />
+            <MobileFirstHero />
             <BlocoExploracaoGuararema />
 
             {/* Conteúdo principal */}

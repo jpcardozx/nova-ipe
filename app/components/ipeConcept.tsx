@@ -267,7 +267,7 @@ export default function IpeInstitutional({ className }: IpeInstitutionalProps) {
                                             </div>
                                             <div>
                                                 <p className="font-medium text-stone-900 mb-2 text-sm">
-                                                    Localização Estratégica
+                                                    Novo Escritório Ipê
                                                 </p>
                                                 <p className="text-stone-700 text-sm font-medium">
                                                     Praça 9 de Julho, 65
@@ -298,7 +298,7 @@ export default function IpeInstitutional({ className }: IpeInstitutionalProps) {
                                     >
                                         <div className="flex items-center gap-3">
                                             <div className="w-2 h-2 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full animate-pulse" />
-                                            <span className="text-sm font-medium text-stone-700">Performance consolidada</span>
+                                            <span className="text-sm font-medium text-stone-700">CRECI</span>
                                         </div>
                                     </motion.div>
                                 </div>

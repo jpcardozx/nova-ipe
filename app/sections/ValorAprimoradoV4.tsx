@@ -126,7 +126,7 @@ export default function ValorAprimoradoModerno() {
                                     </div>
 
                                     <h1 className="text-4xl lg:text-5xl font-light text-gray-800 leading-tight">
-                                        Seu investimento imobiliário em
+                                        Sua Imobiliária em
                                         <span className="block text-amber-700 font-medium mt-2">Guararema</span>
                                     </h1>
                                     <p className="text-lg text-gray-600 leading-relaxed">

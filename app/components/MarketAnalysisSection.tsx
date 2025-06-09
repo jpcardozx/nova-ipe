@@ -144,7 +144,7 @@ export default function MarketAnalysisSection() {
         <SectionWrapper
             title="Análise do Mercado Imobiliário"
             subtitle="Insights estratégicos para sua decisão de investimento em Guararema"
-            badge="Dados Atualizados"
+            badge="Compra & Venda"
             background="amber"
             id="analise-mercado"
         >
