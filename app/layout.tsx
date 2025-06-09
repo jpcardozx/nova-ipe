@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     url: 'https://www.ipeimoveis.com.br',
     siteName: 'Ipê Imóveis', images: [
       {
-        url: '/images/ipe-social-banner.png',
+        url: '/images/og-banner-optimized.png',
         width: 1200,
         height: 630,
         alt: 'Ipê Imóveis - Guararema - Preview Banner'
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Ipê Imóveis - Guararema, SP',
     description: 'Ipê Imóveis te espera. Mais de 15 anos ajudando famílias a encontrar os imóveis perfeitos.',
-    images: ['/images/ipe-social-banner.png'],
+    images: ['/images/og-banner-optimized.png'],
     creator: '@ipeimoveis',
   },
   robots: {
