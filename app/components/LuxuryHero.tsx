@@ -104,10 +104,8 @@ export default function LuxuryHero() {
         if (location) params.append('local', location)
 
         window.location.href = `/catalogo?${params.toString()}`
-    }
-
-    return (
-        <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden responsive-padding py-16 sm:py-0">
+    }    return (
+        <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden responsive-padding py-16 sm:py-0 pt-20">
             {/* Background with subtle gradient */}
             <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-[20s] ease-linear"

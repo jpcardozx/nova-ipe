@@ -25,46 +25,42 @@ interface IpeInstitutionalProps {
 
 export default function IpeInstitutional({ className }: IpeInstitutionalProps) {
     const containerRef = useRef<HTMLDivElement>(null);
-    const isInView = useInView(containerRef, { once: true, margin: '-80px' });
-
-    const diferenciais = [
+    const isInView = useInView(containerRef, { once: true, margin: '-80px' }); const diferenciais = [
         {
             icon: <Target className="w-6 h-6" />,
-            titulo: "Estratégia Direcionada",
-            descricao: "Análise técnica do mercado e positioning estratégico para maximizar resultados em cada transação."
+            titulo: "Inteligência de Mercado",
+            descricao: "Análise técnica aprofundada com dados proprietários e insights estratégicos para decisões fundamentadas e timing preciso."
         },
         {
             icon: <Compass className="w-6 h-6" />,
-            titulo: "Conhecimento Territorial",
-            descricao: "Expertise consolidada sobre Guararema: microregiões, tendências de valorização e oportunidades emergentes."
+            titulo: "Expertise Territorial",
+            descricao: "Conhecimento consolidado em microregiões, ciclos de valorização e oportunidades de crescimento em Guararema e entorno."
         },
         {
             icon: <Shield className="w-6 h-6" />,
-            titulo: "Compliance Integral",
-            descricao: "Metodologia estruturada com checklist completo, due diligence e acompanhamento jurídico especializado."
+            titulo: "Compliance & Segurança",
+            descricao: "Metodologia rigorosa com due diligence completa, verificações jurídicas e protocolo de transparência total."
         },
         {
             icon: <TrendingUp className="w-6 h-6" />,
-            titulo: "Performance Otimizada",
-            descricao: "Processos digitais avançados e análise de dados para acelerar negociações e reduzir fricções."
+            titulo: "Execução Otimizada",
+            descricao: "Processos digitais integrados, automações inteligentes e gestão ativa para resultados acelerados e previsíveis."
         }
-    ];
-
-    const indicadores = [
+    ]; const indicadores = [
         {
-            valor: "12+",
+            valor: "15+",
             label: "Anos",
-            descricao: "de expertise consolidada"
+            descricao: "de liderança consolidada"
         },
         {
-            valor: "500+",
-            label: "Transações",
-            descricao: "executadas com sucesso"
+            valor: "650+",
+            label: "Negócios",
+            descricao: "estruturados com sucesso"
         },
         {
-            valor: "98%",
-            label: "Satisfação",
-            descricao: "índice de recomendação"
+            valor: "97%",
+            label: "Excelência",
+            descricao: "em satisfação e resultados"
         }
     ];
 
@@ -103,12 +99,12 @@ export default function IpeInstitutional({ className }: IpeInstitutionalProps) {
                 ease: [0.25, 0.25, 0.25, 0.75]
             }
         }
-    };
-
-    return (
+    }; return (
         <section
+            id="ipe-concept"
             ref={containerRef}
             className={`relative py-32 lg:py-40 overflow-hidden ${className}`}
+            aria-labelledby="ipe-concept-heading"
         >
             {/* Sophisticated Background */}
             <div className="absolute inset-0 bg-gradient-to-br from-stone-50 via-white to-amber-50/40" />
@@ -136,19 +132,17 @@ export default function IpeInstitutional({ className }: IpeInstitutionalProps) {
                     >
                         <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-white/80 to-amber-50/60 backdrop-blur-sm border border-amber-100/50 rounded-full mb-10 shadow-sm">
                             <div className="w-2 h-2 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full" />
-                            <span className="text-sm font-medium text-stone-700 tracking-wide">NOVA IPÊ IMÓVEIS</span>
-                        </div>
-
-                        <h2 className="text-5xl lg:text-7xl font-light text-stone-900 mb-8 leading-[0.95] tracking-tight">
+                            <span className="text-sm font-medium text-stone-700 tracking-wide">CONHEÇA A IPÊ</span>
+                        </div>                        <h2 id="ipe-concept-heading" className="text-5xl lg:text-7xl font-light text-stone-900 mb-8 leading-[0.95] tracking-tight">
                             Expertise que{' '}
                             <span className="font-medium text-transparent bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-600 bg-clip-text">
-                                constrói valor
+                                transforma decisões
                             </span>
                         </h2>
 
                         <p className="text-xl text-stone-600 max-w-4xl mx-auto leading-relaxed font-light">
-                            Combinamos conhecimento técnico aprofundado, análise de mercado e processos estruturados
-                            para entregar soluções imobiliárias de alta performance em Guararema e região.
+                            Desenvolvemos soluções imobiliárias estratégicas através de inteligência de mercado,
+                            análise técnica avançada e metodologia proprietária para resultados consistentes e mensuráveis.
                         </p>
                     </motion.div>
 
@@ -226,7 +220,7 @@ export default function IpeInstitutional({ className }: IpeInstitutionalProps) {
                                 >
                                     <div className="absolute inset-0 bg-gradient-to-r from-amber-600/10 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                                     <Users className="w-5 h-5 relative z-10" />
-                                    <span className="relative z-10">Iniciar conversa estratégica</span>
+                                    <span className="relative z-10">Explorar oportunidades estratégicas</span>
                                     <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300 relative z-10" />
                                 </a>
                             </motion.div>
@@ -302,7 +296,7 @@ export default function IpeInstitutional({ className }: IpeInstitutionalProps) {
                                 >
                                     <div className="flex items-center gap-3">
                                         <div className="w-2 h-2 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full animate-pulse" />
-                                        <span className="text-sm font-medium text-stone-700">+28% YoY</span>
+                                        <span className="text-sm font-medium text-stone-700">Performance consolidada</span>
                                     </div>
                                 </motion.div>
                             </div>
@@ -313,16 +307,15 @@ export default function IpeInstitutional({ className }: IpeInstitutionalProps) {
                     <motion.div
                         className="mt-32 text-center"
                         variants={itemVariants}
-                    >
-                        <div className="inline-flex flex-wrap items-center gap-8 px-12 py-6 bg-gradient-to-r from-white/60 via-white/80 to-white/60 backdrop-blur-sm rounded-3xl border border-stone-100/60 shadow-sm">
+                    >                        <div className="inline-flex flex-wrap items-center gap-8 px-12 py-6 bg-gradient-to-r from-white/60 via-white/80 to-white/60 backdrop-blur-sm rounded-3xl border border-stone-100/60 shadow-sm">
                             <div className="flex items-center gap-3 text-stone-600">
                                 <div className="w-2 h-2 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full" />
-                                <span className="text-sm font-medium">CRECI Ativo</span>
+                                <span className="text-sm font-medium">Certificação CRECI</span>
                             </div>
                             <div className="w-px h-6 bg-stone-200/60" />
                             <div className="flex items-center gap-3 text-stone-600">
                                 <div className="w-2 h-2 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full" />
-                                <span className="text-sm font-medium">Suporte Técnico</span>
+                                <span className="text-sm font-medium">Assessoria Técnica</span>
                             </div>
                             <div className="w-px h-6 bg-stone-200/60" />
                             <div className="flex items-center gap-3 text-stone-600">

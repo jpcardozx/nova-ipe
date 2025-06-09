@@ -114,7 +114,7 @@ export default function BlocoExploracaoGuararema() {
                         className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 rounded-full text-amber-700 text-sm font-semibold mb-8 shadow-lg backdrop-blur-sm"
                     >
                         <Sparkles className="w-4 h-4 text-amber-500" />
-                        Explore Guararema
+                        Descubra Guararema
                         <MapPin className="w-4 h-4 text-amber-600" />
                     </motion.div>
 
@@ -324,8 +324,7 @@ export default function BlocoExploracaoGuararema() {
 
                         <h3 className="text-2xl font-bold mb-3">Atendimento Personalizado</h3>
                         <p className="text-gray-300 mb-6 max-w-lg mx-auto">
-                            Nossa equipe de especialistas locais pode criar uma busca direcionada para seus
-                            critérios específicos. Conte-nos sobre seu imóvel ideal.
+                            Nossos corretores podem te auxiliar a criar uma busca direcionada às suas necessidades. Conte-nos sobre seu imóvel ideal.
                         </p>
 
                         <motion.div
