@@ -8,8 +8,7 @@ import type { ImovelClient } from '../src/types/imovel-client';
 export const metadata: Metadata = {
   title: 'Ipê Imóveis - Serviços Imobiliários em Guararema e Região',
   description: 'Temos o imóvel que você procura em Guararema e região. Entre em contato conosco e descubra as melhores opções de compra e aluguel. 15 anos de experiência, 500+ imóveis vendidos.',
-  keywords: 'imóveis Guararema, casas venda, apartamentos aluguel, terrenos, Nova Ipê, imobiliária, Guararema SP, região, compra, venda, locação, corretor, avaliação',
-  authors: [{ name: 'Ipê Imóveis', url: 'https://www.ipeimoveis.com.br' }],
+  keywords: 'imóveis Guararema, casas venda, apartamentos aluguel, terrenos, Nova Ipê, imobiliária, Guararema SP, região, compra, venda, locação, corretor, avaliação', authors: [{ name: 'Ipê Imóveis', url: 'https://ipeimoveis.vercel.app' }],
   creator: 'Ipê Imóveis',
   publisher: 'Ipê Imóveis',
   formatDetection: {
@@ -17,13 +16,13 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://www.ipeimoveis.com.br'),
+  metadataBase: new URL('https://ipeimoveis.vercel.app'),
   alternates: {
     canonical: '/',
   }, openGraph: {
     title: 'Ipê Imóveis - Compra, Venda e Locação em Guararema',
     description: 'O imóvel que você busca está em nosso catálogo. Agende sua visita. 15 anos de experiência, 500+ imóveis vendidos.',
-    url: 'https://www.ipeimoveis.com.br',
+    url: 'https://ipeimoveis.vercel.app',
     siteName: 'Ipê Imóveis', images: [
       {
         url: '/images/og-banner-optimized.png',
