@@ -11,11 +11,17 @@ import EnhancedTestimonials from './components/EnhancedTestimonials';
 import LuxuryHero from './components/LuxuryHero';
 import { ProcessedProperty } from './types/property';
 import { transformPropertiesArrayToPremium } from './utils/property-transformer';
+import type { ImovelClient } from '../src/types/imovel-client';
 
-// Importando os novos componentes premium otimizados
-const PremiumPropertyCarouselOptimized = dynamic(() => import('./components/premium/PremiumPropertyCarouselOptimized'), {
+// Importando os componentes limpos e funcionais
+const CleanSalesSection = dynamic(() => import('./components/premium/CleanPropertySections').then(mod => ({ default: mod.CleanSalesSection })), {
     ssr: true,
-    loading: () => <UnifiedLoading height="500px" title="Carregando imóveis..." />
+    loading: () => <UnifiedLoading height="500px" title="Carregando imóveis para venda..." />
+});
+
+const CleanRentalsSection = dynamic(() => import('./components/premium/CleanPropertySections').then(mod => ({ default: mod.CleanRentalsSection })), {
+    ssr: true,
+    loading: () => <UnifiedLoading height="500px" title="Carregando imóveis para aluguel..." />
 });
 
 const ValorAprimorado = dynamic(() => import('./sections/ValorAprimoradoV4'), {
@@ -44,9 +50,9 @@ const FooterAprimorado = dynamic(() => import('./sections/FooterAprimorado'), {
 });
 
 interface HomePageClientProps {
-    propertiesForSale: ProcessedProperty[];
-    propertiesForRent: ProcessedProperty[];
-    featuredProperties: ProcessedProperty[];
+    propertiesForSale: ImovelClient[];
+    propertiesForRent: ImovelClient[];
+    featuredProperties: ImovelClient[];
 }
 
 export default function HomePageClient({
@@ -73,53 +79,31 @@ export default function HomePageClient({
             <BlocoExploracaoGuararema />
 
             {/* Conteúdo principal */}
-            <main>
-                <ScrollAnimations>                    {/* Imóveis para Venda - Carrossel Premium Otimizado */}
-                    <PremiumPropertyCarouselOptimized
-                        properties={transformPropertiesArrayToPremium(propertiesForSale)}
-                        title="Imóveis para Venda"
-                        subtitle="Encontre a casa dos seus sonhos em Guararema"
-                        badge="Vendas"
-                        viewAllLink="/imoveis/venda"
-                        viewAllText="Ver todos para venda"
-                        cardVariant="featured"
-                        slidesToShow={{
-                            desktop: 3,
-                            tablet: 2,
-                            mobile: 1
-                        }}
-                        autoplay={true}
-                        autoplayDelay={6000}
-                        className="mb-16"
-                    />
+            <main>                <ScrollAnimations>                {/* Seção de Imóveis para Venda - Sistema Limpo e Funcional */}
+                <CleanSalesSection
+                    properties={propertiesForSale}
+                    title="Imóveis para Venda"
+                    subtitle="Encontre a casa dos seus sonhos em Guararema"
+                    maxItems={12}
+                    className="mb-20"
+                />
 
+                {/* 2. Apresentação Institucional - IpeConcept original */}
+                <IpeConcept />                    {/* Seção de Imóveis para Aluguel - Sistema Limpo e Funcional */}
+                <CleanRentalsSection
+                    properties={propertiesForRent}
+                    title="Imóveis para Aluguel"
+                    subtitle="Encontre o imóvel ideal para locação em Guararema"
+                    maxItems={12}
+                    className="mb-20"
+                /><MarketAnalysisSection />
 
-                    {/* 2. Apresentação Institucional - IpeConcept original */}
-                    <IpeConcept />                    {/* Imóveis para Aluguel (principal) - Carrossel Premium Otimizado */}
-                    <PremiumPropertyCarouselOptimized
-                        properties={transformPropertiesArrayToPremium(propertiesForRent)}
-                        title="Imóveis para Aluguel"
-                        subtitle="Encontre o imóvel ideal para locação em Guararema"
-                        badge="Locações"
-                        viewAllLink="/imoveis/aluguel"
-                        viewAllText="Ver todos para aluguel"
-                        cardVariant="default"
-                        slidesToShow={{
-                            desktop: 3,
-                            tablet: 2,
-                            mobile: 1
-                        }}
-                        autoplay={true}
-                        autoplayDelay={7000}
-                        className="mb-16"
-                    /><MarketAnalysisSection />
+                {/* 3. Seção de Precificação */}
+                <ValorAprimorado />
 
-                    {/* 3. Seção de Precificação */}
-                    <ValorAprimorado />
-
-                    {/* Banner de depoimentos para aumentar a confiança */}
-                    <EnhancedTestimonials />
-                </ScrollAnimations>
+                {/* Banner de depoimentos para aumentar a confiança */}
+                <EnhancedTestimonials />
+            </ScrollAnimations>
             </main>
 
             {/* Botão do WhatsApp fixo */}

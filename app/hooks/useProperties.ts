@@ -1,23 +1,54 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { getImoveisDestaqueVenda, getImoveisAluguel } from '@/lib/queries';
 import { loadImage } from '@/lib/enhanced-image-loader';
 import { extractSlugString } from '@/app/PropertyTypeFix';
 import type { ImovelClient } from '@/src/types/imovel-client';
 import type { PropertyType, PropertyCardUnifiedProps as PropertyCardProps } from '@/app/components/ui/property/PropertyCardUnified';
 
+// Enhanced cache system
+const propertyCache = new Map<string, {
+  data: ImovelClient[];
+  timestamp: number;
+  staleTime: number;
+}>();
+
+const getCachedData = (key: string): ImovelClient[] | null => {
+  const cached = propertyCache.get(key);
+  if (!cached) return null;
+  
+  const now = Date.now();
+  if (now - cached.timestamp > cached.staleTime) {
+    propertyCache.delete(key);
+    return null;
+  }
+  
+  return cached.data;
+};
+
+const setCachedData = (key: string, data: ImovelClient[], staleTime: number = 5 * 60 * 1000) => {
+  propertyCache.set(key, {
+    data,
+    timestamp: Date.now(),
+    staleTime
+  });
+};
+
 export interface UsePropertiesOptions {
   type: 'sale' | 'rent';
   initialFilter?: string;
   initialSort?: string;
   pageSize?: number;
+  staleTime?: number;
+  enabled?: boolean;
 }
 
 export interface UsePropertiesReturn {
   // Data
   properties: PropertyCardProps[];
   filteredProperties: PropertyCardProps[];
+  rawProperties: ImovelClient[];
   loading: boolean;
   error: string | null;
   
@@ -45,7 +76,67 @@ export interface UsePropertiesReturn {
     averagePrice: number;
     priceRange: { min: number; max: number };
   };
+  
+  // Enhanced state
+  isEmpty: boolean;
+  hasData: boolean;
 }
+
+// Specialized hooks for different property types
+export const useSalesProperties = (options?: Omit<UsePropertiesOptions, 'type'>) => {
+  return useProperties({ type: 'sale', ...options });
+};
+
+export const useRentalProperties = (options?: Omit<UsePropertiesOptions, 'type'>) => {
+  return useProperties({ type: 'rent', ...options });
+};
+
+// Hook for managing property favorites
+export const useFavorites = () => {
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('property-favorites');
+      if (saved) {
+        const favArray = JSON.parse(saved);
+        setFavorites(new Set(favArray));
+      }
+    } catch (error) {
+      console.error('Error loading favorites:', error);
+    }
+  }, []);
+
+  const toggleFavorite = useCallback((propertyId: string) => {
+    setFavorites(prev => {
+      const newFavorites = new Set(prev);
+      if (newFavorites.has(propertyId)) {
+        newFavorites.delete(propertyId);
+      } else {
+        newFavorites.add(propertyId);
+      }
+      
+      try {
+        localStorage.setItem('property-favorites', JSON.stringify([...newFavorites]));
+      } catch (error) {
+        console.error('Error saving favorites:', error);
+      }
+      
+      return newFavorites;
+    });
+  }, []);
+
+  const isFavorite = useCallback((propertyId: string) => {
+    return favorites.has(propertyId);
+  }, [favorites]);
+
+  return {
+    favorites: [...favorites],
+    toggleFavorite,
+    isFavorite,
+    count: favorites.size
+  };
+};
 
 // Transform property data
 function transformPropertyData(imovel: ImovelClient, propertyType: PropertyType): PropertyCardProps | null {
@@ -243,11 +334,11 @@ export function useProperties({
     setCurrentPage(1);
     fetchProperties();
   }, [fetchProperties]);
-
   return {
     // Data
     properties,
     filteredProperties: paginatedProperties,
+    rawProperties: [], // TODO: Store raw ImovelClient data if needed
     loading,
     error,
     
@@ -269,7 +360,11 @@ export function useProperties({
     refresh,
     
     // Stats
-    stats
+    stats,
+    
+    // Enhanced state
+    isEmpty: properties.length === 0,
+    hasData: properties.length > 0
   };
 }
 

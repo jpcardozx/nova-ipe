@@ -3,8 +3,7 @@ import { Suspense } from 'react';
 import HomePageClient from './page-client';
 import { fetchProperties } from '../lib/sanity/fetchImoveis';
 import { UnifiedLoading } from './components/ui/UnifiedComponents';
-import { ProcessedProperty } from './types/property';
-import { transformImovelToProcessedProperty } from '../lib/transformers/imovelToProcessedProperty';
+import type { ImovelClient } from '../src/types/imovel-client';
 
 export const metadata: Metadata = {
   title: 'Ipê Imóveis',
@@ -36,11 +35,10 @@ export const metadata: Metadata = {
 async function getProperties() {
   try {
     const imoveis = await fetchProperties();
-    const properties = imoveis.map(transformImovelToProcessedProperty);
 
-    const propertiesForSale = properties.filter(p => p.categoria === 'venda').slice(0, 6);
-    const propertiesForRent = properties.filter(p => p.categoria === 'aluguel').slice(0, 6);
-    const featuredProperties = properties.filter(p => p.destaque).slice(0, 4);
+    const propertiesForSale = imoveis.filter(p => p.finalidade === 'Venda').slice(0, 12);
+    const propertiesForRent = imoveis.filter(p => p.finalidade === 'Aluguel').slice(0, 12);
+    const featuredProperties = imoveis.filter(p => p.destaque).slice(0, 6);
 
     return {
       propertiesForSale,
