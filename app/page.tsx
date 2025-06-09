@@ -6,12 +6,12 @@ import { UnifiedLoading } from './components/ui/UnifiedComponents';
 import type { ImovelClient } from '../src/types/imovel-client';
 
 export const metadata: Metadata = {
-  title: 'Ipê Imóveis',
+  title: 'Ipê Imóveis - Serviços Imobiliários em Guararema e Região',
   description: 'Temos o imóvel que você procura em Guararema e região. Entre em contato conosco e descubra as melhores opções de compra e aluguel.',
   keywords: 'imóveis Guararema, casas venda, apartamentos aluguel, terrenos, Nova Ipê, imobiliária',
   openGraph: {
     title: 'Ipê Imóveis - Compra, Venda e Locação em Guararema',
-    description: 'Encontre seu imóvel ideal com a Ipê Imóveis. 15+ anos de experiência, 500+ imóveis vendidos.',
+    description: 'O imóvel que você busca está em nosso catálogo. Agende sua visita. 15 anos de experiência, 500+ imóveis vendidos.',
     images: [
       {
         url: '/images/ipeLogoWritten.png',

@@ -124,11 +124,10 @@ export default function EnhancedNotificationBanner({
                     initial={{ opacity: 0, y: position === 'top' ? -20 : 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: position === 'top' ? -20 : 20 }}
-                    transition={{ duration: 0.3 }}
-                    className={cn(
+                    transition={{ duration: 0.3 }} className={cn(
                         config.bg,
-                        "py-2.5 px-4 z-50 shadow-md",
-                        position === 'top' ? 'relative' : 'fixed bottom-0 left-0 right-0'
+                        "py-2.5 px-4 shadow-md",
+                        position === 'top' ? 'relative z-40' : 'fixed bottom-0 left-0 right-0 z-50'
                     )}
                 >
                     <div className="container mx-auto flex flex-wrap items-center justify-center md:justify-between gap-x-4 gap-y-2">

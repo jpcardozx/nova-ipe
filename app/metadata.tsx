@@ -87,6 +87,8 @@ export const metadata: Metadata = {
         'mobile-web-app-capable': 'yes',
         'apple-mobile-web-app-status-bar-style': 'default',
         'format-detection': 'telephone=no',
+        'og:image:width': '1200',
+        'og:image:height': '630',
     },
     manifest: '/manifest.webmanifest',
 };

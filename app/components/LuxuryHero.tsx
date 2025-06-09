@@ -54,10 +54,9 @@ export default function LuxuryHero() {
                     background-position: -200% center;
                 }
             }
-            
-            @media (max-width: 640px) {
+              @media (max-width: 640px) {
                 .responsive-padding {
-                    padding-top: 5rem !important;
+                    padding-top: 6rem !important;
                     padding-bottom: 5rem !important;
                 }
                 
@@ -98,14 +97,15 @@ export default function LuxuryHero() {
     }, [])
 
     const handleSearch = () => {
-        const params = new URLSearchParams()
-        if (searchQuery) params.append('q', searchQuery)
-        if (propertyType) params.append('tipo', propertyType)
-        if (location) params.append('local', location)
+        const params = new URLSearchParams();
+        if (searchQuery) params.append('q', searchQuery);
+        if (propertyType) params.append('tipo', propertyType); if (location) params.append('local', location);
 
-        window.location.href = `/catalogo?${params.toString()}`
-    }    return (
-        <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden responsive-padding py-16 sm:py-0 pt-20">
+        window.location.href = `/catalogo?${params.toString()}`;
+    }
+
+    return (
+        <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden responsive-padding py-16 sm:py-0 pt-20 sm:pt-24">
             {/* Background with subtle gradient */}
             <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-[20s] ease-linear"
@@ -383,13 +383,12 @@ export default function LuxuryHero() {
                                 repeat: Infinity,
                                 duration: 2,
                                 ease: "easeInOut"
-                            }}
-                        >
+                            }}                        >
                             <ChevronDown className="w-5 h-5 text-white/60" />
                         </motion.div>
                     </div>
                 </motion.div>
             </div>
         </section>
-    )
+    );
 }
