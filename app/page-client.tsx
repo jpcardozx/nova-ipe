@@ -8,7 +8,7 @@ import OptimizationProvider from './components/OptimizationProvider';
 import WhatsAppButton from './components/WhatsAppButton';
 import EnhancedNotificationBanner from './components/EnhancedNotificationBanner';
 import EnhancedTestimonials from './components/EnhancedTestimonials';
-import MobileFirstHero from './components/MobileFirstHero';
+import { Hero, Section } from '@/lib/components';
 import { ProcessedProperty } from './types/property';
 import { transformPropertiesArrayToPremium } from './utils/property-transformer';
 import type { ImovelClient } from '../src/types/imovel-client';
@@ -41,10 +41,6 @@ const IpeConcept = dynamic(() => import('./components/ipeConcept'), {
     loading: () => <UnifiedLoading height="550px" title="Carregando..." />,
 });
 
-const ContactForm = dynamic(() => import('./components/FormularioContatoUnified'), {
-    loading: () => <UnifiedLoading height="400px" title="Carregando formulário..." />,
-});
-
 const FooterAprimorado = dynamic(() => import('./sections/FooterAprimorado'), {
     loading: () => <UnifiedLoading height="300px" title="Carregando rodapé..." />,
 });
@@ -75,35 +71,51 @@ export default function HomePageClient({
                     storageKey="home_notification_dismissed"
                 />
             </header>
-            <MobileFirstHero />
+            <Hero />
             <BlocoExploracaoGuararema />
 
-            {/* Conteúdo principal */}
-            <main>                <ScrollAnimations>                {/* Seção de Imóveis para Venda - Sistema Limpo e Funcional */}
-                <CleanSalesSection
-                    properties={propertiesForSale}
-                    title="Imóveis para Venda"
-                    subtitle="Encontre a casa dos seus sonhos em Guararema"
-                    maxItems={12}
-                    className="mb-20"
-                />
+            {/* Main Content */}
+            <main>
+                <ScrollAnimations>
+                    {/* Properties for Sale Section */}
+                    <Section variant="feature" background="gray">
+                        <CleanSalesSection
+                            properties={propertiesForSale}
+                            title="Imóveis para Venda"
+                            subtitle="Encontre a casa dos seus sonhos em Guararema"
+                            maxItems={12}
+                            className="mb-20"
+                        />
+                    </Section>
 
-                {/* 2. Apresentação Institucional - IpeConcept original */}
-                <IpeConcept />                    {/* Seção de Imóveis para Aluguel - Sistema Limpo e Funcional */}
-                <CleanRentalsSection
-                    properties={propertiesForRent}
-                    title="Imóveis para Aluguel"
-                    subtitle="Encontre o imóvel ideal para locação em Guararema"
-                    maxItems={12}
-                    className="mb-20"
-                /><MarketAnalysisSection />
+                    {/* Institutional Presentation */}
+                    <Section variant="default">
+                        <IpeConcept />
+                    </Section>
 
-                {/* 3. Seção de Precificação */}
-                <ValorAprimorado />
+                    {/* Properties for Rent Section */}
+                    <Section variant="feature" background="gray">
+                        <CleanRentalsSection
+                            properties={propertiesForRent}
+                            title="Imóveis para Aluguel"
+                            subtitle="Encontre o imóvel ideal para locação em Guararema"
+                            maxItems={12}
+                            className="mb-20"
+                        />
+                    </Section>
 
-                {/* Banner de depoimentos para aumentar a confiança */}
-                <EnhancedTestimonials />
-            </ScrollAnimations>
+                    <MarketAnalysisSection />
+
+                    {/* Value Proposition Section */}
+                    <Section variant="cta">
+                        <ValorAprimorado />
+                    </Section>
+
+                    {/* Testimonials */}
+                    <Section variant="default" background="gray">
+                        <EnhancedTestimonials />
+                    </Section>
+                </ScrollAnimations>
             </main>
 
             {/* Botão do WhatsApp fixo */}

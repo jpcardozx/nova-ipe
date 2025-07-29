@@ -6,7 +6,6 @@
 
 import { ImageType } from '../app/PropertyTypeFix';
 import { extractImageUrl, extractAltText } from './image-sanity';
-import { debugImage } from './debug-image';
 
 /**
  * Interface for normalized image data
@@ -73,8 +72,10 @@ export function processEnhancedSanityImage(
         // Merge options with defaults
         const config = { ...defaultOptions, ...options };
 
-        // Debug image structure
-        debugImage(image, 'processEnhancedSanityImage');
+        // Debug image structure (removed debug call)
+        if (process.env.NODE_ENV === 'development') {
+            console.log('[Enhanced Image] Processing image:', image);
+        }
 
         // Handle null/undefined image
         if (!image) {
