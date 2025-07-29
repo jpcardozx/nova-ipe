@@ -41,7 +41,7 @@ const IpeConcept = dynamic(() => import('./components/ipeConcept'), {
     loading: () => <UnifiedLoading height="550px" title="Carregando..." />,
 });
 
-const FormularioContatoModerno = dynamic(() => import('./components/FormularioContatoModerno'), {
+const ContactForm = dynamic(() => import('./components/FormularioContatoUnified'), {
     loading: () => <UnifiedLoading height="400px" title="Carregando formulário..." />,
 });
 

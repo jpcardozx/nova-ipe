@@ -2,7 +2,6 @@
 
 import React from 'react';
 import FormularioContatoUnified from '@/app/components/FormularioContatoUnified';
-import FormularioContatoEnhanced from '@/app/components/FormularioContatoEnhanced';
 import ValorUnified from '@/app/sections/ValorAprimoradoV4';
 import { motion } from 'framer-motion';
 
@@ -89,7 +88,7 @@ const ComponentShowcase: React.FC = () => {
                         <h3 className="text-2xl font-semibold text-neutral-800 mb-2">Versão Enhanced (Alternativa)</h3>
                         <p className="text-neutral-600">Componente com ainda mais recursos visuais e persuasivos</p>
                     </div>
-                    <FormularioContatoEnhanced />
+                    <FormularioContatoUnified />
                 </div>
             </section>            {/* Comparação Antes/Depois */}
             <section className="py-20 bg-gradient-to-b from-amber-50 via-orange-50/30 to-amber-50">

@@ -2,25 +2,25 @@
 
 import { useState, useEffect } from 'react';
 import type { ImovelClient } from '../../src/types/imovel-client';
-import MobilePropertyCard from '../components/MobilePropertyCard';
+import PropertyCard from '@/lib/components/ui/PropertyCard';
 
 interface TurboComprarPageProps {
     preloadedProperties?: ImovelClient[];
 }
 
-// Transform Sanity data to MobilePropertyCard format
-const transformToMobileCard = (imovel: ImovelClient) => ({
+// Transform Sanity data to PropertyCard format
+const transformToPropertyCard = (imovel: ImovelClient) => ({
     id: imovel._id,
     title: imovel.titulo || 'Imóvel disponível',
     price: imovel.preco || 0,
-    address: imovel.endereco || '',
     location: imovel.bairro || imovel.cidade || 'Guararema',
-    image: imovel.imagem?.imagemUrl || '/images/property-placeholder.jpg',
+    imageUrl: imovel.imagem?.imagemUrl || '/images/property-placeholder.jpg',
     bedrooms: imovel.dormitorios,
     bathrooms: imovel.banheiros,
+    parkingSpots: imovel.vagas,
     area: imovel.areaUtil,
-    type: 'sale' as const,
-    featured: imovel.destaque || false,
+    slug: imovel.slug || '',
+    purpose: 'sale' as const,
 });
 
 /**
@@ -45,9 +45,9 @@ export default function TurboComprarPage({ preloadedProperties }: TurboComprarPa
                 {/* Properties Grid - Mobile First */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {properties.map((property) => (
-                        <MobilePropertyCard
+                        <PropertyCard
                             key={property._id}
-                            {...transformToMobileCard(property)}
+                            {...transformToPropertyCard(property)}
                         />
                     ))}
                 </div>

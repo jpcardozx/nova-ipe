@@ -12,19 +12,12 @@ const SentryInitClient = dynamic(
     { ssr: false, loading: () => null }
 );
 
-// Dynamic import for debug tools com tratamento de erro aprimorado
-const DebugPanelClient = dynamic(
-    () => safeDynamicImport(import('./debug-tools'), 'DebugPanel'),
-    { ssr: false, loading: () => null }
-);
-
 export function ClientOnly({ children }: { children: React.ReactNode }) {
     // Usando React.ErrorBoundary para capturar erros em componentes filhos
     return (
         <React.Suspense fallback={null}>
             <ErrorBoundary>
                 <SentryInitClient />
-                {process.env.NODE_ENV === 'development' ? <DebugPanelClient /> : null}
                 {children}
             </ErrorBoundary>
         </React.Suspense>

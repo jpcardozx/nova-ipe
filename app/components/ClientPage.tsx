@@ -2,19 +2,26 @@
 
 import { ReactNode } from 'react';
 import dynamic from 'next/dynamic';
-import SkeletonLoader from './SkeletonLoader';
+
+// Simple loading component
+const SimpleLoader = ({ height = "300px" }: { height?: string }) => (
+    <div 
+        className="animate-pulse bg-gray-200 rounded-lg"
+        style={{ height }}
+    />
+);
 
 // Lazy-loaded components for optimal client-side performance
 export const PropertyFeatureTabs = dynamic(() => import('./PropertyFeatureTabs'), {
-    loading: () => <SkeletonLoader variant="simple" height="300px" />
+    loading: () => <SimpleLoader height="300px" />
 });
 
 export const TestimonialsSection = dynamic(() => import('../sections/Testimonials'), {
-    loading: () => <SkeletonLoader variant="simple" height="400px" />
+    loading: () => <SimpleLoader height="400px" />
 });
 
 export const ContactSection = dynamic(() => import('../sections/Contact'), {
-    loading: () => <SkeletonLoader variant="simple" height="300px" />
+    loading: () => <SimpleLoader height="300px" />
 });
 
 // Client wrapper component

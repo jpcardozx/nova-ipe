@@ -17,31 +17,21 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ImovelClient } from '../../../src/types/imovel-client';
-import MobilePropertyCard from '../MobilePropertyCard';
+import PropertyCard from '@/lib/components/ui/PropertyCard';
 
-// Função para transformar dados para MobilePropertyCard
-const transformToMobileCard = (imovel: ImovelClient, type: 'sale' | 'rent') => ({
+// Função para transformar dados para PropertyCard
+const transformToPropertyCard = (imovel: ImovelClient, type: 'sale' | 'rent') => ({
     id: imovel._id,
     title: imovel.titulo || 'Imóvel disponível',
     price: imovel.preco || 0,
-    address: imovel.endereco || '',
     location: imovel.bairro || imovel.cidade || 'Guararema',
-    images: imovel.galeria?.map(img => ({
-        url: img.imagemUrl || '/images/placeholder-property.jpg',
-        alt: imovel.titulo || 'Imóvel'
-    })) || [],
-    mainImage: imovel.imagem ? {
-        url: imovel.imagem.imagemUrl || '/images/placeholder-property.jpg',
-        alt: imovel.titulo || 'Imóvel'
-    } : undefined,
+    imageUrl: imovel.imagem?.imagemUrl || '/images/placeholder-property.jpg',
     bedrooms: imovel.dormitorios,
     bathrooms: imovel.banheiros,
-    area: imovel.areaUtil,
     parkingSpots: imovel.vagas,
-    type,
-    isNew: Boolean(imovel.dataPublicacao && new Date(imovel.dataPublicacao) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)),
-    featured: Boolean(imovel.destaque),
-    isPremium: false // We'll default this to false for now
+    area: imovel.areaUtil,
+    slug: imovel.slug || '',
+    purpose: type,
 });
 
 // Carrossel Mobile-First
@@ -170,7 +160,7 @@ const CleanPropertySection: React.FC<CleanPropertySectionProps> = ({
     className
 }) => {
     const displayProperties = properties.slice(0, maxItems);
-    const transformedProperties = displayProperties.map(p => transformToMobileCard(p, type));
+    const transformedProperties = displayProperties.map(p => transformToPropertyCard(p, type));
 
     const colorScheme = type === 'sale'
         ? 'from-emerald-500 to-green-600'
@@ -236,7 +226,7 @@ const CleanPropertySection: React.FC<CleanPropertySectionProps> = ({
                 </div>                {/* Carrossel de Cards */}
                 <ResponsiveCarousel>
                     {transformedProperties.map((property) => (
-                        <MobilePropertyCard
+                        <PropertyCard
                             key={property.id}
                             {...property}
                         />

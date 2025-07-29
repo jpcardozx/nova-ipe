@@ -15,11 +15,6 @@ const WebVitalsMonitor = dynamic(
     { ssr: false }
 );
 
-// Optimized performance monitoring - single debugger in development
-const WebVitalsDebuggerWrapper = process.env.NODE_ENV === 'development'
-    ? dynamic(() => safeDynamicImport(import('./WebVitalsDebuggerWrapper'), 'WebVitalsDebuggerWrapper'), { ssr: false })
-    : null;
-
 // Use WebVitals component instead of ClientWebVitals
 const WebVitals = dynamic(
     () => safeDynamicImport(import('./WebVitals'), 'WebVitals'),
@@ -139,17 +134,13 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
             <WebVitals />
             {/* Adicionamos uma div vazia para auxiliar no debugging */}
             <div id="web-vitals-mount-point" style={{ display: 'none' }} data-debug="true" />
-        </Suspense>            {/* Optimized Web Vitals Monitor */}
-        {process.env.NODE_ENV === 'production' ? (
+        </Suspense>
+        
+        {/* Optimized Web Vitals Monitor */}
+        {process.env.NODE_ENV === 'production' && (
             <Suspense fallback={null}>
                 <WebVitalsMonitor />
             </Suspense>
-        ) : (
-            WebVitalsDebuggerWrapper && (
-                <Suspense fallback={null}>
-                    <WebVitalsDebuggerWrapper />
-                </Suspense>
-            )
         )}
     </OfflineSupportProvider>
     );
