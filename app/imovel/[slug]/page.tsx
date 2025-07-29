@@ -19,11 +19,25 @@ import ImovelDetalhesClient from './ImovelDetalhesClient';
 
 // Geração estática das rotas dinâmicas
 export async function generateStaticParams() {
-  const slugs: { slug: { current: string } }[] = await sanityFetch({
-    query: `*[_type == "imovel" && defined(slug.current)]{ slug }`,
-    tags: ['imoveis'] // Tag para revalidação
-  });
-  return slugs.map(({ slug }) => ({ slug: slug.current }));
+  try {
+    const slugs: { slug: { current: string } }[] = await sanityFetch({
+      query: `*[_type == "imovel" && defined(slug.current)]{ slug }`,
+      tags: ['imoveis'] // Tag para revalidação
+    });
+    
+    // Ensure slugs is an array before mapping
+    if (!Array.isArray(slugs)) {
+      console.warn('Sanity query returned non-array result for generateStaticParams');
+      return [];
+    }
+    
+    return slugs
+      .filter(item => item?.slug?.current) // Filter out invalid entries
+      .map(({ slug }) => ({ slug: slug.current }));
+  } catch (error) {
+    console.error('Error in generateStaticParams:', error);
+    return []; // Return empty array to prevent build failure
+  }
 }
 
 // SSR Metadata com gerador otimizado para redes sociais
