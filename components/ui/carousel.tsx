@@ -134,4 +134,5 @@ export function CarouselNext({ className, ...props }: React.ButtonHTMLAttributes
     );
 }
 
+export { Carousel };
 export default Carousel;

@@ -2,8 +2,8 @@
 
 import { motion } from 'framer-motion';
 import { Suspense } from 'react';
-import { UnifiedLoading } from './ui/UnifiedComponents';
-import BlocoCTAConversao from './client/BlocoCTAConversao';
+import { UnifiedLoading } from '../ui/UnifiedComponents';
+import BlocoCTAConversao from './BlocoCTAConversao';
 
 export default function AnimatedCTASection() {
     return (
