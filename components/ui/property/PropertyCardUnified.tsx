@@ -200,5 +200,3 @@ const PropertyCardUnified: React.FC<PropertyCardUnifiedProps> = ({
 };
 
 export default PropertyCardUnified;
-
-export default PropertyCardUnified;

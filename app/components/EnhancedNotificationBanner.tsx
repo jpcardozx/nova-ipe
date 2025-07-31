@@ -81,34 +81,34 @@ export default function EnhancedNotificationBanner({
         }
     };
 
-    // Configurações baseadas na variante
+    // Enhanced configurations based on variant
     const variantConfig = {
         info: {
-            bg: 'bg-gradient-to-r from-blue-600 to-blue-500',
+            bg: 'bg-gradient-to-r from-blue-600 via-blue-600 to-blue-500',
             icon: <Info className="w-4 h-4" />,
             textColor: 'text-white',
             buttonHover: 'hover:bg-blue-700',
         },
         promotional: {
-            bg: 'bg-gradient-to-r from-amber-700 to-amber-600',
+            bg: 'bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600',
             icon: <Bell className="w-4 h-4" />,
             textColor: 'text-white',
-            buttonHover: 'hover:bg-amber-800',
+            buttonHover: 'hover:bg-emerald-700',
         },
         announcement: {
-            bg: 'bg-gradient-to-r from-indigo-600 to-purple-600',
+            bg: 'bg-gradient-to-r from-indigo-600 via-indigo-600 to-purple-600',
             icon: <Bell className="w-4 h-4" />,
             textColor: 'text-white',
             buttonHover: 'hover:bg-indigo-700',
         },
         success: {
-            bg: 'bg-gradient-to-r from-emerald-600 to-emerald-500',
+            bg: 'bg-gradient-to-r from-emerald-600 via-emerald-600 to-emerald-500',
             icon: <CheckCircle className="w-4 h-4" />,
             textColor: 'text-white',
             buttonHover: 'hover:bg-emerald-700',
         },
         alert: {
-            bg: 'bg-gradient-to-r from-red-600 to-orange-600',
+            bg: 'bg-gradient-to-r from-red-600 via-red-600 to-orange-600',
             icon: <AlertTriangle className="w-4 h-4" />,
             textColor: 'text-white',
             buttonHover: 'hover:bg-red-700',

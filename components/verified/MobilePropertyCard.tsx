@@ -122,19 +122,21 @@ export default function MobilePropertyCard({
     return (
         <motion.div
             className={cn(
-                "relative bg-white rounded-3xl overflow-hidden shadow-lg border border-gray-100 transition-all duration-300",
-                "active:scale-[0.98] transform-gpu",
+                "relative bg-white rounded-2xl overflow-hidden shadow-xl border border-gray-100/50 transition-all duration-300 group",
+                "hover:shadow-2xl hover:shadow-gray-900/10 hover:-translate-y-1 transform-gpu",
+                "active:scale-[0.98]",
                 className
             )}
             onTapStart={() => setIsPressed(true)}
             onTap={() => setIsPressed(false)}
             onTapCancel={() => setIsPressed(false)}
             whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: 1.02 }}
         >
             <Link href={`/imovel/${id}`} className="block">
                 {/* Image Container with Touch Navigation */}
                 <div
-                    className="relative h-56 overflow-hidden"
+                    className="relative h-56 overflow-hidden group-hover:scale-105 transition-transform duration-500"
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
@@ -159,63 +161,80 @@ export default function MobilePropertyCard({
                         </motion.div>
                     </AnimatePresence>
 
-                    {/* Gradient overlay for better text readability */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                    {/* Enhanced gradient overlay for better text readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent group-hover:from-black/70 transition-all duration-300" />
 
-                    {/* Badges */}
-                    <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 max-w-[70%]">
+                    {/* Enhanced Badges */}
+                    <div className="absolute top-4 left-4 flex flex-wrap gap-2 max-w-[70%]">
                         {isNew && (
-                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-green-500/90 text-white text-xs font-medium backdrop-blur-sm">
+                            <motion.span 
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ delay: 0.2 }}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/95 text-white text-xs font-semibold backdrop-blur-md border border-emerald-400/30"
+                            >
                                 <Sparkles className="w-3 h-3" />
                                 Novo
-                            </span>
+                            </motion.span>
                         )}
                         {featured && (
-                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-500/90 text-white text-xs font-medium backdrop-blur-sm">
-                                <Star className="w-3 h-3" />
+                            <motion.span 
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ delay: 0.1 }}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/95 text-white text-xs font-semibold backdrop-blur-md border border-amber-400/30"
+                            >
+                                <Star className="w-3 h-3 fill-current" />
                                 Destaque
-                            </span>
+                            </motion.span>
                         )}
                         {isPremium && !featured && (
-                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-purple-500/90 text-white text-xs font-medium backdrop-blur-sm">
+                            <motion.span 
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ delay: 0.3 }}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-500/95 text-white text-xs font-semibold backdrop-blur-md border border-purple-400/30"
+                            >
                                 <Award className="w-3 h-3" />
                                 Premium
-                            </span>
+                            </motion.span>
                         )}
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="absolute top-3 right-3 flex flex-col gap-2">
+                    {/* Enhanced Action Buttons */}
+                    <div className="absolute top-4 right-4 flex flex-col gap-2">
                         {onFavoriteToggle && (
                             <motion.button
                                 onClick={handleFavorite}
                                 className={cn(
-                                    "w-10 h-10 rounded-full backdrop-blur-sm border transition-all duration-300 flex items-center justify-center",
+                                    "w-11 h-11 rounded-xl backdrop-blur-md border transition-all duration-300 flex items-center justify-center shadow-lg",
                                     isFavorited
-                                        ? "bg-red-500/90 text-white border-red-400/50"
-                                        : "bg-white/90 hover:bg-white text-gray-600 border-white/50 hover:text-red-500"
+                                        ? "bg-red-500/95 text-white border-red-400/50 hover:bg-red-600"
+                                        : "bg-white/95 hover:bg-white text-gray-600 border-white/50 hover:text-red-500 hover:scale-105"
                                 )}
                                 whileTap={{ scale: 0.9 }}
+                                whileHover={{ scale: 1.05 }}
                             >
                                 <Heart className={cn("w-4 h-4", isFavorited && "fill-current")} />
                             </motion.button>
                         )}
 
                         <motion.button
-                            className="w-10 h-10 rounded-full bg-white/90 hover:bg-white text-gray-600 hover:text-blue-600 backdrop-blur-sm border border-white/50 transition-all duration-300 flex items-center justify-center"
+                            className="w-11 h-11 rounded-xl bg-white/95 hover:bg-white text-gray-600 hover:text-emerald-600 backdrop-blur-md border border-white/50 transition-all duration-300 flex items-center justify-center shadow-lg hover:scale-105"
                             whileTap={{ scale: 0.9 }}
+                            whileHover={{ scale: 1.05 }}
                         >
                             <Eye className="w-4 h-4" />
                         </motion.button>
                     </div>
 
-                    {/* Type Badge */}
-                    <div className="absolute bottom-3 right-3">
+                    {/* Enhanced Type Badge */}
+                    <div className="absolute bottom-4 right-4">
                         <span className={cn(
-                            "px-3 py-1.5 rounded-full text-xs font-medium backdrop-blur-sm border text-white",
+                            "px-4 py-2 rounded-xl text-xs font-semibold backdrop-blur-md border text-white shadow-lg",
                             type === 'sale'
-                                ? "bg-emerald-500/90 border-emerald-400/50"
-                                : "bg-blue-500/90 border-blue-400/50"
+                                ? "bg-emerald-500/95 border-emerald-400/50"
+                                : "bg-blue-500/95 border-blue-400/50"
                         )}>
                             {type === 'sale' ? 'Venda' : 'Locação'}
                         </span>
@@ -239,59 +258,59 @@ export default function MobilePropertyCard({
                     )}
                 </div>
 
-                {/* Content */}
-                <div className="p-5 space-y-4">
+                {/* Enhanced Content */}
+                <div className="p-6 space-y-4">
                     {/* Title and Location */}
                     <div>
-                        <h3 className="font-semibold text-gray-900 text-lg mb-1 line-clamp-2 leading-tight">
+                        <h3 className="font-bold text-gray-900 text-lg mb-2 line-clamp-2 leading-tight">
                             {title}
                         </h3>
                         <div className="flex items-center text-gray-500 text-sm">
-                            <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
-                            <span className="line-clamp-1">{location || address}</span>
+                            <MapPin className="w-4 h-4 mr-1.5 flex-shrink-0 text-emerald-600" />
+                            <span className="line-clamp-1 font-medium">{location || address}</span>
                         </div>
                     </div>
 
-                    {/* Features */}
+                    {/* Enhanced Features */}
                     <div className="flex items-center gap-4 text-gray-600 text-sm">
                         {bedrooms !== undefined && (
-                            <div className="flex items-center gap-1">
-                                <BedDouble className="w-4 h-4" />
-                                <span>{bedrooms}</span>
+                            <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg">
+                                <BedDouble className="w-4 h-4 text-emerald-600" />
+                                <span className="font-semibold">{bedrooms}</span>
                             </div>
                         )}
                         {bathrooms !== undefined && (
-                            <div className="flex items-center gap-1">
-                                <Bath className="w-4 h-4" />
-                                <span>{bathrooms}</span>
+                            <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg">
+                                <Bath className="w-4 h-4 text-blue-600" />
+                                <span className="font-semibold">{bathrooms}</span>
                             </div>
                         )}
                         {area && (
-                            <div className="flex items-center gap-1">
-                                <Ruler className="w-4 h-4" />
-                                <span>{area}m²</span>
+                            <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg">
+                                <Ruler className="w-4 h-4 text-amber-600" />
+                                <span className="font-semibold">{area}m²</span>
                             </div>
                         )}
                         {parkingSpots !== undefined && parkingSpots > 0 && (
-                            <div className="flex items-center gap-1">
-                                <Car className="w-4 h-4" />
-                                <span>{parkingSpots}</span>
+                            <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg">
+                                <Car className="w-4 h-4 text-purple-600" />
+                                <span className="font-semibold">{parkingSpots}</span>
                             </div>
                         )}
                     </div>
 
-                    {/* Price and Trend */}
-                    <div className="flex items-center justify-between">
+                    {/* Enhanced Price and Trend */}
+                    <div className="flex items-center justify-between border-t border-gray-100 pt-4">
                         <div className="flex-1">
-                            <div className="text-2xl font-bold text-gray-900">
+                            <div className="text-2xl font-bold text-gray-900 mb-1">
                                 {formattedPrice}
                             </div>
                             {type === 'rent' && (
-                                <span className="text-sm text-gray-500">/mês</span>
+                                <span className="text-sm text-gray-500 font-medium">/mês</span>
                             )}
                         </div>
                         {trend && (
-                            <div className="flex items-center gap-1 text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                            <div className="flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 px-3 py-2 rounded-xl font-semibold border border-emerald-100">
                                 <TrendingUp className="w-3 h-3" />
                                 {trend}
                             </div>
@@ -300,13 +319,14 @@ export default function MobilePropertyCard({
                 </div>
             </Link>
 
-            {/* Mobile Action Bar */}
-            <div className="px-5 pb-5">
-                <div className="flex gap-2">
+            {/* Enhanced Mobile Action Bar */}
+            <div className="px-6 pb-6">
+                <div className="flex gap-3">
                     <motion.button
                         onClick={handleCall}
                         whileTap={{ scale: 0.95 }}
-                        className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition-colors"
+                        whileHover={{ scale: 1.02 }}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3.5 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-lg"
                     >
                         <Phone className="w-4 h-4" />
                         Ligar
@@ -314,7 +334,8 @@ export default function MobilePropertyCard({
                     <motion.button
                         onClick={handleWhatsApp}
                         whileTap={{ scale: 0.95 }}
-                        className="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition-colors"
+                        whileHover={{ scale: 1.02 }}
+                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3.5 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-lg"
                     >
                         <MessageSquare className="w-4 h-4" />
                         WhatsApp

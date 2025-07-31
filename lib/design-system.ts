@@ -323,21 +323,6 @@ export const spacing = {
     },
 };
 
-// Sistema de design completo exportado
-export const designSystem = {
-    colors,
-    typography,
-    spacing,
-    breakpoints,
-    shadows,
-    animations,
-    transitions,
-    hoverEffects,
-    borderRadius,
-    zIndex,
-    componentPatterns,
-};
-
 // Utilidades para uso fácil
 export const utils = {
     // Função para criar classes condicionais
@@ -609,4 +594,19 @@ export const breakpoints = {
     desktop: '1024px',
     wide: '1280px',
     ultrawide: '1536px',
+};
+
+// Sistema de design completo exportado
+export const designSystem = {
+    colors,
+    typography,
+    spacing,
+    breakpoints,
+    shadows,
+    animations,
+    transitions,
+    hoverEffects,
+    borderRadius,
+    zIndex,
+    componentPatterns,
 };

@@ -51,4 +51,5 @@ export const useToast = () => {
     return { addToast, ToastContainer };
 };
 
+export { Toaster };
 export default Toaster;

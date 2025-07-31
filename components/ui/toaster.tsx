@@ -1,2 +1,2 @@
 // Este arquivo serve como redirecionamento para o toaster padrão
-export * from '@/components/ui/toast';
+export { Toaster, useToast } from '@/components/ui/toast';

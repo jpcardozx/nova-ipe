@@ -19,7 +19,7 @@ import {
     Filter
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { Property } from '../types/property';
+import { Property } from '../../app/types/property';
 
 interface EnhancedPropertySectionProps {
     title: string;

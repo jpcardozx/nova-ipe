@@ -26,4 +26,5 @@ function Badge({
     );
 }
 
+export { Badge };
 export default Badge;

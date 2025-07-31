@@ -69,50 +69,50 @@ export default function MobileFirstHero() {
                         </span>
                     </h1>
 
-                    <p className="text-xl sm:text-2xl text-white/80 mb-8 font-light max-w-2xl mx-auto leading-relaxed">
-                        Mais de <strong className="text-amber-400">500 imóveis vendidos</strong> e famílias realizadas.
+                    <p className="text-xl sm:text-2xl text-white/85 mb-8 font-light max-w-3xl mx-auto leading-relaxed">
+                        <strong className="text-amber-400 font-semibold">15 anos de expertise</strong> conectando famílias aos seus lares ideais.
                         <br className="hidden sm:block" />
-                        Consultoria imobiliária especializada e personalizada.
+                        <span className="text-lg sm:text-xl text-white/75">Consultoria personalizada • Atendimento premium • Resultados garantidos</span>
                     </p>
 
                     {/* Enhanced CTA Buttons */}
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10">
                         <motion.button
                             onClick={handleQuickCall}
                             whileTap={{ scale: 0.95 }}
-                            whileHover={{ scale: 1.05 }}
-                            className="w-full sm:w-auto bg-gradient-to-r from-green-600 via-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-10 py-5 rounded-2xl font-semibold text-lg flex items-center justify-center gap-3 shadow-2xl hover:shadow-green-500/25 transition-all duration-300 group"
+                            whileHover={{ scale: 1.02 }}
+                            className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white px-8 py-4 rounded-2xl font-semibold text-lg flex items-center justify-center gap-3 shadow-2xl hover:shadow-emerald-500/25 transition-all duration-300 group border border-emerald-500/20"
                         >
-                            <svg className="w-6 h-6 group-hover:animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M20.5 3.5c-2.6-2.6-6.9-2.6-9.5 0-2.2 2.2-2.5 5.6-1 8.2L3 21l9.3-7c2.6 1.5 6 .8 8.2-1 2.6-2.6 2.6-6.9 0-9.5z" />
                             </svg>
-                            Consultoria Gratuita
-                            <span className="text-sm bg-white/20 px-2 py-1 rounded-full">WhatsApp</span>
+                            Consultoria Especializada
+                            <span className="text-xs bg-white/20 px-2 py-1 rounded-full font-medium">Gratuita</span>
                         </motion.button>
 
                         <Link
                             href="/catalogo"
-                            className="w-full sm:w-auto bg-white/10 backdrop-blur-md border-2 border-white/30 text-white px-10 py-5 rounded-2xl font-semibold text-lg flex items-center justify-center gap-3 hover:bg-white/20 hover:border-white/50 transition-all duration-300 group"
+                            className="w-full sm:w-auto bg-white/95 backdrop-blur-md border border-white/40 text-slate-800 px-8 py-4 rounded-2xl font-semibold text-lg flex items-center justify-center gap-3 hover:bg-white hover:border-white hover:shadow-2xl transition-all duration-300 group"
                         >
                             <Building2 className="w-6 h-6" />
-                            Ver Todos os Imóveis
+                            Explorar Catálogo
                             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                         </Link>
                     </div>
 
-                    {/* Trust indicators */}
-                    <div className="flex flex-wrap justify-center items-center gap-6 text-white/70 text-sm">
+                    {/* Professional trust indicators */}
+                    <div className="flex flex-wrap justify-center items-center gap-8 text-white/75 text-sm">
                         <div className="flex items-center gap-2">
                             <Award className="w-5 h-5 text-amber-400" />
-                            <span>Especialistas Certificados</span>
+                            <span className="font-medium">CRECI Certificado</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Users className="w-5 h-5 text-amber-400" />
-                            <span>500+ Famílias Atendidas</span>
+                            <span className="font-medium">500+ Famílias</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Star className="w-5 h-5 text-amber-400 fill-current" />
-                            <span>15 Anos de Confiança</span>
+                            <span className="font-medium">15 Anos</span>
                         </div>
                     </div>
                 </motion.div>
@@ -126,39 +126,39 @@ export default function MobileFirstHero() {
                 >
                     <div className="bg-white/98 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/30 max-w-2xl mx-auto">
                         <div className="text-center mb-6">
-                            <h3 className="text-2xl font-bold text-neutral-800 mb-2">
-                                Encontre seu imóvel ideal
+                            <h3 className="text-2xl font-bold text-slate-800 mb-2">
+                                Busca Inteligente
                             </h3>
-                            <p className="text-neutral-600">
-                                Busque entre centenas de opções em Guararema
+                            <p className="text-slate-600 text-lg">
+                                Encontre o imóvel ideal com nossa ferramenta avançada
                             </p>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-5">
                             {/* Enhanced Search Input */}
                             <div className="relative group">
                                 <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                                    <Search className="h-6 w-6 text-neutral-400 group-focus-within:text-primary-500 transition-colors" />
+                                    <Search className="h-6 w-6 text-slate-400 group-focus-within:text-emerald-600 transition-colors" />
                                 </div>
                                 <input
                                     type="text"
-                                    placeholder="Ex: Casa 3 quartos, apartamento centro..."
+                                    placeholder="Ex: Casa 3 quartos no centro, apartamento vista para montanha..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-14 pr-5 py-5 text-lg border-2 border-neutral-200 rounded-2xl focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 outline-none transition-all bg-white placeholder:text-neutral-400"
+                                    className="w-full pl-14 pr-5 py-4 text-lg border-2 border-slate-200 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all bg-white placeholder:text-slate-400 shadow-sm"
                                 />
                             </div>
 
                             {/* Enhanced Filters Row */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                                        <Home className="h-5 w-5 text-neutral-400 group-focus-within:text-primary-500 transition-colors" />
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <Home className="h-5 w-5 text-slate-400 group-focus-within:text-emerald-600 transition-colors" />
                                     </div>
                                     <select
                                         value={propertyType}
                                         onChange={(e) => setPropertyType(e.target.value)}
-                                        className="w-full pl-14 pr-5 py-4 text-base border-2 border-neutral-200 rounded-xl focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 outline-none transition-all bg-white appearance-none cursor-pointer"
+                                        className="w-full pl-12 pr-4 py-4 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all bg-white appearance-none cursor-pointer shadow-sm font-medium"
                                     >
                                         <option value="">Tipo de imóvel</option>
                                         <option value="casa">🏠 Casa</option>
@@ -167,17 +167,17 @@ export default function MobileFirstHero() {
                                         <option value="chacara">🌳 Chácara</option>
                                         <option value="comercial">🏪 Comercial</option>
                                     </select>
-                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-400 pointer-events-none" />
+                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
                                 </div>
 
                                 <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                                        <MapPin className="h-5 w-5 text-neutral-400 group-focus-within:text-primary-500 transition-colors" />
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <MapPin className="h-5 w-5 text-slate-400 group-focus-within:text-emerald-600 transition-colors" />
                                     </div>
                                     <select
                                         value={location}
                                         onChange={(e) => setLocation(e.target.value)}
-                                        className="w-full pl-14 pr-5 py-4 text-base border-2 border-neutral-200 rounded-xl focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 outline-none transition-all bg-white appearance-none cursor-pointer"
+                                        className="w-full pl-12 pr-4 py-4 text-base border-2 border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all bg-white appearance-none cursor-pointer shadow-sm font-medium"
                                     >
                                         <option value="">Região de interesse</option>
                                         <option value="centro">📍 Centro</option>
@@ -186,7 +186,7 @@ export default function MobileFirstHero() {
                                         <option value="itapema">📍 Itapema</option>
                                         <option value="rural">🌾 Zona Rural</option>
                                     </select>
-                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-400 pointer-events-none" />
+                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
                                 </div>
                             </div>
 
@@ -194,22 +194,22 @@ export default function MobileFirstHero() {
                             <motion.button
                                 onClick={handleSearch}
                                 whileTap={{ scale: 0.98 }}
-                                whileHover={{ scale: 1.02 }}
-                                className="w-full bg-gradient-to-r from-primary-500 via-primary-600 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-bold py-5 px-8 rounded-2xl transition-all duration-300 flex items-center justify-center gap-4 text-lg shadow-xl hover:shadow-2xl group"
+                                whileHover={{ scale: 1.01 }}
+                                className="w-full bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 flex items-center justify-center gap-3 text-lg shadow-xl hover:shadow-2xl group"
                             >
                                 <Search className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                                Buscar Imóveis
+                                Encontrar Meu Imóvel
                                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                             </motion.button>
 
-                            {/* Quick filters */}
-                            <div className="flex flex-wrap gap-2 pt-2">
-                                <span className="text-sm text-neutral-500 mr-2">Buscas populares:</span>
+                            {/* Professional quick filters */}
+                            <div className="flex flex-wrap gap-2 pt-3">
+                                <span className="text-sm text-slate-500 mr-2 font-medium">Buscas populares:</span>
                                 {['Casa 3 quartos', 'Apartamento centro', 'Terreno 1000m²', 'Chácara'].map((tag) => (
                                     <button
                                         key={tag}
                                         onClick={() => setSearchQuery(tag)}
-                                        className="text-xs bg-neutral-100 hover:bg-primary-100 text-neutral-600 hover:text-primary-700 px-3 py-1 rounded-full transition-colors duration-200"
+                                        className="text-xs bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 px-3 py-2 rounded-full transition-all duration-200 font-medium border border-slate-200 hover:border-emerald-200"
                                     >
                                         {tag}
                                     </button>
@@ -235,13 +235,13 @@ export default function MobileFirstHero() {
                     {
                         icon: <Building2 className="w-6 h-6" />,
                         value: "500+",
-                        label: "Transaçõe ss",
+                        label: "Transações",
                         color: "from-blue-400 to-blue-500"
                     },
                     {
                         icon: <Star className="w-6 h-6" />,
                         value: "4.9★",
-                        label: "Avaliação Clientes",
+                        label: "Avaliação",
                         color: "from-green-400 to-green-500"
                     }
                 ].map((stat, index) => (
@@ -251,9 +251,10 @@ export default function MobileFirstHero() {
                         animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
                         transition={{ duration: 0.6, delay: 0.5 + index * 0.1 }}
                         className="text-center"
-                    >                            <div className="bg-white/15 backdrop-blur-lg rounded-2xl p-6 border border-white/30 hover:bg-white/20 transition-all duration-300">
+                    >
+                        <div className="bg-white/20 backdrop-blur-xl rounded-2xl p-6 border border-white/30 hover:bg-white/25 hover:border-white/40 transition-all duration-300 group">
                             <div className="flex justify-center mb-3">
-                                <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${stat.color} flex items-center justify-center text-white shadow-lg`}>
+                                <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${stat.color} flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                                     {stat.icon}
                                 </div>
                             </div>

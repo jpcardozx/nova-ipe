@@ -9,11 +9,11 @@ export const PropertyFeatureTabs = dynamic(() => import('./PropertyFeatureTabs')
     loading: () => <SkeletonLoader variant="simple" height="300px" />
 });
 
-export const TestimonialsSection = dynamic(() => import('../sections/Testimonials'), {
+export const TestimonialsSection = dynamic(() => import('../../app/sections/Testimonials'), {
     loading: () => <SkeletonLoader variant="simple" height="400px" />
 });
 
-export const ContactSection = dynamic(() => import('../sections/Contact'), {
+export const ContactSection = dynamic(() => import('../../app/sections/Contact'), {
     loading: () => <SkeletonLoader variant="simple" height="300px" />
 });
 
