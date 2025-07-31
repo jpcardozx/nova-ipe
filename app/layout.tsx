@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import { Providers } from './providers/QueryProvider';
+import ChunkErrorBoundary from './components/boundaries/ChunkErrorBoundary';
 import './globals.css';
 
 const CenteredNavbar = dynamic(() => import('./components/ui/CenteredNavbar'), {
@@ -136,12 +137,14 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans antialiased bg-white text-gray-900">
-        <Providers>
-          <CenteredNavbar />
-          <main role="main">
-            {children}
-          </main>
-        </Providers>
+        <ChunkErrorBoundary>
+          <Providers>
+            <CenteredNavbar />
+            <main role="main">
+              {children}
+            </main>
+          </Providers>
+        </ChunkErrorBoundary>
       </body>
     </html>
   );

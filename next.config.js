@@ -2,10 +2,16 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  // Minimal experimental config for Vercel compatibility
+  output: 'standalone',
+  
+  // Optimized experimental features
   experimental: {
-    // Remove optimizeCss to prevent critters issues
-    // Turbo disabled for production builds to prevent issues
+    optimizeCss: true,
+    optimizePackageImports: [
+      '@heroicons/react',
+      'date-fns',
+      'sanity'
+    ],
     ...(process.env.NODE_ENV === 'development' && {
       turbo: {
         rules: {
@@ -31,6 +37,26 @@ const nextConfig = {
   },
 
   webpack: (config, { isServer, dev }) => {
+    // Optimize chunks for production
+    if (!dev && !isServer) {
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            priority: 10,
+            chunks: 'all'
+          },
+          common: {
+            minChunks: 2,
+            priority: 5,
+            reuseExistingChunk: true
+          }
+        }
+      };
+    }
+
     // Basic fallbacks for client-side only
     if (!isServer) {
       config.resolve.fallback = {

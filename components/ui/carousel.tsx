@@ -8,7 +8,7 @@ type CarouselApi = UseEmblaCarouselType[1];
 type CarouselOptions = Parameters<typeof useEmblaCarousel>[0];
 type CarouselPlugin = Parameters<typeof useEmblaCarousel>[1];
 
-interface CarouselProps {
+export interface CarouselProps {
     opts?: CarouselOptions;
     plugins?: CarouselPlugin;
     orientation?: "horizontal" | "vertical";
@@ -90,15 +90,15 @@ function Carousel({
     );
 }
 
-function CarouselContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+export function CarouselContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
     return <div className={cn("flex", className)} {...props} />;
 }
 
-function CarouselItem({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+export function CarouselItem({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
     return <div className={cn("min-w-0 flex-shrink-0 flex-grow-0", className)} {...props} />;
 }
 
-function CarouselPrevious({ className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+export function CarouselPrevious({ className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
     const { scrollPrev, canScrollPrev } = React.useContext(CarouselContext) || {};
 
     return (
@@ -116,7 +116,7 @@ function CarouselPrevious({ className, ...props }: React.ButtonHTMLAttributes<HT
     );
 }
 
-function CarouselNext({ className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+export function CarouselNext({ className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
     const { scrollNext, canScrollNext } = React.useContext(CarouselContext) || {};
 
     return (
@@ -134,10 +134,4 @@ function CarouselNext({ className, ...props }: React.ButtonHTMLAttributes<HTMLBu
     );
 }
 
-export {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselPrevious,
-    CarouselNext,
-};
+export default Carousel;

@@ -17,7 +17,7 @@ import {
   Users,
   Building
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import Button from '@/components/ui/button';
 
 interface FormData {
   nome: string;

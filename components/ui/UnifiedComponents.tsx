@@ -2,7 +2,15 @@
 
 import React from 'react';
 
-export const UnifiedLoading = ({ height = "300px", title = "Carregando..." }) => {
+export interface UnifiedLoadingProps {
+    height?: string;
+    title?: string;
+    }
+
+export const UnifiedLoading = ({
+    height = "300px",
+    title = "Carregando..."
+}: UnifiedLoadingProps) => {
     return (
         <div
             style={{ height: height }}
@@ -13,3 +21,5 @@ export const UnifiedLoading = ({ height = "300px", title = "Carregando..." }) =>
         </div>
     );
 };
+
+export default UnifiedLoading;

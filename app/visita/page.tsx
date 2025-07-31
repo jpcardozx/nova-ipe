@@ -14,7 +14,7 @@ import {
 import OptimizationProvider from '../components/OptimizationProvider';
 import WhatsAppButton from '../components/WhatsAppButton';
 import SkipToContent from '../components/SkipToContent';
-import SectionHeader from '../components/ui/SectionHeader';
+import SectionHeader from '@/components/verified/SectionHeader';
 import ClientOnlyNavbar from "../components/ClientOnlyNavbar";
 import Footer from "../sections/Footer";
 

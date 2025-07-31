@@ -1,0 +1,39 @@
+{
+  "startTime": "2025-07-16T19:27:58.074Z",
+  "endTime": "2025-07-16T19:28:00.137Z",
+  "totalDuration": 2063,
+  "phasesCompleted": [],
+  "phasesSkipped": [],
+  "phasesFailed": [],
+  "overallStatus": "completed-with-warnings",
+  "metrics": {
+    "dependencies": 59,
+    "bundleSize": 0,
+    "buildTime": 0,
+    "componentCount": 0
+  },
+  "errors": [
+    "ENOENT: no such file or directory, copyfile 'C:\\Users\\João Pedro Cardozo\\projetos\\nova-ipe\\package.json' -> 'C:\\Users\\João Pedro Cardozo\\projetos\\nova-ipe\\.automation-checkpoints\\checkpoint-2025-07-16T19-27-59-113Z\\package.json'"
+  ],
+  "warnings": [
+    "Uncommitted changes detected"
+  ],
+  "project": "Nova Ipê Modernization",
+  "version": "1.0.0",
+  "automation": {
+    "dryRun": true,
+    "skipValidation": false,
+    "enableRollback": true
+  },
+  "improvements": {
+    "dependencyReduction": "Estimated 15-20% reduction",
+    "buildPerformance": "Expected 25-30% improvement",
+    "codeOrganization": "Unified component structure",
+    "developerExperience": "Improved import paths and standards"
+  },
+  "nextSteps": [
+    "⚠️ Review automation errors and warnings",
+    "🔍 Check logs for detailed error information",
+    "🔄 Consider running rollback if needed"
+  ]
+}

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Phone, MessageCircle, Home, TrendingUp, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import Button from '@/components/ui/button';
 
 // Tipos essenciais
 interface HeroPhase {

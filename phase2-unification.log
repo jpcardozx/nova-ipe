@@ -1,0 +1,70 @@
+[2025-07-16T20:51:06.619Z] [PHASE2-TASKS-MD] [INFO] 🚀 Starting Phase 2: Component Architecture Cleanup (TASKS.MD)
+[2025-07-16T20:51:06.631Z] [PHASE2-TASKS-MD] [INFO] 📋 1. AUDITORIA COMPLETA - mapeando componentes conforme tasks.md...
+[2025-07-16T20:51:06.650Z] [PHASE2-TASKS-MD] [INFO] 📊 Auditoria completa:
+[2025-07-16T20:51:06.651Z] [PHASE2-TASKS-MD] [INFO]   Total: 183 componentes
+[2025-07-16T20:51:06.652Z] [PHASE2-TASKS-MD] [INFO]   Duplicatas: 8 encontradas
+[2025-07-16T20:51:06.654Z] [PHASE2-TASKS-MD] [INFO] 🔍 Duplicatas identificadas (tasks.md): AnimatedStatsCard, FallbackPropertyCard, PropertyCard, CardCTAImovel, ElegantPropertyCard, ImovelCard, MobilePropertyCard, OptimizedImovelCard, ModernPropertyCardV2, PremiumPropertyCardOptimized, PremiumPropertyCard, PropertyContactModal, SocialShareButtons, button, EnhancedPropertyCard, PropertyCardUnified, WhatsAppButton, WhatsAppPreviewCard, card
+[2025-07-16T20:51:06.661Z] [PHASE2-TASKS-MD] [INFO] 🔀 2. MERGE INTELIGENTE - consolidando duplicatas...
+[2025-07-16T20:51:06.665Z] [PHASE2-TASKS-MD] [INFO] Analisando duplicata: undefined
+[2025-07-16T20:51:06.669Z] [PHASE2-TASKS-MD] [ERROR] ❌ Phase 2 failed: Cannot read properties of undefined (reading 'path')
+[2025-07-16T20:54:33.237Z] [PHASE2-TASKS-MD] [INFO] 🚀 Starting Phase 2: Component Architecture Cleanup (TASKS.MD)
+[2025-07-16T20:54:33.255Z] [PHASE2-TASKS-MD] [INFO] 📋 1. AUDITORIA COMPLETA - mapeando componentes conforme tasks.md...
+[2025-07-16T20:54:33.277Z] [PHASE2-TASKS-MD] [INFO] 📊 Auditoria completa:
+[2025-07-16T20:54:33.278Z] [PHASE2-TASKS-MD] [INFO]   Total: 183 componentes
+[2025-07-16T20:54:33.279Z] [PHASE2-TASKS-MD] [INFO]   Duplicatas: 8 encontradas
+[2025-07-16T20:54:33.281Z] [PHASE2-TASKS-MD] [INFO] 🔍 Duplicatas identificadas: PropertyCard, PropertyCard, OptimizedCarousel, SectionHeader, button, PropertyCardUnified, toaster, UnifiedComponents
+[2025-07-16T20:54:33.283Z] [PHASE2-TASKS-MD] [INFO] 🔀 2. MERGE INTELIGENTE - consolidando duplicatas...
+[2025-07-16T20:54:33.284Z] [PHASE2-TASKS-MD] [INFO] Analisando duplicata: PropertyCard
+[2025-07-16T20:54:33.287Z] [PHASE2-TASKS-MD] [INFO]   Melhor versão: app\components\layouts (score: 8)
+[2025-07-16T20:54:33.291Z] [PHASE2-TASKS-MD] [INFO]   💾 Backup criado: C:\Users\João Pedro Cardozo\projetos\nova-ipe\.component-backup\PropertyCard.tsx
+[2025-07-16T20:54:33.292Z] [PHASE2-TASKS-MD] [INFO] Analisando duplicata: PropertyCard
+[2025-07-16T20:54:33.295Z] [PHASE2-TASKS-MD] [INFO]   Melhor versão: app\components\property (score: 9)
+[2025-07-16T20:54:33.297Z] [PHASE2-TASKS-MD] [INFO]   💾 Backup criado: C:\Users\João Pedro Cardozo\projetos\nova-ipe\.component-backup\PropertyCard.tsx
+[2025-07-16T20:54:33.301Z] [PHASE2-TASKS-MD] [INFO] Analisando duplicata: OptimizedCarousel
+[2025-07-16T20:54:33.312Z] [PHASE2-TASKS-MD] [INFO]   Melhor versão: app/components (score: 10)
+[2025-07-16T20:54:33.316Z] [PHASE2-TASKS-MD] [INFO]   💾 Backup criado: C:\Users\João Pedro Cardozo\projetos\nova-ipe\.component-backup\OptimizedCarousel.tsx
+[2025-07-16T20:54:33.317Z] [PHASE2-TASKS-MD] [INFO] Analisando duplicata: SectionHeader
+[2025-07-16T20:54:33.320Z] [PHASE2-TASKS-MD] [INFO]   Melhor versão: app/components (score: 8)
+[2025-07-16T20:54:33.322Z] [PHASE2-TASKS-MD] [INFO]   💾 Backup criado: C:\Users\João Pedro Cardozo\projetos\nova-ipe\.component-backup\SectionHeader.tsx
+[2025-07-16T20:54:33.323Z] [PHASE2-TASKS-MD] [INFO] Analisando duplicata: button
+[2025-07-16T20:54:33.325Z] [PHASE2-TASKS-MD] [INFO]   Melhor versão: app\components\ui (score: 10)
+[2025-07-16T20:54:33.327Z] [PHASE2-TASKS-MD] [INFO]   💾 Backup criado: C:\Users\João Pedro Cardozo\projetos\nova-ipe\.component-backup\button.tsx
+[2025-07-16T20:54:33.328Z] [PHASE2-TASKS-MD] [INFO] Analisando duplicata: PropertyCardUnified
+[2025-07-16T20:54:33.330Z] [PHASE2-TASKS-MD] [INFO]   Melhor versão: app\components\ui\property (score: 7)
+[2025-07-16T20:54:33.332Z] [PHASE2-TASKS-MD] [INFO]   💾 Backup criado: C:\Users\João Pedro Cardozo\projetos\nova-ipe\.component-backup\PropertyCardUnified.tsx
+[2025-07-16T20:54:33.333Z] [PHASE2-TASKS-MD] [INFO] Analisando duplicata: toaster
+[2025-07-16T20:54:33.334Z] [PHASE2-TASKS-MD] [INFO]   Melhor versão: app\components\ui (score: 5)
+[2025-07-16T20:54:33.336Z] [PHASE2-TASKS-MD] [INFO]   💾 Backup criado: C:\Users\João Pedro Cardozo\projetos\nova-ipe\.component-backup\toaster.tsx
+[2025-07-16T20:54:33.337Z] [PHASE2-TASKS-MD] [INFO] Analisando duplicata: UnifiedComponents
+[2025-07-16T20:54:33.338Z] [PHASE2-TASKS-MD] [INFO]   Melhor versão: app\components\ui (score: 6)
+[2025-07-16T20:54:33.340Z] [PHASE2-TASKS-MD] [INFO]   💾 Backup criado: C:\Users\João Pedro Cardozo\projetos\nova-ipe\.component-backup\UnifiedComponents.tsx
+[2025-07-16T20:54:33.341Z] [PHASE2-TASKS-MD] [INFO] 🏗️ 3. CRIANDO NOVA ESTRUTURA conforme tasks.md...
+[2025-07-16T20:54:33.343Z] [PHASE2-TASKS-MD] [INFO] 📁 Criado: components/business - Específicos do negócio (PropertyCard, SearchForm)
+[2025-07-16T20:54:33.345Z] [PHASE2-TASKS-MD] [INFO] 📁 Criado: components/layout - Layout e navegação (Header, Footer, Sidebar)
+[2025-07-16T20:54:33.347Z] [PHASE2-TASKS-MD] [INFO] 📁 Criado: components/providers - Context providers e wrappers
+[2025-07-16T20:54:33.350Z] [PHASE2-TASKS-MD] [INFO] 📦 Criando barrel exports...
+[2025-07-16T20:54:33.361Z] [PHASE2-TASKS-MD] [INFO] 🔄 4. UPDATE AUTOMÁTICO de imports...
+[2025-07-16T20:54:33.762Z] [PHASE2-TASKS-MD] [INFO]   ✅ Imports atualizados: app\documentation\ErrorBoundaryUsage.tsx
+[2025-07-16T20:54:33.877Z] [PHASE2-TASKS-MD] [INFO]   ✅ Imports atualizados: app\sections\DestaquesVenda.tsx
+[2025-07-16T20:54:33.969Z] [PHASE2-TASKS-MD] [INFO]   ✅ Imports atualizados: app\visita\page.tsx
+[2025-07-16T20:54:34.155Z] [PHASE2-TASKS-MD] [INFO] ✅ 5. VALIDAÇÃO - verificando se nada quebrou...
+[2025-07-16T20:54:37.324Z] [PHASE2-TASKS-MD] [ERROR] ❌ Validation failed: Command failed: pnpm typecheck
+node:internal/modules/cjs/loader:1228
+  throw err;
+  ^
+
+Error: Cannot find module 'C:\Users\João Pedro Cardozo\projetos\nova-ipe\node_modules\typescript\bin\tsc'
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1225:15)
+    at Function._load (node:internal/modules/cjs/loader:1055:27)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:220:24)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:170:5)
+    at node:internal/main/run_main_module:36:49 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v22.14.0
+
+[2025-07-16T20:54:37.334Z] [PHASE2-TASKS-MD] [INFO] 📊 Phase 2 Unification Report Generated
+[2025-07-16T20:54:37.348Z] [PHASE2-TASKS-MD] [INFO] ✅ Phase 2 Tasks.md implementation completed

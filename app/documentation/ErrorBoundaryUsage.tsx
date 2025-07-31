@@ -2,7 +2,7 @@ import React, { ReactNode, FC } from 'react';
 // ErrorBoundaryWrapper.tsx
 'use client';
 
-import { ErrorBoundary } from '../components/ui/ErrorBoundary';
+import { ErrorBoundary } from '@/components/verified/ErrorBoundary';
 
 interface Props {
   children: ReactNode;

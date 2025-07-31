@@ -4,7 +4,7 @@ import * as React from "react";
 import { useTheme } from "next-themes";
 import { Toaster as Sonner } from "sonner";
 
-type ToasterProps = React.ComponentProps<typeof Sonner>;
+export type ToasterProps = React.ComponentProps<typeof Sonner>;
 
 const Toaster = ({ ...props }: ToasterProps) => {
     const { theme = "system" } = useTheme();
@@ -30,8 +30,6 @@ const Toaster = ({ ...props }: ToasterProps) => {
     );
 };
 
-export { Toaster };
-
 // Custom hook para uso do Toast
 export const useToast = () => {
     const addToast = React.useCallback(({ type = 'default', title = '', message = '', duration = 5000 }) => {
@@ -52,3 +50,5 @@ export const useToast = () => {
 
     return { addToast, ToastContainer };
 };
+
+export default Toaster;

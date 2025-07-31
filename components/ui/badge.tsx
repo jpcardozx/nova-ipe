@@ -2,7 +2,7 @@
 
 import React from "react";
 
-interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
     variant?: 'default' | 'secondary' | 'destructive' | 'outline';
 }
 
@@ -26,4 +26,4 @@ function Badge({
     );
 }
 
-export { Badge };
+export default Badge;
