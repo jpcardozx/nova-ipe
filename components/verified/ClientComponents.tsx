@@ -4,7 +4,11 @@ import dynamic from 'next/dynamic';
 import React, { createContext, useContext, ReactNode, memo } from 'react';
 import { Search } from 'lucide-react';
 import Link from 'next/link';
-import { safeDynamicImport } from '../utils/dynamic-import-fix';
+
+// Simple fallback for dynamic import
+const safeDynamicImport = (importPromise: any, componentName?: string) => {
+    return importPromise.catch(() => ({ default: () => null }));
+};
 
 // Lazy load do componente SentryInit com tratamento de erro aprimorado
 const SentryInitClient = dynamic(

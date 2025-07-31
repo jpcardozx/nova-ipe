@@ -4,7 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Calendar, Loader2, AlertTriangle, Ghost, MapPin, Wallet } from "lucide-react";
 import { formatarMoeda, formatarImovelInfo } from '@/lib/utils';
-import type { ImovelClient as Imovel } from "../../src/types/imovel-client";
+import type { ImovelClient as Imovel } from "@/src/types/imovel-client";
 
 /**
  * Estado de carregamento

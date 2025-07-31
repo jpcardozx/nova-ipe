@@ -4,7 +4,7 @@ import React, { Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { PropertyShowcaseSystem } from '../premium/PropertyShowcaseSystem';
 import { UnifiedLoading } from '../ui/UnifiedComponents';
-import type { ImovelClient } from '../../../src/types/imovel-client';
+import type { ImovelClient } from '@/src/types/imovel-client';
 
 // Transform function to convert ImovelClient to PropertyData
 const transformToPropertyData = (imovel: ImovelClient, type: 'sale' | 'rent') => ({
