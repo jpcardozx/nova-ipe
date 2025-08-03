@@ -56,15 +56,37 @@ const amenitiesList = [
   'Pet friendly', 'Academia', 'Playground'
 ]
 
-function PropertyFilters() {
+function PropertyFilters({
+  filters,
+  onChange,
+  onClear,
+  activeCount
+}: PropertyFiltersProps) {
   return (
     <div className="space-y-4">
-      <h3 className="font-semibold text-lg">Filtros</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="font-semibold text-lg">Filtros</h3>
+        {activeCount > 0 && (
+          <button
+            onClick={onClear}
+            className="text-sm text-blue-600 hover:text-blue-700"
+          >
+            Limpar ({activeCount})
+          </button>
+        )}
+      </div>
+
       <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
         {propertyTypes.map((type) => (
           <button
             key={type.value}
-            className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-100 transition-colors"
+            onClick={() => onChange({ ...filters, type: type.value })}
+            className={cn(
+              "px-3 py-2 text-sm border rounded-lg transition-colors",
+              filters.type === type.value
+                ? "bg-blue-100 border-blue-300 text-blue-700"
+                : "hover:bg-gray-100"
+            )}
           >
             {type.label}
           </button>

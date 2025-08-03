@@ -14,8 +14,8 @@ import {
     ChevronLeft,
     ChevronRight
 } from 'lucide-react';
-import EnhancedPropertyCard from '../ui/property/EnhancedPropertyCard';
-import { PropertySectionLayout } from './PropertySectionLayout';
+import EnhancedPropertyCard from './EnhancedPropertyCard';
+import PropertySectionLayout from './PropertySectionLayout';
 
 interface PropertySectionProps {
     id: string;
@@ -581,6 +581,3 @@ export default function PropertySection({
         </PropertySectionLayout>
     );
 }
-
-// Auto-generated type exports
-export type { PropertySectionProps } from './PropertySection';

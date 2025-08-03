@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import PropertyCard from '../build-safe/PropertyCard';
-import FallbackPropertyCard from '../build-safe/FallbackPropertyCard';
-import type { PropertyType } from '../build-safe/PropertyCard';
+import PropertyCard from './PropertyCard';
+import FallbackPropertyCard from './FallbackPropertyCard';
+import type { PropertyData } from '@/app/types/property';
 import { ProcessedProperty } from '@/app/types/property';
 
 interface PropertyAdapterProps {

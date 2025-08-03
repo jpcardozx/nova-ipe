@@ -9,7 +9,7 @@ export interface TrustAndCredibilitySectionClientProps {
     testimonials: Testimonial[];
 }
 
-export default function TrustAndCredibilitySectionClient({ testimonials }: Props) {
+export default function TrustAndCredibilitySectionClient({ testimonials }: TrustAndCredibilitySectionClientProps) {
     const [active, setActive] = useState(0);
 
     useEffect(() => {
@@ -32,9 +32,9 @@ export default function TrustAndCredibilitySectionClient({ testimonials }: Props
                     transition={{ duration: 0.4 }}
                     className="testimonial"
                 >
-                    <p>{current.quote}</p>
+                    <p>{current.content}</p>
                     <footer>
-                        — {current.author}, <span>{current.location}</span>
+                        — {current.name}, <span>{current.role}</span>
                     </footer>
                 </motion.blockquote>
             </AnimatePresence>

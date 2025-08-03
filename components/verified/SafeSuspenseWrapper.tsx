@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense } from 'react';
-import { UnifiedLoading } from './ui/UnifiedComponents';
+import UnifiedLoading from './UnifiedLoading';
 
 interface SafeSuspenseWrapperProps {
     children: React.ReactNode;

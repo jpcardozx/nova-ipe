@@ -12,6 +12,14 @@ export interface ReferencesSectionProps {
     image?: string;
 }
 
+interface TestimonialProps {
+    content: string;
+    author: string;
+    role: string;
+    rating: number;
+    image?: string;
+}
+
 const testimonials: TestimonialProps[] = [
     {
         content: "A Ipê nos ajudou a encontrar a casa perfeita em Guararema. O conhecimento deles sobre o mercado local é impressionante.",
@@ -177,6 +185,3 @@ export default function ReferencesSection() {
         </section>
     );
 }
-
-// Auto-generated type exports
-export type { ReferencesSectionProps } from './ReferencesSection';

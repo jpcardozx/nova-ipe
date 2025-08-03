@@ -89,4 +89,19 @@ interface ImovelHeroProps {
     finalidade?: string;
 }
 
+function ImovelHero({ finalidade = 'venda' }: ImovelHeroProps) {
+    return (
+        <div className="relative h-96 bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
+            <div className="text-center text-white">
+                <h1 className="text-4xl font-bold mb-4">
+                    {finalidade === 'venda' ? 'Imóveis para Venda' : 'Imóveis para Locação'}
+                </h1>
+                <p className="text-xl opacity-90">
+                    Encontre o imóvel perfeito para você
+                </p>
+            </div>
+        </div>
+    );
+}
+
 export default ImovelHero;

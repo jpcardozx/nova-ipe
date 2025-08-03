@@ -1,6 +1,15 @@
 import React, { Suspense } from 'react';
-import { UnifiedLoading } from '../ui/UnifiedComponents';
-import { SafeComponent } from '../ui/ErrorBoundary';
+import UnifiedLoading from './UnifiedLoading';
+
+// Simple safe component wrapper
+const SafeComponent = ({ children }: { children: React.ReactNode }) => {
+    try {
+        return <>{children}</>;
+    } catch (error) {
+        console.error('Component error:', error);
+        return <div>Erro ao carregar componente</div>;
+    }
+};
 
 /**
  * Adaptador cliente para componentes de servidor de propriedades
@@ -11,7 +20,7 @@ import { SafeComponent } from '../ui/ErrorBoundary';
 export function PropertiesSaleAdapter() {
     return (
         <SafeComponent>
-            <Suspense fallback={<UnifiedLoading variant="property" height="600px" title="Carregando imóveis em destaque..." />}>
+            <Suspense fallback={<UnifiedLoading height="600px" title="Carregando imóveis em destaque..." />}>
                 {/* O conteúdo real é renderizado pela página principal - não pelo client component */}
                 <div id="properties-sale-container" className="w-full">
                     {/* Espaço reservado para o conteúdo do servidor */}
@@ -25,7 +34,7 @@ export function PropertiesSaleAdapter() {
 export function PropertiesRentalAdapter() {
     return (
         <SafeComponent>
-            <Suspense fallback={<UnifiedLoading variant="property" height="600px" title="Carregando imóveis para aluguel..." />}>
+            <Suspense fallback={<UnifiedLoading height="600px" title="Carregando imóveis para aluguel..." />}>
                 {/* O conteúdo real é renderizado pela página principal - não pelo client component */}
                 <div id="properties-rental-container" className="w-full">
                     {/* Espaço reservado para o conteúdo do servidor */}
