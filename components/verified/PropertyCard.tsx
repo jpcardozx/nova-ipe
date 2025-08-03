@@ -14,7 +14,7 @@ import type { PropertyData } from '@/app/types/property'
 interface PropertyCardProps {
     property: PropertyData
     viewMode: 'grid' | 'list'
-    variant?: 'default' | 'featured' | 'compact'
+    variant?: 'default' | 'featured' | 'compact' | 'showcase' | 'hero' | 'highlight' | 'premium'
     className?: string
     onFavoriteToggle?: (id: string) => void
     isFavorited?: boolean

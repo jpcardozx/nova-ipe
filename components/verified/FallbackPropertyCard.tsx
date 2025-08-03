@@ -6,7 +6,10 @@ interface FallbackPropertyCardProps {
     title?: string;
     price?: number;
     location?: string;
-    slug: string;
+    slug?: string;
+    property?: any;
+    error?: Error;
+    className?: string;
     mainImage?: {
         url?: string;
         alt?: string;
@@ -22,7 +25,10 @@ export default function FallbackPropertyCard({
     price,
     location,
     slug,
-    mainImage
+    mainImage,
+    property,
+    error,
+    className = ''
 }: FallbackPropertyCardProps) {
     return (
         <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">

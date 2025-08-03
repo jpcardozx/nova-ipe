@@ -1,3 +1,5 @@
+export type PropertyType = 'sale' | 'rent' | 'featured';
+
 export interface Property {
     id: string;
     title: string;
@@ -24,8 +26,8 @@ export interface Property {
     isPremium?: boolean;
     isNew?: boolean;
     featured?: boolean;
-    propertyType: 'sale' | 'rent' | 'featured';
-    transactionType?: 'sale' | 'rent' | 'featured';
+    propertyType: PropertyType;
+    transactionType?: PropertyType;
 }
 
 export interface ProcessedProperty {

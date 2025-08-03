@@ -3,66 +3,80 @@
 import React from 'react';
 import PropertyCard from './PropertyCard';
 import FallbackPropertyCard from './FallbackPropertyCard';
-import type { PropertyData } from '@/app/types/property';
-import { ProcessedProperty } from '@/app/types/property';
+import type { PropertyData, ProcessedProperty, PropertyType } from '@/app/types/property';
 
-interface PropertyAdapterProps {
-    property: ProcessedProperty;
-    variant?: string;
+export interface PropertyAdapterProps {
+    property: PropertyData | ProcessedProperty;
+    viewMode: 'grid' | 'list';
+    variant?: 'default' | 'featured' | 'compact' | 'showcase' | 'hero' | 'highlight' | 'premium';
+    className?: string;
+    onFavoriteToggle?: (id: string) => void;
+    isFavorited?: boolean;
 }
 
-/**
- * PropertyAdapter - Adapta ProcessedProperty para formato compatível com PropertyCardUnified
- */
-export default function PropertyAdapter({ property, variant = 'default' }: PropertyAdapterProps) {
+const PropertyAdapter: React.FC<PropertyAdapterProps> = ({
+    property,
+    viewMode,
+    variant = 'default',
+    className = '',
+    onFavoriteToggle,
+    isFavorited = false
+}) => {
     // Converte o tipo de propriedade se necessário
     const adaptedPropertyType: PropertyType =
-        property.propertyType === 'investment' ? 'sale' :
-            (property.propertyType as PropertyType) || 'sale';    // Try to render PropertyCard, but fall back to FallbackPropertyCard if it fails
-    try {
-        if (!PropertyCard || typeof PropertyCard !== 'function') {
-            console.error('PropertyCard is undefined or not a function! Using fallback...');
-            return (
-                <FallbackPropertyCard
-                    title={property.title || property.titulo}
-                    slug={typeof property.slug === 'object' ? property.slug.current : property.slug}
-                    location={property.location || property.localizacao}
-                    price={property.price || property.preco}
-                    mainImage={property.mainImage}
-                />
-            );
+        (property as any).propertyType === 'investment' ? 'sale' :
+            ((property as any).propertyType as PropertyType) || 'sale';
+
+    // Helper function to get slug string
+    const getSlugString = (property: PropertyData | ProcessedProperty): string => {
+        if ('slug' in property) {
+            if (typeof property.slug === 'string') {
+                return property.slug;
+            } else if (property.slug && typeof property.slug === 'object' && 'current' in property.slug) {
+                return property.slug.current;
+            }
         }
+        return property._id || (property as any).id || '';
+    };
+
+    try {
+        // Adapt the property to PropertyData format
+        const adaptedProperty: PropertyData = {
+            _id: property._id || (property as any).id || '',
+            title: (property as any).title || (property as any).titulo || '',
+            slug: getSlugString(property),
+            price: (property as any).price || (property as any).preco || 0,
+            area: (property as any).area,
+            bedrooms: (property as any).bedrooms || (property as any).quartos,
+            bathrooms: (property as any).bathrooms || (property as any).banheiros,
+            parkingSpots: (property as any).parkingSpots || (property as any).vagas,
+            featured: (property as any).featured || (property as any).destaque || false,
+            description: (property as any).description || (property as any).descricao || '',
+            bairro: (property as any).location || (property as any).localizacao || '',
+            cidade: (property as any).cidade || ''
+        };
 
         return (
             <PropertyCard
-                id={property.id || property._id}
-                title={property.title || property.titulo}
-                slug={typeof property.slug === 'object' ? property.slug.current : property.slug}
-                location={property.location || property.localizacao || ''}
-                price={property.price || property.preco || 0}
-                propertyType={adaptedPropertyType}
-                area={property.area}
-                bedrooms={property.bedrooms || property.quartos}
-                bathrooms={property.bathrooms || property.banheiros}
-                parkingSpots={property.parkingSpots}
-                status={'available'}
-                mainImage={property.mainImage}
-                isHighlight={property.featured || property.destaque}
-                isPremium={property.isPremium || property.destaque}
-                className={variant === 'carousel' ? 'h-full' : ''}
+                property={adaptedProperty}
+                viewMode={viewMode}
+                variant={variant}
+                className={className}
+                onFavoriteToggle={onFavoriteToggle}
+                isFavorited={isFavorited}
             />
         );
     } catch (error) {
-        console.error('Error rendering PropertyCard:', error);
+        console.error('Error in PropertyAdapter:', error);
         return (
             <FallbackPropertyCard
-                title={property.title || property.titulo}
-                slug={typeof property.slug === 'object' ? property.slug.current : property.slug}
-                location={property.location || property.localizacao}
-                price={property.price || property.preco}
-                mainImage={property.mainImage}
+                property={property}
+                error={error instanceof Error ? error : new Error('Unknown error')}
+                className={className}
             />
         );
     }
-}
+};
+
+export default PropertyAdapter;
 
