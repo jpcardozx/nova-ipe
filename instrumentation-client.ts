@@ -1,23 +1,11 @@
-/**
- * Client-side instrumentation and monitoring
- * This file is loaded dynamically by client components
- */
+// Instrumentation client for performance monitoring
+// Temporarily disabled for diagnostic purposes
 
-export function initSentry() {
-  // Client-side Sentry initialization
-  if (typeof window !== 'undefined') {
-    console.log('Sentry client-side initialization skipped for now');
-  }
-}
-
-export function initPerformanceMonitoring() {
-  // Performance monitoring setup
-  if (typeof window !== 'undefined') {
-    console.log('Performance monitoring initialized');
-  }
+export function SentryInit() {
+  // Sentry initialization code disabled for performance diagnosis
+  console.log('Sentry initialization skipped for performance optimization');
 }
 
 export default {
-  initSentry,
-  initPerformanceMonitoring
+  SentryInit
 };

@@ -5,7 +5,7 @@
 
 // Re-export all UI components from their respective files
 export { Badge } from './badge';
-export { Button, buttonVariants } from './button';
+export { default as Button, buttonVariants } from './button';
 export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './card';
 export { 
   Carousel,

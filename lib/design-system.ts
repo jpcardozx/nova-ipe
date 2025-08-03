@@ -323,43 +323,23 @@ export const spacing = {
     },
 };
 
-// Sistema de design completo exportado
-export const designSystem = {
-    colors,
-    typography,
-    spacing,
-    breakpoints,
-    shadows,
-    animations,
-    transitions,
-    hoverEffects,
-    borderRadius,
-    zIndex,
-    componentPatterns,
-};
-
-// Utilidades para uso fácil
-export const utils = {
-    // Função para criar classes condicionais
-    cn: (...classes: (string | undefined | false | null)[]) => {
-        return classes.filter(Boolean).join(' ');
-    },
+// Breakpoints premium com mais granularidade
+export const breakpoints = {
+    xs: '475px',
+    sm: '640px',
+    md: '768px',
+    lg: '1024px',
+    xl: '1280px',
+    '2xl': '1536px',
+    '3xl': '1920px',
     
-    // Função para aplicar padrões de componentes
-    applyPattern: (pattern: keyof typeof componentPatterns, variant: string) => {
-        return componentPatterns[pattern]?.[variant as keyof typeof componentPatterns[typeof pattern]] || '';
-    },
-    
-    // Função para responsive design
-    responsive: {
-        mobile: (classes: string) => classes.split(' ').map(c => `sm:${c}`).join(' '),
-        tablet: (classes: string) => classes.split(' ').map(c => `md:${c}`).join(' '),
-        desktop: (classes: string) => classes.split(' ').map(c => `lg:${c}`).join(' '),
-        wide: (classes: string) => classes.split(' ').map(c => `xl:${c}`).join(' '),
-    },
+    // Breakpoints específicos
+    mobile: '640px',
+    tablet: '768px',
+    desktop: '1024px',
+    wide: '1280px',
+    ultrawide: '1536px',
 };
-
-export default designSystem;
 
 // Sombras
 export const shadows = {
@@ -593,20 +573,40 @@ export const componentPatterns = {
     },
 };
 
-// Breakpoints premium com mais granularidade
-export const breakpoints = {
-    xs: '475px',
-    sm: '640px',
-    md: '768px',
-    lg: '1024px',
-    xl: '1280px',
-    '2xl': '1536px',
-    '3xl': '1920px',
-    
-    // Breakpoints específicos
-    mobile: '640px',
-    tablet: '768px',
-    desktop: '1024px',
-    wide: '1280px',
-    ultrawide: '1536px',
+// Sistema de design completo exportado
+export const designSystem = {
+    colors,
+    typography,
+    spacing,
+    breakpoints,
+    shadows,
+    animations,
+    transitions,
+    hoverEffects,
+    borderRadius,
+    zIndex,
+    componentPatterns,
 };
+
+// Utilidades para uso fácil
+export const utils = {
+    // Função para criar classes condicionais
+    cn: (...classes: (string | undefined | false | null)[]) => {
+        return classes.filter(Boolean).join(' ');
+    },
+    
+    // Função para aplicar padrões de componentes
+    applyPattern: (pattern: keyof typeof componentPatterns, variant: string) => {
+        return componentPatterns[pattern]?.[variant as keyof typeof componentPatterns[typeof pattern]] || '';
+    },
+    
+    // Função para responsive design
+    responsive: {
+        mobile: (classes: string) => classes.split(' ').map(c => `sm:${c}`).join(' '),
+        tablet: (classes: string) => classes.split(' ').map(c => `md:${c}`).join(' '),
+        desktop: (classes: string) => classes.split(' ').map(c => `lg:${c}`).join(' '),
+        wide: (classes: string) => classes.split(' ').map(c => `xl:${c}`).join(' '),
+    },
+};
+
+export default designSystem;

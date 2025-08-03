@@ -25,3 +25,10 @@ export const useToast = () => {
 
     return { addToast, ToastContainer };
 };
+
+// Export Toaster component for compatibility
+export const Toaster = () => {
+    return <div id="toast-container" />;
+};
+
+export default { useToast, Toaster };

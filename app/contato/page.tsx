@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import Navbar from '../sections/NavBar';
 import Footer from '../sections/Footer';
-import { Button } from '@/components/ui/button';
+import Button from '@/components/ui/button';
 
 interface FormData {
   nome: string;

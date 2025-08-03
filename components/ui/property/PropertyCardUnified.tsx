@@ -52,8 +52,8 @@ const PropertyCardUnified: React.FC<PropertyCardUnifiedProps> = ({
 
     // Format price with better formatting
     const formattedPrice = preco ?
-        new Intl.NumberFormat('pt-BR', { 
-            style: 'currency', 
+        new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
             currency: 'BRL',
             minimumFractionDigits: 0,
             maximumFractionDigits: 0
@@ -84,7 +84,7 @@ const PropertyCardUnified: React.FC<PropertyCardUnifiedProps> = ({
                         {/* Gradient overlay */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
-                    
+
                     {/* Enhanced badges */}
                     <div className="absolute top-3 left-3 flex flex-col gap-2">
                         {destaque && (
@@ -179,7 +179,7 @@ const PropertyCardUnified: React.FC<PropertyCardUnifiedProps> = ({
                     {caracteristicas && caracteristicas.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-3 pt-3 border-t border-neutral-100">
                             {caracteristicas.slice(0, 3).map((feature, index) => (
-                                <span 
+                                <span
                                     key={index}
                                     className="text-xs bg-neutral-100 text-neutral-600 px-2 py-1 rounded-md"
                                 >
@@ -198,7 +198,5 @@ const PropertyCardUnified: React.FC<PropertyCardUnifiedProps> = ({
         </Link>
     );
 };
-
-export default PropertyCardUnified;
 
 export default PropertyCardUnified;

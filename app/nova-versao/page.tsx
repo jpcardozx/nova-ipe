@@ -17,7 +17,7 @@ import {
   Star,
   CheckCircle
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import Button from '@/components/ui/button';
 import Navbar from '../sections/NavBar';
 import Footer from '../sections/Footer';
 

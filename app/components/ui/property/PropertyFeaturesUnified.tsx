@@ -29,7 +29,7 @@ import {
     Zap
 } from 'lucide-react';
 import { cn, formatarArea } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import Button from '@/components/ui/button';
 
 // Tipos unificados
 export interface FeatureUnified {

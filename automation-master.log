@@ -1,2 +1,0 @@
-[2025-07-16T19:28:00.132Z] [MASTER] [WARNING] Could not create Git checkpoint
-[2025-07-16T19:28:00.135Z] [MASTER] [ERROR] ❌ Automation failed: ENOENT: no such file or directory, copyfile 'C:\Users\João Pedro Cardozo\projetos\nova-ipe\package.json' -> 'C:\Users\João Pedro Cardozo\projetos\nova-ipe\.automation-checkpoints\checkpoint-2025-07-16T19-27-59-113Z\package.json'

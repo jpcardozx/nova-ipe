@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { formatarMoeda } from '@/lib/utils';
 import type { ImovelClient as ImovelDataType } from '@/src/types/imovel-client';
-import { Button } from '@/components/ui/button';
+import Button from '@/components/ui/button';
 
 // Importação segura de ícones com fallback
 let Phone: any, Calendar: any, UserCheck: any, Share2: any;

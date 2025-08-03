@@ -10,7 +10,7 @@ import { formatarMoeda } from '@/lib/utils';
 import SanityImage from '@/app/components/SanityImage';
 import type { ImovelClient } from '../../src/types/imovel-client';
 import { normalizeDocuments } from '../../lib/sanity-utils';
-import { Button } from '@/components/ui/button';
+import Button from '@/components/ui/button';
 // import FeaturedProperty from '@/components/ui/FeaturedProperty'; // Temporarily disabled - empty component
 import type { ImovelClientType } from '../../types/imovel';
 import PropertyCardUnified from '@/app/components/ui/property/PropertyCardUnified';

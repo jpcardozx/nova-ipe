@@ -56,7 +56,22 @@ const amenitiesList = [
   'Pet friendly', 'Academia', 'Playground'
 ]
 
-export default PropertyFilters;
+function PropertyFilters() {
+  return (
+    <div className="space-y-4">
+      <h3 className="font-semibold text-lg">Filtros</h3>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+        {propertyTypes.map((type) => (
+          <button
+            key={type.value}
+            className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            {type.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
 
-// Auto-generated type exports
-export type { PropertyFiltersProps } from './PropertyFilters';
+export default PropertyFilters;
