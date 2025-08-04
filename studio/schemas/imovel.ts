@@ -131,7 +131,41 @@ export default defineType({
       name: 'imagem',
       title: 'Imagem Principal',
       type: 'image',
-      fieldset: 'midia'
+      fieldset: 'midia',
+      validation: Rule => Rule.required(),
+      description: 'Imagem de capa que aparece na listagem de imóveis'
+    }),
+
+    defineField({
+      name: 'galeria',
+      title: '🖼️ Galeria de Imagens',
+      type: 'array',
+      fieldset: 'midia',
+      of: [{
+        type: 'image',
+        options: {
+          hotspot: true,
+          metadata: ['blurhash', 'lqip', 'palette']
+        },
+        fields: [
+          {
+            name: 'alt',
+            title: 'Texto alternativo',
+            type: 'string',
+            description: 'Descreva brevemente o que mostra esta imagem (para acessibilidade)'
+          },
+          {
+            name: 'titulo',
+            title: 'Título da imagem',
+            type: 'string',
+            description: 'Título opcional para a imagem (ex: "Sala de estar", "Cozinha planejada")'
+          }
+        ]
+      }],
+      options: {
+        layout: 'grid'
+      },
+      description: 'Múltiplas imagens do imóvel. A primeira será usada como capa se não houver imagem principal.'
     }),
 
     defineField({

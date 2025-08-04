@@ -354,15 +354,30 @@ export const queryImovelPorSlug = /* groq */ `
     areaUtil,
     documentacaoOk,
     videoTour,
+    dormitorios,
+    banheiros,
+    vagas,
+    tipoImovel,
+    caracteristicas,
+    status,
     categoria->{
       _id,
       "categoriaTitulo": titulo,
       "categoriaSlug": slug
-    },    imagem {
+    },
+    imagem {
       "asset": asset->,
       "_type": "image",
       "imagemUrl": asset->url,
       "alt": alt
+    },
+    "galeria": galeria[]{
+      "asset": asset->,
+      "_type": "image", 
+      "imagemUrl": asset->url,
+      "alt": alt,
+      "titulo": titulo,
+      hotspot
     },
     imagemOpenGraph {
       "asset": asset->,

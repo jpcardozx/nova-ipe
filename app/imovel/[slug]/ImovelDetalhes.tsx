@@ -25,7 +25,12 @@ import {
     TrendingUp,
     Building2,
     MessageSquare,
-    Send
+    Send,
+    ChevronLeft,
+    ChevronRight,
+    X,
+    Maximize2,
+    Grid3X3
 } from 'lucide-react';
 
 interface ImovelDetalhesProps {
@@ -37,6 +42,7 @@ interface ImovelDetalhesProps {
 const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], preco }) => {
     const [imagemAtiva, setImagemAtiva] = useState(0);
     const [isFavorito, setIsFavorito] = useState(false);
+    const [modalGaleriaAberto, setModalGaleriaAberto] = useState(false);
 
     // Log para debug
     console.log('DEBUG ImovelDetalhes - props recebidos:', {
@@ -73,6 +79,30 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
 
     const precoFinal = preco ?? imovel.preco ?? 0;
     const tipoPropriedade = imovel.finalidade?.toLowerCase() === 'venda' ? 'sale' : 'rent';
+
+    // Navegação por teclado no modal
+    React.useEffect(() => {
+        if (!modalGaleriaAberto) return;
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            switch (e.key) {
+                case 'Escape':
+                    setModalGaleriaAberto(false);
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    setImagemAtiva(imagemAtiva > 0 ? imagemAtiva - 1 : todasImagens.length - 1);
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    setImagemAtiva(imagemAtiva < todasImagens.length - 1 ? imagemAtiva + 1 : 0);
+                    break;
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [modalGaleriaAberto, imagemAtiva, todasImagens.length]);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-amber-50">
@@ -112,9 +142,9 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
                 <div className="grid lg:grid-cols-3 gap-8">
                     {/* Coluna Principal - Imagens e Detalhes */}
                     <div className="lg:col-span-2">
-                        {/* Galeria de Imagens */}
+                        {/* Galeria de Imagens Aprimorada */}
                         <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
-                            <div className="relative h-96 lg:h-[500px]">
+                            <div className="relative h-96 lg:h-[500px] group">
                                 <Image
                                     src={todasImagens[imagemAtiva]?.imagemUrl || imagemPrincipal}
                                     alt={todasImagens[imagemAtiva]?.alt || imovel.titulo || 'Imóvel'}
@@ -122,6 +152,44 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
                                     className="object-cover"
                                     priority
                                 />
+
+                                {/* Controles de navegação */}
+                                {todasImagens.length > 1 && (
+                                    <>
+                                        <button
+                                            onClick={() => setImagemAtiva(imagemAtiva > 0 ? imagemAtiva - 1 : todasImagens.length - 1)}
+                                            className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300"
+                                        >
+                                            <ChevronLeft className="w-6 h-6" />
+                                        </button>
+                                        <button
+                                            onClick={() => setImagemAtiva(imagemAtiva < todasImagens.length - 1 ? imagemAtiva + 1 : 0)}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300"
+                                        >
+                                            <ChevronRight className="w-6 h-6" />
+                                        </button>
+                                    </>
+                                )}
+
+                                {/* Botões de ação */}
+                                <div className="absolute top-4 right-4 flex gap-2">
+                                    {todasImagens.length > 1 && (
+                                        <button
+                                            onClick={() => setModalGaleriaAberto(true)}
+                                            className="bg-black/20 hover:bg-black/40 text-white p-2 rounded-lg backdrop-blur-sm transition-colors"
+                                            title="Ver todas as fotos"
+                                        >
+                                            <Grid3X3 className="w-5 h-5" />
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={() => setModalGaleriaAberto(true)}
+                                        className="bg-black/20 hover:bg-black/40 text-white p-2 rounded-lg backdrop-blur-sm transition-colors"
+                                        title="Ampliar imagem"
+                                    >
+                                        <Maximize2 className="w-5 h-5" />
+                                    </button>
+                                </div>
 
                                 {/* Badges sobre a imagem */}
                                 <div className="absolute top-4 left-4 flex flex-col gap-2">
@@ -147,23 +215,40 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
                                 )}
                             </div>
 
-                            {/* Thumbnails */}
+                            {/* Thumbnails com scroll horizontal aprimorado */}
                             {todasImagens.length > 1 && (
                                 <div className="p-4 bg-slate-50">
-                                    <div className="flex gap-2 overflow-x-auto">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-sm font-medium text-slate-600">
+                                            Galeria ({todasImagens.length} {todasImagens.length === 1 ? 'foto' : 'fotos'})
+                                        </span>
+                                        <button
+                                            onClick={() => setModalGaleriaAberto(true)}
+                                            className="text-amber-600 hover:text-amber-700 text-sm font-medium flex items-center gap-1"
+                                        >
+                                            <Eye className="w-4 h-4" />
+                                            Ver todas
+                                        </button>
+                                    </div>
+                                    <div className="flex gap-2 overflow-x-auto pb-2">
                                         {todasImagens.map((img, index) => (
                                             <button
                                                 key={index}
                                                 onClick={() => setImagemAtiva(index)}
-                                                className={`relative w-20 h-16 rounded-lg overflow-hidden flex-shrink-0 ${imagemAtiva === index ? 'ring-2 ring-amber-500' : ''
+                                                className={`relative w-20 h-16 rounded-lg overflow-hidden flex-shrink-0 transition-all duration-200 ${imagemAtiva === index
+                                                        ? 'ring-2 ring-amber-500 scale-105'
+                                                        : 'hover:ring-2 hover:ring-amber-300'
                                                     }`}
                                             >
                                                 <Image
                                                     src={img.imagemUrl}
-                                                    alt={`Imagem ${index + 1}`}
+                                                    alt={img.alt || `Imagem ${index + 1}`}
                                                     fill
                                                     className="object-cover"
                                                 />
+                                                {imagemAtiva === index && (
+                                                    <div className="absolute inset-0 bg-amber-500/20" />
+                                                )}
                                             </button>
                                         ))}
                                     </div>
@@ -356,6 +441,83 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
                     </div>
                 )}
             </div>
+
+            {/* Modal de Galeria em Tela Cheia */}
+            {modalGaleriaAberto && (
+                <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm">
+                    <div className="flex flex-col h-full">
+                        {/* Header do Modal */}
+                        <div className="flex items-center justify-between p-4 text-white">
+                            <div>
+                                <h2 className="text-lg font-semibold">{imovel.titulo}</h2>
+                                <p className="text-sm text-white/70">
+                                    {imagemAtiva + 1} de {todasImagens.length} fotos
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => setModalGaleriaAberto(false)}
+                                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        {/* Imagem Principal do Modal */}
+                        <div className="flex-1 relative">
+                            <Image
+                                src={todasImagens[imagemAtiva]?.imagemUrl || imagemPrincipal}
+                                alt={todasImagens[imagemAtiva]?.alt || imovel.titulo || 'Imóvel'}
+                                fill
+                                className="object-contain"
+                                priority
+                            />
+
+                            {/* Controles de navegação */}
+                            {todasImagens.length > 1 && (
+                                <>
+                                    <button
+                                        onClick={() => setImagemAtiva(imagemAtiva > 0 ? imagemAtiva - 1 : todasImagens.length - 1)}
+                                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-3 rounded-full transition-colors"
+                                    >
+                                        <ChevronLeft className="w-8 h-8" />
+                                    </button>
+                                    <button
+                                        onClick={() => setImagemAtiva(imagemAtiva < todasImagens.length - 1 ? imagemAtiva + 1 : 0)}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-3 rounded-full transition-colors"
+                                    >
+                                        <ChevronRight className="w-8 h-8" />
+                                    </button>
+                                </>
+                            )}
+                        </div>
+
+                        {/* Thumbnails no Modal */}
+                        {todasImagens.length > 1 && (
+                            <div className="p-4 bg-black/50">
+                                <div className="flex gap-2 overflow-x-auto justify-center">
+                                    {todasImagens.map((img, index) => (
+                                        <button
+                                            key={index}
+                                            onClick={() => setImagemAtiva(index)}
+                                            className={`relative w-16 h-12 rounded-lg overflow-hidden flex-shrink-0 transition-all duration-200 ${imagemAtiva === index
+                                                    ? 'ring-2 ring-amber-400 scale-110'
+                                                    : 'hover:ring-2 hover:ring-white/50 opacity-70 hover:opacity-100'
+                                                }`}
+                                        >
+                                            <Image
+                                                src={img.imagemUrl}
+                                                alt={img.alt || `Imagem ${index + 1}`}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

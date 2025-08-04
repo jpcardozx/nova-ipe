@@ -58,9 +58,9 @@ const VirtualizedPropertyCard = React.memo(({
         bedrooms: imovel.dormitorios,
         bathrooms: imovel.banheiros,
         parkingSpots: imovel.vagas,
-        mainImage: imovel.imagens?.[0] ? {
-            url: imovel.imagens[0].imagemUrl || '',
-            alt: imovel.imagens[0].alt || imovel.titulo
+        mainImage: imovel.galeria?.[0] ? {
+            url: imovel.galeria[0].imagemUrl || '',
+            alt: imovel.galeria[0].alt || imovel.titulo
         } : undefined,
         isHighlight: imovel.destaque,
         isPremium: false,
@@ -183,37 +183,35 @@ export default function PropertyCatalogOptimized({
             const searchLower = debouncedSearchTerm.toLowerCase()
             result = result.filter(imovel =>
                 imovel.titulo?.toLowerCase().includes(searchLower) ||
-                imovel.endereco?.cidade?.toLowerCase().includes(searchLower) ||
-                imovel.endereco?.bairro?.toLowerCase().includes(searchLower) ||
+                imovel.cidade?.toLowerCase().includes(searchLower) ||
+                imovel.bairro?.toLowerCase().includes(searchLower) ||
                 imovel.descricao?.toLowerCase().includes(searchLower)
             )
         }
 
         // Type filter
         if (filters.type) {
-            result = result.filter(imovel => imovel.tipo === filters.type)
+            result = result.filter(imovel => imovel.tipoImovel === filters.type)
         }
 
         // Location filter
         if (filters.location) {
             result = result.filter(imovel =>
-                imovel.endereco?.cidade?.toLowerCase().includes(filters.location.toLowerCase()) ||
-                imovel.endereco?.bairro?.toLowerCase().includes(filters.location.toLowerCase())
+                imovel.cidade?.toLowerCase().includes(filters.location.toLowerCase()) ||
+                imovel.bairro?.toLowerCase().includes(filters.location.toLowerCase())
             )
         }
 
         // Price range filter
         if (filters.priceMin > 0) {
             result = result.filter(imovel =>
-                (imovel.precoVenda && imovel.precoVenda >= filters.priceMin) ||
-                (imovel.precoAluguel && imovel.precoAluguel >= filters.priceMin)
+                (imovel.preco && imovel.preco >= filters.priceMin)
             )
         }
 
         if (filters.priceMax > 0) {
             result = result.filter(imovel =>
-                (imovel.precoVenda && imovel.precoVenda <= filters.priceMax) ||
-                (imovel.precoAluguel && imovel.precoAluguel <= filters.priceMax)
+                (imovel.preco && imovel.preco <= filters.priceMax)
             )
         }
 
@@ -221,7 +219,7 @@ export default function PropertyCatalogOptimized({
         if (filters.bedrooms) {
             const bedCount = parseInt(filters.bedrooms)
             result = result.filter(imovel => {
-                const quartos = imovel.caracteristicas?.quartos || 0
+                const quartos = imovel.dormitorios || 0
                 return bedCount === 4 ? quartos >= 4 : quartos === bedCount
             })
         }
@@ -230,7 +228,7 @@ export default function PropertyCatalogOptimized({
         if (filters.bathrooms) {
             const bathCount = parseInt(filters.bathrooms)
             result = result.filter(imovel => {
-                const banheiros = imovel.caracteristicas?.banheiros || 0
+                const banheiros = imovel.banheiros || 0
                 return bathCount === 3 ? banheiros >= 3 : banheiros === bathCount
             })
         }
@@ -239,29 +237,29 @@ export default function PropertyCatalogOptimized({
         switch (sortBy) {
             case 'price-asc':
                 result.sort((a, b) => {
-                    const priceA = a.precoVenda || a.precoAluguel || 0
-                    const priceB = b.precoVenda || b.precoAluguel || 0
+                    const priceA = a.preco || 0
+                    const priceB = b.preco || 0
                     return priceA - priceB
                 })
                 break
             case 'price-desc':
                 result.sort((a, b) => {
-                    const priceA = a.precoVenda || a.precoAluguel || 0
-                    const priceB = b.precoVenda || b.precoAluguel || 0
+                    const priceA = a.preco || 0
+                    const priceB = b.preco || 0
                     return priceB - priceA
                 })
                 break
             case 'area-desc':
                 result.sort((a, b) => {
-                    const areaA = a.caracteristicas?.areaTotal || 0
-                    const areaB = b.caracteristicas?.areaTotal || 0
+                    const areaA = a.areaUtil || 0
+                    const areaB = b.areaUtil || 0
                     return areaB - areaA
                 })
                 break
             case 'newest':
                 result.sort((a, b) => {
-                    const dateA = new Date(a._createdAt || 0).getTime()
-                    const dateB = new Date(b._createdAt || 0).getTime()
+                    const dateA = new Date(a.dataPublicacao || 0).getTime()
+                    const dateB = new Date(b.dataPublicacao || 0).getTime()
                     return dateB - dateA
                 })
                 break

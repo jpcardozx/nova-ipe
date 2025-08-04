@@ -191,7 +191,8 @@ export default function PropertyCatalogOptimized({
         priceMax: Number(searchParams.precoMax) || 2000000,
         bedrooms: searchParams.dormitorios || '',
         bathrooms: searchParams.banheiros || '',
-        area: searchParams.area || ''
+        area: searchParams.area || '',
+        amenities: []
     })
     const [sortBy, setSortBy] = useState(searchParams.ordem || 'relevance')
 
@@ -395,15 +396,17 @@ export default function PropertyCatalogOptimized({
                             <PropertyFilters
                                 filters={filters}
                                 onChange={setFilters}
-                                onReset={() => setFilters({
+                                onClear={() => setFilters({
                                     type: '',
                                     location: '',
                                     priceMin: 0,
                                     priceMax: 2000000,
                                     bedrooms: '',
                                     bathrooms: '',
-                                    area: ''
+                                    area: '',
+                                    amenities: []
                                 })}
+                                activeCount={Object.values(filters).filter(v => v && v !== 0 && (Array.isArray(v) ? v.length > 0 : true)).length}
                             />
                         </Suspense>
                     </div>
@@ -464,7 +467,8 @@ export default function PropertyCatalogOptimized({
                                         priceMax: 2000000,
                                         bedrooms: '',
                                         bathrooms: '',
-                                        area: ''
+                                        area: '',
+                                        amenities: []
                                     })
                                 }}
                                 className="bg-amber-500 text-white px-6 py-3 rounded-lg hover:bg-amber-600 transition-colors"
