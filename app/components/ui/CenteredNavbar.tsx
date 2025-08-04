@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+// Removido framer-motion para evitar problemas de exibição
 import { Phone, MessageCircle, X, Menu, Home, Building, Key, Mail } from 'lucide-react';
 
 const navItems = [
@@ -90,14 +90,11 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
 
   return (
     <>
-      <motion.nav
+      <nav
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${isScrolled
           ? 'bg-white/98 backdrop-blur-xl shadow-lg border-b border-gray-200/80'
           : 'bg-white/95 backdrop-blur-lg border-b border-gray-100/60'
           } ${className || ''}`}
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className={`transition-all duration-500 ${isScrolled ? 'h-16' : 'h-20'} flex items-center`}>
@@ -118,25 +115,14 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
                 </Link>
 
                 {/* Mobile Menu Button */}
-                <motion.button
+                <button
                   onClick={() => setIsOpen(!isOpen)}
                   className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-colors"
                   aria-label="Menu de navegação"
                   aria-expanded={isOpen}
-                  whileTap={{ scale: 0.95 }}
                 >
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={isOpen ? 'close' : 'menu'}
-                      initial={{ rotate: isOpen ? -90 : 90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: isOpen ? 90 : -90, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-                    </motion.div>
-                  </AnimatePresence>
-                </motion.button>
+                  {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                </button>
               </div>
             ) : (
               /* Desktop Layout - Centered Navigation */
@@ -179,11 +165,8 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
 
                               {/* Active indicator */}
                               {isActive && (
-                                <motion.div
-                                  className="absolute inset-0 bg-gradient-to-r from-amber-100/60 to-orange-100/60 rounded-xl border border-amber-200/40"
-                                  layoutId="activeNavItem"
-                                  initial={false}
-                                  transition={{ type: 'spring', bounce: 0.15, duration: 0.6 }}
+                                <div
+                                  className="absolute inset-0 bg-gradient-to-r from-amber-100/60 to-orange-100/60 rounded-xl border border-amber-200/40 transition-all duration-300"
                                 />
                               )}
 
@@ -200,29 +183,25 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
                 {/* Right: CTA Buttons */}
                 <div className="flex justify-end items-center gap-3">
                   {/* Phone CTA */}
-                  <motion.a
+                  <a
                     href="tel:+551146933003"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-amber-600 transition-colors group"
+                    className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-amber-600 transition-colors group hover:scale-105 active:scale-95"
                   >
                     <Phone className="w-4 h-4 group-hover:scale-110 transition-transform" />
                     <span className="text-sm font-medium hidden xl:block">(11) 4693-3003</span>
-                  </motion.a>
+                  </a>
 
                   {/* WhatsApp CTA */}
-                  <motion.a
+                  <a
                     href="https://wa.me/5511981845016"
                     target="_blank"
                     rel="noopener noreferrer"
-                    whileHover={{ scale: 1.02, y: -1 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:from-green-700 hover:to-green-600 transition-all shadow-md hover:shadow-lg"
+                    className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:from-green-700 hover:to-green-600 transition-all shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
                   >
                     <MessageCircle className="w-4 h-4" />
                     <span className="hidden xl:block">Atendimento via WhatsApp</span>
                     <span className="xl:hidden">WhatsApp</span>
-                  </motion.a>
+                  </a>
                 </div>
               </div>
             )}
@@ -230,96 +209,79 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
         </div>
 
         {/* Mobile Menu Overlay */}
-        <AnimatePresence>
-          {isOpen && isMobile && (
-            <>
-              {/* Backdrop */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="fixed inset-0 bg-black/20 backdrop-blur-sm"
-                onClick={() => setIsOpen(false)}
-              />
+        {isOpen && isMobile && (
+          <>
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 bg-black/20 backdrop-blur-sm transition-opacity duration-300"
+              onClick={() => setIsOpen(false)}
+            />
 
-              {/* Mobile Menu */}
-              <motion.div
-                initial={{ opacity: 0, y: -20, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-                className="absolute top-full left-0 right-0 bg-white/98 backdrop-blur-xl border-b border-gray-200 shadow-2xl"
-              >
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                  {/* Mobile Navigation Links */}
-                  <nav className="mb-8">
-                    <ul className="space-y-2">
-                      {navItems.map(({ label, href, icon: Icon }, index) => {
-                        const isActive = pathname === href || (href !== '/' && pathname.startsWith(href));
+            {/* Mobile Menu */}
+            <div
+              className="absolute top-full left-0 right-0 bg-white/98 backdrop-blur-xl border-b border-gray-200 shadow-2xl animate-fade-in"
+            >
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {/* Mobile Navigation Links */}
+                <nav className="mb-8">
+                  <ul className="space-y-2">
+                    {navItems.map(({ label, href, icon: Icon }, index) => {
+                      const isActive = pathname === href || (href !== '/' && pathname.startsWith(href));
 
-                        return (
-                          <motion.li
-                            key={label}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.1, duration: 0.3 }}
+                      return (
+                        <li
+                          key={label}
+                          className="transition-all duration-200"
+                        >
+                          <Link
+                            href={href}
+                            onClick={() => setIsOpen(false)}
+                            className={`flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 ${isActive
+                              ? 'bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 border border-amber-200/40'
+                              : 'text-gray-700 hover:bg-gray-50 border border-transparent hover:border-gray-200'
+                              }`}
                           >
-                            <Link
-                              href={href}
-                              onClick={() => setIsOpen(false)}
-                              className={`flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 ${isActive
-                                ? 'bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 border border-amber-200/40'
-                                : 'text-gray-700 hover:bg-gray-50 border border-transparent hover:border-gray-200'
-                                }`}
-                            >
-                              <div className={`p-2 rounded-xl ${isActive ? 'bg-amber-100 text-amber-600' : 'bg-gray-100 text-gray-500'}`}>
-                                <Icon className="w-5 h-5" />
-                              </div>
-                              <span className="font-semibold text-lg">{label}</span>
-                              {isActive && (
-                                <div className="ml-auto w-2 h-2 bg-amber-500 rounded-full" />
-                              )}
-                            </Link>
-                          </motion.li>
-                        );
-                      })}
-                    </ul>
-                  </nav>
+                            <div className={`p-2 rounded-xl ${isActive ? 'bg-amber-100 text-amber-600' : 'bg-gray-100 text-gray-500'}`}>
+                              <Icon className="w-5 h-5" />
+                            </div>
+                            <span className="font-semibold text-lg">{label}</span>
+                            {isActive && (
+                              <div className="ml-auto w-2 h-2 bg-amber-500 rounded-full" />
+                            )}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </nav>
 
-                  {/* Mobile CTA Buttons */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4, duration: 0.3 }}
-                    className="space-y-4 pt-6 border-t border-gray-200"
+                {/* Mobile CTA Buttons */}
+                <div className="space-y-4 pt-6 border-t border-gray-200">
+                  {/* WhatsApp Button */}
+                  <a
+                    href="https://wa.me/5511981845016"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-3 w-full bg-gradient-to-r from-green-600 to-green-500 text-white px-6 py-4 rounded-2xl font-semibold text-lg hover:from-green-700 hover:to-green-600 transition-all shadow-lg"
                   >
-                    {/* WhatsApp Button */}
-                    <a
-                      href="https://wa.me/5511981845016"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-3 w-full bg-gradient-to-r from-green-600 to-green-500 text-white px-6 py-4 rounded-2xl font-semibold text-lg hover:from-green-700 hover:to-green-600 transition-all shadow-lg"
-                    >
-                      <MessageCircle className="w-6 h-6" />
-                      <span>Falar via WhatsApp</span>
-                    </a>
+                    <MessageCircle className="w-6 h-6" />
+                    <span>Falar via WhatsApp</span>
+                  </a>
 
-                    {/* Phone Button */}
-                    <a
-                      href="tel:+551146933003"
-                      className="flex items-center justify-center gap-3 w-full border-2 border-gray-200 text-gray-700 px-6 py-4 rounded-2xl font-semibold text-lg hover:bg-gray-50 hover:border-gray-300 transition-all"
-                    >
-                      <Phone className="w-5 h-5" />
-                      <span>(11) 4693-3003</span>
-                    </a>
-                  </motion.div>
+                  {/* Phone Button */}
+                  <a
+                    href="tel:+551146933003"
+                    className="flex items-center justify-center gap-3 w-full border-2 border-gray-200 text-gray-700 px-6 py-4 rounded-2xl font-semibold text-lg hover:bg-gray-50 hover:border-gray-300 transition-all"
+                  >
+                    <Phone className="w-5 h-5" />
+                    <span>(11) 4693-3003</span>
+                  </a>
                 </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
-      </motion.nav>
+              </div>
+            </div>
+          </>
+        )}
+      </nav>
 
       {/* Spacer to prevent content overlap */}
       <div className={`transition-all duration-500 ${isScrolled ? 'h-16' : 'h-20'}`} />

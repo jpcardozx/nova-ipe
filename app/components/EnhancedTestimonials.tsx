@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ChevronLeft, ChevronRight, Quote, Building2, User2, MapPin, Award } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -269,7 +268,6 @@ export default function EnhancedTestimonials({
                         <h2 className={cn("text-3xl font-bold", styles.headingText)}>{title}</h2>
                         <p className={cn("text-lg", styles.subText)}>{subtitle}</p>
                     </div>
-
                     <div className="flex justify-center mb-8">
                         <div className="flex space-x-2">
                             {testimonials.map((_, idx) => (
@@ -290,38 +288,27 @@ export default function EnhancedTestimonials({
                                 />
                             ))}
                         </div>
-                    </div>                    <div className="relative overflow-hidden">
-                        <AnimatePresence initial={false} mode="wait">
-                            <motion.div
-                                key={currentIndex}
-                                initial={{ opacity: 0, x: direction === 'right' ? 20 : -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: direction === 'right' ? -20 : 20 }}
-                                transition={{ duration: 0.3 }}
-                                className="text-center"
-                            >
-                                <div className="mb-5">
-                                    <div className="flex justify-center mb-3">
-                                        {renderStars(testimonials[currentIndex].rating)}
-                                    </div>
-
-                                    <div className={cn("relative italic text-lg px-8 mb-6", styles.contentText)}>
-                                        <Quote className={cn("absolute top-0 left-0 w-5 h-5 -translate-x-1 -translate-y-1", styles.quoteColor)} />
-                                        "{testimonials[currentIndex].content}"
-                                        <Quote className={cn("absolute bottom-0 right-0 w-5 h-5 translate-x-1 translate-y-1 rotate-180", styles.quoteColor)} />
-                                    </div>
-
-                                    <div className="mt-4">
-                                        <p className={cn("font-medium", styles.nameText)}>{testimonials[currentIndex].name}</p>
-                                        {testimonials[currentIndex].role && (
-                                            <p className={cn("text-sm", styles.roleText)}>{testimonials[currentIndex].role}</p>
-                                        )}
-                                    </div>
-                                </div>
-                            </motion.div>
-                        </AnimatePresence>
                     </div>
-
+                    <div className="relative overflow-hidden">
+                        <div className="text-center transition-all duration-300">
+                            <div className="mb-5">
+                                <div className="flex justify-center mb-3">
+                                    {renderStars(testimonials[currentIndex].rating)}
+                                </div>
+                                <div className={cn("relative italic text-lg px-8 mb-6", styles.contentText)}>
+                                    <Quote className={cn("absolute top-0 left-0 w-5 h-5 -translate-x-1 -translate-y-1", styles.quoteColor)} />
+                                    "{testimonials[currentIndex].content}"
+                                    <Quote className={cn("absolute bottom-0 right-0 w-5 h-5 translate-x-1 translate-y-1 rotate-180", styles.quoteColor)} />
+                                </div>
+                                <div className="mt-4">
+                                    <p className={cn("font-medium", styles.nameText)}>{testimonials[currentIndex].name}</p>
+                                    {testimonials[currentIndex].role && (
+                                        <p className={cn("text-sm", styles.roleText)}>{testimonials[currentIndex].role}</p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div className="flex justify-center space-x-4 mt-8">
                         <button
                             onClick={handlePrev}
@@ -356,26 +343,18 @@ export default function EnhancedTestimonials({
     // Renderização para o modo cards
     if (mode === 'cards') {
         return (
-            <section
-                ref={sectionRef}
-                className={cn("py-20 px-4", styles.bg)}
-            >
+            <section ref={sectionRef} className={cn("py-20 px-4", styles.bg)}>
                 <div className="container mx-auto">
                     <div className="text-center space-y-3 mb-12">
                         <h2 className={cn("text-3xl md:text-4xl font-bold", styles.headingText)}>{title}</h2>
                         {subtitle && <p className={cn("text-lg max-w-3xl mx-auto", styles.subText)}>{subtitle}</p>}
                     </div>
-
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
                         {testimonials.map((testimonial) => (
-                            <motion.div
+                            <div
                                 key={testimonial.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5 }}
-                                viewport={{ once: true, margin: "-50px" }}
                                 className={cn(
-                                    "rounded-xl p-6",
+                                    "rounded-xl p-6 transition-all duration-500",
                                     styles.cardBg,
                                     styles.cardBorder,
                                     styles.cardShadow
@@ -389,21 +368,20 @@ export default function EnhancedTestimonials({
                                     </div>
                                     <Quote className={cn("w-8 h-8", styles.quoteColor)} />
                                 </div>
-
                                 <p className={cn("mb-4", styles.contentText)}>
                                     "{testimonial.content}"
                                 </p>
-
                                 <div className="flex items-center mt-6">
                                     {testimonial.avatarUrl ? (
-                                        <div className="mr-4">                                        <Image
-                                            src={testimonial.avatarUrl}
-                                            alt={testimonial.name}
-                                            width={48}
-                                            height={48}
-                                            className="rounded-full object-cover"
-                                            priority={testimonial.featured}
-                                        />
+                                        <div className="mr-4">
+                                            <Image
+                                                src={testimonial.avatarUrl}
+                                                alt={testimonial.name}
+                                                width={48}
+                                                height={48}
+                                                className="rounded-full object-cover"
+                                                priority={testimonial.featured}
+                                            />
                                         </div>
                                     ) : (
                                         <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center mr-4">
@@ -424,7 +402,7 @@ export default function EnhancedTestimonials({
                                         </div>
                                     )}
                                 </div>
-                            </motion.div>
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -444,27 +422,15 @@ export default function EnhancedTestimonials({
             <div className="container mx-auto">
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
                     <div className="md:max-w-2xl">
-                        <motion.h2
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
-                            transition={{ duration: 0.6 }}
-                            className={cn("text-3xl md:text-4xl font-bold mb-4", styles.headingText)}
-                        >
+                        <h2 className={cn("text-3xl md:text-4xl font-bold mb-4", styles.headingText)}>
                             {title}
-                        </motion.h2>
-
+                        </h2>
                         {subtitle && (
-                            <motion.p
-                                initial={{ opacity: 0 }}
-                                animate={isVisible ? { opacity: 1 } : { opacity: 0 }}
-                                transition={{ duration: 0.6, delay: 0.2 }}
-                                className={cn("text-lg", styles.subText)}
-                            >
+                            <p className={cn("text-lg", styles.subText)}>
                                 {subtitle}
-                            </motion.p>
+                            </p>
                         )}
                     </div>
-
                     {mode !== 'focused' && (
                         <div className="flex space-x-3 mt-6 md:mt-0">
                             <button
@@ -494,39 +460,28 @@ export default function EnhancedTestimonials({
                         </div>
                     )}
                 </div>
-
                 <div className="relative">
-                    <AnimatePresence initial={false} mode="wait">
-                        <motion.div
-                            key={currentIndex}
-                            initial={{ opacity: 0, x: direction === 'right' ? 100 : -100 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: direction === 'right' ? -100 : 100 }}
-                            transition={{
-                                type: "spring",
-                                stiffness: 300,
-                                damping: 30
-                            }}
-                            className={cn(
-                                "rounded-2xl p-6 md:p-10",
-                                styles.cardBg,
-                                styles.cardBorder,
-                                styles.cardShadow,
-                                mode === 'focused' ? 'max-w-4xl mx-auto' : ''
-                            )}
-                        >
-                            <Quote className={cn("w-12 h-12 mb-6", styles.quoteColor)} />
-
-                            <p className={cn(
-                                "text-lg md:text-xl mb-8 leading-relaxed",
-                                styles.contentText
-                            )}>
-                                "{testimonials[currentIndex].content}"
-                            </p>
-
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
-                                <div className="flex items-center mb-4 sm:mb-0">
-                                    {testimonials[currentIndex].avatarUrl ? (<Image
+                    <div
+                        key={currentIndex}
+                        className={cn(
+                            "rounded-2xl p-6 md:p-10 transition-all duration-500",
+                            styles.cardBg,
+                            styles.cardBorder,
+                            styles.cardShadow,
+                            mode === 'focused' ? 'max-w-4xl mx-auto' : ''
+                        )}
+                    >
+                        <Quote className={cn("w-12 h-12 mb-6", styles.quoteColor)} />
+                        <p className={cn(
+                            "text-lg md:text-xl mb-8 leading-relaxed",
+                            styles.contentText
+                        )}>
+                            "{testimonials[currentIndex].content}"
+                        </p>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center mb-4 sm:mb-0">
+                                {testimonials[currentIndex].avatarUrl ? (
+                                    <Image
                                         src={testimonials[currentIndex].avatarUrl}
                                         alt={testimonials[currentIndex].name}
                                         width={56}
@@ -534,38 +489,33 @@ export default function EnhancedTestimonials({
                                         className="rounded-full object-cover mr-4"
                                         priority={testimonials[currentIndex].featured}
                                     />
-                                    ) : (
-                                        <div className="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center mr-4">
-                                            <User2 className="w-7 h-7 text-gray-500" />
-                                        </div>
-                                    )}
-
-                                    <div>
-                                        <p className={cn("font-semibold text-lg", styles.nameText)}>
-                                            {testimonials[currentIndex].name}
-                                        </p>
-                                        <div className="flex items-center gap-3">
-                                            {testimonials[currentIndex].role && (
-                                                <p className={cn("text-sm", styles.roleText)}>
-                                                    {testimonials[currentIndex].role}
-                                                </p>
-                                            )}
-
-                                            {testimonials[currentIndex].transactionType && (
-                                                <TransactionBadge type={testimonials[currentIndex].transactionType} />
-                                            )}
-                                        </div>
+                                ) : (
+                                    <div className="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center mr-4">
+                                        <User2 className="w-7 h-7 text-gray-500" />
+                                    </div>
+                                )}
+                                <div>
+                                    <p className={cn("font-semibold text-lg", styles.nameText)}>
+                                        {testimonials[currentIndex].name}
+                                    </p>
+                                    <div className="flex items-center gap-3">
+                                        {testimonials[currentIndex].role && (
+                                            <p className={cn("text-sm", styles.roleText)}>
+                                                {testimonials[currentIndex].role}
+                                            </p>
+                                        )}
+                                        {testimonials[currentIndex].transactionType && (
+                                            <TransactionBadge type={testimonials[currentIndex].transactionType} />
+                                        )}
                                     </div>
                                 </div>
-
-                                <div className="flex items-center">
-                                    {renderStars(testimonials[currentIndex].rating)}
-                                </div>
                             </div>
-                        </motion.div>
-                    </AnimatePresence>
+                            <div className="flex items-center">
+                                {renderStars(testimonials[currentIndex].rating)}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
                 {mode === 'focused' && (
                     <div className="flex justify-center mt-8 space-x-3">
                         {testimonials.map((_, idx) => (

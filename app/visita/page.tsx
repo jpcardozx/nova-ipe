@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+// Removido framer-motion para evitar problemas de animação em cascata
 import {
     ArrowRight, Calendar, Check, ChevronRight, Clock,
     Compass, Eye, FileCheck, Home, MapPin, MessageSquare,
@@ -163,11 +163,8 @@ export default function VisitaPage() {
                                 {/* Benefícios principais em cards elegantes */}
                                 <div className="grid md:grid-cols-3 gap-5 max-w-4xl mx-auto">
                                     {heroFeatures.map((feature, idx) => (
-                                        <motion.div
+                                        <div
                                             key={idx}
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ duration: 0.5, delay: 0.2 + (idx * 0.1) }}
                                             className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-6 hover:bg-white/10 hover:border-white/20 transition-all"
                                         >
                                             <div className="bg-brand-dark/60 w-12 h-12 rounded-full flex items-center justify-center mb-4 mx-auto">
@@ -175,16 +172,13 @@ export default function VisitaPage() {
                                             </div>
                                             <h3 className="text-white medium-text text-body mb-2 font-body">{feature.title}</h3>
                                             <p className="text-neutral-300 text-body-small font-body">{feature.desc}</p>
-                                        </motion.div>
+                                        </div>
                                     ))}
                                 </div>
                             </div>
 
                             {/* Imagem premium em tamanho grande */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 40 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 1.2, ease: "easeOut" }}
+                            <div
                                 className="relative aspect-[21/9] rounded-xl overflow-hidden shadow-2xl"
                             >
                                 <Image
@@ -222,7 +216,7 @@ export default function VisitaPage() {
                                         </div>
                                     </div>
                                 </div>
-                            </motion.div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -254,12 +248,8 @@ export default function VisitaPage() {
 
                                 <div className="space-y-10">
                                     {abordagemSteps.map((step, idx) => (
-                                        <motion.div
+                                        <div
                                             key={idx}
-                                            initial={{ opacity: 0, x: 20 }}
-                                            whileInView={{ opacity: 1, x: 0 }}
-                                            viewport={{ once: true }}
-                                            transition={{ duration: 0.5, delay: idx * 0.1 }}
                                             className="flex gap-6"
                                         >
                                             <div className="flex-shrink-0 w-12 h-12 rounded-full bg-brand-light flex items-center justify-center text-brand-green semibold-text font-body">
@@ -269,7 +259,7 @@ export default function VisitaPage() {
                                                 <h3 className="text-xl semibold-text text-brand-dark mb-3 font-body text-heading-5">{step.title}</h3>
                                                 <p className="text-neutral-600 font-body text-body">{step.description}</p>
                                             </div>
-                                        </motion.div>
+                                        </div>
                                     ))}
                                 </div>
                             </div>
@@ -277,12 +267,8 @@ export default function VisitaPage() {
                             {/* Pilares da consultoria */}
                             <div className="grid md:grid-cols-3 gap-8">
                                 {pilaresConsultoria.map((card, idx) => (
-                                    <motion.div
+                                    <div
                                         key={idx}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{ duration: 0.5, delay: idx * 0.1 }}
                                         className="bg-brand-light border border-neutral-200 rounded-lg p-8 hover:shadow-lg transition-all"
                                     >
                                         <div className="bg-white w-16 h-16 rounded-full flex items-center justify-center mb-6 shadow-sm border border-neutral-100">
@@ -290,7 +276,7 @@ export default function VisitaPage() {
                                         </div>
                                         <h3 className="text-xl semibold-text text-brand-dark mb-4 font-body text-heading-5">{card.title}</h3>
                                         <p className="text-neutral-600 font-body text-body">{card.description}</p>
-                                    </motion.div>
+                                    </div>
                                 ))}
                             </div>
 
@@ -311,11 +297,7 @@ export default function VisitaPage() {
                 <section id="vantagens" className="py-24 bg-brand-light/50">
                     <div className="container mx-auto px-6 lg:px-8">
                         <div className="max-w-screen-xl mx-auto text-center">
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.6 }}
+                            <div
                                 className="max-w-3xl mx-auto mb-16"
                             >                                <h2 className="font-display text-3xl md:text-4xl text-brand-dark mb-6 text-heading-2">
                                     Vantagens exclusivas de investir em Guararema
@@ -324,16 +306,12 @@ export default function VisitaPage() {
                                     Descubra por que a região é considerada estratégica para investidores que buscam
                                     valorização superior à média do mercado, com qualidade de vida e infraestrutura premium.
                                 </p>
-                            </motion.div>
+                            </div>
 
                             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                                 {vantagensMetrics.map((metric, idx) => (
-                                    <motion.div
+                                    <div
                                         key={idx}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{ duration: 0.5, delay: idx * 0.1 }}
                                         className="bg-white rounded-lg shadow-lg overflow-hidden"
                                     >
                                         <div className={`bg-gradient-to-r ${metric.color} h-2`}></div>
@@ -342,15 +320,11 @@ export default function VisitaPage() {
                                             <div className="text-neutral-600 medium-text mb-4 uppercase text-sm tracking-wider font-body text-caption">{metric.label}</div>
                                             <p className="text-neutral-500 text-sm font-body text-body-small">{metric.description}</p>
                                         </div>
-                                    </motion.div>
+                                    </div>
                                 ))}
                             </div>
 
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.6, delay: 0.5 }}
+                            <div
                                 className="mt-16 bg-white p-8 rounded-xl shadow-lg border border-neutral-100"
                             >
                                 <div className="flex items-center gap-3 mb-6 justify-center">
@@ -368,7 +342,7 @@ export default function VisitaPage() {
                                     Solicitar relatório completo
                                     <ChevronRight className="h-5 w-5" />
                                 </Link>
-                            </motion.div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -378,11 +352,7 @@ export default function VisitaPage() {
                     <div className="container mx-auto px-6 lg:px-8">
                         <div className="max-w-screen-xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
                             {/* Textos explicativos */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.6 }}
+                            <div
                                 className="space-y-10 text-white"
                             >
                                 <div>
@@ -430,14 +400,10 @@ export default function VisitaPage() {
                                         </div>
                                     </div>
                                 </div>
-                            </motion.div>
+                            </div>
 
                             {/* Formulário */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.6 }}
+                            <div
                                 className="bg-white rounded-xl overflow-hidden shadow-2xl"
                             >
                                 <div className="p-1 bg-gradient-to-r from-brand-green to-brand-dark">
@@ -532,7 +498,7 @@ export default function VisitaPage() {
                                         </div>
                                     </form>
                                 </div>
-                            </motion.div>
+                            </div>
                         </div>
                     </div>
                 </section>

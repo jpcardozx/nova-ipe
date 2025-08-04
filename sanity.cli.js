@@ -1,6 +1,6 @@
 module.exports = {
     api: {
-        projectId: '0nks58lj',
+        projectId: 'cptxhbwu', // mesmo do .env e sanity.config.ts
         dataset: 'production',
     },
 }

@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  output: 'standalone',
+  // output: 'standalone', // Commented out for troubleshooting Sanity Studio loading issues
   
   // Optimized experimental features
   experimental: {

@@ -14,7 +14,7 @@ if (typeof window !== 'undefined') {
 // Carrega o NextStudio apenas no client com isolamento de Sentry
 const NextStudio = dynamic(
     // @ts-ignore - Sanity studio module doesn't have TypeScript declarations
-    () => import('../lib/sanity/studio').then((mod: any) => mod.NextStudio),
+    () => import('../lib/sanity/studio.js').then((mod: any) => mod.NextStudio),
     {
         ssr: false,
         loading: () => <div>Loading Studio...</div>

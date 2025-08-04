@@ -3,12 +3,11 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { UnifiedLoading } from './components/ui/UnifiedComponents';
-import ScrollAnimations from './components/ScrollAnimations';
 import OptimizationProvider from './components/OptimizationProvider';
 import WhatsAppButton from './components/WhatsAppButton';
 import EnhancedNotificationBanner from './components/EnhancedNotificationBanner';
 import EnhancedTestimonials from './components/EnhancedTestimonials';
-import MobileFirstHero from './components/MobileFirstHero';
+import MobileFirstHeroEnhanced from './components/MobileFirstHeroEnhanced';
 import { ProcessedProperty } from './types/property';
 import { transformPropertiesArrayToPremium } from './utils/property-transformer';
 import type { ImovelClient } from '../src/types/imovel-client';
@@ -41,10 +40,6 @@ const IpeConcept = dynamic(() => import('./components/ipeConcept'), {
     loading: () => <UnifiedLoading height="550px" title="Carregando..." />,
 });
 
-const FormularioContatoModerno = dynamic(() => import('./components/FormularioContatoModerno'), {
-    loading: () => <UnifiedLoading height="400px" title="Carregando formulário..." />,
-});
-
 const FooterAprimorado = dynamic(() => import('./sections/FooterAprimorado'), {
     loading: () => <UnifiedLoading height="300px" title="Carregando rodapé..." />,
 });
@@ -75,11 +70,11 @@ export default function HomePageClient({
                     storageKey="home_notification_dismissed"
                 />
             </header>
-            <MobileFirstHero />
+            <MobileFirstHeroEnhanced />
             <BlocoExploracaoGuararema />
 
             {/* Conteúdo principal */}
-            <main>                <ScrollAnimations>                {/* Seção de Imóveis para Venda - Sistema Limpo e Funcional */}
+            <main> {/* Seção de Imóveis para Venda - Sistema Limpo e Funcional */}
                 <CleanSalesSection
                     properties={propertiesForSale}
                     title="Imóveis para Venda"
@@ -89,21 +84,32 @@ export default function HomePageClient({
                 />
 
                 {/* 2. Apresentação Institucional - IpeConcept original */}
-                <IpeConcept />                    {/* Seção de Imóveis para Aluguel - Sistema Limpo e Funcional */}
+                <IpeConcept />
+
+                {/* Seção de Imóveis para Aluguel - Sistema Limpo e Funcional */}
                 <CleanRentalsSection
                     properties={propertiesForRent}
                     title="Imóveis para Aluguel"
                     subtitle="Encontre o imóvel ideal para locação em Guararema"
                     maxItems={12}
                     className="mb-20"
-                /><MarketAnalysisSection />
+                />
 
-                {/* 3. Seção de Precificação */}
-                <ValorAprimorado />
+                {/* 3. Análise de Mercado */}
+                <section className="py-12">
+                    <MarketAnalysisSection />
+                </section>
+
+                {/* 4. Seção de Precificação */}
+                <section className="py-12">
+                    <ValorAprimorado />
+                </section>
 
                 {/* Banner de depoimentos para aumentar a confiança */}
-                <EnhancedTestimonials />
-            </ScrollAnimations>
+                <section className="py-12">
+                    <EnhancedTestimonials />
+                </section>
+
             </main>
 
             {/* Botão do WhatsApp fixo */}

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { TrendingUp, MapPin, Clock, Calculator, Home, DollarSign, BarChart3, AlertCircle, Calendar, ChevronRight, Target, Globe } from 'lucide-react';
-import { motion } from 'framer-motion';
 import SectionWrapper from './ui/SectionWrapper';
 
 // Define TypeScript types for our data structures
@@ -43,7 +42,7 @@ interface Insight {
 }
 
 export default function MarketAnalysisSection() {
-    const [tipoLead, setTipoLead] = useState<ServiceKey>('comprador'); // comprador, vendedor, investidor
+    const [tipoLead, setTipoLead] = useState<ServiceKey>('comprador');
     const [leadForm, setLeadForm] = useState({ name: '', email: '', regiao: 'centro' });
     const [insightAtivo, setInsightAtivo] = useState(0);
 
@@ -117,7 +116,9 @@ export default function MarketAnalysisSection() {
             tempo: "89 dias",
             destaque: false
         }
-    ]; const insights: Insight[] = [
+    ];
+
+    const insights: Insight[] = [
         {
             titulo: "Momento ideal para investir",
             conteudo: "Crescimento de 18% no último ano com perspectivas positivas. Mercado aquecido favorece negociações rápidas.",
@@ -140,7 +141,9 @@ export default function MarketAnalysisSection() {
 
     const insightsRelevantes = insights.filter(insight =>
         insight.relevancia[tipoLead] === "alta" || insight.relevancia[tipoLead] === "média"
-    ); return (
+    );
+
+    return (
         <SectionWrapper
             title="Análise do Mercado Imobiliário"
             subtitle="Insights estratégicos para sua decisão de investimento em Guararema"
@@ -149,20 +152,14 @@ export default function MarketAnalysisSection() {
             id="analise-mercado"
         >
             {/* Seletor de público */}
-            <motion.div
-                className="flex justify-center mb-12"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-            >
+            <div className="flex justify-center mb-12">
                 <div className="inline-flex bg-white/80 backdrop-blur-sm rounded-xl p-1 shadow-lg border border-amber-200">
                     {Object.entries(configuracoes).map(([key, config]) => (
                         <button
                             key={key}
                             onClick={() => setTipoLead(key as ServiceKey)}
-                            className={`px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-300 ${tipoLead === key
-                                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg transform scale-105'
+                            className={`px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${tipoLead === key
+                                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg scale-105'
                                 : 'text-gray-600 hover:text-amber-600 hover:bg-amber-50'
                                 }`}
                         >
@@ -170,19 +167,13 @@ export default function MarketAnalysisSection() {
                         </button>
                     ))}
                 </div>
-            </motion.div>
+            </div>
 
             <div className="grid lg:grid-cols-3 gap-8">
                 {/* Coluna principal - Análise */}
                 <div className="lg:col-span-2 space-y-8">
                     {/* Pergunta principal */}
-                    <motion.div
-                        className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-amber-200 shadow-lg"
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.7, delay: 0.2 }}
-                    >
+                    <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-amber-200 shadow-lg">
                         <div className="flex items-center gap-3 mb-6">
                             <div className="p-3 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl">
                                 <Target className="w-6 h-6 text-white" />
@@ -205,17 +196,12 @@ export default function MarketAnalysisSection() {
                             </h3>
 
                             {regioes.map((regiao, index) => (
-                                <motion.div
+                                <div
                                     key={index}
-                                    className={`p-6 rounded-xl border-2 transition-all duration-300 hover:shadow-lg cursor-pointer group ${regiao.destaque
+                                    className={`p-6 rounded-xl border-2 transition-all duration-200 hover:shadow-lg cursor-pointer group ${regiao.destaque
                                         ? 'border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 shadow-md'
-                                        : 'border-gray-200 hover:border-amber-200 bg-white/50'
+                                        : 'border-gray-200 hover:border-amber-200 bg-white/50 hover:scale-[1.02]'
                                         }`}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    whileInView={{ opacity: 1, x: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.6, delay: 0.1 * index }}
-                                    whileHover={{ scale: 1.02 }}
                                 >
                                     <div className="flex justify-between items-start mb-3">
                                         <div className="flex items-center gap-3">
@@ -240,19 +226,13 @@ export default function MarketAnalysisSection() {
                                             <span className="font-semibold text-amber-700">Oportunidade:</span> {regiao.oportunidade[tipoLead]}
                                         </p>
                                     </div>
-                                </motion.div>
+                                </div>
                             ))}
                         </div>
-                    </motion.div>
+                    </div>
 
                     {/* Insights relevantes */}
-                    <motion.div
-                        className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-amber-200 shadow-lg"
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.7, delay: 0.4 }}
-                    >
+                    <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-amber-200 shadow-lg">
                         <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                             <BarChart3 className="w-6 h-6 text-amber-600" />
                             Insights Estratégicos
@@ -260,15 +240,10 @@ export default function MarketAnalysisSection() {
 
                         <div className="space-y-4">
                             {insightsRelevantes.map((insight, index) => (
-                                <motion.div
+                                <div
                                     key={index}
-                                    className="flex items-start space-x-4 p-5 rounded-xl hover:bg-amber-50/50 transition-all duration-300 cursor-pointer border border-transparent hover:border-amber-200"
+                                    className="flex items-start space-x-4 p-5 rounded-xl hover:bg-amber-50/50 transition-all duration-200 cursor-pointer border border-transparent hover:border-amber-200 hover:scale-[1.01]"
                                     onClick={() => setInsightAtivo(index)}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    whileInView={{ opacity: 1, x: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.6, delay: 0.1 * index }}
-                                    whileHover={{ scale: 1.01 }}
                                 >
                                     <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-amber-100 to-orange-100 rounded-xl flex items-center justify-center text-amber-600 border border-amber-200">
                                         {insight.icone}
@@ -283,20 +258,14 @@ export default function MarketAnalysisSection() {
                                         }`}>
                                         {insight.relevancia[tipoLead] === 'alta' ? 'Prioridade' : 'Relevante'}
                                     </div>
-                                </motion.div>
+                                </div>
                             ))}
                         </div>
-                    </motion.div>
+                    </div>
                 </div>
 
                 {/* Sidebar com captura */}
-                <motion.div
-                    className="space-y-6"
-                    initial={{ opacity: 0, x: 30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.7, delay: 0.3 }}
-                >
+                <div className="space-y-6">
                     {/* Formulário principal */}
                     <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-amber-200 shadow-lg sticky top-6">
                         <div className="text-center mb-6">
@@ -318,6 +287,7 @@ export default function MarketAnalysisSection() {
                                 value={leadForm.name}
                                 onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
                                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all bg-white/80 backdrop-blur-sm"
+                                required
                             />
 
                             <input
@@ -326,6 +296,7 @@ export default function MarketAnalysisSection() {
                                 value={leadForm.email}
                                 onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
                                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all bg-white/80 backdrop-blur-sm"
+                                required
                             />
 
                             <select
@@ -339,14 +310,12 @@ export default function MarketAnalysisSection() {
                                 <option value="todas">Todas as regiões</option>
                             </select>
 
-                            <motion.button
+                            <button
                                 onClick={handleSubmit}
-                                className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
+                                className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:scale-105 hover:shadow-xl"
                             >
                                 {configuracoes[tipoLead].cta}
-                            </motion.button>
+                            </button>
                         </div>
 
                         <p className="text-xs text-gray-500 mt-4 text-center">
@@ -363,15 +332,19 @@ export default function MarketAnalysisSection() {
                         <div className="space-y-3 text-sm text-gray-600">
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                <span>(11) 98184-5016</span>
+                                <a href="tel:+5511981845016" className="hover:text-green-600 transition-colors">
+                                    (11) 98184-5016
+                                </a>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
-                                <span>contato@ipeimoveis.com.br</span>
+                                <a href="mailto:contato@ipeimoveis.com.br" className="hover:text-amber-600 transition-colors">
+                                    contato@ipeimoveis.com.br
+                                </a>
                             </div>
                         </div>
                     </div>
-                </motion.div>
+                </div>
             </div>
         </SectionWrapper>
     );

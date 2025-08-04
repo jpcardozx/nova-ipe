@@ -7,6 +7,10 @@
  */
 export function getAdminSecret(): string {
     const secret = process.env.ADMIN_PASS
+    
+    console.log('NODE_ENV:', process.env.NODE_ENV)
+    console.log('ADMIN_PASS exists:', !!secret)
+    console.log('ADMIN_PASS value:', secret)
 
     if (typeof secret !== 'string' || secret.trim() === '') {
         const msg = '⚠️ ADMIN_PASS não definida ou vazia.'

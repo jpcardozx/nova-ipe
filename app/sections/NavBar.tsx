@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
+// import { motion, AnimatePresence } from "framer-motion"
 
 const links = [
     { label: "Início", href: "/" },
@@ -25,10 +25,7 @@ export default function Navbar() {
     }, [])
 
     return (
-        <motion.nav
-            initial={{ y: -50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
+        <nav
             className={`fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-lg border-b border-neutral-200 shadow-sm transition-all duration-320 ${scrolled ? "py-1.5" : "py-4"}`}
         >
             <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
@@ -58,19 +55,18 @@ export default function Navbar() {
                     ))}
                 </ul>
 
-                {/* ✅ CTA WhatsApp Desktop */}                <motion.a
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.98 }}
+                {/* ✅ CTA WhatsApp Desktop */}
+                <a
                     href="https://wa.me/5511981845016"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hidden md:flex items-center gap-2 bg-[#20b858] text-white px-5 py-2 rounded-full text-button font-body medium-text hover:brightness-105 transition"
+                    className="hidden md:flex items-center gap-2 bg-[#20b858] text-white px-5 py-2 rounded-full text-button font-body medium-text hover:brightness-105 transition hover:scale-105 active:scale-98"
                 >
                     <svg width="16" height="16" fill="currentColor" className="text-white" viewBox="0 0 24 24" aria-hidden>
                         <path d="M20.5 3.5c-2.6-2.6-6.9-2.6-9.5 0-2.2 2.2-2.5 5.6-1 8.2L3 21l9.3-7c2.6 1.5 6 .8 8.2-1 2.6-2.6 2.6-6.9 0-9.5z" />
                     </svg>
                     Fale com um especialista
-                </motion.a>
+                </a>
 
                 {/* ✅ Menu Toggle Mobile */}
                 <button
@@ -90,41 +86,31 @@ export default function Navbar() {
             </div>
 
             {/* ✅ Mobile Menu */}
-            <AnimatePresence>
-                {open && (
-                    <motion.div
-                        key="mobileMenu"
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ type: "spring", stiffness: 260, damping: 25 }}
-                        className="md:hidden bg-white/95 backdrop-blur-xl shadow-md rounded-b-2xl px-6 pt-4 pb-8"
-                    >                        <ul className="flex flex-col gap-4 text-[#0D1F2D] text-body font-body medium-text">
-                            {links.map(({ label, href }) => (
-                                <li key={label} onClick={() => setOpen(false)}>
-                                    <Link href={href} className="block py-1 hover:text-[#000]">
-                                        {label}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-
-                        <motion.a
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.97 }}
-                            href="https://wa.me/5511981845016"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="mt-6 flex items-center justify-center gap-2 bg-[#25D366] text-white px-5 py-3 rounded-full text-button font-body medium-text hover:brightness-105 transition"
-                        >
-                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                                <path d="M20.5 3.5c-2.6-2.6-6.9-2.6-9.5 0-2.2 2.2-2.5 5.6-1 8.2L3 21l9.3-7c2.6 1.5 6 .8 8.2-1 2.6-2.6 2.6-6.9 0-9.5z" />
-                            </svg>
-                            Fale com um especialista
-                        </motion.a>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </motion.nav>
+            {/* Mobile Menu */}
+            {open && (
+                <div className="md:hidden bg-white/95 backdrop-blur-xl shadow-md rounded-b-2xl px-6 pt-4 pb-8 animate-fade-in-down">
+                    <ul className="flex flex-col gap-4 text-[#0D1F2D] text-body font-body medium-text">
+                        {links.map(({ label, href }) => (
+                            <li key={label} onClick={() => setOpen(false)}>
+                                <Link href={href} className="block py-1 hover:text-[#000]">
+                                    {label}
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                    <a
+                        href="https://wa.me/5511981845016"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-6 flex items-center justify-center gap-2 bg-[#25D366] text-white px-5 py-3 rounded-full text-button font-body medium-text hover:brightness-105 transition hover:scale-105 active:scale-97"
+                    >
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                            <path d="M20.5 3.5c-2.6-2.6-6.9-2.6-9.5 0-2.2 2.2-2.5 5.6-1 8.2L3 21l9.3-7c2.6 1.5 6 .8 8.2-1 2.6-2.6 2.6-6.9 0-9.5z" />
+                        </svg>
+                        Fale com um especialista
+                    </a>
+                </div>
+            )}
+        </nav>
     )
 }

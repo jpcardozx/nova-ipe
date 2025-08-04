@@ -16,8 +16,8 @@ if (process.env.NODE_ENV === 'development') {
 export default defineConfig({
   name: 'nova-ipe-studio',
   title: 'Nova Ipê - CMS',
-  projectId: '0nks58lj',
-  dataset: 'production',
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
   plugins: [
     deskTool(),
     ...(visionTool ? [visionTool()] : [])

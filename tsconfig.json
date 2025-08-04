@@ -40,6 +40,12 @@
         "app/components/*",
         "components/*"
       ],
+      "@/components/ui/*": [
+        "app/components/ui/*"
+      ],
+      "@hooks/*": [
+        "app/hooks/*"
+      ],
       "@sections/*": [
         "app/sections/*",
         "sections/*"
@@ -65,7 +71,7 @@
     "src/types/**/*.d.ts",
     ".next/types/**/*.ts"
   ],
-  "exclude": [
+      "exclude": [
     "node_modules",
     "archive",
     "temp",
@@ -73,6 +79,7 @@
     "types/sanity-schema.js",
     "app/page.backup.tsx",
     "app/page.clean.tsx",
-    "app/page.restored.tsx"
+    "app/page.restored.tsx",
+    "components/verified"
   ]
 }

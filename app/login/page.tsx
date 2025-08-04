@@ -2,8 +2,8 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Navbar from '@app/sections/NavBar'
-import Footer from '@app/sections/Footer'
+import Navbar from '../sections/NavBar'
+import Footer from '../sections/Footer'
 
 const AUTH_COOKIE_NAME = 'admin-auth'
 

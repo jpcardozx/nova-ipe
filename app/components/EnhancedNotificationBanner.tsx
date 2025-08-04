@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+// Removido framer-motion para evitar problemas de exibição
 import { X, Bell, Info, AlertTriangle, CheckCircle, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -117,57 +117,51 @@ export default function EnhancedNotificationBanner({
 
     const config = variantConfig[variant];
 
+    if (!isVisible) return null;
     return (
-        <AnimatePresence>
-            {isVisible && (
-                <motion.div
-                    initial={{ opacity: 0, y: position === 'top' ? -20 : 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: position === 'top' ? -20 : 20 }}
-                    transition={{ duration: 0.3 }} className={cn(
-                        config.bg,
-                        "py-2.5 px-4 shadow-md",
-                        position === 'top' ? 'relative z-40' : 'fixed bottom-0 left-0 right-0 z-50'
-                    )}
-                >
-                    <div className="container mx-auto flex flex-wrap items-center justify-center md:justify-between gap-x-4 gap-y-2">
-                        <div className="flex items-center gap-2">
-                            <span className={cn("flex-shrink-0", config.textColor)}>
-                                {config.icon}
-                            </span>
-                            <p className={cn("text-sm font-medium", config.textColor)}>{message}</p>
-                        </div>
+        <div
+            className={cn(
+                config.bg,
+                "py-2.5 px-4 shadow-md",
+                position === 'top' ? 'relative z-40' : 'fixed bottom-0 left-0 right-0 z-50'
+            )}
+        >
+            <div className="container mx-auto flex flex-wrap items-center justify-center md:justify-between gap-x-4 gap-y-2">
+                <div className="flex items-center gap-2">
+                    <span className={cn("flex-shrink-0", config.textColor)}>
+                        {config.icon}
+                    </span>
+                    <p className={cn("text-sm font-medium", config.textColor)}>{message}</p>
+                </div>
 
-                        {link && linkText && (
-                            <div className="flex items-center gap-1">
-                                <Link
-                                    href={link}
-                                    className={cn(
-                                        "text-sm font-bold flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full transition-colors hover:bg-white/20",
-                                        config.textColor
-                                    )}
-                                >
-                                    {linkText}
-                                    <ExternalLink className="w-3 h-3" />
-                                </Link>
-                            </div>
-                        )}
-                    </div>
-
-                    {dismissible && (
-                        <button
+                {link && linkText && (
+                    <div className="flex items-center gap-1">
+                        <Link
+                            href={link}
                             className={cn(
-                                "absolute right-4 top-1/2 -translate-y-1/2 opacity-70 hover:opacity-100 transition-opacity",
+                                "text-sm font-bold flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full transition-colors hover:bg-white/20",
                                 config.textColor
                             )}
-                            onClick={handleDismiss}
-                            aria-label="Fechar notificação"
                         >
-                            <X className="w-4 h-4" />
-                        </button>
+                            {linkText}
+                            <ExternalLink className="w-3 h-3" />
+                        </Link>
+                    </div>
+                )}
+            </div>
+
+            {dismissible && (
+                <button
+                    className={cn(
+                        "absolute right-4 top-1/2 -translate-y-1/2 opacity-70 hover:opacity-100 transition-opacity",
+                        config.textColor
                     )}
-                </motion.div>
+                    onClick={handleDismiss}
+                    aria-label="Fechar notificação"
+                >
+                    <X className="w-4 h-4" />
+                </button>
             )}
-        </AnimatePresence>
+        </div>
     );
 }

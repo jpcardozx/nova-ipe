@@ -19,7 +19,6 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 // Links para navegação do rodapé
@@ -66,23 +65,19 @@ const FooterLink = ({ href, children }: { href: string, children: React.ReactNod
 
 // Componente de ícone social
 const SocialIcon = ({ href, icon, label }: { href: string, icon: React.ReactNode, label: string }) => (
-    <motion.a
+    <a
         href={href}
         target="_blank"
         rel="noopener noreferrer"
         aria-label={label}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.95 }}
-        className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-white hover:bg-amber-500 transition-colors duration-300"
+        className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-white hover:bg-amber-500 hover:scale-110 transition-all duration-300"
     >
         {icon}
-    </motion.a>
+    </a>
 );
 
 export default function FooterAprimorado() {
     const [year] = useState(new Date().getFullYear());
-    const { scrollYProgress } = useScroll({ layoutEffect: false });
-    const opacity = useTransform(scrollYProgress, [0.7, 0.85], [0, 1]);
 
     // Estado para controle de scroll-to-top
     const [showScrollToTop, setShowScrollToTop] = useState(false);
@@ -123,11 +118,8 @@ export default function FooterAprimorado() {
                     <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 mb-16">
                         {/* Coluna de informações da empresa */}
                         <div className="lg:col-span-2">
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.6 }}
+                            <div
+                                className="animate-fade-in-up"
                             >
                                 <Image
                                     src="/images/writtenLogo.png"
@@ -183,18 +175,16 @@ export default function FooterAprimorado() {
                                         label="WhatsApp da Ipê Imóveis"
                                     />
                                 </div>
-                            </motion.div>
+                            </div>
                         </div>
 
                         {/* Colunas de links */}
                         <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-8">
                             {footerLinks.map((column, idx) => (
-                                <motion.div
+                                <div
                                     key={column.title}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.5, delay: idx * 0.1 }}
+                                    className="animate-fade-in-up"
+                                    style={{ animationDelay: `${idx * 0.1}s` }}
                                 >                            <h4 className="text-amber-400 semibold-text mb-6 pb-2 border-b border-gray-700 text-heading-3">
                                         {column.title}
                                     </h4>
@@ -207,7 +197,7 @@ export default function FooterAprimorado() {
                                             </li>
                                         ))}
                                     </ul>
-                                </motion.div>
+                                </div>
                             ))}
                         </div>
                     </div>
@@ -215,11 +205,8 @@ export default function FooterAprimorado() {
                     {/* Newsletter e confiança */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 border-t border-gray-800 pt-12 pb-6">
                         {/* Newsletter */}
-                        <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6 }}
+                        <div
+                            className="animate-fade-in-left"
                         >                            <h4 className="text-amber-400 bold mb-4 text-heading-2">
                                 Novidades Selecionadas
                             </h4>
@@ -240,15 +227,11 @@ export default function FooterAprimorado() {
                                     Inscrever-se
                                 </button>
                             </form>
-                        </motion.div>
+                        </div>
 
                         {/* Selos de confiança */}
-                        <motion.div
-                            initial={{ opacity: 0, x: 20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6 }}
-                            className="flex flex-col"
+                        <div
+                            className="flex flex-col animate-fade-in-right"
                         >
                             <h4 className="text-white font-semibold mb-4 text-xl">
                                 Confiança e credibilidade
@@ -277,7 +260,7 @@ export default function FooterAprimorado() {
                                     </div>
                                 </div>
                             </div>
-                        </motion.div>
+                        </div>
                     </div>
 
                     {/* Rodapé final */}
@@ -301,19 +284,16 @@ export default function FooterAprimorado() {
             </div>
 
             {/* Botão de voltar ao topo */}
-            <motion.button
-                style={{ opacity }}
+            <button
                 onClick={scrollToTop}
                 className={cn(
-                    "fixed bottom-8 right-8 w-12 h-12 rounded-full bg-amber-500 text-white flex items-center justify-center shadow-lg hover:bg-amber-600 transition-all z-50",
+                    "fixed bottom-8 right-8 w-12 h-12 rounded-full bg-amber-500 text-white flex items-center justify-center shadow-lg hover:bg-amber-600 hover:scale-110 transition-all z-50",
                     !showScrollToTop && "pointer-events-none opacity-0"
                 )}
                 aria-label="Voltar ao topo"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
             >
                 <ArrowUp className="w-5 h-5" />
-            </motion.button>
+            </button>
         </footer>
     );
 }

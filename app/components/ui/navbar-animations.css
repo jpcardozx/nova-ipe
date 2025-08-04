@@ -1,0 +1,279 @@
+/**
+ * Animações CSS-first para evitar conflitos SSR/CSR
+ * Sistema maduro de transições baseado em classes CSS
+ */
+
+/* Animações de entrada da navbar */
+.navbar-enter {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+.navbar-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Navbar com estilo fixo otimizado */
+.navbar-unified {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 12px -3px rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.7);
+}
+
+/* Menu mobile - animações suaves */
+.mobile-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 40;
+}
+
+.mobile-menu-backdrop.active {
+  opacity: 1;
+}
+
+.mobile-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(229, 231, 235, 1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  transform: translateY(-20px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 50;
+}
+
+.mobile-menu.active {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Logo hover effects */
+.logo-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  padding: 8px;
+}
+
+.logo-hover-effect {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(251, 191, 36, 0) 0%,
+    rgba(251, 191, 36, 0.6) 50%,
+    rgba(251, 191, 36, 0) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.logo-container:hover .logo-hover-effect {
+  opacity: 1;
+}
+
+/* Navegação centralizada */
+.nav-pill {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 4px 8px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(243, 244, 246, 0.6);
+}
+
+/* Items de navegação */
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  color: rgb(55, 65, 81);
+}
+
+.nav-item:hover {
+  color: rgb(217, 119, 6);
+  background: rgba(251, 191, 36, 0.4);
+}
+
+.nav-item.active {
+  color: rgb(180, 83, 9);
+  background: rgba(251, 191, 36, 0.8);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Indicador ativo com animação suave */
+.nav-active-indicator {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(254, 215, 170, 0.6) 0%, rgba(253, 186, 116, 0.6) 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover indicator */
+.nav-hover-indicator {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(251, 191, 36, 0.4) 0%, rgba(249, 115, 22, 0.4) 100%);
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.nav-item:hover .nav-hover-indicator {
+  opacity: 1;
+}
+
+/* CTAs */
+.cta-phone {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: rgb(75, 85, 99);
+  transition: color 0.3s ease;
+}
+
+.cta-phone:hover {
+  color: rgb(217, 119, 6);
+}
+
+.cta-phone .icon {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+}
+
+.cta-phone:hover .icon {
+  transform: scale(1.1);
+}
+
+.cta-whatsapp {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(90deg, rgb(34, 197, 94) 0%, rgb(22, 163, 74) 100%);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.cta-whatsapp:hover {
+  background: linear-gradient(90deg, rgb(21, 128, 61) 0%, rgb(22, 163, 74) 100%);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Mobile navigation links */
+.mobile-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 16px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.mobile-nav-item:hover {
+  background: rgb(249, 250, 251);
+  border-color: rgb(229, 231, 235);
+}
+
+.mobile-nav-item.active {
+  background: linear-gradient(90deg, rgb(251, 191, 36, 0.1) 0%, rgb(249, 115, 22, 0.1) 100%);
+  color: rgb(180, 83, 9);
+  border-color: rgba(251, 191, 36, 0.4);
+}
+
+.mobile-nav-icon {
+  padding: 8px;
+  border-radius: 12px;
+  background: rgb(243, 244, 246);
+  color: rgb(107, 114, 128);
+}
+
+.mobile-nav-item.active .mobile-nav-icon {
+  background: rgb(254, 215, 170);
+  color: rgb(217, 119, 6);
+}
+
+/* Mobile CTAs */
+.mobile-cta-whatsapp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  background: linear-gradient(90deg, rgb(34, 197, 94) 0%, rgb(22, 163, 74) 100%);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 18px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.mobile-cta-whatsapp:hover {
+  background: linear-gradient(90deg, rgb(21, 128, 61) 0%, rgb(22, 163, 74) 100%);
+}
+
+.mobile-cta-phone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  border: 2px solid rgb(229, 231, 235);
+  color: rgb(55, 65, 81);
+  padding: 16px 24px;
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+
+.mobile-cta-phone:hover {
+  background: rgb(249, 250, 251);
+  border-color: rgb(156, 163, 175);
+}
+
+/* Prevenção de body scroll */
+.no-scroll {
+  overflow: hidden;
+}
+
+/* Responsividade */
+@media (max-width: 1023px) {
+  .desktop-only {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .mobile-only {
+    display: none;
+  }
+}

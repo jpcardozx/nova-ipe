@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
+// Removido useState, não é mais necessário para hover
 import { Home, MapPin, ShoppingBag, Search, Trees, Building2, Car, TrendingUp, ArrowRight, Sparkles, Target } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { motion, useInView } from "framer-motion"
-import { useRef } from "react"
+// import { motion } from "framer-motion"
+// import { useRef } from "react"
 import SectionWrapper from "@/app/components/ui/SectionWrapper"
 
 // Categorias de imóveis em Guararema com design premium
@@ -60,39 +60,14 @@ const buscasFrequentes = [
 ]
 
 export default function BlocoExploracaoGuararema() {
-    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-    const sectionRef = useRef(null);
-    const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+    // Removido estado de hover e animações
 
-    // Animation variants
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.2,
-                delayChildren: 0.1
-            }
-        }
-    };
 
-    const itemVariants = {
-        hidden: { opacity: 0, y: 30 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: {
-                duration: 0.6,
-                ease: [0.22, 1, 0.36, 1]
-            }
-        }
-    };
 
     return (
         <SectionWrapper
             background="gradient"
             className="relative overflow-hidden"
-            animate={true}
         >
             {/* Background decorativo */}
             <div className="absolute inset-0 opacity-40">
@@ -101,80 +76,52 @@ export default function BlocoExploracaoGuararema() {
                 <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-yellow-100/25 rounded-full blur-2xl transform -translate-x-1/2 -translate-y-1/2" />
             </div>
 
-            <div ref={sectionRef} className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Cabeçalho premium */}
-                <motion.div
-                    className="text-center mb-20"
-                    initial="hidden"
-                    animate={isInView ? "visible" : "hidden"}
-                    variants={containerVariants}
-                >
-                    <motion.div
-                        variants={itemVariants}
-                        className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 rounded-full text-amber-700 text-sm font-semibold mb-8 shadow-lg backdrop-blur-sm"
-                    >
+                <div className="text-center mb-20">
+                    <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 rounded-full text-amber-700 text-sm font-semibold mb-8 shadow-lg backdrop-blur-sm">
                         <Sparkles className="w-4 h-4 text-amber-500" />
                         Descubra Guararema
                         <MapPin className="w-4 h-4 text-amber-600" />
-                    </motion.div>
-
-                    <motion.h2
-                        variants={itemVariants}
-                        className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 tracking-tight"
-                    >
+                    </div>
+                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
                         Encontre seu
                         <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-orange-600">
                             Espaço Ideal
                         </span>
-                    </motion.h2>
-
-                    <motion.p
-                        variants={itemVariants}
-                        className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed"
-                    >
+                    </h2>
+                    <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
                         Explore nossa seleção exclusiva de imóveis em Guararema.
                         <span className="text-amber-600 font-semibold"> Atualizada semanalmente</span> com as
                         melhores oportunidades do mercado local.
-                    </motion.p>
-                </motion.div>
+                    </p>
+                </div>
 
                 {/* Cards de categorias com design premium */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
                     {categoriasDestaque.map((categoria, idx) => (
-                        <motion.div
+                        <div
                             key={idx}
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: 0.1 * idx }}
-                            whileHover={{ scale: 1.05 }}
-                            className="group relative overflow-hidden rounded-2xl border border-gray-200 
-                                     hover:border-amber-300 transition-all duration-500 shadow-lg hover:shadow-2xl"
-                            onMouseEnter={() => setHoveredIndex(idx)}
-                            onMouseLeave={() => setHoveredIndex(null)}
+                            className="group relative overflow-hidden rounded-2xl border border-gray-200 hover:border-amber-300 transition-all duration-300 shadow-lg hover:shadow-2xl"
                         >
                             <Link href={categoria.href}>
                                 <div className="relative h-64 w-full">
-                                    {/* Overlay gradiente mais sofisticado */}
+                                    {/* Overlay gradiente */}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent z-10" />
-                                    <div className="absolute inset-0 bg-amber-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
-
+                                    <div className="absolute inset-0 bg-amber-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
                                     <Image
                                         src={categoria.bgImage}
                                         alt={categoria.label}
                                         fill
                                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                        className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                    />                                    {/* Conteúdo do card */}
+                                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                    />
+                                    {/* Conteúdo do card */}
                                     <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
                                         <div className="flex items-center justify-between mb-3">
-                                            <motion.div
-                                                className="p-3 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg"
-                                                whileHover={{ scale: 1.1 }}
-                                                transition={{ duration: 0.2 }}
-                                            >
+                                            <div className="p-3 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-200">
                                                 {categoria.icone}
-                                            </motion.div>
+                                            </div>
                                             <div className="flex flex-col items-end gap-1">
                                                 <span className="text-xs font-semibold text-white bg-amber-600/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-amber-400/30">
                                                     {categoria.quantidadeMedia}
@@ -184,53 +131,38 @@ export default function BlocoExploracaoGuararema() {
                                                 </span>
                                             </div>
                                         </div>
-
                                         <h3 className="text-xl font-bold text-white mb-2">
                                             {categoria.label}
                                         </h3>
                                         <p className="text-sm text-white/90 leading-relaxed mb-3">
                                             {categoria.descricao}
                                         </p>
-
                                         {/* Highlight gradient bar */}
                                         <div className={`h-1 w-full bg-gradient-to-r ${categoria.highlightColor} rounded-full mb-3 opacity-80`} />
-
                                         {/* Indicador de hover */}
-                                        <motion.div
-                                            className="flex items-center gap-2 text-amber-300"
-                                            initial={{ opacity: 0, x: -10 }}
-                                            animate={{
-                                                opacity: hoveredIndex === idx ? 1 : 0,
-                                                x: hoveredIndex === idx ? 0 : -10
-                                            }}
-                                            transition={{ duration: 0.3 }}
+                                        <div
+                                            className="flex items-center gap-2 text-amber-300 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
                                         >
                                             <span className="text-sm font-medium">Explorar</span>
                                             <ArrowRight className="w-4 h-4" />
-                                        </motion.div>
+                                        </div>
                                     </div>
                                 </div>
                             </Link>
-                        </motion.div>
+                        </div>
                     ))}
                 </div>
 
                 {/* Seção de filtros por bairro melhorada */}
-                <motion.div
+                <div
                     className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-8 border border-amber-200 shadow-lg"
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: 0.3 }}
                 >
                     <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                         <div>
                             <h3 className="text-xl font-bold text-gray-900 font-display mb-2">Explore por Bairro</h3>
                             <p className="text-gray-600 font-body">Cada região tem sua personalidade única. Descubra a sua!</p>
                         </div>
-                        <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
+                        <div
                         >
                             <Link
                                 href="/mapa"
@@ -239,18 +171,12 @@ export default function BlocoExploracaoGuararema() {
                                 <Car className="w-4 h-4" />
                                 Ver no Mapa Interativo
                             </Link>
-                        </motion.div>
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">                        {filtrosBairros.map((filtro, idx) => (
-                        <motion.div
+                        <div
                             key={idx}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.4, delay: 0.05 * idx }}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
                         >
                             <Link
                                 href={filtro.href}
@@ -269,7 +195,7 @@ export default function BlocoExploracaoGuararema() {
                                     {filtro.count}
                                 </span>
                             </Link>
-                        </motion.div>
+                        </div>
                     ))}
                     </div>
 
@@ -280,10 +206,8 @@ export default function BlocoExploracaoGuararema() {
                             Buscas em Alta:
                         </p>                        <div className="flex flex-wrap gap-3">
                             {buscasFrequentes.map((busca, idx) => (
-                                <motion.div
+                                <div
                                     key={idx}
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
                                 >
                                     <Link
                                         href={busca.href}
@@ -296,41 +220,30 @@ export default function BlocoExploracaoGuararema() {
                                             {busca.trend}
                                         </span>
                                     </Link>
-                                </motion.div>
+                                </div>
                             ))}
                         </div>
                     </div>
-                </motion.div>                {/* Chamada para ação elegante */}
-                <motion.div
+                </div>                {/* Chamada para ação elegante */}
+                <div
                     className="mt-16 text-center"
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: 0.4 }}
                 >
                     <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-8 text-white shadow-2xl">
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.2 }}
+                        <div
                             className="flex items-center justify-center gap-2 mb-4"
                         >
                             <Target className="w-5 h-5 text-amber-400" />
                             <span className="text-sm font-medium text-amber-400 uppercase tracking-wide">
                                 Busca Especializada
                             </span>
-                        </motion.div>
+                        </div>
 
                         <h3 className="text-2xl font-bold mb-3">Atendimento Personalizado</h3>
                         <p className="text-gray-300 mb-6 max-w-lg mx-auto">
                             Nossos corretores podem te auxiliar a criar uma busca direcionada às suas necessidades. Conte-nos sobre seu imóvel ideal.
                         </p>
 
-                        <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                        >
+                        <div>
                             <Link
                                 href="/contato"
                                 className="inline-flex items-center gap-3 px-8 py-4 
@@ -342,7 +255,7 @@ export default function BlocoExploracaoGuararema() {
                                 Solicitar Análise Gratuita
                                 <ArrowRight className="w-4 h-4" />
                             </Link>
-                        </motion.div>
+                        </div>
 
                         {/* Stats row */}
                         <div className="mt-6 pt-6 border-t border-gray-700 flex justify-center items-center gap-8 text-sm text-gray-400">
@@ -356,7 +269,7 @@ export default function BlocoExploracaoGuararema() {
                             </div>
                         </div>
                     </div>
-                </motion.div>
+                </div>
             </div>
         </SectionWrapper>
     );

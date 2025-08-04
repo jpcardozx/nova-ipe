@@ -94,13 +94,9 @@ export default function InvestmentCasesSection() {
                 {/* Grid de Casos */}
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
                     {investmentCases.map((case_, index) => (
-                        <motion.div
+                        <div
                             key={case_.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.6, delay: index * 0.1 }}
-                            viewport={{ once: true }}
-                            className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-neutral-light/50"
+                            className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-neutral-light/50 opacity-100 translate-y-0"
                         >
                             {/* Header do Card */}
                             <div className="flex items-start gap-4 mb-6">
@@ -145,7 +141,7 @@ export default function InvestmentCasesSection() {
                                 <MapPin size={14} className="mr-2 text-primary-darkest" />
                                 {case_.location}
                             </div>
-                        </motion.div>
+                        </div>
                     ))}
                 </div>
 

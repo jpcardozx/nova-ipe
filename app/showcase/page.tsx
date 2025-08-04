@@ -4,16 +4,14 @@ import React from 'react';
 import FormularioContatoUnified from '@/app/components/FormularioContatoUnified';
 import FormularioContatoEnhanced from '@/app/components/FormularioContatoEnhanced';
 import ValorUnified from '@/app/sections/ValorAprimoradoV4';
-import { motion } from 'framer-motion';
+// Removido framer-motion para evitar problemas de animação em cascata
 
 const ComponentShowcase: React.FC = () => {
     return (
         <div className="min-h-screen bg-gradient-to-b from-neutral-50 via-white to-neutral-50">
             {/* Header */}
             <header className="pt-32 pb-16 text-center">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                <div
                     className="max-w-4xl mx-auto px-6"
                 >
                     <h1 className="text-6xl font-bold bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent mb-6">
@@ -22,7 +20,7 @@ const ComponentShowcase: React.FC = () => {
                     <p className="text-xl text-neutral-600 leading-relaxed">
                         Nova identidade visual unificada para a Nova Ipê Imobiliária
                     </p>
-                </motion.div>
+                </div>
             </header>
 
             {/* Seção Valor Unificada */}
@@ -96,12 +94,9 @@ const ComponentShowcase: React.FC = () => {
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center mb-16">
                         <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-200 rounded-full text-amber-800 font-medium mb-6">
-                            <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                            >
+                            <div className="animate-spin">
                                 ⚡
-                            </motion.div>
+                            </div>
                             <span>Transformação Completa</span>
                         </div>
                         <h2 className="text-4xl font-bold text-neutral-900 mb-4">
@@ -115,11 +110,8 @@ const ComponentShowcase: React.FC = () => {
                         </p>
                     </div>                    <div className="grid md:grid-cols-2 gap-12">
                         {/* Antes */}
-                        <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.2 }}
-                            className="bg-white p-8 rounded-2xl border border-red-200 shadow-lg"
+                        <div
+                            className="bg-white p-8 rounded-2xl border border-red-200 shadow-lg animate-fade-in-left"
                         >
                             <h3 className="text-2xl font-semibold text-red-600 mb-6 flex items-center gap-3">
                                 <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
@@ -149,14 +141,11 @@ const ComponentShowcase: React.FC = () => {
                                     <span>UX não compatível com proposta premium</span>
                                 </li>
                             </ul>
-                        </motion.div>
+                        </div>
 
                         {/* Depois */}
-                        <motion.div
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.4 }}
-                            className="bg-gradient-to-br from-emerald-50 to-teal-50 p-8 rounded-2xl border border-emerald-200 shadow-lg"
+                        <div
+                            className="animate-fade-in-right bg-gradient-to-br from-emerald-50 to-teal-50 p-8 rounded-2xl border border-emerald-200 shadow-lg"
                         >
                             <h3 className="text-2xl font-semibold text-emerald-700 mb-6 flex items-center gap-3">
                                 <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
@@ -186,7 +175,7 @@ const ComponentShowcase: React.FC = () => {
                                     <span>UX premium com micro-interações e feedback visual</span>
                                 </li>
                             </ul>
-                        </motion.div>
+                        </div>
                     </div>
 
                     {/* Métricas de Melhoria */}

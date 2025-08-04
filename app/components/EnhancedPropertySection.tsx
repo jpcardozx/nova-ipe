@@ -35,9 +35,6 @@ interface EnhancedPropertySectionProps {
 // Componente de card de propriedade aprimorado
 function PremiumPropertyCard({ property, index }: { property: Property; index: number }) {
     const [isHovered, setIsHovered] = useState(false);
-    const cardRef = useRef<HTMLDivElement>(null);
-    const isInView = useInView(cardRef, { once: true, amount: 0.3 });
-
     // Formatação de preço
     const formatPrice = (price: number): string => {
         if (property.propertyType === 'rent') {
@@ -46,36 +43,14 @@ function PremiumPropertyCard({ property, index }: { property: Property; index: n
             return `R$ ${price.toLocaleString('pt-BR')}`;
         }
     };
-
-    // Animação do card
-    const cardVariants = {
-        hidden: { y: 50, opacity: 0 },
-        visible: {
-            y: 0,
-            opacity: 1,
-            transition: {
-                duration: 0.5,
-                delay: index * 0.1,
-                ease: [0.25, 1, 0.5, 1]
-            }
-        }
-    };
-
+    // Removido motion.div e useInView do card, animação só no container
     return (
-        <motion.div
-            ref={cardRef}
-            variants={cardVariants}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-            className="relative group"
+        <div
+            className={`relative group transition-all duration-500 ease-out ${isHovered ? 'shadow-xl shadow-amber-900/10 scale-[1.02]' : ''}`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <div className={`
-        relative overflow-hidden rounded-xl bg-white shadow-md
-        transition-all duration-500 ease-out
-        ${isHovered ? 'shadow-xl shadow-amber-900/10 scale-[1.02]' : ''}
-      `}>
+            <div className="relative overflow-hidden rounded-xl bg-white shadow-md">
                 {/* Badges */}
                 <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
                     {property.isPremium && (
@@ -201,7 +176,7 @@ function PremiumPropertyCard({ property, index }: { property: Property; index: n
                     <ArrowUpRight className="w-4 h-4" />
                 </div>
             </div>
-        </motion.div>
+        </div>
     );
 }
 
@@ -257,7 +232,6 @@ export default function EnhancedPropertySection({
             }
         }
     };
-
     const titleVariants = {
         hidden: { opacity: 0, y: -20 },
         visible: {
@@ -375,6 +349,7 @@ export default function EnhancedPropertySection({
                 {/* Carousel de propriedades */}
                 {variant === 'carousel' && (
                     <div className="relative overflow-hidden">
+                        {/* Apenas animação no container do carousel, não nos cards */}
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={currentSlide}
@@ -396,8 +371,6 @@ export default function EnhancedPropertySection({
                                     ))}
                             </motion.div>
                         </AnimatePresence>
-
-                        {/* Controles do carousel */}
                         <div className="flex justify-end gap-2 mt-8">
                             <button
                                 onClick={prevSlide}
@@ -421,11 +394,9 @@ export default function EnhancedPropertySection({
                 {variant === 'featured' && filteredProperties.length > 0 && (
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                         {/* Propriedade destaque maior */}
-                        <motion.div
-                            className="lg:col-span-6"
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-                            transition={{ duration: 0.6 }}
+                        <div
+                            className="lg:col-span-6 transition-all duration-700"
+                            style={{ opacity: isInView ? 1 : 0, transform: isInView ? 'translateY(0)' : 'translateY(30px)' }}
                         >
                             <div className="relative overflow-hidden rounded-xl bg-white shadow-xl h-full">
                                 {/* Badges */}
@@ -512,7 +483,7 @@ export default function EnhancedPropertySection({
                                     <span className="sr-only">Ver detalhes</span>
                                 </Link>
                             </div>
-                        </motion.div>
+                        </div>
 
                         {/* Grid de propriedades secundárias */}
                         <div className="lg:col-span-6">

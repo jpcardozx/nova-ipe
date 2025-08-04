@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { ChevronDown, MapPin, Calculator, Home, Clock, Mail, Phone, Check, CalendarDays, FileText, Calendar } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+// Removido framer-motion para evitar problemas de animação em cascata
 
 // TypeScript interfaces for better type safety
 type ServiceKey = 'compra' | 'venda' | 'gestao';
@@ -106,18 +106,12 @@ export default function ValorAprimoradoModerno() {
             <section className="bg-gradient-to-br from-gray-50 to-amber-50 py-20">
                 <div className="container mx-auto px-6">
                     <div className="max-w-6xl mx-auto">
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.6 }}
+                        <div
                             className="grid lg:grid-cols-2 gap-14 items-center"
                         >
                             {/* Content */}
                             <div className="space-y-8">
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.2, duration: 0.6 }}
+                                <div
                                     className="space-y-4"
                                 >                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-100 text-amber-700 rounded-full text-xs font-medium shadow-sm">
                                         <span className="font-semibold">IPÊ IMÓVEIS</span>
@@ -133,12 +127,9 @@ export default function ValorAprimoradoModerno() {
                                         Assessoria especializada com conhecimento local para compra,
                                         venda e administração de imóveis desde 2009.
                                     </p>
-                                </motion.div>
+                                </div>
 
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.4, duration: 0.6 }}
+                                <div
                                     className="grid grid-cols-3 gap-8"
                                 >
                                     <div className="rounded-lg bg-white p-4 border border-gray-100 shadow-sm">
@@ -153,14 +144,11 @@ export default function ValorAprimoradoModerno() {
                                         <div className="text-2xl font-medium text-amber-600 mb-1">14+</div>
                                         <div className="text-sm text-gray-600">Anos</div>
                                     </div>
-                                </motion.div>
+                                </div>
                             </div>
 
                             {/* Lead Form */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.6, duration: 0.6 }}
+                            <div
                                 className="bg-white rounded-lg p-8 shadow-sm border border-gray-200"
                             >
                                 <div className="mb-7">
@@ -215,22 +203,20 @@ export default function ValorAprimoradoModerno() {
                                         </div>
                                     </div>
 
-                                    <motion.button
-                                        whileHover={{ scale: 1.01 }}
-                                        whileTap={{ scale: 0.98 }}
+                                    <button
                                         onClick={handleLeadSubmit}
-                                        className="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-3 px-6 rounded-md transition-all duration-200 mt-2 shadow-sm hover:shadow"
+                                        className="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-3 px-6 rounded-md transition-all duration-200 mt-2 shadow-sm hover:shadow hover:scale-[1.01] active:scale-[0.98]"
                                     >
                                         Solicitar atendimento
-                                    </motion.button>
+                                    </button>
                                 </div>
 
                                 <p className="text-xs text-gray-500 flex items-center justify-center gap-1.5 mt-6">
                                     <Clock className="w-3 h-3" />
                                     Retornamos em até 24 horas úteis
                                 </p>
-                            </motion.div>
-                        </motion.div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -239,11 +225,7 @@ export default function ValorAprimoradoModerno() {
             <section className="py-20 bg-white">
                 <div className="container mx-auto px-6">
                     <div className="max-w-4xl mx-auto">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6 }}
+                        <div
                             className="text-center mb-12"
                         >                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-100/80 text-amber-700 rounded-full text-xs font-medium mb-3 shadow-sm">
                                 <span className="font-semibold">SERVIÇOS</span>
@@ -254,20 +236,14 @@ export default function ValorAprimoradoModerno() {
                             <p className="text-gray-600 max-w-2xl mx-auto">
                                 Suporte especializado em todas as etapas do processo imobiliário em Guararema
                             </p>
-                        </motion.div>
+                        </div>
 
                         {/* Service Navigation */}                            <div className="flex flex-wrap justify-center gap-3 mb-12">
                             {Object.entries(services).map(([key, service], index) => (
-                                <motion.button
+                                <button
                                     key={key}
-                                    initial={{ opacity: 0, y: 10 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                                    whileHover={{ y: -2 }}
-                                    whileTap={{ scale: 0.98 }}
                                     onClick={() => setActiveService(key as ServiceKey)}
-                                    className={`px-6 py-3 rounded-md text-sm font-medium transition-all duration-200 ${activeService === key
+                                    className={`px-6 py-3 rounded-md text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${activeService === key
                                         ? 'bg-amber-50 text-amber-800 border border-amber-200 shadow-md'
                                         : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-100 hover:shadow-sm'
                                         }`}
@@ -278,25 +254,20 @@ export default function ValorAprimoradoModerno() {
                                         </div>
                                         {service.title}
                                     </div>
-                                </motion.button>
+                                </button>
                             ))}
                         </div>
 
-                        {/* Service Content */}                        <motion.div
+                        {/* Service Content */}                        <div
                             key={activeService}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.4 }}
                             className="bg-gradient-to-b from-white to-gray-50 rounded-lg p-8 shadow-md border border-gray-100"
                         >
                             <div className="flex flex-col md:flex-row md:items-center gap-6 mb-8 border-b border-gray-200 pb-6">
                                 <div className="p-3.5 rounded-md bg-amber-100/80 text-amber-700 shadow-sm">
-                                    <motion.div
-                                        animate={{ rotate: [0, 5, 0, -5, 0] }}
-                                        transition={{ duration: 0.5, delay: 0.2 }}
+                                    <div
                                         className="w-7 h-7">
                                         {services[activeService].icon}
-                                    </motion.div>
+                                    </div>
                                 </div>
                                 <div>
                                     <h3 className="text-2xl font-medium text-gray-800 mb-2">
@@ -309,44 +280,35 @@ export default function ValorAprimoradoModerno() {
                             </div>
 
                             <div className="grid md:grid-cols-2 gap-6">
-                                {services[activeService].points.map((point, index) => (<motion.div
+                                {services[activeService].points.map((point, index) => (<div
                                     key={index}
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: index * 0.1, duration: 0.4 }}
                                     className="flex items-start space-x-3"
                                 >
                                     <div className="flex-shrink-0 rounded-full p-1.5 bg-amber-100 text-amber-700 mt-0.5 shadow-sm">
                                         <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
                                     </div>
                                     <span className="text-gray-700 leading-relaxed">{point}</span>
-                                </motion.div>
+                                </div>
                                 ))}
                             </div>                            <div className="mt-8 border-t border-gray-200 pt-6 text-center">
-                                <motion.button
-                                    whileHover={{ scale: 1.03 }}
-                                    whileTap={{ scale: 0.97 }}
-                                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-md transition-all duration-200 shadow-sm hover:shadow"
+                                <button
+                                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-md transition-all duration-200 shadow-sm hover:shadow hover:scale-[1.03] active:scale-[0.97]"
                                 >
                                     Saiba mais sobre este serviço
                                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="ml-1">
                                         <path d="M1.16669 7H12.8334" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                         <path d="M7 1.16663L12.8333 6.99996L7 12.8333" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                     </svg>
-                                </motion.button>
+                                </button>
                             </div>
-                        </motion.div>
+                        </div>
                     </div>
                 </div>
             </section>            {/* FAQ Section */}
             <section className="py-20 bg-gradient-to-br from-white via-amber-50/30 to-orange-50/30">
                 <div className="container mx-auto px-6">
                     <div className="max-w-4xl mx-auto">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6 }}
+                        <div
                             className="text-center mb-16"
                         >
                             <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-200 text-amber-800 rounded-full text-sm font-medium mb-6 shadow-sm">
@@ -360,16 +322,12 @@ export default function ValorAprimoradoModerno() {
                             <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
                                 Esclarecemos as principais dúvidas sobre processos imobiliários em Guararema
                             </p>
-                        </motion.div>
+                        </div>
 
                         <div className="grid gap-6">
                             {faqItems.map((item, index) => (
-                                <motion.div
+                                <div
                                     key={index}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: index * 0.1, duration: 0.6 }}
                                     className="bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
                                 >
                                     <button
@@ -384,51 +342,39 @@ export default function ValorAprimoradoModerno() {
                                                 {item.question}
                                             </span>
                                         </div>
-                                        <motion.div
-                                            animate={{ rotate: activeQuestion === index ? 180 : 0 }}
-                                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                                            className="flex-shrink-0 ml-4"
+                                        <div
+                                            className={`flex-shrink-0 ml-4 transition-transform duration-300 ${activeQuestion === index ? 'rotate-180' : ''}`}
                                         >
                                             <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center group-hover:bg-amber-200 transition-colors duration-300">
                                                 <ChevronDown className="w-4 h-4 text-amber-700" />
                                             </div>
-                                        </motion.div>
+                                        </div>
                                     </button>
-                                    <AnimatePresence>
-                                        {activeQuestion === index && (
-                                            <motion.div
-                                                initial={{ opacity: 0, height: 0 }}
-                                                animate={{ opacity: 1, height: 'auto' }}
-                                                exit={{ opacity: 0, height: 0 }}
-                                                transition={{ duration: 0.4, ease: "easeInOut" }}
-                                                className="overflow-hidden"
-                                            >
-                                                <div className="px-6 lg:px-8 pb-6 lg:pb-8">
-                                                    <div className="ml-12 border-t border-amber-100 pt-6">
-                                                        <p className="text-gray-700 text-base leading-relaxed">
-                                                            {item.answer}
-                                                        </p>
-                                                        <div className="mt-4 flex items-center gap-2 text-amber-700">
-                                                            <Clock className="w-4 h-4" />
-                                                            <span className="text-sm font-medium">
-                                                                Ainda tem dúvidas? Fale conosco
-                                                            </span>
-                                                        </div>
+                                    {activeQuestion === index && (
+                                        <div
+                                            className="overflow-hidden"
+                                        >
+                                            <div className="px-6 lg:px-8 pb-6 lg:pb-8">
+                                                <div className="ml-12 border-t border-amber-100 pt-6">
+                                                    <p className="text-gray-700 text-base leading-relaxed">
+                                                        {item.answer}
+                                                    </p>
+                                                    <div className="mt-4 flex items-center gap-2 text-amber-700">
+                                                        <Clock className="w-4 h-4" />
+                                                        <span className="text-sm font-medium">
+                                                            Ainda tem dúvidas? Fale conosco
+                                                        </span>
                                                     </div>
                                                 </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </motion.div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             ))}
                         </div>
 
                         {/* Call to action para mais informações */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.5, duration: 0.6 }}
+                        <div
                             className="text-center mt-12"
                         >
                             <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-8 text-white">
@@ -439,27 +385,23 @@ export default function ValorAprimoradoModerno() {
                                     Nossa equipe está pronta para esclarecer todas as suas dúvidas
                                 </p>
                                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                    <motion.a
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
+                                    <a
                                         href="tel:+5511981845016"
-                                        className="inline-flex items-center px-6 py-3 bg-white text-amber-700 font-semibold rounded-lg hover:bg-amber-50 transition-all duration-200 shadow-lg"
+                                        className="inline-flex items-center px-6 py-3 bg-white text-amber-700 font-semibold rounded-lg hover:bg-amber-50 transition-all duration-200 shadow-lg hover:scale-[1.05] active:scale-[0.95]"
                                     >
                                         <Phone className="w-5 h-5 mr-2" />
                                         Ligar Agora
-                                    </motion.a>
-                                    <motion.a
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
+                                    </a>
+                                    <a
                                         href="/contato"
-                                        className="inline-flex items-center px-6 py-3 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 transition-all duration-200 shadow-lg border-2 border-white/20"
+                                        className="inline-flex items-center px-6 py-3 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 transition-all duration-200 shadow-lg border-2 border-white/20 hover:scale-[1.05] active:scale-[0.95]"
                                     >
                                         <Mail className="w-5 h-5 mr-2" />
                                         Enviar Mensagem
-                                    </motion.a>
+                                    </a>
                                 </div>
                             </div>
-                        </motion.div>
+                        </div>
                     </div>
                 </div>
             </section>

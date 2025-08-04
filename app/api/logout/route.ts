@@ -19,3 +19,19 @@ export async function DELETE(_req: NextRequest) {
     })
     return res
 }
+
+/**
+ * Handler para logout via POST: apaga o cookie de autenticação.
+ */
+export async function POST(_req: NextRequest) {
+    const res = NextResponse.json({ ok: true })
+    // Define o cookie com maxAge=0 para removê-lo
+    res.cookies.set(COOKIE_NAME, "", {
+        path: "/",
+        maxAge: 0,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+    })
+    return res
+}
