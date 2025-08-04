@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Navbar from '../sections/NavBar'
 import Footer from '../sections/Footer'
 
 const AUTH_COOKIE_NAME = 'admin-auth'
@@ -51,8 +50,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-neutral-50 text-neutral-800">
-      <Navbar />
+    <div className="flex flex-col min-h-screen bg-neutral-50 text-neutral-800"
+      style={{ paddingTop: '80px' }} // Offset para navbar fixa
+    >
 
       <main className="flex flex-1 items-center justify-center px-4 py-20">
         <div className="w-full max-w-md p-8 rounded-2xl bg-white shadow-xl border border-neutral-200 space-y-6">

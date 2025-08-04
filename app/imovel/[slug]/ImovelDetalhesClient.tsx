@@ -1,6 +1,6 @@
 "use client";
 import { Suspense } from "react";
-import ImovelDetalhes from "./ImovelDetalhes";
+import ImovelDetalhesNew from "./ImovelDetalhesNew";
 
 // Componente de proteção contra undefined
 function ComponentGuard({ children, fallback }: { children: React.ReactNode; fallback?: React.ReactNode }) {
@@ -18,16 +18,16 @@ export default function ImovelDetalhesClient(props: any) {
         return <div>Erro: Dados do imóvel não disponíveis</div>;
     }
 
-    // Verificação do componente ImovelDetalhes
-    if (typeof ImovelDetalhes !== 'function') {
-        console.error('🚨 ImovelDetalhes não é uma função válida:', typeof ImovelDetalhes);
-        return <div>Erro: Componente ImovelDetalhes não disponível</div>;
+    // Verificação do componente ImovelDetalhesNew
+    if (typeof ImovelDetalhesNew !== 'function') {
+        console.error('🚨 ImovelDetalhesNew não é uma função válida:', typeof ImovelDetalhesNew);
+        return <div>Erro: Componente ImovelDetalhesNew não disponível</div>;
     }
 
     return (
         <Suspense fallback={<div>Carregando detalhes do imóvel...</div>}>
             <ComponentGuard>
-                <ImovelDetalhes {...props} />
+                <ImovelDetalhesNew {...props} />
             </ComponentGuard>
         </Suspense>
     );

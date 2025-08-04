@@ -4,8 +4,6 @@
 import { Home, MapPin, ShoppingBag, Search, Trees, Building2, Car, TrendingUp, ArrowRight, Sparkles, Target } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-// import { motion } from "framer-motion"
-// import { useRef } from "react"
 import SectionWrapper from "@/app/components/ui/SectionWrapper"
 
 // Categorias de imóveis em Guararema com design premium
@@ -102,24 +100,23 @@ export default function BlocoExploracaoGuararema() {
                     {categoriasDestaque.map((categoria, idx) => (
                         <div
                             key={idx}
-                            className="group relative overflow-hidden rounded-2xl border border-gray-200 hover:border-amber-300 transition-all duration-300 shadow-lg hover:shadow-2xl"
+                            className="group relative overflow-hidden rounded-2xl border border-gray-200 hover:border-amber-300 transition-colors duration-200 shadow-lg hover:shadow-xl"
                         >
                             <Link href={categoria.href}>
                                 <div className="relative h-64 w-full">
                                     {/* Overlay gradiente */}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent z-10" />
-                                    <div className="absolute inset-0 bg-amber-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
                                     <Image
                                         src={categoria.bgImage}
                                         alt={categoria.label}
                                         fill
                                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                        className="object-cover"
                                     />
                                     {/* Conteúdo do card */}
                                     <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
                                         <div className="flex items-center justify-between mb-3">
-                                            <div className="p-3 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-200">
+                                            <div className="p-3 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg">
                                                 {categoria.icone}
                                             </div>
                                             <div className="flex flex-col items-end gap-1">
@@ -139,10 +136,8 @@ export default function BlocoExploracaoGuararema() {
                                         </p>
                                         {/* Highlight gradient bar */}
                                         <div className={`h-1 w-full bg-gradient-to-r ${categoria.highlightColor} rounded-full mb-3 opacity-80`} />
-                                        {/* Indicador de hover */}
-                                        <div
-                                            className="flex items-center gap-2 text-amber-300 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
-                                        >
+                                        {/* Indicador de hover simplificado */}
+                                        <div className="flex items-center gap-2 text-amber-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                             <span className="text-sm font-medium">Explorar</span>
                                             <ArrowRight className="w-4 h-4" />
                                         </div>
@@ -174,29 +169,30 @@ export default function BlocoExploracaoGuararema() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">                        {filtrosBairros.map((filtro, idx) => (
-                        <div
-                            key={idx}
-                        >
-                            <Link
-                                href={filtro.href}
-                                className="group flex items-center justify-between text-sm px-4 py-3.5 
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+                        {filtrosBairros.map((filtro, idx) => (
+                            <div
+                                key={idx}
+                            >
+                                <Link
+                                    href={filtro.href}
+                                    className="group flex items-center justify-between text-sm px-4 py-3.5 
                                              bg-white text-gray-700 rounded-xl border border-gray-200
                                              hover:bg-amber-50 hover:border-amber-300 hover:text-amber-800
-                                             transition-all duration-300 shadow-sm hover:shadow-md"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="p-1.5 rounded-lg bg-gray-100 group-hover:bg-amber-100 transition-colors">
-                                        {filtro.icon}
+                                             transition-colors duration-200 shadow-sm hover:shadow-md"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-1.5 rounded-lg bg-gray-100 group-hover:bg-amber-100 transition-colors duration-200">
+                                            {filtro.icon}
+                                        </div>
+                                        <span className="font-medium">{filtro.label}</span>
                                     </div>
-                                    <span className="font-medium">{filtro.label}</span>
-                                </div>
-                                <span className="text-xs text-gray-500 group-hover:text-amber-600">
-                                    {filtro.count}
-                                </span>
-                            </Link>
-                        </div>
-                    ))}
+                                    <span className="text-xs text-gray-500 group-hover:text-amber-600">
+                                        {filtro.count}
+                                    </span>
+                                </Link>
+                            </div>
+                        ))}
                     </div>
 
                     {/* Buscas frequentes aprimoradas */}
@@ -213,7 +209,7 @@ export default function BlocoExploracaoGuararema() {
                                         href={busca.href}
                                         className="group inline-flex items-center gap-2 text-sm text-amber-700 hover:text-amber-800 
                                                  bg-white hover:bg-amber-50 px-4 py-2.5 rounded-lg border border-amber-200
-                                                 font-medium transition-all duration-200 shadow-sm hover:shadow-md"
+                                                 font-medium transition-colors duration-200 shadow-sm hover:shadow-md"
                                     >
                                         <span>{busca.label}</span>
                                         <span className="text-xs text-gray-500 group-hover:text-amber-600 border-l border-amber-200 pl-2 ml-1">
@@ -225,13 +221,9 @@ export default function BlocoExploracaoGuararema() {
                         </div>
                     </div>
                 </div>                {/* Chamada para ação elegante */}
-                <div
-                    className="mt-16 text-center"
-                >
+                <div className="mt-16 text-center">
                     <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-8 text-white shadow-2xl">
-                        <div
-                            className="flex items-center justify-center gap-2 mb-4"
-                        >
+                        <div className="flex items-center justify-center gap-2 mb-4">
                             <Target className="w-5 h-5 text-amber-400" />
                             <span className="text-sm font-medium text-amber-400 uppercase tracking-wide">
                                 Busca Especializada
@@ -248,7 +240,7 @@ export default function BlocoExploracaoGuararema() {
                                 href="/contato"
                                 className="inline-flex items-center gap-3 px-8 py-4 
                                          bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-semibold
-                                         hover:from-amber-600 hover:to-orange-600 transition-all duration-300 
+                                         hover:from-amber-600 hover:to-orange-600 transition-colors duration-200 
                                          shadow-lg hover:shadow-xl border border-amber-400/20"
                             >
                                 <Search className="w-5 h-5" />

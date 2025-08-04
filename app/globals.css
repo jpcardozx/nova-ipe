@@ -1276,3 +1276,22 @@ img:not([width]):not([height]) {
     transform: translateX(0);
   }
 }
+
+/* Additional catalog page animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleX {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}

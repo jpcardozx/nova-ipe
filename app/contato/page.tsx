@@ -2,19 +2,17 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { 
-  Phone, 
-  Mail, 
-  MapPin, 
-  Send, 
+import {
+  Phone,
+  Mail,
+  MapPin,
+  Send,
   CheckCircle,
   AlertCircle,
   Clock
 } from 'lucide-react';
-import Navbar from '../sections/NavBar';
-import Footer from '../sections/Footer';
+import FooterAprimorado from '../sections/FooterAprimorado';
 import Button from '@/components/ui/button';
 
 interface FormData {
@@ -95,16 +93,13 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar />
-      
       {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-br from-slate-50 to-white overflow-hidden">
+      <section className="relative py-20 bg-gradient-to-br from-slate-50 to-white overflow-hidden"
+        style={{ marginTop: '80px' }} // Offset para a navbar fixa
+      >
         <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-4xl mx-auto text-center mb-16"
+          <div
+            className="max-w-4xl mx-auto text-center mb-16 animate-fade-in-up"
           >
             <h1 className="text-5xl lg:text-6xl font-light text-slate-900 mb-6">
               Entre em <span className="font-bold text-amber-600">Contato</span>
@@ -112,15 +107,12 @@ export default function ContactPage() {
             <p className="text-xl text-slate-600 leading-relaxed">
               Nossa equipe está pronta para transformar seus objetivos imobiliários em realidade
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid lg:grid-cols-2 gap-16 max-w-7xl mx-auto">
             {/* Contact Information */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="space-y-8"
+            <div
+              className="animate-fade-in-left space-y-8"
             >
               {/* Office Image */}
               <div className="relative rounded-2xl overflow-hidden shadow-xl">
@@ -201,14 +193,11 @@ export default function ContactPage() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Contact Form */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="bg-white rounded-2xl shadow-xl p-8 border border-slate-100"
+            <div
+              className="bg-white rounded-2xl shadow-xl p-8 border border-slate-100 animate-fade-in-right"
             >
               <div className="mb-8">
                 <h3 className="text-2xl font-semibold text-slate-900 mb-2">
@@ -230,9 +219,8 @@ export default function ContactPage() {
                       type="text"
                       value={formData.nome}
                       onChange={(e) => handleInputChange('nome', e.target.value)}
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all ${
-                        errors.nome ? 'border-red-300' : 'border-slate-300'
-                      }`}
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all ${errors.nome ? 'border-red-300' : 'border-slate-300'
+                        }`}
                       placeholder="Digite seu nome"
                     />
                     {errors.nome && (
@@ -252,9 +240,8 @@ export default function ContactPage() {
                       type="email"
                       value={formData.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all ${
-                        errors.email ? 'border-red-300' : 'border-slate-300'
-                      }`}
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all ${errors.email ? 'border-red-300' : 'border-slate-300'
+                        }`}
                       placeholder="seu@email.com"
                     />
                     {errors.email && (
@@ -276,9 +263,8 @@ export default function ContactPage() {
                       type="tel"
                       value={formData.telefone}
                       onChange={(e) => handleInputChange('telefone', e.target.value)}
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all ${
-                        errors.telefone ? 'border-red-300' : 'border-slate-300'
-                      }`}
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all ${errors.telefone ? 'border-red-300' : 'border-slate-300'
+                        }`}
                       placeholder="(11) 99999-9999"
                     />
                     {errors.telefone && (
@@ -312,9 +298,8 @@ export default function ContactPage() {
                   <select
                     value={formData.interesse}
                     onChange={(e) => handleInputChange('interesse', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all ${
-                      errors.interesse ? 'border-red-300' : 'border-slate-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all ${errors.interesse ? 'border-red-300' : 'border-slate-300'
+                      }`}
                   >
                     <option value="">Selecione uma opção</option>
                     {interesseOptions.map((option) => (
@@ -340,9 +325,8 @@ export default function ContactPage() {
                     value={formData.mensagem}
                     onChange={(e) => handleInputChange('mensagem', e.target.value)}
                     rows={4}
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all resize-none ${
-                      errors.mensagem ? 'border-red-300' : 'border-slate-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all resize-none ${errors.mensagem ? 'border-red-300' : 'border-slate-300'
+                      }`}
                     placeholder="Conte-nos mais sobre o que você procura..."
                   />
                   {errors.mensagem && (
@@ -373,44 +357,36 @@ export default function ContactPage() {
                 </Button>
 
                 {/* Success/Error Messages */}
-                <AnimatePresence>
-                  {submitStatus === 'success' && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3 text-green-800"
-                    >
-                      <CheckCircle className="w-5 h-5" />
-                      <div>
-                        <p className="font-medium">Mensagem enviada com sucesso!</p>
-                        <p className="text-sm">Retornaremos em breve.</p>
-                      </div>
-                    </motion.div>
-                  )}
+                {submitStatus === 'success' && (
+                  <div
+                    className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3 text-green-800 animate-fade-in-up"
+                  >
+                    <CheckCircle className="w-5 h-5" />
+                    <div>
+                      <p className="font-medium">Mensagem enviada com sucesso!</p>
+                      <p className="text-sm">Retornaremos em breve.</p>
+                    </div>
+                  </div>
+                )}
 
-                  {submitStatus === 'error' && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3 text-red-800"
-                    >
-                      <AlertCircle className="w-5 h-5" />
-                      <div>
-                        <p className="font-medium">Erro ao enviar mensagem</p>
-                        <p className="text-sm">Tente novamente ou ligue para nós.</p>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {submitStatus === 'error' && (
+                  <div
+                    className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3 text-red-800 animate-fade-in-up"
+                  >
+                    <AlertCircle className="w-5 h-5" />
+                    <div>
+                      <p className="font-medium">Erro ao enviar mensagem</p>
+                      <p className="text-sm">Tente novamente ou ligue para nós.</p>
+                    </div>
+                  </div>
+                )}
               </form>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
 
-      <Footer />
+      <FooterAprimorado />
     </div>
   );
 }

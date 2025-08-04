@@ -5,7 +5,6 @@ import { Metadata } from "next";
 
 // Importando componentes usando caminho relativo para garantir compatibilidade
 import Footer from "../sections/Footer";
-import Navbar from "../sections/NavBar";
 
 export const metadata: Metadata = {
     title: "Acesso restrito - Ipê Imóveis",
@@ -14,8 +13,7 @@ export const metadata: Metadata = {
 
 export default function AcessoNegadoPage() {
     return (
-        <>
-            <Navbar />
+        <div style={{ paddingTop: '80px' }}> {/* Offset para navbar fixa */}
             <main className="min-h-[80vh] flex flex-col items-center justify-center px-6 text-center bg-gradient-to-br from-[#f7f6f3] to-white text-[#0D1F2D]">
                 <div className="max-w-xl">
                     <h1 className="text-4xl md:text-5xl font-bold mb-6">
@@ -34,6 +32,6 @@ export default function AcessoNegadoPage() {
                 </div>
             </main>
             <Footer />
-        </>
+        </div>
     );
 }

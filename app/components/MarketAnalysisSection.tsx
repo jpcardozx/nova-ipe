@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TrendingUp, MapPin, Clock, Calculator, Home, DollarSign, BarChart3, AlertCircle, Calendar, ChevronRight, Target, Globe } from 'lucide-react';
+import { TrendingUp, MapPin, Clock, Calculator, Home, DollarSign, BarChart3, AlertCircle, Calendar, ChevronRight, Target, Globe, Check, ArrowRight } from 'lucide-react';
 import SectionWrapper from './ui/SectionWrapper';
 
 // Define TypeScript types for our data structures
@@ -151,18 +151,21 @@ export default function MarketAnalysisSection() {
             background="amber"
             id="analise-mercado"
         >
-            {/* Seletor de público */}
+            {/* Seletor de público - Melhorado */}
             <div className="flex justify-center mb-12">
-                <div className="inline-flex bg-white/80 backdrop-blur-sm rounded-xl p-1 shadow-lg border border-amber-200">
+                <div className="inline-flex bg-white/90 backdrop-blur-sm rounded-2xl p-2 shadow-xl border border-amber-200/50">
                     {Object.entries(configuracoes).map(([key, config]) => (
                         <button
                             key={key}
                             onClick={() => setTipoLead(key as ServiceKey)}
-                            className={`px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${tipoLead === key
-                                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg scale-105'
-                                : 'text-gray-600 hover:text-amber-600 hover:bg-amber-50'
+                            className={`px-8 py-4 rounded-xl text-sm font-semibold transition-all duration-300 relative ${tipoLead === key
+                                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg transform scale-105'
+                                : 'text-gray-600 hover:text-amber-600 hover:bg-amber-50/50'
                                 }`}
                         >
+                            {tipoLead === key && (
+                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white animate-pulse"></div>
+                            )}
                             {config.label}
                         </button>
                     ))}
@@ -170,157 +173,219 @@ export default function MarketAnalysisSection() {
             </div>
 
             <div className="grid lg:grid-cols-3 gap-8">
-                {/* Coluna principal - Análise */}
+                {/* Coluna principal - Análise Melhorada */}
                 <div className="lg:col-span-2 space-y-8">
-                    {/* Pergunta principal */}
-                    <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-amber-200 shadow-lg">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="p-3 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl">
-                                <Target className="w-6 h-6 text-white" />
+                    {/* Pergunta principal - UI melhorada */}
+                    <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 border border-amber-200/50 shadow-xl hover:shadow-2xl transition-all duration-300">
+                        <div className="flex items-start gap-4 mb-8">
+                            <div className="p-4 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl shadow-lg">
+                                <Target className="w-8 h-8 text-white" />
                             </div>
-                            <div>
-                                <h2 className="text-2xl font-bold text-gray-900">
+                            <div className="flex-1">
+                                <h2 className="text-3xl font-bold text-gray-900 mb-2">
                                     {configuracoes[tipoLead].titulo}
                                 </h2>
-                                <p className="text-gray-600 mt-1">
+                                <p className="text-gray-600 text-lg leading-relaxed">
                                     {configuracoes[tipoLead].subtitulo}
                                 </p>
+                                <div className="flex items-center gap-2 mt-3 text-sm text-amber-700">
+                                    <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+                                    <span className="font-medium">Dados atualizados em tempo real</span>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Análise por região */}
-                        <div className="space-y-4">
-                            <h3 className="font-semibold text-gray-900 text-lg mb-4 flex items-center gap-2">
-                                <MapPin className="w-5 h-5 text-amber-600" />
+                        {/* Análise por região - UI melhorada */}
+                        <div className="space-y-6">
+                            <h3 className="font-bold text-gray-900 text-xl mb-6 flex items-center gap-3">
+                                <MapPin className="w-6 h-6 text-amber-600" />
                                 {configuracoes[tipoLead].pergunta}
+                                <span className="px-3 py-1 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 text-sm font-medium rounded-full border border-green-200">
+                                    {regioes.length} regiões analisadas
+                                </span>
                             </h3>
 
                             {regioes.map((regiao, index) => (
                                 <div
                                     key={index}
-                                    className={`p-6 rounded-xl border-2 transition-all duration-200 hover:shadow-lg cursor-pointer group ${regiao.destaque
-                                        ? 'border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 shadow-md'
-                                        : 'border-gray-200 hover:border-amber-200 bg-white/50 hover:scale-[1.02]'
+                                    className={`group p-6 rounded-2xl border-2 transition-all duration-300 hover:shadow-xl cursor-pointer relative overflow-hidden ${regiao.destaque
+                                        ? 'border-amber-300 bg-gradient-to-br from-amber-50 via-white to-orange-50 shadow-lg hover:shadow-2xl'
+                                        : 'border-gray-200 hover:border-amber-300 bg-white hover:bg-gradient-to-br hover:from-amber-25 hover:to-orange-25 hover:scale-[1.02]'
                                         }`}
                                 >
-                                    <div className="flex justify-between items-start mb-3">
-                                        <div className="flex items-center gap-3">
-                                            <div className={`p-2 rounded-lg ${regiao.destaque ? 'bg-amber-200' : 'bg-gray-100'}`}>
-                                                <Home className="w-5 h-5 text-gray-700" />
+                                    {/* Efeito visual de destaque */}
+                                    {regiao.destaque && (
+                                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-amber-400"></div>
+                                    )}
+
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div className="flex items-center gap-4">
+                                            <div className={`p-3 rounded-xl transition-all duration-300 ${regiao.destaque ? 'bg-amber-200 shadow-md' : 'bg-gray-100 group-hover:bg-amber-100'}`}>
+                                                <Home className="w-6 h-6 text-gray-700" />
                                             </div>
                                             <div>
-                                                <h4 className="font-semibold text-gray-900">{regiao.nome}</h4>
-                                                <p className="text-sm text-gray-600">{regiao.valor} • {regiao.tempo}</p>
+                                                <h4 className="font-bold text-gray-900 text-lg">{regiao.nome}</h4>
+                                                <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
+                                                    <span className="font-semibold text-amber-700">{regiao.valor}</span>
+                                                    <span>•</span>
+                                                    <div className="flex items-center gap-1">
+                                                        <Clock className="w-4 h-4" />
+                                                        <span>{regiao.tempo}</span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                        {regiao.destaque && (
-                                            <span className="px-3 py-1 bg-gradient-to-r from-amber-400 to-orange-400 text-white text-xs font-semibold rounded-full">
-                                                ⭐ Destaque
-                                            </span>
-                                        )}
-                                        <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-amber-600 transition-colors" />
+                                        <div className="flex items-center gap-3">
+                                            {regiao.destaque && (
+                                                <span className="px-4 py-2 bg-gradient-to-r from-amber-400 to-orange-400 text-white text-sm font-bold rounded-full shadow-lg flex items-center gap-2">
+                                                    <span>⭐</span>
+                                                    <span>Top Choice</span>
+                                                </span>
+                                            )}
+                                            <ChevronRight className="w-6 h-6 text-gray-400 group-hover:text-amber-600 group-hover:scale-110 transition-all duration-300" />
+                                        </div>
                                     </div>
-                                    <p className="text-sm text-gray-700 mb-3 font-medium">{regiao.tendencia}</p>
-                                    <div className="bg-white/60 rounded-lg p-3 border border-gray-100">
-                                        <p className="text-sm text-gray-600">
-                                            <span className="font-semibold text-amber-700">Oportunidade:</span> {regiao.oportunidade[tipoLead]}
-                                        </p>
+
+                                    <p className="text-sm text-gray-700 mb-4 font-medium flex items-center gap-2">
+                                        <TrendingUp className="w-4 h-4 text-green-600" />
+                                        {regiao.tendencia}
+                                    </p>
+
+                                    <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-gray-100 shadow-sm">
+                                        <div className="flex items-start gap-3">
+                                            <div className="p-2 bg-gradient-to-r from-green-100 to-emerald-100 rounded-lg">
+                                                <Check className="w-4 h-4 text-green-600" />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-semibold text-amber-700 mb-1">Oportunidade para {configuracoes[tipoLead].label.toLowerCase()}:</p>
+                                                <p className="text-sm text-gray-700 leading-relaxed">{regiao.oportunidade[tipoLead]}</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    {/* Insights relevantes */}
-                    <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-amber-200 shadow-lg">
-                        <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                            <BarChart3 className="w-6 h-6 text-amber-600" />
+                    {/* Insights relevantes - UI melhorada */}
+                    <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 border border-amber-200/50 shadow-xl">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+                            <BarChart3 className="w-7 h-7 text-amber-600" />
                             Insights Estratégicos
+                            <span className="px-3 py-1 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 text-sm font-medium rounded-full border border-blue-200">
+                                Relevantes para você
+                            </span>
                         </h3>
 
-                        <div className="space-y-4">
+                        <div className="grid gap-6">
                             {insightsRelevantes.map((insight, index) => (
                                 <div
                                     key={index}
-                                    className="flex items-start space-x-4 p-5 rounded-xl hover:bg-amber-50/50 transition-all duration-200 cursor-pointer border border-transparent hover:border-amber-200 hover:scale-[1.01]"
+                                    className="group flex items-start gap-6 p-6 rounded-2xl hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 transition-all duration-300 cursor-pointer border border-transparent hover:border-amber-200 hover:shadow-lg"
                                     onClick={() => setInsightAtivo(index)}
                                 >
-                                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-amber-100 to-orange-100 rounded-xl flex items-center justify-center text-amber-600 border border-amber-200">
+                                    <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-r from-amber-100 to-orange-100 rounded-2xl flex items-center justify-center text-amber-600 border border-amber-200 shadow-md group-hover:scale-110 transition-transform duration-300">
                                         {insight.icone}
                                     </div>
                                     <div className="flex-1">
-                                        <h4 className="font-semibold text-gray-900 mb-2">{insight.titulo}</h4>
-                                        <p className="text-sm text-gray-600 leading-relaxed">{insight.conteudo}</p>
-                                    </div>
-                                    <div className={`px-3 py-1 rounded-full text-xs font-semibold ${insight.relevancia[tipoLead] === 'alta'
-                                        ? 'bg-green-100 text-green-700 border border-green-200'
-                                        : 'bg-amber-100 text-amber-700 border border-amber-200'
-                                        }`}>
-                                        {insight.relevancia[tipoLead] === 'alta' ? 'Prioridade' : 'Relevante'}
+                                        <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-amber-800 transition-colors">{insight.titulo}</h4>
+                                        <p className="text-gray-600 leading-relaxed mb-3">{insight.conteudo}</p>
+                                        <div className="flex items-center gap-2">
+                                            <div className={`px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 ${insight.relevancia[tipoLead] === 'alta'
+                                                ? 'bg-green-100 text-green-700 border border-green-200'
+                                                : 'bg-amber-100 text-amber-700 border border-amber-200'
+                                                }`}>
+                                                {insight.relevancia[tipoLead] === 'alta' ? (
+                                                    <>
+                                                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                                        <span>Alta Prioridade</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                                                        <span>Relevante</span>
+                                                    </>
+                                                )}
+                                            </div>
+                                            <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-amber-600 group-hover:translate-x-1 transition-all duration-300" />
+                                        </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </div>
-                </div>
-
-                {/* Sidebar com captura */}
+                </div>            {/* Sidebar com captura */}
                 <div className="space-y-6">
                     {/* Formulário principal */}
-                    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-amber-200 shadow-lg sticky top-6">
-                        <div className="text-center mb-6">
-                            <div className="w-16 h-16 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                <Calculator className="w-8 h-8 text-white" />
+                    <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-8 border border-amber-200/50 shadow-xl hover:shadow-2xl transition-all duration-300 sticky top-6">
+                        <div className="text-center mb-8">
+                            <div className="w-20 h-20 bg-gradient-to-r from-amber-500 to-orange-500 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                                <Calculator className="w-10 h-10 text-white" />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                            <h3 className="text-2xl font-bold text-gray-900 mb-3">
                                 Análise Personalizada
                             </h3>
-                            <p className="text-gray-600 text-sm">
-                                Receba dados detalhados da região que te interessa
+                            <p className="text-gray-600 leading-relaxed">
+                                Receba dados detalhados e insights exclusivos da região que te interessa
                             </p>
+                            <div className="flex items-center justify-center gap-2 mt-4 text-sm text-amber-700">
+                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                <span className="font-medium">100% gratuito</span>
+                            </div>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-5">
                             <input
                                 type="text"
-                                placeholder="Seu nome"
+                                placeholder="Seu nome completo"
                                 value={leadForm.name}
                                 onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
-                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all bg-white/80 backdrop-blur-sm"
+                                className="w-full px-5 py-4 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all bg-white/90 backdrop-blur-sm shadow-sm hover:shadow-md text-gray-900 placeholder-gray-500"
                                 required
                             />
 
                             <input
                                 type="email"
-                                placeholder="Seu e-mail"
+                                placeholder="Seu melhor e-mail"
                                 value={leadForm.email}
                                 onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
-                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all bg-white/80 backdrop-blur-sm"
+                                className="w-full px-5 py-4 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all bg-white/90 backdrop-blur-sm shadow-sm hover:shadow-md text-gray-900 placeholder-gray-500"
                                 required
                             />
 
                             <select
                                 value={leadForm.regiao}
                                 onChange={(e) => setLeadForm({ ...leadForm, regiao: e.target.value })}
-                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all bg-white/80 backdrop-blur-sm"
+                                className="w-full px-5 py-4 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all bg-white/90 backdrop-blur-sm shadow-sm hover:shadow-md text-gray-900"
                             >
-                                <option value="centro">Centro</option>
-                                <option value="itapema">Itapema</option>
-                                <option value="portal">Portal das Colinas</option>
-                                <option value="todas">Todas as regiões</option>
+                                <option value="centro">Centro - Região consolidada</option>
+                                <option value="itapema">Itapema - Em expansão</option>
+                                <option value="portal">Portal das Colinas - Residencial</option>
+                                <option value="todas">Todas as regiões - Análise completa</option>
                             </select>
 
                             <button
                                 onClick={handleSubmit}
-                                className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:scale-105 hover:shadow-xl"
+                                className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 shadow-lg hover:scale-105 hover:shadow-xl flex items-center justify-center gap-3"
                             >
+                                <Calculator className="w-5 h-5" />
                                 {configuracoes[tipoLead].cta}
+                                <ArrowRight className="w-5 h-5" />
                             </button>
                         </div>
 
-                        <p className="text-xs text-gray-500 mt-4 text-center">
-                            📊 Análise gratuita • ⚡ Resposta em 24 horas
-                        </p>
+                        <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-200">
+                            <div className="flex items-center justify-center gap-8 text-sm">
+                                <div className="flex items-center gap-2 text-green-700">
+                                    <Check className="w-4 h-4" />
+                                    <span className="font-medium">Análise gratuita</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-green-700">
+                                    <Clock className="w-4 h-4" />
+                                    <span className="font-medium">Resposta em 24h</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Contato direto */}
@@ -346,6 +411,6 @@ export default function MarketAnalysisSection() {
                     </div>
                 </div>
             </div>
-        </SectionWrapper>
+        </SectionWrapper >
     );
 }
