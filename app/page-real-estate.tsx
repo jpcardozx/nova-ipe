@@ -12,10 +12,10 @@ interface HomePageProps {
   featuredProperties: ImovelClient[];
 }
 
-export default function RealEstateHomePage({ 
-  propertiesForSale, 
-  propertiesForRent, 
-  featuredProperties 
+export default function RealEstateHomePage({
+  propertiesForSale,
+  propertiesForRent,
+  featuredProperties
 }: HomePageProps) {
   const [searchType, setSearchType] = useState<'venda' | 'aluguel'>('venda');
   const [searchLocation, setSearchLocation] = useState('');
@@ -47,10 +47,10 @@ export default function RealEstateHomePage({
               Encontre seu Imóvel em <span className="text-yellow-400">Guararema</span>
             </h1>
             <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
-              15 anos ajudando famílias a encontrar o lar perfeito. 
+              15 anos ajudando famílias a encontrar o lar perfeito.
               Mais de 500 imóveis vendidos e 400 famílias realizadas.
             </p>
-            
+
             {/* Property Search Form */}
             <div className="bg-white rounded-lg p-6 max-w-4xl mx-auto shadow-lg">
               <form onSubmit={handleSearch} className="space-y-4">
@@ -59,27 +59,25 @@ export default function RealEstateHomePage({
                     <button
                       type="button"
                       onClick={() => setSearchType('venda')}
-                      className={`px-6 py-2 rounded-md font-medium transition-colors ${
-                        searchType === 'venda' 
-                          ? 'bg-green-600 text-white' 
+                      className={`px-6 py-2 rounded-md font-medium transition-colors ${searchType === 'venda'
+                          ? 'bg-green-600 text-white'
                           : 'text-gray-700 hover:bg-gray-200'
-                      }`}
+                        }`}
                     >
                       Comprar
                     </button>
                     <button
                       type="button"
                       onClick={() => setSearchType('aluguel')}
-                      className={`px-6 py-2 rounded-md font-medium transition-colors ${
-                        searchType === 'aluguel' 
-                          ? 'bg-green-600 text-white' 
+                      className={`px-6 py-2 rounded-md font-medium transition-colors ${searchType === 'aluguel'
+                          ? 'bg-green-600 text-white'
                           : 'text-gray-700 hover:bg-gray-200'
-                      }`}
+                        }`}
                     >
                       Alugar
                     </button>
                   </div>
-                  
+
                   <div className="flex-1 relative">
                     <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                     <input
@@ -90,7 +88,7 @@ export default function RealEstateHomePage({
                       className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
                     />
                   </div>
-                  
+
                   <button
                     type="submit"
                     className="contact-btn flex items-center gap-2 px-8 py-3"
@@ -130,14 +128,14 @@ export default function RealEstateHomePage({
               <h2 className="text-3xl font-bold text-gray-900 mb-4">Imóveis em Destaque</h2>
               <p className="text-lg text-gray-600">Selecionamos os melhores imóveis para você</p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {featuredProperties.slice(0, 6).map((property) => (
                 <div key={property.id} className="property-card">
                   <div className="relative h-64">
                     <Image
-                      src={property.imagens?.[0]?.asset?.url || '/placeholder-property.jpg'}
-                      alt={property.titulo}
+                      src={property.imagem?.imagemUrl || '/placeholder-property.jpg'}
+                      alt={property.titulo || 'Imóvel'}
                       fill
                       className="object-cover"
                     />
@@ -147,24 +145,24 @@ export default function RealEstateHomePage({
                       </span>
                     </div>
                   </div>
-                  
+
                   <div className="p-6">
                     <h3 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-2">
                       {property.titulo}
                     </h3>
-                    
+
                     <div className="flex items-center text-gray-600 mb-4">
                       <MapPin className="h-4 w-4 mr-1" />
-                      <span className="text-sm">{property.endereco?.cidade || 'Guararema'}</span>
+                      <span className="text-sm">{property.cidade || 'Guararema'}</span>
                     </div>
-                    
+
                     <div className="property-features mb-4">
-                      {property.quartos && (
+                      {property.dormitorios && property.dormitorios > 0 && (
                         <span className="property-feature">
-                          🛏️ {property.quartos} quartos
+                          🛏️ {property.dormitorios} quartos
                         </span>
                       )}
-                      {property.banheiros && (
+                      {property.banheiros && property.banheiros > 0 && (
                         <span className="property-feature">
                           🚿 {property.banheiros} banheiros
                         </span>
@@ -175,13 +173,13 @@ export default function RealEstateHomePage({
                         </span>
                       )}
                     </div>
-                    
+
                     <div className="property-price mb-4">
                       R$ {property.preco?.toLocaleString('pt-BR') || 'Consulte'}
                     </div>
-                    
+
                     <Link
-                      href={`/imovel/${property.slug?.current || property.id}`}
+                      href={`/imovel/${property.slug || property.id || property._id}`}
                       className="contact-btn w-full text-center block"
                     >
                       Ver Detalhes
@@ -190,7 +188,7 @@ export default function RealEstateHomePage({
                 </div>
               ))}
             </div>
-            
+
             <div className="text-center mt-12">
               <Link
                 href="/catalogo"
@@ -209,7 +207,7 @@ export default function RealEstateHomePage({
           <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
             O que você está procurando?
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Link href="/comprar" className="group">
               <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-8 text-white hover:shadow-lg transition-all duration-300 group-hover:scale-105">
@@ -225,7 +223,7 @@ export default function RealEstateHomePage({
                 </p>
               </div>
             </Link>
-            
+
             <Link href="/alugar" className="group">
               <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg p-8 text-white hover:shadow-lg transition-all duration-300 group-hover:scale-105">
                 <div className="flex items-center mb-4">
@@ -253,8 +251,8 @@ export default function RealEstateHomePage({
                 Especialistas em Guararema há 15 anos
               </h2>
               <p className="text-lg text-gray-600 mb-6">
-                Conhecemos cada bairro, cada rua e cada oportunidade em Guararema. 
-                Nossa experiência local faz toda a diferença na hora de encontrar 
+                Conhecemos cada bairro, cada rua e cada oportunidade em Guararema.
+                Nossa experiência local faz toda a diferença na hora de encontrar
                 o imóvel perfeito para sua família.
               </p>
               <ul className="space-y-4 mb-8">
@@ -275,7 +273,7 @@ export default function RealEstateHomePage({
                   <span>Suporte jurídico especializado</span>
                 </li>
               </ul>
-              
+
               <div className="flex flex-col sm:flex-row gap-4">
                 <a
                   href="tel:(11)99999-9999"
@@ -293,7 +291,7 @@ export default function RealEstateHomePage({
                 </a>
               </div>
             </div>
-            
+
             <div className="relative">
               <Image
                 src="/images/guararema-office.jpg"
@@ -301,7 +299,7 @@ export default function RealEstateHomePage({
                 width={600}
                 height={400}
                 className="rounded-lg shadow-lg object-cover w-full h-80"
-                onError={(e) => {
+                onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
                   e.currentTarget.src = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80';
                 }}
               />
@@ -317,10 +315,10 @@ export default function RealEstateHomePage({
             Pronto para encontrar seu novo lar?
           </h2>
           <p className="text-xl mb-8">
-            Entre em contato conosco hoje mesmo e deixe que nossa experiência 
+            Entre em contato conosco hoje mesmo e deixe que nossa experiência
             trabalhe para você.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/contato"

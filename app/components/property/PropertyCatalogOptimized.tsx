@@ -5,7 +5,7 @@ import { Search, Filter, Grid, List, MapPin, SlidersHorizontal, X, ArrowUpDown, 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useDebounce } from '@/app/hooks/useDebounce'
 import { cn } from '@/lib/utils'
-import { PropertyCardUnified } from '@/app/components/ui/property/PropertyCardUnified'
+import PropertyCardSimple from '@/app/components/ui/PropertyCardSimple'
 import { getTodosImoveis } from '@/lib/sanity/fetchImoveis'
 import type { ImovelClient } from '@/src/types/imovel-client'
 
@@ -83,26 +83,9 @@ const VirtualizedPropertyCard: React.FC<VirtualizedPropertyCardProps> = React.me
             )}
             style={{ animationDelay: `${index * 100}ms` }}
         >
-            <PropertyCardUnified
-                id={imovel._id}
-                title={imovel.titulo || ''}
-                slug={imovel.slug || ''}
-                location={imovel.endereco || ''}
-                city={imovel.cidade || ''}
-                price={imovel.preco || 0}
-                propertyType={imovel.finalidade?.toLowerCase() === 'venda' ? 'sale' : 'rent'}
-                area={imovel.areaUtil || undefined}
-                bedrooms={imovel.dormitorios || undefined}
-                bathrooms={imovel.banheiros || undefined}
-                parkingSpots={imovel.vagas || undefined}
-                mainImage={{
-                    url: imovel.imagem?.imagemUrl || imovel.galeria?.[0]?.imagemUrl || '',
-                    alt: imovel.titulo || '',
-                    sanityImage: imovel.imagem
-                }}
-                isHighlight={imovel.destaque || false}
-                isNew={Boolean(imovel.dataPublicacao && new Date(imovel.dataPublicacao) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000))}
-                className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-100"
+            <PropertyCardSimple
+                property={imovel}
+                className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-100"
             />
         </div>
     )

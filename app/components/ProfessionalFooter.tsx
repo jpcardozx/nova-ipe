@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { Phone, Mail, MapPin, Facebook, Instagram, Clock } from 'lucide-react';
 
@@ -31,7 +33,7 @@ export default function ProfessionalFooter() {
               </div>
             </div>
             <p className="text-gray-300 mb-4">
-              Especialistas em imóveis em Guararema há 15 anos. 
+              Especialistas em imóveis em Guararema há 15 anos.
               Mais de 500 imóveis vendidos e 400 famílias atendidas.
             </p>
             <div className="flex space-x-4">
@@ -111,8 +113,8 @@ export default function ProfessionalFooter() {
               <div className="flex items-start space-x-3">
                 <Phone className="h-5 w-5 text-green-400 mt-1 flex-shrink-0" />
                 <div>
-                  <a 
-                    href="tel:+5521990051961" 
+                  <a
+                    href="tel:+5521990051961"
                     onClick={handlePhoneClick}
                     className="text-gray-300 hover:text-white transition-colors"
                   >
@@ -121,17 +123,17 @@ export default function ProfessionalFooter() {
                   <p className="text-sm text-gray-400">WhatsApp disponível</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start space-x-3">
                 <Mail className="h-5 w-5 text-green-400 mt-1 flex-shrink-0" />
-                <a 
+                <a
                   href="mailto:contato@ipeimoveis.com.br"
                   className="text-gray-300 hover:text-white transition-colors"
                 >
                   contato@ipeimoveis.com.br
                 </a>
               </div>
-              
+
               <div className="flex items-start space-x-3">
                 <MapPin className="h-5 w-5 text-green-400 mt-1 flex-shrink-0" />
                 <div className="text-gray-300">
@@ -140,7 +142,7 @@ export default function ProfessionalFooter() {
                   <p>CEP: 08900-000</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start space-x-3">
                 <Clock className="h-5 w-5 text-green-400 mt-1 flex-shrink-0" />
                 <div className="text-gray-300">

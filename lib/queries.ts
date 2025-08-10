@@ -295,8 +295,20 @@ export const queryTodosImoveis = /* groq */`
     preco,
     destaque,
     finalidade,
+    tipoImovel,
     bairro,
     cidade,
+    estado,
+    endereco,
+    dormitorios,
+    banheiros,
+    areaUtil,
+    vagas,
+    descricao,
+    caracteristicas,
+    aceitaFinanciamento,
+    documentacaoOk,
+    _createdAt,
     categoria->{
       _id,
       "categoriaTitulo": titulo,
@@ -307,6 +319,13 @@ export const queryTodosImoveis = /* groq */`
       "_type": "image",
       "imagemUrl": asset->url,
       "alt": alt
+    },
+    galeria[]{
+      "asset": asset->,
+      "_type": "image",
+      "imagemUrl": asset->url,
+      "alt": alt,
+      "titulo": titulo
     }
   }
 `;

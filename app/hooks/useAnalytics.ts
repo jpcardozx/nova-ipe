@@ -1,6 +1,6 @@
-import { useEffect, useCallback } from 'react';
 'use client';
 
+import { useEffect, useCallback } from 'react';
 import { getScrollPercentage } from '../utils/scroll-helper';
 
 // Tipos para eventos de analytics
