@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { ThemeProvider as NextThemesProvider, type ThemeProviderProps } from "next-themes";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 interface ThemeContextType {
     setTheme: (theme: string) => void;
@@ -17,8 +17,12 @@ export const useTheme = () => {
     return useContext(ThemeContext);
 };
 
-interface Props extends Omit<ThemeProviderProps, 'children'> {
+interface Props {
     children: ReactNode;
+    attribute?: string;
+    defaultTheme?: string;
+    enableSystem?: boolean;
+    disableTransitionOnChange?: boolean;
 }
 
 export function ThemeProvider({ children, ...props }: Props): JSX.Element {

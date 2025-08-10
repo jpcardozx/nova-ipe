@@ -21,7 +21,7 @@ import {
     ChevronLeft,
     ChevronRight,
     Check,
-    BriefcaseBusiness,
+    Briefcase,
     Users,
     Info,
     X
@@ -84,7 +84,7 @@ const userProfiles = [
     {
         id: 'profissional',
         title: 'Para Trabalhar',
-        icon: <BriefcaseBusiness className="w-5 h-5" />
+        icon: <Briefcase className="w-5 h-5" />
     }, {
         id: 'segunda-casa',
         title: 'Para seu Futuro',

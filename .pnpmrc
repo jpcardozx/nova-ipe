@@ -1,0 +1,22 @@
+# Store global packages in project
+shamefully-hoist=false
+
+# Faster installs
+auto-install-peers=true
+dedupe-peer-dependents=false
+
+# Better caching
+store-dir=node_modules/.pnpm-store
+
+# Strict peer dependencies
+strict-peer-dependencies=false
+
+# Registry configuration
+registry=https://registry.npmjs.org/
+
+# Workspace configuration for monorepo support
+link-workspace-packages=true
+shared-workspace-lockfile=true
+
+# Node.js settings
+engine-strict=false

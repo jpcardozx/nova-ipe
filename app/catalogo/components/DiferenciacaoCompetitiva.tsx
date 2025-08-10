@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Home, Users, Clock, MapPin, Shield, Handshake } from 'lucide-react'
+import { Home, Users, Clock, MapPin, Shield, UserCheck } from 'lucide-react'
 import Link from 'next/link'
 
 interface CompetitiveAdvantage {
@@ -49,7 +49,7 @@ const advantages: CompetitiveAdvantage[] = [
         detail: "Tudo conferido"
     },
     {
-        icon: Handshake,
+        icon: UserCheck,
         title: "Estamos aqui depois",
         description: "Comprou ou alugou conosco? Continuamos aqui para o que precisar. Somos vizinhos, afinal.",
         metric: "Sempre",
@@ -177,7 +177,7 @@ export default function DiferenciacaoCompetitiva() {
                                     className="group bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-bold px-10 py-5 rounded-xl transition-all duration-300 shadow-xl shadow-amber-500/25 hover:shadow-amber-500/40 flex items-center justify-center gap-2"
                                 >
                                     Agendar Consultoria
-                                    <Handshake className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                    <UserCheck className="w-5 h-5 group-hover:scale-110 transition-transform" />
                                 </Link>
 
                                 <Link
