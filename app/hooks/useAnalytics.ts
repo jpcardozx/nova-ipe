@@ -39,6 +39,8 @@ export function useAnalytics() {
   // Verificar se o analytics está habilitado
   const isAnalyticsEnabled = typeof window !== 'undefined' && 
     process.env['NEXT_PUBLIC_ENABLE_ANALYTICS'] === 'true';
+  
+  const trackingId = process.env['NEXT_PUBLIC_GA_TRACKING_ID'] || 'AW-17457190449';
 
   // Função para enviar evento para GA4
   const sendToGA4 = useCallback((event: AnalyticsEvent) => {
@@ -189,6 +191,91 @@ export function useAnalytics() {
     });
   }, [sendToGA4]);
 
+  // ===== MICRO-CAMPAIGN TRACKING FUNCTIONS =====
+  
+  // Conversão: Visualização de imóvel (micro-conversão)
+  const trackPropertyViewConversion = useCallback((propertyId: string, price?: number) => {
+    if (!isAnalyticsEnabled || typeof window === 'undefined') return;
+
+    try {
+      if (window.gtag) {
+        // Evento de conversão para Google Ads
+        window.gtag('event', 'conversion', {
+          'send_to': `${trackingId}/property_view`,
+          'value': price || 0,
+          'currency': 'BRL',
+          'event_category': 'micro_conversion',
+          'event_label': propertyId
+        });
+      }
+    } catch (error) {
+      console.warn('Erro ao trackear conversão de visualização:', error);
+    }
+  }, [isAnalyticsEnabled, trackingId]);
+
+  // Conversão: Contato via WhatsApp
+  const trackWhatsAppConversion = useCallback((propertyId?: string, contactType: string = 'property_inquiry') => {
+    if (!isAnalyticsEnabled || typeof window === 'undefined') return;
+
+    try {
+      if (window.gtag) {
+        window.gtag('event', 'conversion', {
+          'send_to': `${trackingId}/whatsapp_contact`,
+          'event_category': 'lead_conversion',
+          'event_label': contactType,
+          'custom_parameters': {
+            'property_id': propertyId,
+            'contact_method': 'whatsapp'
+          }
+        });
+      }
+    } catch (error) {
+      console.warn('Erro ao trackear conversão WhatsApp:', error);
+    }
+  }, [isAnalyticsEnabled, trackingId]);
+
+  // Conversão: Formulário de contato
+  const trackFormConversion = useCallback((formType: string, propertyId?: string) => {
+    if (!isAnalyticsEnabled || typeof window === 'undefined') return;
+
+    try {
+      if (window.gtag) {
+        window.gtag('event', 'conversion', {
+          'send_to': `${trackingId}/form_submission`,
+          'event_category': 'lead_conversion',
+          'event_label': formType,
+          'custom_parameters': {
+            'property_id': propertyId,
+            'form_type': formType
+          }
+        });
+      }
+    } catch (error) {
+      console.warn('Erro ao trackear conversão de formulário:', error);
+    }
+  }, [isAnalyticsEnabled, trackingId]);
+
+  // Conversão: Ligação telefônica
+  const trackPhoneConversion = useCallback((propertyId?: string) => {
+    if (!isAnalyticsEnabled || typeof window === 'undefined') return;
+
+    try {
+      if (window.gtag) {
+        window.gtag('event', 'conversion', {
+          'send_to': `${trackingId}/phone_call`,
+          'event_category': 'lead_conversion',
+          'event_label': 'phone_click',
+          'custom_parameters': {
+            'property_id': propertyId,
+            'contact_method': 'phone'
+          }
+        });
+      }
+    } catch (error) {
+      console.warn('Erro ao trackear conversão telefônica:', error);
+    }
+  }, [isAnalyticsEnabled, trackingId]);
+
   // Auto-tracking de scroll profundo
   useEffect(() => {
     if (!isAnalyticsEnabled) return;
@@ -248,11 +335,18 @@ export function useAnalytics() {
     trackTimeOnPage,
     trackError,
     
+    // Micro-campaign conversions
+    trackPropertyViewConversion,
+    trackWhatsAppConversion,
+    trackFormConversion,
+    trackPhoneConversion,
+    
     // Evento genérico
     trackEvent: sendToGA4,
     
     // Estado
-    isEnabled: isAnalyticsEnabled
+    isEnabled: isAnalyticsEnabled,
+    trackingId
   };
 }
 

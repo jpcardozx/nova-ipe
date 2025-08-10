@@ -4,6 +4,17 @@ import { Phone, Mail, MapPin, Facebook, Instagram, Clock } from 'lucide-react';
 export default function ProfessionalFooter() {
   const currentYear = new Date().getFullYear();
 
+  const handlePhoneClick = () => {
+    // Track phone click if analytics is available
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'conversion', {
+        'send_to': 'AW-17457190449/phone_call',
+        'event_category': 'footer_contact',
+        'event_label': 'phone_click'
+      });
+    }
+  };
+
   return (
     <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 py-12">
@@ -101,7 +112,8 @@ export default function ProfessionalFooter() {
                 <Phone className="h-5 w-5 text-green-400 mt-1 flex-shrink-0" />
                 <div>
                   <a 
-                    href="tel:(11)99999-9999" 
+                    href="tel:+5511999999999" 
+                    onClick={handlePhoneClick}
                     className="text-gray-300 hover:text-white transition-colors"
                   >
                     (11) 99999-9999

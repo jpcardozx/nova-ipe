@@ -4,9 +4,20 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, X, Phone, Mail, MapPin } from 'lucide-react';
+import { useAnalytics } from '@/app/hooks/useAnalytics';
 
 export default function ProfessionalNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  
+  // Analytics tracking
+  const { trackPhoneConversion, trackButtonClick, isEnabled: analyticsEnabled } = useAnalytics();
+  
+  const handlePhoneClick = () => {
+    if (analyticsEnabled) {
+      trackPhoneConversion();
+      trackButtonClick('navbar_phone', window.location.pathname);
+    }
+  };
 
   const navLinks = [
     { href: '/', label: 'Início' },
@@ -23,7 +34,7 @@ export default function ProfessionalNavbar() {
       <div className="bg-green-800 text-white py-2 text-sm">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
           <div className="flex items-center space-x-6">
-            <a href="tel:(11)99999-9999" className="flex items-center hover:text-yellow-300 transition-colors">
+            <a href="tel:+5511999999999" onClick={handlePhoneClick} className="flex items-center hover:text-yellow-300 transition-colors">
               <Phone className="h-4 w-4 mr-1" />
               (11) 99999-9999
             </a>
@@ -70,7 +81,8 @@ export default function ProfessionalNavbar() {
             {/* CTA Button */}
             <div className="hidden md:block">
               <a
-                href="tel:(11)99999-9999"
+                href="tel:+5511999999999"
+                onClick={handlePhoneClick}
                 className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors duration-300 flex items-center space-x-2"
               >
                 <Phone className="h-4 w-4" />
@@ -108,7 +120,8 @@ export default function ProfessionalNavbar() {
               ))}
               <div className="pt-4 border-t border-gray-200">
                 <a
-                  href="tel:(11)99999-9999"
+                  href="tel:+5511999999999"
+                  onClick={handlePhoneClick}
                   className="block w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-semibold text-center transition-colors"
                 >
                   📞 Ligar Agora

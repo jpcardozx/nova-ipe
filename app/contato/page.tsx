@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Phone, Mail, MapPin, Clock, Send } from 'lucide-react';
+import { useAnalytics } from '@/app/hooks/useAnalytics';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -14,6 +15,9 @@ export default function ContactPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  
+  // Analytics tracking
+  const { trackFormConversion, trackLead, isEnabled: analyticsEnabled } = useAnalytics();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
@@ -25,6 +29,15 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    
+    // Track form submission attempt
+    if (analyticsEnabled) {
+      trackFormConversion('contact_form');
+      trackLead({
+        lead_type: 'contact_form',
+        source_page: '/contato'
+      });
+    }
     
     // Simulate API call
     try {
