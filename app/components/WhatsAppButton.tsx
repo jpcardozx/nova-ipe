@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Phone } from 'lucide-react';
 import SafeHydration from './SafeHydration';
+import { useAnalytics } from '@/app/hooks/useAnalytics';
 
 interface WhatsAppButtonProps {
     phoneNumber: string;
@@ -22,6 +23,16 @@ export default function WhatsAppButton({
     const [isVisible, setIsVisible] = useState(!showAfterScroll);
     const [isBusinessHours, setIsBusinessHours] = useState(false);
     const ref = React.useRef(null);
+    
+    // Analytics tracking
+    const { trackWhatsAppConversion, trackButtonClick, isEnabled: analyticsEnabled } = useAnalytics();
+    
+    const handleWhatsAppClick = () => {
+        if (analyticsEnabled) {
+            trackWhatsAppConversion(undefined, 'floating_button');
+            trackButtonClick('whatsapp_floating', window.location.pathname);
+        }
+    };
 
     // Verifica se está dentro do horário comercial
     useEffect(() => {
@@ -73,6 +84,7 @@ export default function WhatsAppButton({
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={handleWhatsAppClick}
                 className={`
               flex items-center justify-center gap-2 
               bg-gradient-to-r from-green-500 to-green-600
