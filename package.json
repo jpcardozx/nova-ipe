@@ -11,9 +11,9 @@
     "typecheck": "tsc --noEmit --skipLibCheck",
     "clean": "rimraf .next out",
     "clean:all": "rimraf .next out node_modules/.cache",
-    "dev:clean": "npm run clean && next dev",
-    "build:clean": "npm run clean && next build",
-    "start:clean": "npm run clean && next start",
+    "dev:clean": "pnpm run clean && next dev",
+    "build:clean": "pnpm run clean && next build",
+    "start:clean": "pnpm run clean && next start",
     "diagnostic": "node scripts/check-build-health.js",
     "analyze": "ANALYZE=true next build"
   },
@@ -29,6 +29,7 @@
     "@sanity/image-url": "^1.0.2",
     "@sanity/vision": "^3.20.0",
     "@tanstack/react-query": "^5.8.4",
+    "@types/react-window": "1.8.8",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
@@ -42,8 +43,11 @@
     "react-hook-form": "^7.48.2",
     "react-hot-toast": "^2.4.1",
     "react-intersection-observer": "^9.5.3",
+    "react-virtualized-auto-sizer": "1.0.26",
+    "react-window": "1.8.11",
     "sanity": "^3.20.0",
     "tailwind-merge": "^2.0.0",
+    "web-vitals": "5.1.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {

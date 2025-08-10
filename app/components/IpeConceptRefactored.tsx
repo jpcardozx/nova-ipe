@@ -6,7 +6,7 @@ import { motion, useInView } from 'framer-motion';
 import { 
     Home, 
     Heart, 
-    HandHeart, 
+    HeartHandshake, 
     MapPin, 
     Clock, 
     Star, 
@@ -37,7 +37,7 @@ export default function IpeConceptRefactored({ className }: IpeConceptRefactored
             descricao: "Nascemos e crescemos em Guararema. Conhecemos cada rua, cada vizinhança, cada oportunidade."
         },
         {
-            icon: <HandHeart className="w-5 h-5" />,
+            icon: <HeartHandshake className="w-5 h-5" />,
             titulo: "Transparência Total",
             descricao: "Processos claros, preços justos, sem surpresas. O que prometemos, cumprimos."
         },
