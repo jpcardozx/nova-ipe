@@ -112,7 +112,7 @@ export default function ProfessionalFooter() {
                 <Phone className="h-5 w-5 text-green-400 mt-1 flex-shrink-0" />
                 <div>
                   <a 
-                    href="tel:+5511999999999" 
+                    href="tel:+5521990051961" 
                     onClick={handlePhoneClick}
                     className="text-gray-300 hover:text-white transition-colors"
                   >

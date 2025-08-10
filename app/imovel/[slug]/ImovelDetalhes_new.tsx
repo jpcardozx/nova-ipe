@@ -327,7 +327,7 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
                                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Interessado neste imóvel?</h3>
                                 <div className="space-y-3">
                                     <a
-                                        href={`https://wa.me/5511999999999?text=Olá! Tenho interesse no imóvel: ${imovel.titulo}`}
+                                        href={`https://wa.me/5521990051961?text=Olá! Tenho interesse no imóvel: ${imovel.titulo}`}
                                         className="flex items-center justify-center gap-3 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl transition-colors font-medium"
                                     >
                                         <MessageCircle className="w-5 h-5" />

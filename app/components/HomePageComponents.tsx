@@ -71,7 +71,7 @@ export default function HomePageComponents({ propertiesForSale, propertiesForRen
                 </Suspense>
             </main>
 
-            <WhatsAppButton phoneNumber="+5511981845016" />
+            <WhatsAppButton phoneNumber="+5521990051961" />
 
             <Suspense fallback={<FallbackLoader title="Carregando rodapé..." height="300px" />}>
                 <FooterAprimorado />

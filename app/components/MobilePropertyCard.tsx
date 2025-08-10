@@ -110,13 +110,13 @@ export default function MobilePropertyCard({
         e.preventDefault()
         e.stopPropagation()
         const message = `Olá! Tenho interesse no imóvel: ${title}. Podemos conversar?`
-        window.open(`https://wa.me/5511981845016?text=${encodeURIComponent(message)}`, '_blank')
+        window.open(`https://wa.me/5521990051961?text=${encodeURIComponent(message)}`, '_blank')
     }
 
     const handleCall = (e: React.MouseEvent) => {
         e.preventDefault()
         e.stopPropagation()
-        window.open('tel:+5511981845016', '_self')
+        window.open('tel:+5521990051961', '_self')
     }
 
     return (

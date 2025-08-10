@@ -170,7 +170,7 @@ export default function FooterAprimorado() {
                                         label="LinkedIn da Ipê Imóveis"
                                     />
                                     <SocialIcon
-                                        href="https://wa.me/5511981845016"
+                                        href="https://wa.me/5521990051961"
                                         icon={<Phone className="w-5 h-5" />}
                                         label="WhatsApp da Ipê Imóveis"
                                     />
