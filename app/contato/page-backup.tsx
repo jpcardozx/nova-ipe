@@ -1,49 +1,25 @@
 'use client';
 
 import { useState } from 'react';
-import { Phone, Mail, MapPin, Clock, Send } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, Send, AlertCircle } from 'lucide-react';
+import FooterAprimorado from '@/app/sections/FooterAprimorado';
 
-export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: 'Interesse em Imóvel',
-    message: '',
-    propertyType: 'venda'
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+interface FormData {
+  nome: string;
+  email: string;
+  telefone: string;
+  cidade: string;
+  mensagem: string;
+  interesse: string;
+}
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    // Simulate API call
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setSubmitStatus('success');
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: 'Interesse em Imóvel',
-        message: '',
-        propertyType: 'venda'
-      });
-    } catch (error) {
-      setSubmitStatus('error');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+interface FormErrors {
+  nome?: string;
+  email?: string;
+  telefone?: string;
+  cidade?: string;
+  mensagem?: string;
+}
 
 export default function ContactPage() {
   const [formData, setFormData] = useState<FormData>({

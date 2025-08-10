@@ -88,7 +88,7 @@ export default function PropertyDetails({ property, relatedProperties = [] }: Pr
                 window.open(`https://wa.me/5511999999999?text=Olá! Tenho interesse no imóvel: ${property.titulo}`, '_blank')
                 break
             case 'phone':
-                window.location.href = 'tel:+5511999999999'
+                window.location.href = 'tel:+5521990051961'
                 break
             case 'email':
                 window.location.href = `mailto:contato@novaiipe.com?subject=Interesse no imóvel: ${property.titulo}`

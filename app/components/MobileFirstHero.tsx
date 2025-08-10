@@ -23,7 +23,7 @@ export default function MobileFirstHero() {
     }
 
     const handleQuickCall = () => {
-        window.open('https://wa.me/5511981845016?text=Olá! Gostaria de uma consultoria especializada sobre imóveis em Guararema.', '_blank');
+        window.open('https://wa.me/5521990051961?text=Olá! Gostaria de uma consultoria especializada sobre imóveis em Guararema.', '_blank');
     }
 
     return (

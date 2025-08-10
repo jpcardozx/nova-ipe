@@ -87,8 +87,8 @@ export default function ContactPage() {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-1">Telefone</h3>
                   <p className="text-gray-600 mb-2">
-                    <a href="tel:(11)99999-9999" className="hover:text-green-600 transition-colors">
-                      (11) 99999-9999
+                    <a href="tel:+5521990051961" className="hover:text-green-600 transition-colors">
+                      (21) 99005-1961
                     </a>
                   </p>
                   <p className="text-sm text-gray-500">WhatsApp disponível</p>
@@ -141,7 +141,7 @@ export default function ContactPage() {
             {/* Quick Contact Buttons */}
             <div className="mt-8 space-y-4">
               <a
-                href="tel:(11)99999-9999"
+                href="tel:+5521990051961"
                 className="w-full bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-lg font-semibold text-center flex items-center justify-center space-x-2 transition-colors"
               >
                 <Phone className="h-5 w-5" />
@@ -149,7 +149,7 @@ export default function ContactPage() {
               </a>
               
               <a
-                href="https://wa.me/5511999999999?text=Olá! Gostaria de saber mais sobre os imóveis disponíveis em Guararema."
+                href="https://wa.me/5521990051961?text=Olá! Gostaria de saber mais sobre os imóveis disponíveis em Guararema."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full bg-green-500 hover:bg-green-600 text-white py-4 px-6 rounded-lg font-semibold text-center flex items-center justify-center space-x-2 transition-colors"

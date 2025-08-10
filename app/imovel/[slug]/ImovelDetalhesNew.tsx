@@ -327,7 +327,7 @@ const ImovelDetalhesNew: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [],
 
                             <div className="space-y-4">
                                 <a 
-                                    href="tel:+5511999999999"
+                                    href="tel:+5521990051961"
                                     onClick={handlePhoneClick}
                                     className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-300 flex items-center justify-center gap-2"
                                 >
@@ -336,7 +336,7 @@ const ImovelDetalhesNew: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [],
                                 </a>
 
                                 <a 
-                                    href={`https://wa.me/5511999999999?text=Olá! Tenho interesse no imóvel: ${encodeURIComponent(imovel.titulo || 'Imóvel')}`}
+                                    href={`https://wa.me/5521990051961?text=Olá! Tenho interesse no imóvel: ${encodeURIComponent(imovel.titulo || 'Imóvel')}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={handleWhatsAppClick}

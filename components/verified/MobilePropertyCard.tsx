@@ -116,7 +116,7 @@ export default function MobilePropertyCard({
     const handleCall = (e: React.MouseEvent) => {
         e.preventDefault()
         e.stopPropagation()
-        window.open('tel:+5511981845016', '_self')
+        window.open('tel:+5521990051961', '_self')
     }
 
     return (

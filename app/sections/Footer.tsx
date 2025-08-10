@@ -57,7 +57,7 @@ export default function Footer() {
                     </p>
 
                     <div className="mt-6 flex justify-center md:justify-start">                        <a
-                        href="https://wa.me/5511981845016"
+                        href="https://wa.me/5521990051961"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-[#FFAD43] text-[#0D1F2D] hover:bg-[#e89c36] transition-all text-sm font-medium shadow-md hover:shadow-lg"
@@ -123,9 +123,7 @@ export default function Footer() {
                         <h4 className="text-[#FFAD43] text-xs uppercase mb-4 tracking-widest font-semibold">Contato</h4>
                         <ul className="space-y-3">
                             {[
-                                { nome: "Leonardo", tel: "11981845016" },
-                                { nome: "José Luiz", tel: "11997105640" },
-                                { nome: "Júlia", tel: "11981024749" },
+                                { nome: "WhatsApp", tel: "21990051961" },
                             ].map((contato, idx) => (
                                 <li key={idx}>
                                     <a

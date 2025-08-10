@@ -32,7 +32,7 @@ const CardCTAImovel: FC<CardCTAImovelProps> = ({
   // URL do CTA
   const safeTitle = encodeURIComponent(titulo ?? ""); const defaultLink = useMemo(
     () =>
-      `https://wa.me/5511981845016?text=Olá! Gostaria de mais informações sobre o imóvel: ${safeTitle}. Podemos conversar?`,
+      `https://wa.me/5521990051961?text=Olá! Gostaria de mais informações sobre o imóvel: ${safeTitle}. Podemos conversar?`,
     [safeTitle]
   );
   const ctaUrl = linkPersonalizado?.trim() || defaultLink;
