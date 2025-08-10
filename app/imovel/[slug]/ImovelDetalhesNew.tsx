@@ -1,11 +1,12 @@
 "use client";
 
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { formatarMoeda } from '@/lib/utils';
 import type { ImovelClient as ImovelDataType } from '@/src/types/imovel-client';
 import { PropertyCardUnified } from '@/app/components/ui/property/PropertyCardUnified';
+import { useAnalytics } from '@/app/hooks/useAnalytics';
 import {
     Phone,
     Calendar,
@@ -35,6 +36,55 @@ interface ImovelDetalhesProps {
 const ImovelDetalhesNew: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], preco }) => {
     const [imagemAtiva, setImagemAtiva] = useState(0);
     const [isFavorito, setIsFavorito] = useState(false);
+    
+    // Analytics hook
+    const {
+        trackPropertyView,
+        trackPropertyViewConversion,
+        trackWhatsAppConversion,
+        trackPhoneConversion,
+        trackButtonClick,
+        isEnabled: analyticsEnabled
+    } = useAnalytics();
+
+    // Track property view on component mount
+    useEffect(() => {
+        if (imovel && analyticsEnabled) {
+            // Track general property view
+            trackPropertyView({
+                property_id: imovel._id,
+                property_type: imovel.finalidade?.toLowerCase() === 'venda' ? 'sale' : 'rent',
+                price: preco || imovel.preco,
+                location: `${imovel.bairro || ''}, ${imovel.cidade || ''}`.trim()
+            });
+
+            // Track micro-conversion for property view
+            trackPropertyViewConversion(imovel._id, preco || imovel.preco);
+        }
+    }, [imovel, preco, analyticsEnabled, trackPropertyView, trackPropertyViewConversion]);
+
+    // Handle WhatsApp click
+    const handleWhatsAppClick = () => {
+        if (analyticsEnabled) {
+            trackWhatsAppConversion(imovel._id, 'property_inquiry');
+            trackButtonClick('whatsapp_contact', window.location.pathname);
+        }
+    };
+
+    // Handle phone click
+    const handlePhoneClick = () => {
+        if (analyticsEnabled) {
+            trackPhoneConversion(imovel._id);
+            trackButtonClick('phone_contact', window.location.pathname);
+        }
+    };
+
+    // Handle visit scheduling
+    const handleVisitClick = () => {
+        if (analyticsEnabled) {
+            trackButtonClick('schedule_visit', window.location.pathname);
+        }
+    };
 
     // Verificação de segurança
     if (!imovel || !imovel._id) {
@@ -276,17 +326,30 @@ const ImovelDetalhesNew: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [],
                             </div>
 
                             <div className="space-y-4">
-                                <button className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-300 flex items-center justify-center gap-2">
+                                <a 
+                                    href="tel:+5511999999999"
+                                    onClick={handlePhoneClick}
+                                    className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-300 flex items-center justify-center gap-2"
+                                >
                                     <Phone className="w-5 h-5" />
                                     Ligar agora
-                                </button>
+                                </a>
 
-                                <button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-300 flex items-center justify-center gap-2">
+                                <a 
+                                    href={`https://wa.me/5511999999999?text=Olá! Tenho interesse no imóvel: ${encodeURIComponent(imovel.titulo || 'Imóvel')}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={handleWhatsAppClick}
+                                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-300 flex items-center justify-center gap-2"
+                                >
                                     <MessageSquare className="w-5 h-5" />
                                     WhatsApp
-                                </button>
+                                </a>
 
-                                <button className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-amber-600 hover:to-amber-700 transition-all duration-300 flex items-center justify-center gap-2">
+                                <button 
+                                    onClick={handleVisitClick}
+                                    className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-amber-600 hover:to-amber-700 transition-all duration-300 flex items-center justify-center gap-2"
+                                >
                                     <Calendar className="w-5 h-5" />
                                     Agendar visita
                                 </button>
