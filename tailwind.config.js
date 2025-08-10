@@ -4,62 +4,28 @@ module.exports = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {      colors: {
-        // Cores do sistema de design Ipê
+    extend: {
+      colors: {
+        // Core brand colors for real estate business
         primary: {
           DEFAULT: '#1a6f5c',
-          foreground: '#ffffff',
-          light: '#e8f5f2',
+          light: '#3a8f7c',
           dark: '#145a49',
-          darkest: '#0d1f2d',
         },
         secondary: {
-          DEFAULT: '#0E1F2D',
-          foreground: '#ffffff',
-        },
-        neutral: {
-          lightest: '#f8f9fa',
-          light: '#e9ecef',
-          DEFAULT: '#6c757d',
-          charcoal: '#495057',
-          darkest: '#212529',
-        },
-        background: '#ffffff',
-        foreground: '#333333',
-        border: '#e5e5e5',
-        input: '#f0f0f0',
-        ring: 'rgba(26, 111, 92, 0.3)',
-        // Cores específicas do Ipê
-        brand: {
-          green: '#1a6f5c',
-          'green-dark': '#145a49',
-          'green-light': '#3a8f7c',
-          dark: '#0d1f2d',
-          'dark-light': '#1e3042',
-          light: '#f8f4e3',
+          DEFAULT: '#0d1f2d',
+          light: '#1e3042',
         },
         accent: {
-          yellow: '#ffcc00',
-          'yellow-dark': '#e6b800',
+          DEFAULT: '#ffcc00',
+          dark: '#e6b800',
         },
       },
-      keyframes: {
-        shimmer_cls_opt: {
-          "0%": { transform: "translateX(-100%)" },
-          "100%": { transform: "translateX(100%)" },
-        },
-      },
-      animation: {
-        shimmer: "shimmer_cls_opt 1.5s infinite",
-      },
-      // Adicionando transformações explícitas para v4
-      transform: {
-        'lift': 'translateY(-0.25rem)',
-        'scale-sm': 'scale(1.05)',
-        'none': 'none',
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        serif: ['Playfair Display', 'Georgia', 'serif'],
       },
     },
   },
