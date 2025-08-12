@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false, // Desabilitar temporariamente para evitar erros
-  swcMinify: false, // Desabilitar minification problemática
   
   images: {
     unoptimized: true, // Bypass image optimization temporariamente

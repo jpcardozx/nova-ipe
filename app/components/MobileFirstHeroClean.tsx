@@ -10,10 +10,10 @@ import {
 } from 'lucide-react'
 
 // Components
-import EnhancedPropertyCard from './EnhancedPropertyCard'
+import SimplePropertyCard from './SimplePropertyCard'
 
 // Types
-import type { ImovelClient } from '../../src/types/imovel-client'
+import type { ImovelClient } from '@/src/types/imovel-client'
 
 interface HeroProps {
     imoveisEmAlta?: ImovelClient[]
@@ -804,12 +804,19 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
                                 {imoveisEmAlta.length > 0 ? (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                                         {imoveisEmAlta.slice(0, 6).map((imovel, index) => (
-                                            <EnhancedPropertyCard
-                                                key={imovel._id}
-                                                imovel={imovel}
-                                                priority={index < 3}
-                                                showFavorite={true}
-                                                showShare={true}
+                                            <SimplePropertyCard
+                                                key={imovel._id || index}
+                                                id={imovel._id || `featured-${index}`}
+                                                title={imovel.titulo || 'Imóvel em destaque'}
+                                                location={`${imovel.bairro || ''}, ${imovel.cidade || 'Guararema'}`}
+                                                price={imovel.preco || 0}
+                                                propertyType={imovel.finalidade === 'Venda' ? 'sale' : 'rent'}
+                                                bedrooms={imovel.dormitorios}
+                                                bathrooms={imovel.banheiros}
+                                                area={imovel.areaUtil}
+                                                mainImage={{ url: imovel.imagem?.imagemUrl || '/placeholder-house.jpg' }}
+                                                description={imovel.descricao}
+                                                showFavoriteButton={true}
                                             />
                                         ))}
                                     </div>
