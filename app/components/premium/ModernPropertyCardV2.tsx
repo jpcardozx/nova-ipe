@@ -173,7 +173,7 @@ const ModernPropertyCardV2 = memo<ModernPropertyCardV2Props>(({
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.6, ease: "easeOut" as const }}
             whileHover={{ y: -8 }}
             onHoverStart={() => setIsHovered(true)}
             onHoverEnd={() => setIsHovered(false)}
@@ -373,3 +373,4 @@ const ModernPropertyCardV2 = memo<ModernPropertyCardV2Props>(({
 ModernPropertyCardV2.displayName = 'ModernPropertyCardV2'
 
 export default ModernPropertyCardV2
+

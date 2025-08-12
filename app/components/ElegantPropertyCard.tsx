@@ -66,13 +66,13 @@ const ElegantPropertyCard: React.FC<PropertyCardProps> = ({
       scale: 1,
       y: 0,
       boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-      transition: { duration: 0.3, ease: "easeOut" }
+      transition: { duration: 0.3, ease: "easeOut" as const }
     },
     hover: {
       scale: 1.02,
       y: -8,
       boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-      transition: { duration: 0.3, ease: "easeOut" }
+      transition: { duration: 0.3, ease: "easeOut" as const }
     }
   };
 

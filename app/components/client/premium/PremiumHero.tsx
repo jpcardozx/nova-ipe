@@ -101,7 +101,7 @@ const PremiumHero = () => {
                         initial={{ scale: 1.1, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.95, opacity: 0 }}
-                        transition={{ duration: 1.2, ease: "easeInOut" }}
+                        transition={{ duration: 1.2, ease: "easeInOut" as const }}
                         className="absolute inset-0 bg-cover bg-center"
                         style={{
                             backgroundImage: `url(${currentSlideData.image})`,
@@ -128,7 +128,7 @@ const PremiumHero = () => {
                         duration: Math.max(4, Math.random() * 3 + 4), // Fixed: Ensure minimum duration
                         repeat: Infinity,
                         delay: i * 0.4,
-                        ease: "easeOut"
+                        ease: "easeOut" as const
                     }}
                     style={{
                         left: `${Math.random() * 100}%`,
@@ -153,14 +153,14 @@ const PremiumHero = () => {
                             initial={{ y: 60, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             exit={{ y: -30, opacity: 0 }}
-                            transition={{ duration: 0.8, ease: "easeOut" }}
+                            transition={{ duration: 0.8, ease: "easeOut" as const }}
                             className="text-center lg:text-left"
                         >
                             {/* Highlight Badge */}
                             <motion.div
                                 initial={{ scale: 0, rotate: -180 }}
                                 animate={{ scale: 1, rotate: 0 }}
-                                transition={{ delay: 0.2, duration: 0.6, type: "spring" }}
+                                transition={{ delay: 0.2, duration: 0.6, type: "spring" as const }}
                                 className="inline-block bg-gradient-to-r from-amber-500 to-orange-600 text-white px-6 py-3 rounded-full text-sm font-bold mb-6 shadow-2xl"
                             >
                                 ✨ {currentSlideData.highlight}
@@ -260,7 +260,7 @@ const PremiumHero = () => {
                                     <motion.div
                                         layoutId="activeSlide"
                                         className="absolute inset-0 w-12 h-1 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full"
-                                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                        transition={{ type: "spring" as const, stiffness: 300, damping: 30 }}
                                     />
                                 )}
                             </button>
@@ -280,7 +280,7 @@ const PremiumHero = () => {
                     <span className="text-sm mb-2 font-medium">Explore</span>
                     <motion.div
                         animate={{ y: [0, 8, 0] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" as const }}
                     >
                         <ChevronDown className="w-6 h-6" />
                     </motion.div>
@@ -318,3 +318,5 @@ const PremiumHero = () => {
 };
 
 export default PremiumHero;
+
+

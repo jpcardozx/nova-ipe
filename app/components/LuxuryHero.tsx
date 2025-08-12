@@ -382,7 +382,7 @@ export default function LuxuryHero() {
                             transition={{
                                 repeat: Infinity,
                                 duration: 2,
-                                ease: "easeInOut"
+                                ease: "easeInOut" as const
                             }}                        >
                             <ChevronDown className="w-5 h-5 text-white/60" />
                         </motion.div>

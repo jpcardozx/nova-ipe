@@ -12,7 +12,7 @@ const FormalHero = () => {
     animate: { 
       opacity: 1, 
       y: 0,
-      transition: { duration: 0.6, ease: "easeOut" }
+      transition: { duration: 0.6, ease: "easeOut" as const }
     }
   };
 
@@ -62,7 +62,7 @@ const FormalHero = () => {
               <motion.div 
                 className="inline-flex items-center gap-2 px-4 py-2 bg-amber-400/10 border border-amber-400/20 rounded-full text-amber-400 text-sm font-medium"
                 whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 400 }}
+                transition={{ type: "spring" as const, stiffness: 400 }}
               >
                 <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
                 Imobiliária Premium em Guararema
@@ -112,7 +112,7 @@ const FormalHero = () => {
                     key={index}
                     className="text-center space-y-2"
                     whileHover={{ scale: 1.05 }}
-                    transition={{ type: "spring", stiffness: 300 }}
+                    transition={{ type: "spring" as const, stiffness: 300 }}
                   >
                     <Icon className="w-8 h-8 text-amber-400 mx-auto mb-2" />
                     <div className="text-2xl font-bold text-white">{stat.number}</div>
@@ -135,7 +135,7 @@ const FormalHero = () => {
               <motion.div 
                 className="relative z-10"
                 whileHover={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300 }}
+                transition={{ type: "spring" as const, stiffness: 300 }}
               >
                 <Image
                   src="/images/escritorioInterior.jpg"
@@ -207,3 +207,4 @@ const FormalHero = () => {
 };
 
 export default FormalHero;
+

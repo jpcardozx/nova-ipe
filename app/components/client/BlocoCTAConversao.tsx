@@ -68,7 +68,7 @@ export default function BlocoCTAConversao({ titulo, subtitulo, ctaText, ctaLink 
                         initial={{ opacity: 0, x: -40 }}
                         animate={controls}
                         variants={{
-                            visible: { opacity: 1, x: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } }
+                            visible: { opacity: 1, x: 0, transition: { duration: 0.7, ease: "easeOut" as const } }
                         }}
                         className="md:w-1/2"
                     >
@@ -123,7 +123,7 @@ export default function BlocoCTAConversao({ titulo, subtitulo, ctaText, ctaLink 
                         initial={{ opacity: 0, x: 40 }}
                         animate={controls}
                         variants={{
-                            visible: { opacity: 1, x: 0, transition: { duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] } }
+                            visible: { opacity: 1, x: 0, transition: { duration: 0.7, delay: 0.2, ease: "easeOut" as const } }
                         }}
                         className="md:w-1/2 relative h-80 md:h-auto"
                     >
@@ -131,7 +131,7 @@ export default function BlocoCTAConversao({ titulo, subtitulo, ctaText, ctaLink 
                             <motion.div
                                 className="absolute top-0 left-0 w-48 h-64 rounded-lg overflow-hidden shadow-2xl"
                                 animate={{ y: [0, -15, 0], rotate: [-2, 0, -2] }}
-                                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+                                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" as const }}
                             >
                                 <Image
                                     src="/images/hero-bg.jpg"
@@ -149,7 +149,7 @@ export default function BlocoCTAConversao({ titulo, subtitulo, ctaText, ctaLink 
                             <motion.div
                                 className="absolute bottom-0 right-0 w-56 h-48 rounded-lg overflow-hidden shadow-2xl"
                                 animate={{ y: [0, 15, 0], rotate: [2, 0, 2] }}
-                                transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                                transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" as const, delay: 1 }}
                             >
                                 <Image
                                     src="/images/escritorioInterior.jpg"
@@ -170,3 +170,4 @@ export default function BlocoCTAConversao({ titulo, subtitulo, ctaText, ctaLink 
         </section>
     )
 }
+

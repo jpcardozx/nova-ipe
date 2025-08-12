@@ -6,8 +6,8 @@ import { UnifiedLoading } from './ui/UnifiedComponents';
 import NoSSRWrapper from './ui/NoSSRWrapper';
 import WhatsAppButton from './WhatsAppButton';
 import EnhancedNotificationBanner from './EnhancedNotificationBanner';
-import MobileFirstHero from './MobileFirstHero';
-import type { ImovelClient } from '../../src/types/imovel-client';
+import MobileFirstHeroClean from './MobileFirstHeroClean';
+import type { ImovelClient } from '@/src/types/imovel-client';
 
 // Lazy loading dos componentes
 const BlocoExploracaoSimbolica = lazy(() => import('./BlocoExploracaoSimbolica'));
@@ -39,7 +39,7 @@ export default function HomePageComponents({ propertiesForSale, propertiesForRen
                 />
             </header>
 
-            <MobileFirstHero />
+            <MobileFirstHeroClean />
 
             <Suspense fallback={<FallbackLoader title="Carregando exploração de Guararema..." />}>
                 <BlocoExploracaoSimbolica />
@@ -71,7 +71,7 @@ export default function HomePageComponents({ propertiesForSale, propertiesForRen
                 </Suspense>
             </main>
 
-            <WhatsAppButton phoneNumber="+5521990051961" />
+            <WhatsAppButton phoneNumber="+5511981845016" />
 
             <Suspense fallback={<FallbackLoader title="Carregando rodapé..." height="300px" />}>
                 <FooterAprimorado />

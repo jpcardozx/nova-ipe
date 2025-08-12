@@ -151,7 +151,7 @@ const PremiumPropertyCard = ({
             transition: {
                 duration: 0.6,
                 delay: index * 0.1,
-                ease: [0.22, 1, 0.36, 1]
+                ease: "easeOut" as const
             }
         }
     };
@@ -723,3 +723,4 @@ export default function PremiumPropertyCatalog({
         </section>
     );
 }
+

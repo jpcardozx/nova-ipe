@@ -1,9 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
+  reactStrictMode: false, // Desabilitar temporariamente para evitar erros
+  swcMinify: false, // Desabilitar minification problemática
   
   images: {
+    unoptimized: true, // Bypass image optimization temporariamente
     remotePatterns: [
       {
         protocol: 'https',
@@ -16,8 +17,24 @@ const nextConfig = {
     ],
   },
 
-  experimental: {
-    serverComponentsExternalPackages: ['sanity'],
+  serverExternalPackages: ['sanity'],
+  
+  // Webpack simplificado para evitar erros
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+      };
+    }
+    
+    // Evitar bundle splitting problemático
+    config.optimization = {
+      ...config.optimization,
+      splitChunks: false,
+    };
+
+    return config;
   },
 };
 

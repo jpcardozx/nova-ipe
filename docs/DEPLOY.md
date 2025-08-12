@@ -5,6 +5,7 @@
 ### 1. Verificação de Pré-requisitos
 
 #### Dependências Instaladas
+
 ```bash
 # Verificar Node.js (versão 18+)
 node --version
@@ -17,6 +18,7 @@ npm install
 ```
 
 #### Verificações de Build
+
 ```bash
 # Verificar tipos TypeScript
 npm run typecheck
@@ -31,6 +33,7 @@ npm run build
 ### 2. Configuração de Variáveis de Ambiente
 
 #### Arquivo `.env.local` (Development)
+
 ```env
 # Sanity CMS
 NEXT_PUBLIC_SANITY_PROJECT_ID=your_sanity_project_id
@@ -48,6 +51,7 @@ NEXT_PUBLIC_API_URL=https://yourdomain.com
 ```
 
 #### Arquivo `.env.production` (Production)
+
 ```env
 # Mesmas variáveis do .env.local mas com valores de produção
 NEXT_PUBLIC_ENABLE_ANALYTICS=true
@@ -59,11 +63,13 @@ NEXT_PUBLIC_VITALS_DEBUG=false
 ### 1. Vercel (Recomendado)
 
 #### Deploy Automático via GitHub
+
 1. Conectar repositório ao Vercel
 2. Configurar variáveis de ambiente no dashboard
 3. Deploy automático a cada push na branch main
 
 #### Deploy Manual
+
 ```bash
 # Instalar Vercel CLI
 npm i -g vercel
@@ -76,6 +82,7 @@ vercel --prod
 ```
 
 #### Configuração Vercel (`vercel.json`)
+
 ```json
 {
   "version": 2,
@@ -100,6 +107,7 @@ vercel --prod
 ### 2. Netlify
 
 #### Build Settings
+
 ```bash
 # Build command
 npm run build
@@ -109,6 +117,7 @@ npm run build
 ```
 
 #### Netlify Configuration (`netlify.toml`)
+
 ```toml
 [build]
   command = "npm run build"
@@ -126,6 +135,7 @@ npm run build
 ### 3. Railway
 
 #### Configuração Railway
+
 ```bash
 # Instalar Railway CLI
 npm install -g @railway/cli
@@ -138,6 +148,7 @@ railway up
 ```
 
 #### Dockerfile (se necessário)
+
 ```dockerfile
 FROM node:18-alpine
 
@@ -165,7 +176,7 @@ CMD ["npm", "start"]
 - [ ] **Variáveis de ambiente**: Todas configuradas no ambiente de produção
 - [ ] **Analytics**: IDs de tracking corretos
 - [ ] **Sanity**: CMS configurado e populado
-- [ ] **Contatos**: Números de telefone atualizados (+5521990051961)
+- [ ] **Contatos**: Números de telefone atualizados (+5511981845016)
 
 ### 2. Deploy Steps
 
@@ -193,6 +204,7 @@ vercel --prod
 ### 3. Pós-Deploy Verification
 
 #### Verificações Automáticas
+
 - [ ] **Site carregando**: Homepage acessível
 - [ ] **Formulários**: Teste de envio de contato
 - [ ] **WhatsApp**: Links redirecionando corretamente
@@ -201,6 +213,7 @@ vercel --prod
 - [ ] **SEO**: Meta tags e estruturação correta
 
 #### Testes Manuais
+
 ```bash
 # Testar formulário de contato
 curl -X POST https://yourdomain.com/api/contact \
@@ -219,22 +232,26 @@ curl -X POST https://yourdomain.com/api/contact \
 ### 1. Analytics Setup
 
 #### Google Analytics 4
+
 - Verificar se eventos estão sendo registrados
 - Configurar conversões para formulários
 - Monitorar Core Web Vitals
 
 #### Facebook Pixel
+
 - Verificar events de ViewContent e Lead
 - Configurar campanhas de remarketing
 
 ### 2. Performance Monitoring
 
 #### Core Web Vitals
+
 - **LCP (Largest Contentful Paint)**: < 2.5s
 - **FID (First Input Delay)**: < 100ms
 - **CLS (Cumulative Layout Shift)**: < 0.1
 
 #### Tools de Monitoramento
+
 - Google PageSpeed Insights
 - GTmetrix
 - WebPageTest
@@ -243,6 +260,7 @@ curl -X POST https://yourdomain.com/api/contact \
 ### 3. Error Monitoring
 
 #### Sentry Integration (Opcional)
+
 ```bash
 npm install @sentry/nextjs
 
@@ -251,6 +269,7 @@ const { withSentryConfig } = require('@sentry/nextjs');
 ```
 
 #### Error Boundary
+
 ```typescript
 // app/error.tsx
 'use client';
@@ -280,6 +299,7 @@ export default function Error({
 ### Problemas Comuns
 
 #### 1. Build Falha
+
 ```bash
 # Limpar cache
 npm run clean:all
@@ -291,6 +311,7 @@ node --version  # Deve ser 18+
 ```
 
 #### 2. Variáveis de Ambiente
+
 ```bash
 # Verificar se estão definidas
 echo $NEXT_PUBLIC_SANITY_PROJECT_ID
@@ -300,6 +321,7 @@ console.log(process.env.NEXT_PUBLIC_SANITY_PROJECT_ID);
 ```
 
 #### 3. Sanity CMS Issues
+
 ```bash
 # Verificar conexão
 npm run sanity:check
@@ -309,6 +331,7 @@ npm run sanity:deploy
 ```
 
 #### 4. Analytics Não Funcionando
+
 - Verificar NEXT_PUBLIC_GA_TRACKING_ID
 - Verificar se analytics está habilitado em produção
 - Verificar Network tab no browser
@@ -316,6 +339,7 @@ npm run sanity:deploy
 ### Logs e Debug
 
 #### Vercel Logs
+
 ```bash
 # Visualizar logs
 vercel logs
@@ -325,6 +349,7 @@ vercel dev
 ```
 
 #### Local Debug
+
 ```bash
 # Modo desenvolvimento com debug
 NEXT_PUBLIC_VITALS_DEBUG=true npm run dev
@@ -336,6 +361,7 @@ npm run analyze
 ## Security Checklist
 
 ### Pré-Deploy Security
+
 - [ ] **Variáveis sensíveis**: Não expostas no código
 - [ ] **CORS**: Configurado adequadamente
 - [ ] **Rate limiting**: Implementado nas APIs
@@ -344,24 +370,25 @@ npm run analyze
 - [ ] **Headers de segurança**: CSP, HSTS, etc.
 
 ### Headers de Segurança (`next.config.js`)
+
 ```javascript
 const securityHeaders = [
   {
     key: 'X-DNS-Prefetch-Control',
-    value: 'on'
+    value: 'on',
   },
   {
     key: 'X-XSS-Protection',
-    value: '1; mode=block'
+    value: '1; mode=block',
   },
   {
     key: 'X-Frame-Options',
-    value: 'SAMEORIGIN'
+    value: 'SAMEORIGIN',
   },
   {
     key: 'X-Content-Type-Options',
-    value: 'nosniff'
-  }
+    value: 'nosniff',
+  },
 ];
 
 module.exports = {
@@ -379,6 +406,7 @@ module.exports = {
 ## Backup e Recovery
 
 ### 1. Backup do Sanity
+
 ```bash
 # Exportar dados
 sanity dataset export production backup.tar.gz
@@ -388,11 +416,13 @@ sanity dataset import backup.tar.gz production
 ```
 
 ### 2. Backup do Código
+
 - Repositório Git sempre atualizado
 - Tags para releases importantes
 - Branches de backup para deploys críticos
 
 ### 3. Recovery Plan
+
 1. **Rollback de Deploy**: Usar versão anterior no Vercel
 2. **Restaurar Sanity**: Importar backup de dados
 3. **Restaurar Código**: Checkout de commit estável

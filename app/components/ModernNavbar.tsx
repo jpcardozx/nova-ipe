@@ -6,7 +6,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone, MessageCircle, X, Menu } from "lucide-react";
-import "../styles/modern-navbar.css";
 
 const links = [
     { label: "Início", href: "/" },

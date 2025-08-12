@@ -7,7 +7,7 @@ import OptimizationProvider from './components/OptimizationProvider';
 import WhatsAppButton from './components/WhatsAppButton';
 import EnhancedNotificationBanner from './components/EnhancedNotificationBanner';
 import EnhancedTestimonials from './components/EnhancedTestimonials';
-import MobileFirstHeroEnhanced from './components/MobileFirstHeroEnhanced';
+import MobileFirstHeroClean from './components/MobileFirstHeroClean';
 import { ProcessedProperty } from './types/property';
 import { transformPropertiesArrayToPremium } from './utils/property-transformer';
 import type { ImovelClient } from '../src/types/imovel-client';
@@ -48,12 +48,14 @@ interface HomePageClientProps {
     propertiesForSale: ImovelClient[];
     propertiesForRent: ImovelClient[];
     featuredProperties: ImovelClient[];
+    hotProperties?: ImovelClient[]; // Nova prop para imóveis em alta
 }
 
 export default function HomePageClient({
     propertiesForSale,
     propertiesForRent,
-    featuredProperties
+    featuredProperties,
+    hotProperties = [] // Default vazio para imóveis em alta
 }: HomePageClientProps) {
     const [isLoaded, setIsLoaded] = useState(false);
     useEffect(() => {
@@ -70,20 +72,20 @@ export default function HomePageClient({
                     storageKey="home_notification_dismissed"
                 />
             </header>
-            <MobileFirstHeroEnhanced />
+            <MobileFirstHeroClean imoveisEmAlta={hotProperties} />
             <BlocoExploracaoGuararema />
 
-            {/* Conteúdo principal */}
-            <main> {/* Seção de Imóveis para Venda - Sistema Limpo e Funcional */}
+            {/* Conteúdo principal com espaçamento otimizado */}
+            <main className="space-y-8 lg:space-y-12">
+                {/* Seção de Imóveis para Venda - Sistema Limpo e Funcional */}
                 <CleanSalesSection
                     properties={propertiesForSale}
                     title="Imóveis para Venda"
                     subtitle="Encontre a casa dos seus sonhos em Guararema"
                     maxItems={12}
-                    className="mb-20"
                 />
 
-                {/* 2. Apresentação Institucional - IpeConcept original */}
+                {/* Apresentação Institucional - IpeConcept original */}
                 <IpeConcept />
 
                 {/* Seção de Imóveis para Aluguel - Sistema Limpo e Funcional */}
@@ -92,28 +94,21 @@ export default function HomePageClient({
                     title="Imóveis para Aluguel"
                     subtitle="Encontre o imóvel ideal para locação em Guararema"
                     maxItems={12}
-                    className="mb-20"
                 />
 
-                {/* 3. Análise de Mercado */}
-                <section className="py-12">
-                    <MarketAnalysisSection />
-                </section>
+                {/* Análise de Mercado */}
+                <MarketAnalysisSection />
 
-                {/* 4. Seção de Precificação */}
-                <section className="py-12">
-                    <ValorAprimorado />
-                </section>
+                {/* Seção de Precificação */}
+                <ValorAprimorado />
 
                 {/* Banner de depoimentos para aumentar a confiança */}
-                <section className="py-12">
-                    <EnhancedTestimonials />
-                </section>
+                <EnhancedTestimonials />
 
             </main>
 
             {/* Botão do WhatsApp fixo */}
-            <WhatsAppButton phoneNumber="+5521990051961" />
+            <WhatsAppButton phoneNumber="+5511981845016" />
 
             {/* Footer - Era o componente que estava faltando na página inicial */}
             <FooterAprimorado />

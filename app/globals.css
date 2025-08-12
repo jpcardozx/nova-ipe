@@ -21,30 +21,30 @@
   --color-primary: #1a6f5c;
   --color-primary-light: #3a8f7c;
   --color-primary-dark: #145a49;
-  
+
   /* Secondary Colors */
   --color-secondary: #0d1f2d;
   --color-secondary-light: #1e3042;
   --color-accent: #ffcc00;
   --color-accent-dark: #e6b800;
-  
+
   /* Neutral Colors */
   --color-background: #ffffff;
   --color-foreground: #333333;
   --color-muted: #f5f5f5;
   --color-muted-foreground: #737373;
   --color-border: #e5e5e5;
-  
+
   /* Status Colors */
   --color-success: #22c55e;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
   --color-info: #3b82f6;
-  
+
   /* Typography */
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-serif: 'Playfair Display', Georgia, serif;
-  
+
   /* Spacing System */
   --spacing-1: 0.25rem;
   --spacing-2: 0.5rem;
@@ -54,19 +54,19 @@
   --spacing-8: 2rem;
   --spacing-12: 3rem;
   --spacing-16: 4rem;
-  
+
   /* Border Radius */
   --radius-sm: 0.25rem;
   --radius: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
-  
+
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-  
+
   /* Transitions */
   --transition-fast: 150ms ease;
   --transition: 300ms ease;
@@ -231,11 +231,11 @@ body {
     box-shadow: none !important;
     text-shadow: none !important;
   }
-  
+
   .no-print {
     display: none !important;
   }
-  
+
   .property-card {
     border: 1px solid #000;
     page-break-inside: avoid;
@@ -265,8 +265,27 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  
+
   html {
     scroll-behavior: auto;
+  }
+}
+
+/* ==========================================================================
+   CUSTOM ANIMATIONS
+   ========================================================================== */
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

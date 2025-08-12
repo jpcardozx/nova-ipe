@@ -17,32 +17,18 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ImovelClient } from '../../../src/types/imovel-client';
-import MobilePropertyCard from '../MobilePropertyCard';
+import PremiumPropertyCard from '../PremiumPropertyCard';
+import PropertyCardOptimized from '../PropertyCardOptimized';
 
-// Função para transformar dados para MobilePropertyCard
-const transformToMobileCard = (imovel: ImovelClient, type: 'sale' | 'rent') => ({
-    id: imovel._id,
-    title: imovel.titulo || 'Imóvel disponível',
-    price: imovel.preco || 0,
-    address: imovel.endereco || '',
-    location: imovel.bairro || imovel.cidade || 'Guararema',
-    images: imovel.galeria?.map(img => ({
-        url: img.imagemUrl || '/images/placeholder-property.jpg',
-        alt: imovel.titulo || 'Imóvel'
-    })) || [],
-    mainImage: imovel.imagem ? {
-        url: imovel.imagem.imagemUrl || '/images/placeholder-property.jpg',
-        alt: imovel.titulo || 'Imóvel'
-    } : undefined,
-    bedrooms: imovel.dormitorios,
-    bathrooms: imovel.banheiros,
-    area: imovel.areaUtil,
-    parkingSpots: imovel.vagas,
-    type,
-    isNew: Boolean(imovel.dataPublicacao && new Date(imovel.dataPublicacao) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)),
-    featured: Boolean(imovel.destaque),
-    isPremium: false // We'll default this to false for now
-});
+// Seção de Propriedades Limpa
+interface CleanPropertySectionProps {
+    properties: ImovelClient[];
+    title: string;
+    subtitle?: string;
+    viewAllLink?: string;
+    className?: string;
+    type: 'sale' | 'rent';
+}
 
 // Enhanced Carrossel Mobile-First with Premium Design
 const ResponsiveCarousel: React.FC<{
@@ -60,7 +46,7 @@ const ResponsiveCarousel: React.FC<{
 
         const cardWidth = 320; // Width of each card + gap
         const scrollAmount = direction === 'left' ? -cardWidth : cardWidth;
-        
+
         container.scrollBy({
             left: scrollAmount,
             behavior: 'smooth'
@@ -73,7 +59,7 @@ const ResponsiveCarousel: React.FC<{
 
         const cardWidth = 320;
         const scrollPosition = index * cardWidth;
-        
+
         container.scrollTo({
             left: scrollPosition,
             behavior: 'smooth'
@@ -88,7 +74,7 @@ const ResponsiveCarousel: React.FC<{
         const { scrollLeft, scrollWidth, clientWidth } = container;
         setCanScrollLeft(scrollLeft > 0);
         setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-        
+
         // Update current index based on scroll position
         const cardWidth = 320;
         const newIndex = Math.round(scrollLeft / cardWidth);
@@ -143,8 +129,8 @@ const ResponsiveCarousel: React.FC<{
             <div
                 ref={containerRef}
                 className="flex gap-6 overflow-x-auto scrollbar-hide pb-4 scroll-smooth"
-                style={{ 
-                    scrollbarWidth: 'none', 
+                style={{
+                    scrollbarWidth: 'none',
                     msOverflowStyle: 'none',
                     scrollSnapType: 'x mandatory'
                 }}
@@ -181,10 +167,10 @@ const ResponsiveCarousel: React.FC<{
             {/* Progress bar for desktop */}
             <div className="hidden md:block mt-6">
                 <div className="w-full bg-neutral-200 rounded-full h-1">
-                    <div 
+                    <div
                         className="bg-gradient-to-r from-primary-500 to-secondary-500 h-1 rounded-full transition-all duration-300"
-                        style={{ 
-                            width: `${Math.min(100, ((currentIndex + 1) / children.length) * 100)}%` 
+                        style={{
+                            width: `${Math.min(100, ((currentIndex + 1) / children.length) * 100)}%`
                         }}
                     />
                 </div>
@@ -214,13 +200,12 @@ const CleanPropertySection: React.FC<CleanPropertySectionProps> = ({
     className
 }) => {
     const displayProperties = properties.slice(0, maxItems);
-    const transformedProperties = displayProperties.map(p => transformToMobileCard(p, type));
 
     const colorScheme = type === 'sale'
         ? 'from-emerald-500 to-green-600'
         : 'from-blue-500 to-indigo-600';
 
-    if (transformedProperties.length === 0) {
+    if (displayProperties.length === 0) {
         return (
             <section className={cn("py-8 lg:py-12", className)}>
                 <div className="container mx-auto px-4">
@@ -249,66 +234,68 @@ const CleanPropertySection: React.FC<CleanPropertySectionProps> = ({
     }
 
     return (
-        <section className={cn("py-8 lg:py-16", className)}>
-            <div className="container mx-auto px-4">
+        <section className={cn("py-12 lg:py-16", className)}>
+            <div className="container mx-auto px-4 max-w-7xl">
                 {/* Enhanced Section Header */}
                 <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-8 lg:mb-12">
-                    <div className="max-w-2xl">
-                        <div className="mb-3">
+                    <div className="max-w-3xl">
+                        <div className="mb-4">
                             <span className={cn(
-                                "inline-flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-full",
-                                type === 'sale' 
-                                    ? "bg-emerald-100 text-emerald-700"
-                                    : "bg-blue-100 text-blue-700"
+                                "inline-flex items-center gap-2 text-sm font-bold px-4 py-2 rounded-full backdrop-blur-sm",
+                                type === 'sale'
+                                    ? "bg-gradient-to-r from-emerald-100 to-green-50 text-emerald-700 border border-emerald-200"
+                                    : "bg-gradient-to-r from-blue-100 to-indigo-50 text-blue-700 border border-blue-200"
                             )}>
                                 {type === 'sale' ? '🏠 Para Venda' : '🏢 Para Aluguel'}
-                                <span className="bg-white/80 text-xs px-2 py-0.5 rounded-full">
+                                <span className="bg-white/90 text-xs px-2 py-0.5 rounded-full shadow-sm">
                                     {properties.length} imóveis
                                 </span>
                             </span>
                         </div>
-                        <h2 className="text-3xl lg:text-4xl font-bold text-neutral-800 mb-3 leading-tight">
+                        <h2 className="text-3xl lg:text-5xl font-bold bg-gradient-to-r from-stone-800 to-amber-700 bg-clip-text text-transparent mb-4 leading-tight">
                             {title}
                         </h2>
                         {subtitle && (
-                            <p className="text-neutral-600 text-lg lg:text-xl leading-relaxed">
+                            <p className="text-stone-600 text-lg lg:text-xl leading-relaxed max-w-2xl">
                                 {subtitle}
                             </p>
                         )}
                     </div>
 
                     {viewAllLink && (
-                        <div className="mt-6 md:mt-0 flex flex-col sm:flex-row gap-3">
+                        <div className="mt-8 md:mt-0 flex flex-col sm:flex-row gap-4">
                             <Link
                                 href={viewAllLink}
                                 className={cn(
-                                    "inline-flex items-center gap-3 px-8 py-4 rounded-xl font-semibold transition-all duration-300",
-                                    "bg-gradient-to-r text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5",
-                                    type === 'sale' 
-                                        ? "from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700"
-                                        : "from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
+                                    "inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-[1.02] transform-gpu",
+                                    "bg-gradient-to-r text-white backdrop-blur-sm",
+                                    type === 'sale'
+                                        ? "from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-600 hover:via-green-600 hover:to-emerald-700"
+                                        : "from-blue-500 via-indigo-500 to-blue-600 hover:from-blue-600 hover:via-indigo-600 hover:to-blue-700"
                                 )}
                             >
-                                Ver Todos
-                                <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                                Ver Todos os Imóveis
+                                <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
                             </Link>
                             <Link
                                 href="/contato"
-                                className="inline-flex items-center gap-3 px-8 py-4 rounded-xl font-semibold border-2 border-neutral-200 text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50 transition-all duration-300"
+                                className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold border-2 border-stone-300 text-stone-700 hover:border-amber-400 hover:bg-amber-50 hover:text-amber-700 transition-all duration-300 backdrop-blur-sm bg-white/80"
                             >
-                                Consultoria
-                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                Consultoria Gratuita
+                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M20.5 3.5c-2.6-2.6-6.9-2.6-9.5 0-2.2 2.2-2.5 5.6-1 8.2L3 21l9.3-7c2.6 1.5 6 .8 8.2-1 2.6-2.6 2.6-6.9 0-9.5z" />
                                 </svg>
                             </Link>
                         </div>
                     )}
-                </div>                {/* Carrossel de Cards */}
+                </div>
+
+                {/* Carrossel de Cards */}
                 <ResponsiveCarousel>
-                    {transformedProperties.map((property) => (
-                        <MobilePropertyCard
-                            key={property.id}
-                            {...property}
+                    {displayProperties.map((imovel) => (
+                        <PropertyCardOptimized
+                            key={imovel._id}
+                            imovel={imovel}
                         />
                     ))}
                 </ResponsiveCarousel>

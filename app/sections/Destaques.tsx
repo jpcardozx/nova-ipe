@@ -430,8 +430,7 @@ function DestaquesEstrategicos() {
     const [expandedCard, setExpandedCard] = useState<string | null>(null);    // EFEITOS VISUAIS DE SCROLL
     const { scrollYProgress } = useScroll({
         target: containerRef,
-        offset: ['start end', 'end start'],
-        layoutEffect: false
+        offset: ['start end', 'end start']
     });
 
     const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.8, 1, 1, 0.8]);

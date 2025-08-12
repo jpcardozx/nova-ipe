@@ -89,7 +89,7 @@ const designTokens = {
             animate: { 
                 opacity: 1, 
                 y: 0,
-                transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+                transition: { duration: 0.6, ease: "easeOut" as const }
             }
         }
     }
@@ -127,13 +127,13 @@ const PremiumPropertyCard: React.FC<{
             transition: {
                 delay: index * 0.1,
                 duration: 0.6,
-                ease: [0.22, 1, 0.36, 1]
+                ease: "easeOut" as const
             }
         },
         hover: {
             y: -12,
             scale: 1.03,
-            transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] }
+            transition: { duration: 0.3, ease: "easeOut" as const }
         }
     };
 
@@ -450,7 +450,7 @@ export const PropertyShowcaseSystem: React.FC<PropertyShowcaseProps> = ({
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                        transition={{ duration: 0.6, ease: "easeOut" as const }}
                     >
                         {title && (
                             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -519,7 +519,7 @@ export const PropertyShowcaseSystem: React.FC<PropertyShowcaseProps> = ({
                             <motion.div
                                 className="flex gap-6"
                                 animate={{ x: -currentIndex * (100 / Math.ceil(displayProperties.length / 3)) + '%' }}
-                                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                                transition={{ duration: 0.5, ease: "easeOut" as const }}
                             >
                                 {Array.from({ length: Math.ceil(displayProperties.length / 3) }).map((_, slideIndex) => (
                                     <div key={slideIndex} className="flex gap-6 min-w-full">
@@ -607,3 +607,4 @@ export const PropertyShowcaseSystem: React.FC<PropertyShowcaseProps> = ({
 };
 
 export default PropertyShowcaseSystem;
+

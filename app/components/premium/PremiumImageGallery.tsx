@@ -171,7 +171,7 @@ const PremiumImageGallery: React.FC<PremiumImageGalleryProps> = ({
         center: {
             opacity: 1,
             scale: 1,
-            transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] }
+            transition: { duration: 0.5, ease: "easeOut" as const }
         },
         exit: {
             opacity: 0,

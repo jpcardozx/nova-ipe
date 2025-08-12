@@ -32,9 +32,9 @@ import { generatePropertyMetadata } from '@/lib/metadata-generators';
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = params;
+  const { slug } = await params;
 
   const imovel: ImovelProjetado | null = await sanityFetch({
     query: queryImovelPorSlug,
@@ -75,10 +75,12 @@ export async function generateMetadata({
 }
 
 // Componente principal da página (streaming)
-export default function Page({ params }: { params: { slug: string } }) {
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+
   return (
     <Suspense fallback={<div className="h-[70vh] bg-gray-100 animate-pulse" />}>
-      <ImovelPage slug={params.slug} />
+      <ImovelPage slug={slug} />
     </Suspense>
   );
 }
@@ -86,14 +88,43 @@ export default function Page({ params }: { params: { slug: string } }) {
 // Componente assíncrono que busca e transforma os dados
 async function ImovelPage({ slug }: { slug: string }) {
   try {
-    // Usa a função getImovelPorSlug que já deve estar configurada para servidor
-    const imovelClient = await getImovelPorSlug(slug);
+    console.log(`🔍 Buscando imóvel com slug: ${slug}`);
+
+    // Primeira tentativa: buscar por slug usando getImovelPorSlug
+    let imovelClient = await getImovelPorSlug(slug);
+
+    // Se não encontrou, tentar buscar diretamente por ID (backwards compatibility)
+    if (!imovelClient && slug.includes('-')) {
+      console.log(`🔄 Tentando buscar por ID: ${slug}`);
+
+      const imovelDireto: ImovelProjetado | null = await sanityFetch({
+        query: `*[_type == "imovel" && _id == $id][0] {
+          _id, titulo, slug, preco, destaque, finalidade, bairro, cidade,
+          descricao, endereco, estado, aceitaFinanciamento, area, areaUtil,
+          documentacaoOk, videoTour, dormitorios, banheiros, vagas, tipoImovel,
+          caracteristicas, status,
+          categoria->{ _id, "categoriaTitulo": titulo, "categoriaSlug": slug },
+          imagem { "asset": asset->, "_type": "image", "imagemUrl": asset->url,
+          "alt": alt, "hotspot": hotspot }, galeria[]{ "asset": asset->,
+          "_type": "image", "imagemUrl": asset->url, "alt": alt }, corretor,
+          valorCondominio, iptu, localizacao
+        }`,
+        params: { id: slug },
+        tags: ['imovel', `imovel-${slug}`]
+      });
+
+      if (imovelDireto) {
+        imovelClient = mapImovelToClient(imovelDireto);
+      }
+    }
 
     // Verificação robusta - se não tem dados ou falta ID, retorna 404
     if (!imovelClient || !imovelClient._id) {
-      console.error(`Imóvel com slug ${slug} não encontrado ou dados incompletos`);
+      console.error(`❌ Imóvel com slug ${slug} não encontrado ou dados incompletos`);
       return notFound();
     }
+
+    console.log(`✅ Imóvel encontrado: ${imovelClient.titulo}`);
 
     // Garantir que imagem existe para evitar o erro "imóvel indisponível"
     if (!imovelClient.imagem || !imovelClient.imagem.imagemUrl) {

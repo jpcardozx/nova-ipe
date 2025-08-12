@@ -227,7 +227,16 @@ export default defineType({
       title: '⭐ Imóvel em destaque?',
       type: 'boolean',
       fieldset: 'controle',
-      initialValue: false
+      initialValue: false,
+      description: 'Exibido na seção de imóveis em destaque'
+    }),
+    defineField({
+      name: 'emAlta',
+      title: '🔥 Imóvel em alta?',
+      type: 'boolean',
+      fieldset: 'controle',
+      initialValue: false,
+      description: 'Exibido na seção "Imóveis em Alta" no final do Hero'
     }),
     defineField({
       name: 'status',

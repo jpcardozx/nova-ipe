@@ -62,7 +62,7 @@ const EnhancedContactForm = () => {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.5, ease: "easeOut" }
+      transition: { duration: 0.5, ease: "easeOut" as const }
     }
   };
 
@@ -71,7 +71,7 @@ const EnhancedContactForm = () => {
     visible: {
       opacity: 1,
       scale: 1,
-      transition: { duration: 0.8, ease: "easeOut" }
+      transition: { duration: 0.8, ease: "easeOut" as const }
     }
   };
 
@@ -238,7 +238,7 @@ const EnhancedContactForm = () => {
                     key={index}
                     className="text-center"
                     whileHover={{ scale: 1.05 }}
-                    transition={{ type: "spring", stiffness: 300 }}
+                    transition={{ type: "spring" as const, stiffness: 300 }}
                   >
                     <div className="w-16 h-16 bg-amber-500/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-3 border border-amber-300/30">
                       <Icon className="w-8 h-8 text-amber-300" />
@@ -299,7 +299,7 @@ const EnhancedContactForm = () => {
                 <motion.div 
                   className="relative rounded-3xl overflow-hidden shadow-2xl"
                   whileHover={{ scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 300 }}
+                  transition={{ type: "spring" as const, stiffness: 300 }}
                 >
                   <Image
                     src="/images/escritorioInterior.jpg"
@@ -351,7 +351,7 @@ const EnhancedContactForm = () => {
                           href={item.href}
                           className="flex items-center gap-4 p-6 rounded-2xl bg-white shadow-lg hover:shadow-xl transition-all group border border-slate-100"
                           whileHover={{ x: 5, scale: 1.02 }}
-                          transition={{ type: "spring", stiffness: 400 }}
+                          transition={{ type: "spring" as const, stiffness: 400 }}
                         >
                           <div className="w-14 h-14 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
                             <Icon className="w-7 h-7 text-white" />
@@ -371,7 +371,7 @@ const EnhancedContactForm = () => {
                 <motion.div 
                   className="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-8 rounded-3xl shadow-xl"
                   whileHover={{ scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 300 }}
+                  transition={{ type: "spring" as const, stiffness: 300 }}
                 >
                   <div className="flex items-center gap-3 mb-6">
                     <Clock className="w-8 h-8 text-amber-400" />
@@ -677,3 +677,4 @@ const EnhancedContactForm = () => {
 };
 
 export default EnhancedContactForm;
+

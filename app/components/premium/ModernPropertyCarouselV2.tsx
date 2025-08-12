@@ -310,7 +310,7 @@ const ModernPropertyCarouselV2 = memo<ModernPropertyCarouselV2Props>(({
                             <motion.div
                                 className="flex gap-6"
                                 animate={{ x: 0 }}
-                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                transition={{ type: "spring" as const, stiffness: 300, damping: 30 }}
                             >
                                 <AnimatePresence mode="wait">
                                     {visibleProperties.map((property, index) => (
@@ -321,7 +321,7 @@ const ModernPropertyCarouselV2 = memo<ModernPropertyCarouselV2Props>(({
                                             exit={{ opacity: 0, x: -300 }}
                                             transition={{
                                                 duration: 0.5,
-                                                ease: [0.22, 1, 0.36, 1],
+                                                ease: "easeOut" as const,
                                                 delay: index * 0.1
                                             }}
                                             className="flex-shrink-0"
@@ -404,3 +404,4 @@ const ModernPropertyCarouselV2 = memo<ModernPropertyCarouselV2Props>(({
 ModernPropertyCarouselV2.displayName = 'ModernPropertyCarouselV2'
 
 export default ModernPropertyCarouselV2
+

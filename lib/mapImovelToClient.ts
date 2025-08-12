@@ -68,6 +68,7 @@ export function mapImovelToClient(imovel: any): ImovelClient {
         finalidade: imovel.finalidade || 'Venda',
         tipoImovel: imovel.tipo || 'Outro',
         destaque: imovel.destaque || false,
+        emAlta: imovel.emAlta || false, // Nova funcionalidade: Imóveis em Alta
         bairro: imovel.endereco?.bairro || '',
         cidade: imovel.endereco?.cidade || '',
         estado: imovel.endereco?.estado || '',
@@ -94,6 +95,17 @@ export function mapImovelToClient(imovel: any): ImovelClient {
         // Imagens
         imagem,
         imagemOpenGraph: imagem,
+        
+        // Galeria de imagens
+        galeria: imovel.galeria?.map((img: any) => ({
+            imagemUrl: img.imagemUrl || img.url || img.asset?.url || '',
+            alt: img.alt || img.titulo || imovel.titulo || 'Imagem da galeria',
+            asset: {
+                ...img.asset,
+                _type: img.asset?._type || 'sanity.imageAsset',
+                ...(img.asset?._ref && { _ref: img.asset._ref })
+            }
+        })) || [],
 
         // Outros campos
         endereco: enderecoFormatado,

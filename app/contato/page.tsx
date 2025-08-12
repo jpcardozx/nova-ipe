@@ -1,394 +1,729 @@
 'use client';
 
-import { useState } from 'react';
-import { Phone, Mail, MapPin, Clock, Send } from 'lucide-react';
-import { useAnalytics } from '@/app/hooks/useAnalytics';
+import React, { useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Phone, Mail, MapPin, Clock, Send, AlertCircle, CheckCircle,
+  Shield, Award, Users, TrendingUp, Star, Calendar, MessageSquare,
+  ArrowRight, Building2, Home, FileCheck
+} from 'lucide-react';
 
-export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    name: '',
+interface FormData {
+  nome: string;
+  email: string;
+  telefone: string;
+  cidade: string;
+  mensagem: string;
+  interesse: string;
+  orcamento?: string;
+  prazo?: string;
+}
+
+interface FormErrors {
+  nome?: string;
+  email?: string;
+  telefone?: string;
+  cidade?: string;
+  mensagem?: string;
+  interesse?: string;
+}
+
+export default function ProfessionalContactPage() {
+  const [formData, setFormData] = useState<FormData>({
+    nome: '',
     email: '',
-    phone: '',
-    subject: 'Interesse em Imóvel',
-    message: '',
-    propertyType: 'venda'
+    telefone: '',
+    cidade: '',
+    mensagem: '',
+    interesse: '',
+    orcamento: '',
+    prazo: ''
   });
+
+  const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  
-  // Analytics tracking
-  const { trackFormConversion, trackLead, isEnabled: analyticsEnabled } = useAnalytics();
+  const [focusedField, setFocusedField] = useState<string | null>(null);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-    
-    // Clear errors when user starts typing
-    if (errors[name]) {
-      setErrors({
-        ...errors,
-        [name]: ''
-      });
-    }
-  };
+  const validateForm = useCallback((): boolean => {
+    const newErrors: FormErrors = {};
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-    
-    if (!formData.name.trim()) {
-      newErrors.name = 'Nome é obrigatório';
-    }
-    
+    if (!formData.nome.trim()) newErrors.nome = 'Nome é obrigatório';
     if (!formData.email.trim()) {
       newErrors.email = 'Email é obrigatório';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Email inválido';
     }
-    
-    if (!formData.message.trim()) {
-      newErrors.message = 'Mensagem é obrigatória';
-    }
-    
+    if (!formData.telefone.trim()) newErrors.telefone = 'Telefone é obrigatório';
+    if (!formData.interesse) newErrors.interesse = 'Selecione seu interesse';
+    if (!formData.mensagem.trim()) newErrors.mensagem = 'Mensagem é obrigatória';
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [formData]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Validate form before submitting
-    if (!validateForm()) {
-      return;
+  const handleInputChange = useCallback((field: keyof FormData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (field in errors) {
+      setErrors(prev => ({ ...prev, [field]: undefined }));
     }
-    
+  }, [errors]);
+
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
+
     setIsSubmitting(true);
-    
-    // Track form submission attempt
-    if (analyticsEnabled) {
-      trackFormConversion('contact_form');
-      trackLead({
-        lead_type: 'contact_form',
-        source_page: '/contato'
-      });
-    }
-    
+    setSubmitStatus('idle');
+
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          subject: formData.subject,
-          message: formData.message,
-          propertyType: formData.propertyType,
-        }),
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setSubmitStatus('success');
+      setFormData({
+        nome: '', email: '', telefone: '', cidade: '',
+        mensagem: '', interesse: '', orcamento: '', prazo: ''
       });
-
-      const result = await response.json();
-
-      if (result.success) {
-        setSubmitStatus('success');
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          subject: 'Interesse em Imóvel',
-          message: '',
-          propertyType: 'venda'
-        });
-        setErrors({});
-      } else {
-        setSubmitStatus('error');
-      }
     } catch (error) {
-      console.error('Erro ao enviar formulário:', error);
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // Professional contact methods - Ipê palette
+  const contactMethods = [
+    {
+      icon: Phone,
+      title: 'Telefone',
+      content: '(11) 4693-8484',
+      subtitle: 'Atendimento direto',
+      href: 'tel:+551146938484'
+    },
+    {
+      icon: Mail,
+      title: 'Email',
+      content: 'contato@ipeimoveis.com.br',
+      subtitle: 'Envie sua consulta',
+      href: 'mailto:contato@ipeimoveis.com.br'
+    },
+    {
+      icon: MapPin,
+      title: 'Escritório',
+      content: 'Guararema, SP',
+      subtitle: 'Visite nosso escritório',
+      href: 'https://maps.google.com/?q=Guararema,SP'
+    },
+    {
+      icon: Calendar,
+      title: 'Agendamento',
+      content: 'Consulta Personalizada',
+      subtitle: 'Marque uma reunião',
+      href: '#form'
+    }
+  ];
+
+  const serviceOptions = [
+    {
+      value: 'compra-casa',
+      label: 'Compra de Casa'
+    },
+    {
+      value: 'compra-apartamento',
+      label: 'Compra de Apartamento'
+    },
+    {
+      value: 'investimento',
+      label: 'Investimento Imobiliário'
+    },
+    {
+      value: 'venda',
+      label: 'Venda de Imóvel'
+    },
+    {
+      value: 'locacao',
+      label: 'Locação'
+    },
+    {
+      value: 'avaliacao',
+      label: 'Avaliação de Imóvel'
+    }
+  ];
+
+  const credentials = [
+    {
+      icon: Award,
+      number: '15+',
+      label: 'Anos',
+      detail: 'de Experiência'
+    },
+    {
+      icon: Shield,
+      number: '98%',
+      label: 'Satisfação',
+      detail: 'dos Clientes'
+    },
+    {
+      icon: TrendingUp,
+      number: '500+',
+      label: 'Imóveis',
+      detail: 'Vendidos'
+    },
+    {
+      icon: Users,
+      number: '1000+',
+      label: 'Famílias',
+      detail: 'Atendidas'
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-7xl mx-auto px-4">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Entre em Contato
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Estamos aqui para ajudar você a encontrar o imóvel perfeito em Guararema. 
-            Entre em contato conosco para agendar uma visita ou tirar suas dúvidas.
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-yellow-50">
+
+      {/* Clean professional background */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-50/80 via-white to-yellow-50/60" />
+
+        {/* Subtle Ipê-themed accents */}
+        <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-gradient-to-bl from-amber-100/30 to-transparent" />
+        <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-gradient-to-tr from-yellow-100/20 to-transparent" />
+
+        {/* Professional grid - very subtle */}
+        <div
+          className="absolute inset-0 opacity-[0.02]"
+          style={{
+            backgroundImage: 'radial-gradient(circle at 1px 1px, #d97706 1px, transparent 0)',
+            backgroundSize: '24px 24px'
+          }}
+        />
+      </div>
+
+      {/* Hero Section */}
+      <motion.section
+        className="relative pt-24 pb-16"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+      >
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+
+          {/* Professional badge */}
+          <motion.div
+            className="inline-flex items-center gap-3 px-5 py-2.5 bg-white/90 backdrop-blur-sm border border-amber-200/60 rounded-full mb-8 shadow-sm"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+          >
+            <Shield className="w-4 h-4 text-amber-600" />
+            <span className="text-slate-700 font-medium text-sm">Ipê Imóveis - Especialistas em Guararema</span>
+            <Star className="w-4 h-4 text-amber-500" />
+          </motion.div>
+
+          {/* Main headline */}
+          <motion.h1
+            className="text-4xl sm:text-5xl lg:text-6xl font-light text-slate-900 mb-6 leading-tight"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+          >
+            Entre em{' '}
+            <span className="font-semibold bg-gradient-to-r from-amber-600 to-amber-700 bg-clip-text text-transparent">
+              Contato
+            </span>
+            <br />
+            <span className="text-2xl sm:text-3xl lg:text-4xl text-slate-600">
+              conosco
+            </span>
+          </motion.h1>
+
+          {/* Professional value proposition */}
+          <motion.p
+            className="text-lg lg:text-xl text-slate-600 mb-10 leading-relaxed max-w-3xl mx-auto"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
+          >
+            Nossa equipe está preparada para auxiliar você em todas as etapas do seu projeto imobiliário,
+            com 15 anos de experiência no mercado de Guararema e região.
+          </motion.p>
+
+          {/* Professional CTAs */}
+          <motion.div
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.8 }}
+          >
+            <motion.a
+              href="#form"
+              className="w-full sm:w-auto bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white px-8 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-3 shadow-lg hover:shadow-amber-500/25 transition-all duration-300"
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <MessageSquare className="w-5 h-5" />
+              <span>Enviar Mensagem</span>
+            </motion.a>
+
+            <motion.a
+              href="tel:+551146938484"
+              className="w-full sm:w-auto bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-300 text-slate-700 hover:text-slate-900 px-8 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-3 shadow-sm hover:shadow-md transition-all duration-300"
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Phone className="w-5 h-5" />
+              <span>Ligar Agora</span>
+            </motion.a>
+          </motion.div>
         </div>
+      </motion.section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Contact Information */}
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Informações de Contato
-            </h2>
-            
-            <div className="space-y-6">
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
-                  <Phone className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">Telefone</h3>
-                  <p className="text-gray-600 mb-2">
-                    <a href="tel:+5521990051961" className="hover:text-green-600 transition-colors">
-                      (21) 99005-1961
-                    </a>
-                  </p>
-                  <p className="text-sm text-gray-500">WhatsApp disponível</p>
-                </div>
-              </div>
+      {/* Main Content */}
+      <section className="relative py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-5 gap-12 items-start">
 
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
-                  <Mail className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">E-mail</h3>
-                  <p className="text-gray-600">
-                    <a href="mailto:contato@ipeimoveis.com.br" className="hover:text-green-600 transition-colors">
-                      contato@ipeimoveis.com.br
-                    </a>
-                  </p>
-                </div>
-              </div>
+            {/* Contact Information */}
+            <motion.div
+              className="lg:col-span-2 space-y-8"
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
 
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
-                  <MapPin className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">Endereço</h3>
-                  <p className="text-gray-600">
-                    Rua Principal, 123<br />
-                    Centro - Guararema, SP<br />
-                    CEP: 08900-000
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
-                  <Clock className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">Horário de Funcionamento</h3>
-                  <div className="text-gray-600 space-y-1">
-                    <p>Segunda à Sexta: 8h às 18h</p>
-                    <p>Sábado: 8h às 14h</p>
-                    <p>Domingo: Plantão (ligação)</p>
+              {/* Office image */}
+              <div className="relative group">
+                <div className="relative h-64 rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-amber-100 to-yellow-100">
+                  <img
+                    src="/images/escritorioInterior.jpg"
+                    alt="Escritório Ipê Imóveis"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 via-transparent to-transparent" />
+                  <div className="absolute bottom-6 left-6 right-6">
+                    <h3 className="text-white text-lg font-semibold mb-1">Nosso Escritório</h3>
+                    <p className="text-white/90 text-sm">
+                      Ambiente profissional para atendimento presencial
+                    </p>
+                  </div>
+                  <div className="absolute top-4 right-4 bg-amber-500 text-white px-3 py-1.5 rounded-full text-xs font-bold">
+                    DESDE 2008
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Quick Contact Buttons */}
-            <div className="mt-8 space-y-4">
-              <a
-                href="tel:+5521990051961"
-                className="w-full bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-lg font-semibold text-center flex items-center justify-center space-x-2 transition-colors"
-              >
-                <Phone className="h-5 w-5" />
-                <span>Ligar Agora</span>
-              </a>
-              
-              <a
-                href="https://wa.me/5521990051961?text=Olá! Gostaria de saber mais sobre os imóveis disponíveis em Guararema."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full bg-green-500 hover:bg-green-600 text-white py-4 px-6 rounded-lg font-semibold text-center flex items-center justify-center space-x-2 transition-colors"
-              >
-                <span>💬</span>
-                <span>WhatsApp</span>
-              </a>
-            </div>
-          </div>
-
-          {/* Contact Form */}
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Envie uma Mensagem
-            </h2>
-
-            <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                    Nome Completo *
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    required
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent ${
-                      errors.name ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                    placeholder="Seu nome completo"
-                  />
-                  {errors.name && (
-                    <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    E-mail *
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent ${
-                      errors.email ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                    placeholder="seu@email.com"
-                  />
-                  {errors.email && (
-                    <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                  )}
-                </div>
+              {/* Contact methods */}
+              <div className="space-y-4">
+                {contactMethods.map((method, index) => {
+                  const IconComponent = method.icon;
+                  return (
+                    <motion.a
+                      key={index}
+                      href={method.href}
+                      target={method.href.startsWith('http') ? '_blank' : '_self'}
+                      className="group block p-5 bg-white/90 backdrop-blur-sm rounded-xl border border-gray-200/60 hover:border-amber-200 transition-all duration-300 shadow-sm hover:shadow-md"
+                      whileHover={{ y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 + index * 0.1, duration: 0.6 }}
+                    >
+                      <div className="flex items-center space-x-4">
+                        <div className="p-3 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 shadow-sm">
+                          <IconComponent className="w-5 h-5 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-slate-800 mb-1">
+                            {method.title}
+                          </h3>
+                          <p className="text-slate-900 font-medium text-sm mb-1">
+                            {method.content}
+                          </p>
+                          <p className="text-slate-600 text-xs">
+                            {method.subtitle}
+                          </p>
+                        </div>
+                        <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-amber-600 group-hover:translate-x-0.5 transition-all duration-300" />
+                      </div>
+                    </motion.a>
+                  );
+                })}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                    Telefone
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="(11) 99999-9999"
-                  />
+              {/* Business hours */}
+              <motion.div
+                className="bg-slate-900 text-white p-6 rounded-2xl shadow-lg"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8, duration: 0.6 }}
+              >
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="p-2 bg-amber-500 rounded-lg">
+                    <Clock className="w-5 h-5 text-white" />
+                  </div>
+                  <h4 className="font-semibold text-lg">Horário de Funcionamento</h4>
+                </div>
+                <div className="space-y-2.5">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">Segunda - Sexta</span>
+                    <span className="text-white font-medium">8:00 - 18:00</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">Sábados</span>
+                    <span className="text-white font-medium">8:00 - 14:00</span>
+                  </div>
+                  <div className="flex justify-between items-center border-t border-slate-700 pt-2.5">
+                    <span className="text-gray-400 text-sm">WhatsApp</span>
+                    <span className="text-amber-400 font-medium text-sm">Disponível sempre</span>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Credentials */}
+              <motion.div
+                className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/60 shadow-sm"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.0, duration: 0.6 }}
+              >
+                <h3 className="text-xl font-semibold text-slate-800 mb-5 text-center">
+                  Nossa Experiência
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  {credentials.map((credential, index) => (
+                    <div key={index} className="text-center">
+                      <div className="w-10 h-10 mx-auto mb-2 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 shadow-sm flex items-center justify-center">
+                        <credential.icon className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="text-xl font-bold text-slate-800 mb-1">{credential.number}</div>
+                      <div className="text-sm font-medium text-slate-700 mb-1">{credential.label}</div>
+                      <div className="text-xs text-slate-600 leading-tight">{credential.detail}</div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            </motion.div>
+
+            {/* Contact Form */}
+            <div className="lg:col-span-3">
+              <motion.div
+                className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100"
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                id="form"
+              >
+                <div className="mb-8">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-3 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg">
+                      <MessageSquare className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-semibold text-slate-800">
+                        Fale Conosco
+                      </h2>
+                      <p className="text-slate-600 text-sm mt-1">
+                        Preencha o formulário e entraremos em contato
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
-                <div>
-                  <label htmlFor="propertyType" className="block text-sm font-medium text-gray-700 mb-2">
-                    Interesse em
-                  </label>
-                  <select
-                    id="propertyType"
-                    name="propertyType"
-                    value={formData.propertyType}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                {/* Status messages */}
+                <AnimatePresence>
+                  {submitStatus === 'success' && (
+                    <motion.div
+                      className="mb-6 p-5 bg-green-50 border border-green-200 rounded-xl"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <CheckCircle className="w-5 h-5 text-green-600" />
+                        <div>
+                          <p className="text-green-800 font-medium">Mensagem Enviada</p>
+                          <p className="text-green-700 text-sm mt-1">
+                            Entraremos em contato em breve.
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {submitStatus === 'error' && (
+                    <motion.div
+                      className="mb-6 p-5 bg-red-50 border border-red-200 rounded-xl"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <AlertCircle className="w-5 h-5 text-red-600" />
+                        <div>
+                          <p className="text-red-800 font-medium">Erro no Envio</p>
+                          <p className="text-red-700 text-sm mt-1">
+                            Tente novamente ou entre em contato por telefone.
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="space-y-6">
+
+                  {/* Personal info */}
+                  <div>
+                    <h3 className="text-base font-medium text-slate-800 mb-4 flex items-center gap-2">
+                      <Users className="w-4 h-4 text-amber-600" />
+                      Dados Pessoais
+                    </h3>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Nome Completo *
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.nome}
+                          onChange={(e) => handleInputChange('nome', e.target.value)}
+                          onFocus={() => setFocusedField('nome')}
+                          onBlur={() => setFocusedField(null)}
+                          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all duration-200 ${errors.nome
+                            ? 'border-red-300 bg-red-50'
+                            : focusedField === 'nome'
+                              ? 'border-amber-400 bg-amber-50'
+                              : 'border-gray-200 hover:border-gray-300 bg-white'
+                            }`}
+                          placeholder="Seu nome completo"
+                        />
+                        {errors.nome && (
+                          <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            {errors.nome}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Email *
+                        </label>
+                        <input
+                          type="email"
+                          value={formData.email}
+                          onChange={(e) => handleInputChange('email', e.target.value)}
+                          onFocus={() => setFocusedField('email')}
+                          onBlur={() => setFocusedField(null)}
+                          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all duration-200 ${errors.email
+                            ? 'border-red-300 bg-red-50'
+                            : focusedField === 'email'
+                              ? 'border-amber-400 bg-amber-50'
+                              : 'border-gray-200 hover:border-gray-300 bg-white'
+                            }`}
+                          placeholder="seu@email.com"
+                        />
+                        {errors.email && (
+                          <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            {errors.email}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Contact details */}
+                  <div>
+                    <h3 className="text-base font-medium text-slate-800 mb-4 flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-amber-600" />
+                      Contato
+                    </h3>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Telefone *
+                        </label>
+                        <input
+                          type="tel"
+                          value={formData.telefone}
+                          onChange={(e) => handleInputChange('telefone', e.target.value)}
+                          onFocus={() => setFocusedField('telefone')}
+                          onBlur={() => setFocusedField(null)}
+                          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all duration-200 ${errors.telefone
+                            ? 'border-red-300 bg-red-50'
+                            : focusedField === 'telefone'
+                              ? 'border-amber-400 bg-amber-50'
+                              : 'border-gray-200 hover:border-gray-300 bg-white'
+                            }`}
+                          placeholder="(11) 99999-9999"
+                        />
+                        {errors.telefone && (
+                          <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            {errors.telefone}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Cidade
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.cidade}
+                          onChange={(e) => handleInputChange('cidade', e.target.value)}
+                          onFocus={() => setFocusedField('cidade')}
+                          onBlur={() => setFocusedField(null)}
+                          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all duration-200 ${focusedField === 'cidade'
+                            ? 'border-amber-400 bg-amber-50'
+                            : 'border-gray-200 hover:border-gray-300 bg-white'
+                            }`}
+                          placeholder="Guararema, SP"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Interest */}
+                  <div>
+                    <h3 className="text-base font-medium text-slate-800 mb-4 flex items-center gap-2">
+                      <Home className="w-4 h-4 text-amber-600" />
+                      Interesse
+                    </h3>
+
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Como podemos ajudá-lo? *
+                      </label>
+                      <select
+                        value={formData.interesse}
+                        onChange={(e) => handleInputChange('interesse', e.target.value)}
+                        onFocus={() => setFocusedField('interesse')}
+                        onBlur={() => setFocusedField(null)}
+                        className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all duration-200 appearance-none cursor-pointer ${errors.interesse
+                          ? 'border-red-300 bg-red-50'
+                          : focusedField === 'interesse'
+                            ? 'border-amber-400 bg-amber-50'
+                            : 'border-gray-200 hover:border-gray-300 bg-white'
+                          }`}
+                      >
+                        <option value="">Selecione uma opção</option>
+                        {serviceOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.interesse && (
+                        <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" />
+                          {errors.interesse}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Orçamento
+                        </label>
+                        <select
+                          value={formData.orcamento || ''}
+                          onChange={(e) => handleInputChange('orcamento', e.target.value)}
+                          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 transition-all duration-200 bg-white hover:border-gray-300"
+                        >
+                          <option value="">Não informado</option>
+                          <option value="ate-300k">Até R$ 300 mil</option>
+                          <option value="300k-500k">R$ 300-500 mil</option>
+                          <option value="500k-1mi">R$ 500mil-1mi</option>
+                          <option value="1mi-plus">Acima R$ 1mi</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Prazo
+                        </label>
+                        <select
+                          value={formData.prazo || ''}
+                          onChange={(e) => handleInputChange('prazo', e.target.value)}
+                          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 transition-all duration-200 bg-white hover:border-gray-300"
+                        >
+                          <option value="">Flexível</option>
+                          <option value="urgente">Até 30 dias</option>
+                          <option value="rapido">2-3 meses</option>
+                          <option value="normal">6 meses</option>
+                          <option value="longo">Mais de 6 meses</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Message */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Mensagem *
+                    </label>
+                    <textarea
+                      value={formData.mensagem}
+                      onChange={(e) => handleInputChange('mensagem', e.target.value)}
+                      onFocus={() => setFocusedField('mensagem')}
+                      onBlur={() => setFocusedField(null)}
+                      rows={4}
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all duration-200 resize-none ${errors.mensagem
+                        ? 'border-red-300 bg-red-50'
+                        : focusedField === 'mensagem'
+                          ? 'border-amber-400 bg-amber-50'
+                          : 'border-gray-200 hover:border-gray-300 bg-white'
+                        }`}
+                      placeholder="Conte-nos como podemos ajudá-lo com seu projeto imobiliário..."
+                    />
+                    {errors.mensagem && (
+                      <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {errors.mensagem}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Submit button */}
+                  <motion.button
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 disabled:from-gray-400 disabled:to-gray-500 text-white px-6 py-4 rounded-lg font-medium text-base flex items-center justify-center gap-3 shadow-md hover:shadow-lg transition-all duration-300 disabled:cursor-not-allowed"
+                    whileHover={!isSubmitting ? { y: -1 } : {}}
+                    whileTap={!isSubmitting ? { scale: 0.99 } : {}}
                   >
-                    <option value="venda">Comprar Imóvel</option>
-                    <option value="aluguel">Alugar Imóvel</option>
-                    <option value="avaliacao">Avaliar Meu Imóvel</option>
-                    <option value="consultoria">Consultoria Imobiliária</option>
-                    <option value="outros">Outros</option>
-                  </select>
+                    {isSubmitting ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
+                        <span>Enviando...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-5 h-5" />
+                        <span>Enviar Mensagem</span>
+                      </>
+                    )}
+                  </motion.button>
+
+                  {/* Trust message */}
+                  <div className="text-center pt-4 border-t border-gray-100">
+                    <div className="flex items-center justify-center gap-2 text-slate-600 text-sm">
+                      <Shield className="w-4 h-4 text-amber-600" />
+                      <span>
+                        Seus dados estão protegidos e serão usados apenas para contato
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-
-              <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
-                  Assunto
-                </label>
-                <input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  placeholder="Assunto da sua mensagem"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                  Mensagem *
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  required
-                  rows={5}
-                  value={formData.message}
-                  onChange={handleInputChange}
-                  className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent ${
-                    errors.message ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="Conte-nos sobre o imóvel que você está procurando ou qualquer dúvida que tenha..."
-                />
-                {errors.message && (
-                  <p className="mt-1 text-sm text-red-600">{errors.message}</p>
-                )}
-              </div>
-
-              {submitStatus === 'success' && (
-                <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-md">
-                  ✅ Mensagem enviada com sucesso! Entraremos em contato em breve.
-                </div>
-              )}
-
-              {submitStatus === 'error' && (
-                <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-md">
-                  ❌ Erro ao enviar mensagem. Tente novamente ou entre em contato por telefone.
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    <span>Enviando...</span>
-                  </>
-                ) : (
-                  <>
-                    <Send className="h-5 w-5" />
-                    <span>Enviar Mensagem</span>
-                  </>
-                )}
-              </button>
-            </form>
+              </motion.div>
+            </div>
           </div>
         </div>
-
-        {/* Map Section (Placeholder) */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-            Nossa Localização em Guararema
-          </h2>
-          <div className="bg-gray-300 rounded-lg h-64 flex items-center justify-center">
-            <p className="text-gray-600 text-lg">
-              📍 Rua Principal, 123 - Centro, Guararema - SP
-            </p>
-          </div>
-          <p className="text-center text-gray-600 mt-4">
-            Estamos localizados no centro de Guararema, próximo aos principais pontos da cidade.
-          </p>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }

@@ -34,6 +34,36 @@ export const queryImoveisDestaque = /* groq */ `
   }
 `;
 
+// Query para imóveis em alta (nova funcionalidade)
+export const queryImoveisEmAlta = /* groq */ `
+  *[
+    _type == "imovel" && 
+    emAlta == true && 
+    status == "disponivel"
+  ] | order(_createdAt desc)[0...6] {
+    _id,
+    titulo,
+    slug,
+    preco,
+    finalidade,
+    tipoImovel,
+    bairro,
+    cidade,
+    dormitorios,
+    banheiros,
+    areaUtil,
+    vagas,
+    emAlta,
+    destaque,
+    imagem {
+      "asset": asset->,
+      "_type": "image",
+      "imagemUrl": asset->url,
+      "alt": alt
+    }
+  }
+`;
+
 // Query específica para imóveis em destaque APENAS para venda
 export const queryImoveisDestaqueVenda = /* groq */ `
   *[

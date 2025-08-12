@@ -57,7 +57,7 @@ export default function Navbar() {
 
                 {/* ✅ CTA WhatsApp Desktop */}
                 <a
-                    href="https://wa.me/5521990051961"
+                    href="https://wa.me/5511981845016"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hidden md:flex items-center gap-2 bg-[#20b858] text-white px-5 py-2 rounded-full text-button font-body medium-text hover:brightness-105 transition hover:scale-105 active:scale-98"
@@ -99,7 +99,7 @@ export default function Navbar() {
                         ))}
                     </ul>
                     <a
-                        href="https://wa.me/5521990051961"
+                        href="https://wa.me/5511981845016"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="mt-6 flex items-center justify-center gap-2 bg-[#25D366] text-white px-5 py-3 rounded-full text-button font-body medium-text hover:brightness-105 transition hover:scale-105 active:scale-97"

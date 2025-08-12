@@ -179,7 +179,7 @@ export default function PropertyContactModal({
         initial: { scale: 0.9, opacity: 0, y: 20 },
         animate: { scale: 1, opacity: 1, y: 0 },
         exit: { scale: 0.9, opacity: 0, y: 20 },
-        transition: { type: 'spring', damping: 20, stiffness: 300 }
+        transition: { type: 'spring' as const, damping: 20, stiffness: 300 }
     };    // Progress bar animation using framer-motion
     const progressWidth = useSpring(isOpen ? (step / 3) * 100 : 0, {
         stiffness: 200,

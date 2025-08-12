@@ -1,6 +1,5 @@
 import { createClient } from "next-sanity"
 import { projectId, dataset, apiVersion } from "../../studio/env"
-import { revalidateTag } from "next/cache"
 
 // Server-side Sanity client with revalidation capabilities
 export const serverClient = createClient({
@@ -70,7 +69,12 @@ export async function revalidateSanityContent(type: string, id?: string, slug?: 
 
         // Revalidate all applicable tags
         for (const tag of tagsToRevalidate) {
-            revalidateTag(tag);
+            try {
+                const { revalidateTag } = await import("next/cache");
+                revalidateTag(tag);
+            } catch (err) {
+                console.warn('revalidateTag not available in this context:', tag);
+            }
         }
     } catch (err) {
         console.error('Failed to revalidate:', err);

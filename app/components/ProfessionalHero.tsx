@@ -221,7 +221,7 @@ export default function ProfessionalHero() {
                                         className="border-white/20 text-white hover:bg-white/10 px-8 py-4 h-auto"
                                         asChild
                                     >
-                                        <Link href="tel:+5521990051961">
+                                        <Link href="tel:+5511981845016">
                                             <Phone className="mr-2 w-4 h-4" />
                                             Falar com Consultor
                                         </Link>

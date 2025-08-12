@@ -122,7 +122,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
                 }}
                 transition={{
                     duration: 0.3,
-                    ease: [0.4, 0, 0.2, 1]
+                    ease: "easeInOut" as const
                 }}
                 style={{
                     pointerEvents: isOpen ? 'auto' : 'none',
@@ -134,3 +134,4 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
         </>
     );
 };
+

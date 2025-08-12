@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
       message,
       propertyType: body.propertyType,
       timestamp: new Date().toISOString(),
-      ip: request.ip || 'unknown'
+      ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
     });
 
     // Simulate real processing time

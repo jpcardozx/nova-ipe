@@ -7,6 +7,7 @@ import { formatarMoeda } from '@/lib/utils';
 import type { ImovelClient as ImovelDataType } from '@/src/types/imovel-client';
 import { PropertyCardUnified } from '@/app/components/ui/property/PropertyCardUnified';
 import { useAnalytics } from '@/app/hooks/useAnalytics';
+import { GaleriaImovel } from '@/app/components/ui/GaleriaImovel';
 import {
     Phone,
     Calendar,
@@ -36,7 +37,7 @@ interface ImovelDetalhesProps {
 const ImovelDetalhesNew: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], preco }) => {
     const [imagemAtiva, setImagemAtiva] = useState(0);
     const [isFavorito, setIsFavorito] = useState(false);
-    
+
     // Analytics hook
     const {
         trackPropertyView,
@@ -113,6 +114,20 @@ const ImovelDetalhesNew: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [],
         ...imagensGaleria
     ];
 
+    // Debug detalhado para verificar galeria
+    console.log('🖼️ Debug Galeria Detalhado:', {
+        imovelId: imovel._id,
+        titulo: imovel.titulo,
+        imagemPrincipal,
+        imagemPrincipalObjeto: imovel.imagem,
+        galeriaRaw: imovel.galeria,
+        galeriaFiltrada: imagensGaleria,
+        galeriaLength: imagensGaleria.length,
+        todasImagensLength: todasImagens.length,
+        primeiraImagemGaleria: imagensGaleria[0],
+        todasImagens: todasImagens.map(img => ({ url: img.imagemUrl, alt: img.alt }))
+    });
+
     const precoFinal = preco ?? imovel.preco ?? 0;
     const tipoPropriedade = imovel.finalidade?.toLowerCase() === 'venda' ? 'sale' : 'rent';
 
@@ -154,62 +169,43 @@ const ImovelDetalhesNew: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [],
                 <div className="grid lg:grid-cols-3 gap-8">
                     {/* Coluna Principal - Imagens e Detalhes */}
                     <div className="lg:col-span-2">
-                        {/* Galeria de Imagens */}
-                        <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
-                            <div className="relative h-96 lg:h-[500px]">
-                                <Image
-                                    src={todasImagens[imagemAtiva]?.imagemUrl || imagemPrincipal}
-                                    alt={todasImagens[imagemAtiva]?.alt || imovel.titulo || 'Imóvel'}
-                                    fill
-                                    className="object-cover"
-                                    priority
-                                />
+                        {/* Galeria de Imagens Melhorada */}
+                        <div className="mb-8">
+                            <GaleriaImovel
+                                imagemPrincipal={imagemPrincipal}
+                                galeria={imagensGaleria.map(img => ({
+                                    imagemUrl: img.imagemUrl || '',
+                                    alt: img.alt
+                                }))}
+                                titulo={imovel.titulo || 'Imóvel'}
+                            />
+                        </div>
 
-                                {/* Badges sobre a imagem */}
-                                <div className="absolute top-4 left-4 flex flex-col gap-2">
-                                    {imovel.destaque && (
-                                        <span className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-3 py-1 text-sm font-bold rounded-full shadow-lg flex items-center gap-1">
-                                            <Star className="w-3 h-3" />
-                                            DESTAQUE
-                                        </span>
-                                    )}
-                                    <span className={`px-3 py-1 text-sm font-bold rounded-full shadow-lg ${tipoPropriedade === 'sale'
-                                            ? 'bg-gradient-to-r from-green-500 to-green-600 text-white'
-                                            : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
-                                        }`}>
-                                        {tipoPropriedade === 'sale' ? 'VENDA' : 'ALUGUEL'}
-                                    </span>
-                                </div>
-
-                                {/* Indicador de posição da imagem */}
-                                {todasImagens.length > 1 && (
-                                    <div className="absolute bottom-4 right-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm">
-                                        {imagemAtiva + 1} / {todasImagens.length}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Thumbnails */}
-                            {todasImagens.length > 1 && (
-                                <div className="p-4 bg-slate-50">
-                                    <div className="flex gap-2 overflow-x-auto">
-                                        {todasImagens.map((img, index) => (
-                                            <button
-                                                key={index}
-                                                onClick={() => setImagemAtiva(index)}
-                                                className={`relative w-20 h-16 rounded-lg overflow-hidden flex-shrink-0 ${imagemAtiva === index ? 'ring-2 ring-amber-500' : ''
-                                                    }`}
-                                            >
-                                                <Image
-                                                    src={img.imagemUrl}
-                                                    alt={`Imagem ${index + 1}`}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
+                        {/* Badges de Status */}
+                        <div className="flex flex-wrap gap-3 mb-8">
+                            {imovel.destaque && (
+                                <span className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-2 text-sm font-bold rounded-full shadow-lg flex items-center gap-2">
+                                    <Star className="w-4 h-4" />
+                                    DESTAQUE
+                                </span>
+                            )}
+                            <span className={`px-4 py-2 text-sm font-bold rounded-full shadow-lg ${tipoPropriedade === 'sale'
+                                ? 'bg-gradient-to-r from-green-500 to-green-600 text-white'
+                                : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
+                                }`}>
+                                {tipoPropriedade === 'sale' ? 'VENDA' : 'ALUGUEL'}
+                            </span>
+                            {imovel.documentacaoOk && (
+                                <span className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-4 py-2 text-sm font-bold rounded-full shadow-lg flex items-center gap-2">
+                                    <Shield className="w-4 h-4" />
+                                    DOCS OK
+                                </span>
+                            )}
+                            {imovel.aceitaFinanciamento && (
+                                <span className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 text-sm font-bold rounded-full shadow-lg flex items-center gap-2">
+                                    <TrendingUp className="w-4 h-4" />
+                                    FINANCIA
+                                </span>
                             )}
                         </div>
 
@@ -326,8 +322,8 @@ const ImovelDetalhesNew: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [],
                             </div>
 
                             <div className="space-y-4">
-                                <a 
-                                    href="tel:+5521990051961"
+                                <a
+                                    href="tel:+5511981845016"
                                     onClick={handlePhoneClick}
                                     className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-300 flex items-center justify-center gap-2"
                                 >
@@ -335,8 +331,8 @@ const ImovelDetalhesNew: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [],
                                     Ligar agora
                                 </a>
 
-                                <a 
-                                    href={`https://wa.me/5521990051961?text=Olá! Tenho interesse no imóvel: ${encodeURIComponent(imovel.titulo || 'Imóvel')}`}
+                                <a
+                                    href={`https://wa.me/5511981845016?text=Olá! Tenho interesse no imóvel: ${encodeURIComponent(imovel.titulo || 'Imóvel')}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={handleWhatsAppClick}
@@ -346,7 +342,7 @@ const ImovelDetalhesNew: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [],
                                     WhatsApp
                                 </a>
 
-                                <button 
+                                <button
                                     onClick={handleVisitClick}
                                     className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-amber-600 hover:to-amber-700 transition-all duration-300 flex items-center justify-center gap-2"
                                 >

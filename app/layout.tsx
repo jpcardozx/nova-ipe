@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 import { Providers } from './providers/QueryProvider';
-import ProfessionalNavbar from './components/ProfessionalNavbar';
-import ProfessionalFooter from './components/ProfessionalFooter';
+import CenteredNavbar from './components/ui/CenteredNavbar-optimized';
+import FooterAprimorado from './sections/FooterAprimorado';
 import './globals.css';
 
 export const metadata: Metadata = {
   title: {
     template: '%s | Ipê Imóveis - Guararema',
-    default: 'Ipê Imóveis - Especialistas em Imóveis em Guararema'
+    default: 'Ipê Imóveis - Serviços Imobiliários em Guararema | Compra, Venda e Locação'
   },
   description: 'Encontre seu imóvel ideal em Guararema com a Ipê Imóveis. 15 anos de experiência, 500+ imóveis vendidos, atendimento personalizado.',
   keywords: 'imóveis Guararema, casas venda Guararema, apartamentos aluguel Guararema, terrenos Guararema, Ipê Imóveis, imobiliária Guararema SP',
@@ -110,7 +110,7 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <meta name="theme-color" content="#1a6f5c" />
-        
+
         {/* Google tag (gtag.js) - Google Ads Conversion Tracking */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17457190449"></script>
         <script
@@ -123,7 +123,7 @@ export default function RootLayout({
             `,
           }}
         />
-        
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
@@ -131,11 +131,11 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased bg-white text-gray-900">
         <Providers>
-          <ProfessionalNavbar />
+          <CenteredNavbar />
           <main role="main">
             {children}
           </main>
-          <ProfessionalFooter />
+          <FooterAprimorado />
         </Providers>
       </body>
     </html>

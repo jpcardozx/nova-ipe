@@ -57,7 +57,7 @@ const FormalContactForm = () => {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.5, ease: "easeOut" }
+      transition: { duration: 0.5, ease: "easeOut" as const }
     }
   };
 
@@ -201,7 +201,7 @@ const FormalContactForm = () => {
                         href={item.href}
                         className="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 transition-colors group"
                         whileHover={{ x: 5 }}
-                        transition={{ type: "spring", stiffness: 400 }}
+                        transition={{ type: "spring" as const, stiffness: 400 }}
                       >
                         <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center group-hover:bg-amber-200 transition-colors">
                           <Icon className="w-6 h-6 text-amber-600" />
@@ -220,7 +220,7 @@ const FormalContactForm = () => {
               <motion.div 
                 className="bg-slate-900 text-white p-6 rounded-2xl"
                 whileHover={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300 }}
+                transition={{ type: "spring" as const, stiffness: 300 }}
               >
                 <h4 className="font-semibold mb-4">Horário de Atendimento</h4>
                 <div className="space-y-2 text-sm">
@@ -514,3 +514,4 @@ const FormalContactForm = () => {
 };
 
 export default FormalContactForm;
+

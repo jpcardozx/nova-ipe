@@ -4,22 +4,22 @@ import React, { FC, useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
-import { 
-    Phone, 
-    Calendar, 
-    UserCheck, 
-    Share2, 
-    MapPin, 
-    Bed, 
-    Bath, 
-    Car, 
-    Ruler, 
-    Heart, 
-    ChevronLeft, 
-    ChevronRight, 
-    Expand, 
-    X, 
-    Mail, 
+import {
+    Phone,
+    Calendar,
+    UserCheck,
+    Share2,
+    MapPin,
+    Bed,
+    Bath,
+    Car,
+    Ruler,
+    Heart,
+    ChevronLeft,
+    ChevronRight,
+    Expand,
+    X,
+    Mail,
     ArrowLeft,
     Star,
     Clock,
@@ -144,11 +144,10 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
             <motion.nav
                 initial={{ y: -100 }}
                 animate={{ y: 0 }}
-                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-                    isScrolled 
-                        ? 'bg-white/95 backdrop-blur-xl shadow-lg border-b border-gray-200' 
+                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+                        ? 'bg-white/95 backdrop-blur-xl shadow-lg border-b border-gray-200'
                         : 'bg-transparent'
-                }`}
+                    }`}
             >
                 <div className="container mx-auto px-4 py-4">
                     <div className="flex items-center justify-between">
@@ -163,11 +162,10 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
                         <div className="flex items-center gap-4">
                             <button
                                 onClick={() => setIsFavorite(!isFavorite)}
-                                className={`p-2 rounded-full transition-all duration-200 ${
-                                    isFavorite 
-                                        ? 'bg-red-100 text-red-600' 
+                                className={`p-2 rounded-full transition-all duration-200 ${isFavorite
+                                        ? 'bg-red-100 text-red-600'
                                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                }`}
+                                    }`}
                             >
                                 <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
                             </button>
@@ -261,11 +259,10 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
                                         <button
                                             key={index}
                                             onClick={() => setCurrentImageIndex(index)}
-                                            className={`flex-shrink-0 relative w-20 h-16 rounded-lg overflow-hidden transition-all ${
-                                                index === currentImageIndex 
-                                                    ? 'ring-2 ring-amber-500 ring-offset-2' 
+                                            className={`flex-shrink-0 relative w-20 h-16 rounded-lg overflow-hidden transition-all ${index === currentImageIndex
+                                                    ? 'ring-2 ring-amber-500 ring-offset-2'
                                                     : 'opacity-70 hover:opacity-100'
-                                            }`}
+                                                }`}
                                         >
                                             <Image
                                                 src={image.url}
@@ -296,7 +293,7 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
                                     <MapPin className="w-5 h-5" />
                                     <span>{imovel.endereco || `${imovel.bairro}, ${imovel.cidade}`}</span>
                                 </div>
-                                
+
                                 <div className="flex items-end gap-4">
                                     <div className="text-4xl font-bold text-amber-600">
                                         {formatarMoeda(preco ?? imovel.preco ?? 0)}
@@ -327,7 +324,7 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
                                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Interessado neste imóvel?</h3>
                                 <div className="space-y-3">
                                     <a
-                                        href={`https://wa.me/5521990051961?text=Olá! Tenho interesse no imóvel: ${imovel.titulo}`}
+                                        href={`https://wa.me/5511981845016?text=Olá! Tenho interesse no imóvel: ${imovel.titulo}`}
                                         className="flex items-center justify-center gap-3 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl transition-colors font-medium"
                                     >
                                         <MessageCircle className="w-5 h-5" />
@@ -511,7 +508,7 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
                             >
                                 <X className="w-8 h-8" />
                             </button>
-                            
+
                             <div className="relative aspect-[4/3] rounded-xl overflow-hidden">
                                 {images[currentImageIndex] && (
                                     <Image
@@ -529,9 +526,8 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
                                         <button
                                             key={index}
                                             onClick={() => setCurrentImageIndex(index)}
-                                            className={`w-3 h-3 rounded-full transition-all ${
-                                                index === currentImageIndex ? 'bg-white' : 'bg-white/50'
-                                            }`}
+                                            className={`w-3 h-3 rounded-full transition-all ${index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                                                }`}
                                         />
                                     ))}
                                 </div>

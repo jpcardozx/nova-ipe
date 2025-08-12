@@ -9,6 +9,7 @@ import {
     queryImovelEmDestaque,
     queryImoveisDestaqueVenda,
     queryImovelPorSlug,
+    queryImoveisEmAlta, // Nova query para imóveis em alta
 } from '../queries'
 import type { ImovelClient, ImovelProjetado } from '../../src/types/imovel-client'
 import { mapImovelToClient } from '../mapImovelToClient'
@@ -138,6 +139,16 @@ export async function getImoveisDestaqueAluguel(): Promise<ImovelClient[]> {
         queryImoveisAluguelDestaque,
         {},
         ['imoveis', 'destaque', 'aluguel']
+    )
+    return mapMany(data)
+}
+
+// Nova funcionalidade: Imóveis em Alta
+export async function getImoveisEmAlta(): Promise<ImovelClient[]> {
+    const data = await fetchWithCache<ImovelProjetado[]>(
+        queryImoveisEmAlta,
+        {},
+        ['imoveis', 'emAlta']
     )
     return mapMany(data)
 }

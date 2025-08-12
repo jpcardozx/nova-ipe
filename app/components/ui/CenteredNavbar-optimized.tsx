@@ -180,7 +180,7 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
                                     </a>
 
                                     <a
-                                        href="https://wa.me/5521990051961"
+                                        href="https://wa.me/5511981845016"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700 transition-colors duration-200 text-sm font-medium"
@@ -230,7 +230,7 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
                             {/* Mobile CTAs */}
                             <div className="space-y-3 pt-4 border-t border-gray-200">
                                 <a
-                                    href="https://wa.me/5521990051961"
+                                    href="https://wa.me/5511981845016"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex items-center gap-3 w-full bg-green-600 text-white px-4 py-3 rounded-xl hover:bg-green-700 transition-colors duration-200"

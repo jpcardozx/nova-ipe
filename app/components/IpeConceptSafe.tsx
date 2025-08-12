@@ -82,7 +82,7 @@ export default function IpeConceptSafe({ className }: IpeInstitutionalProps) {
             transition: {
                 duration: 1.2,
                 staggerChildren: 0.15,
-                ease: [0.25, 0.25, 0.25, 0.75]
+                ease: "easeInOut" as const
             }
         }
     };
@@ -94,7 +94,7 @@ export default function IpeConceptSafe({ className }: IpeInstitutionalProps) {
             y: 0,
             transition: {
                 duration: 0.8,
-                ease: [0.25, 0.25, 0.25, 0.75]
+                ease: "easeInOut" as const
             }
         }
     };
@@ -107,7 +107,7 @@ export default function IpeConceptSafe({ className }: IpeInstitutionalProps) {
             scale: 1,
             transition: {
                 duration: 0.9,
-                ease: [0.25, 0.25, 0.25, 0.75]
+                ease: "easeInOut" as const
             }
         }
     };
@@ -299,7 +299,7 @@ export default function IpeConceptSafe({ className }: IpeInstitutionalProps) {
                                         className="absolute -top-4 -right-4 bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-4 rounded-2xl shadow-xl shadow-emerald-500/20"
                                         initial={{ opacity: 0, scale: 0.8, rotate: -12 }}
                                         animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                                        transition={{ delay: 1.2, duration: 0.8, type: "spring", bounce: 0.25 }}
+                                        transition={{ delay: 1.2, duration: 0.8, type: "spring" as const, bounce: 0.25 }}
                                     >
                                         <Award className="w-7 h-7" />
                                     </SafeMotionComponent>
@@ -348,3 +348,4 @@ export default function IpeConceptSafe({ className }: IpeInstitutionalProps) {
         </SectionWrapper>
     );
 }
+

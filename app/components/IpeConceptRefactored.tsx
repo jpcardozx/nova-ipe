@@ -84,7 +84,7 @@ export default function IpeConceptRefactored({ className }: IpeConceptRefactored
             y: 0,
             transition: {
                 duration: 0.6,
-                ease: "easeOut"
+                ease: "easeOut" as const
             }
         }
     };
@@ -240,7 +240,7 @@ export default function IpeConceptRefactored({ className }: IpeConceptRefactored
                                     className="absolute -top-4 -right-4 bg-green-500 text-white p-3 rounded-full shadow-lg"
                                     initial={{ opacity: 0, scale: 0.8 }}
                                     animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
-                                    transition={{ delay: 1, duration: 0.5, type: "spring" }}
+                                    transition={{ delay: 1, duration: 0.5, type: "spring" as const }}
                                 >
                                     <Award className="w-6 h-6" />
                                 </motion.div>
@@ -275,3 +275,4 @@ export default function IpeConceptRefactored({ className }: IpeConceptRefactored
         </section>
     );
 }
+

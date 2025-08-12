@@ -71,7 +71,7 @@ const LoadingShell = ({ isLoading, progress }: { isLoading: boolean; progress: n
                 <motion.div
                     initial={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 1.2, ease: "easeOut" }}
+                    transition={{ duration: 1.2, ease: "easeOut" as const }}
                     className="fixed inset-0 z-50 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center overflow-hidden"
                 >
                     {/* Sophisticated Background Elements */}
@@ -82,7 +82,7 @@ const LoadingShell = ({ isLoading, progress }: { isLoading: boolean; progress: n
                                 scale: [1, 1.2, 1],
                                 rotate: [0, 180, 360]
                             }}
-                            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+                            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" as const }}
                         />
                         <motion.div
                             className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-blue-600/10 to-purple-400/5 rounded-full blur-3xl"
@@ -90,7 +90,7 @@ const LoadingShell = ({ isLoading, progress }: { isLoading: boolean; progress: n
                                 scale: [1.2, 1, 1.2],
                                 rotate: [360, 180, 0]
                             }}
-                            transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+                            transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" as const }}
                         />
                     </div>
 
@@ -99,7 +99,7 @@ const LoadingShell = ({ isLoading, progress }: { isLoading: boolean; progress: n
                         <motion.div
                             initial={{ scale: 0.8, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
-                            transition={{ duration: 0.8, ease: "easeOut" }}
+                            transition={{ duration: 0.8, ease: "easeOut" as const }}
                             className="relative"
                         >
                             <motion.div
@@ -115,7 +115,7 @@ const LoadingShell = ({ isLoading, progress }: { isLoading: boolean; progress: n
                                 transition={{
                                     duration: 3,
                                     repeat: Infinity,
-                                    ease: "easeInOut"
+                                    ease: "easeInOut" as const
                                 }}
                             >
                                 <Home className="w-12 h-12 text-amber-400" />
@@ -162,13 +162,13 @@ const LoadingShell = ({ isLoading, progress }: { isLoading: boolean; progress: n
                                         className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-400 rounded-full shadow-lg shadow-amber-500/50"
                                         initial={{ width: 0 }}
                                         animate={{ width: `${progress}%` }}
-                                        transition={{ duration: 0.8, ease: "easeOut" }}
+                                        transition={{ duration: 0.8, ease: "easeOut" as const }}
                                     />
                                     <motion.div
                                         className="absolute inset-y-0 left-0 bg-gradient-to-r from-white/30 to-transparent rounded-full"
                                         initial={{ width: 0 }}
                                         animate={{ width: `${Math.min(progress + 10, 100)}%` }}
-                                        transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
+                                        transition={{ duration: 0.8, ease: "easeOut" as const, delay: 0.1 }}
                                     />
                                 </div>
 
@@ -212,7 +212,7 @@ const LoadingShell = ({ isLoading, progress }: { isLoading: boolean; progress: n
                                         duration: 2,
                                         repeat: Infinity,
                                         delay: i * 0.3,
-                                        ease: "easeInOut"
+                                        ease: "easeInOut" as const
                                     }}
                                 />
                             ))}
@@ -298,7 +298,7 @@ export default function InteractiveHero() {
                 onMouseMove={handleMouseMove}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: isVisible ? 1 : 0 }}
-                transition={{ duration: 1, ease: "easeOut" }}
+                transition={{ duration: 1, ease: "easeOut" as const }}
                 className="relative min-h-screen bg-slate-900 overflow-hidden"
             >
                 {/* Consolidated Background */}
@@ -344,7 +344,7 @@ export default function InteractiveHero() {
                         style={{ x: springMouseX.get() * -0.5, y: springMouseY.get() * -0.5 }}
                         className="absolute bottom-1/3 left-1/4 w-32 h-32 border border-amber-400/8 rounded-lg"
                         animate={{ rotate: [0, 25, 0] }}
-                        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+                        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" as const }}
                     />
                 </div>
 
@@ -363,7 +363,7 @@ export default function InteractiveHero() {
                                     initial={{ opacity: 0, y: 30, filter: "blur(4px)" }}
                                     animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                                     exit={{ opacity: 0, y: -30, filter: "blur(4px)" }}
-                                    transition={{ duration: 0.8, ease: "easeOut" }}
+                                    transition={{ duration: 0.8, ease: "easeOut" as const }}
                                     className="space-y-6"
                                 >                                    {/* Highlight Badge - Premium Style */}
                                     <motion.div
@@ -378,7 +378,7 @@ export default function InteractiveHero() {
                                                 scale: [1, 1.3, 1],
                                                 opacity: [0.8, 1, 0.8]
                                             }}
-                                            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                                            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" as const }}
                                         />
                                         <span className="text-amber-100 text-base font-medium tracking-wide">
                                             {currentSegment.highlight}
@@ -479,7 +479,7 @@ export default function InteractiveHero() {
                                                     <motion.div
                                                         className="bg-white/20 rounded-lg p-1"
                                                         whileHover={{ x: 4 }}
-                                                        transition={{ type: "spring", stiffness: 400 }}
+                                                        transition={{ type: "spring" as const, stiffness: 400 }}
                                                     >
                                                         <ArrowRight className="w-5 h-5" />
                                                     </motion.div>
@@ -506,7 +506,7 @@ export default function InteractiveHero() {
                                                         <motion.div
                                                             className="p-1.5 bg-emerald-500/20 rounded-lg"
                                                             whileHover={{ rotate: 12, scale: 1.1 }}
-                                                            transition={{ type: "spring", stiffness: 400 }}
+                                                            transition={{ type: "spring" as const, stiffness: 400 }}
                                                         >
                                                             <Phone className="w-4 h-4 text-emerald-400" />
                                                         </motion.div>
@@ -532,7 +532,7 @@ export default function InteractiveHero() {
                                                         <motion.div
                                                             className="p-1.5 bg-green-500/20 rounded-lg"
                                                             whileHover={{ scale: 1.15 }}
-                                                            transition={{ type: "spring", stiffness: 400 }}
+                                                            transition={{ type: "spring" as const, stiffness: 400 }}
                                                         >
                                                             <MessageCircle className="w-4 h-4 text-green-400" />
                                                         </motion.div>
@@ -751,3 +751,4 @@ export default function InteractiveHero() {
         </>
     );
 }
+

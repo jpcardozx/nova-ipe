@@ -119,10 +119,10 @@ export default function PremiumHeroImproved() {
   // Animações mais refinadas
   const fadeInUp = {
     initial: { opacity: 0, y: 40 },
-    animate: { 
-      opacity: 1, 
+    animate: {
+      opacity: 1,
       y: 0,
-      transition: { duration: 0.8, ease: "easeOut" }
+      transition: { duration: 0.8, ease: "easeOut" as const }
     }
   };
 
@@ -294,7 +294,7 @@ export default function PremiumHeroImproved() {
             <motion.div
               className="relative rounded-2xl overflow-hidden shadow-2xl"
               whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              transition={{ type: "spring" as const, stiffness: 300 }}
             >
               <Image
                 src="/images/escritorioInterior.jpg"

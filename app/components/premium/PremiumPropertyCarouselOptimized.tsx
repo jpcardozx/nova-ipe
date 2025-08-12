@@ -259,7 +259,7 @@ const PremiumPropertyCarouselOptimized: React.FC<PremiumPropertyCarouselOptimize
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                        transition={{ duration: 0.8, ease: "easeOut" as const }}
                     >
                         {badge && (
                             <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 rounded-full text-amber-700 text-sm font-semibold mb-6 shadow-md backdrop-blur-sm">
@@ -300,7 +300,7 @@ const PremiumPropertyCarouselOptimized: React.FC<PremiumPropertyCarouselOptimize
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ duration: 0.6, ease: "easeOut" as const }}
                 >
                     {/* Main Carousel */}                    <div
                         ref={carouselRef}
@@ -429,3 +429,4 @@ const PremiumPropertyCarouselOptimized: React.FC<PremiumPropertyCarouselOptimize
 }
 
 export default PremiumPropertyCarouselOptimized
+

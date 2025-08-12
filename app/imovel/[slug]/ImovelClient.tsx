@@ -50,7 +50,7 @@ const CardCTAImovel: FC<CardCTAImovelProps> = ({
     // Preço formatado
     const precoFormatado = preco != null ? formatarMoeda(preco) : 'Sob consulta';    // URL para whatsapp
     const safeTitle = encodeURIComponent(titulo ?? '');
-    const defaultLink = `https://wa.me/5521990051961?text=Olá! Gostaria de uma análise financeira detalhada sobre este imóvel (${finalidade}): ${safeTitle} - Meu interesse é investir para obter retorno financeiro.`;
+    const defaultLink = `https://wa.me/5511981845016?text=Olá! Gostaria de uma análise financeira detalhada sobre este imóvel (${finalidade}): ${safeTitle} - Meu interesse é investir para obter retorno financeiro.`;
     const ctaUrl = linkPersonalizado?.trim() || defaultLink;
 
     return (

@@ -397,7 +397,7 @@ export default function MarketAnalysisSection() {
                         <div className="space-y-3 text-sm text-gray-600">
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                <a href="tel:+5521990051961" className="hover:text-green-600 transition-colors">
+                                <a href="tel:+5511981845016" className="hover:text-green-600 transition-colors">
                                     (11) 98184-5016
                                 </a>
                             </div>

@@ -139,7 +139,7 @@ export default function PremiumHeroRedesigned() {
             transition: {
                 delay: i * 0.08,
                 duration: 0.6,
-                ease: [0.25, 0.46, 0.45, 0.94]
+                ease: "easeOut" as const
             }
         })
     };
@@ -158,7 +158,7 @@ export default function PremiumHeroRedesigned() {
                         exit={{ opacity: 0, scale: 1.01 }}
                         transition={{
                             duration: 2,
-                            ease: [0.25, 0.46, 0.45, 0.94]
+                            ease: "easeOut" as const
                         }}
                         className="absolute inset-0"
                     >
@@ -214,7 +214,7 @@ export default function PremiumHeroRedesigned() {
                                 exit="exit"
                                 transition={{
                                     duration: 1.2,
-                                    ease: [0.25, 0.46, 0.45, 0.94]
+                                    ease: "easeOut" as const
                                 }}
                                 className="space-y-6"
                             >                {/* Professional Badge com animação mais sutil */}
@@ -501,3 +501,4 @@ export default function PremiumHeroRedesigned() {
         </section>
     );
 }
+

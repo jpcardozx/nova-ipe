@@ -24,7 +24,7 @@ export default function EnhancedHero() {
     }
 
     const handleQuickCall = () => {
-        window.open('https://wa.me/5521990051961?text=Olá! Gostaria de uma avaliação profissional sobre imóveis em Guararema.', '_blank');
+        window.open('https://wa.me/5511981845016?text=Olá! Gostaria de uma avaliação profissional sobre imóveis em Guararema.', '_blank');
     }
 
     return (
@@ -260,7 +260,7 @@ export default function EnhancedHero() {
                 <span className="text-sm mb-3 font-light">Explore nosso portfólio</span>
                 <motion.div
                     animate={{ y: [0, 8, 0] }}
-                    transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                    transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" as const }}
                     className="w-10 h-10 rounded-full border-2 border-white/30 flex items-center justify-center"
                 >
                     <ChevronDown className="w-5 h-5" />
@@ -269,3 +269,4 @@ export default function EnhancedHero() {
         </section>
     )
 }
+

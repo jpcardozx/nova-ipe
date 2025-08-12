@@ -31,7 +31,7 @@ const heroVariants = {
         scale: 1,
         transition: {
             duration: 1.2,
-            ease: [0.22, 1, 0.36, 1]
+            ease: "easeOut" as const
         }
     }
 };
@@ -55,7 +55,7 @@ const cardVariants = {
         scale: 1,
         transition: {
             duration: 0.7,
-            ease: [0.25, 0.1, 0.25, 1.0]
+            ease: "easeOut" as const
         }
     }
 };
@@ -291,7 +291,7 @@ export function PremiumSalesSection() {
                             className="inline-block"
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            transition={{ delay: 0.2, type: "spring" }}
+                            transition={{ delay: 0.2, type: "spring" as const }}
                         >
                             <div className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full font-semibold shadow-lg">
                                 Imóveis para Venda
@@ -383,3 +383,4 @@ export function PremiumSalesSection() {
 }
 
 export default PremiumSalesSection;
+

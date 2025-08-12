@@ -80,8 +80,7 @@ const ProcessoGuararema: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({
         target: containerRef,
-        offset: ["start end", "end start"],
-        layoutEffect: false
+        offset: ["start end", "end start"]
     });
 
     const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0])

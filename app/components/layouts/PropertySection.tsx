@@ -71,7 +71,7 @@ export default function PropertySection({
             y: 0,
             scale: 1,
             transition: {
-                type: "spring",
+                type: "spring" as const,
                 stiffness: 100,
                 damping: 20
             }
@@ -333,7 +333,7 @@ export default function PropertySection({
                             key={property.id}
                             className="min-w-full md:min-w-[50%] lg:min-w-[33.333%] px-4"
                             whileHover={{ scale: 0.98 }}
-                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            transition={{ type: "spring" as const, stiffness: 300, damping: 30 }}
                         >
                             <Link href={`/imovel/${property.slug}`}>
                                 <div className="relative group">
@@ -445,7 +445,7 @@ export default function PropertySection({
                                     <motion.div
                                         initial={{ opacity: 0, scale: 0 }}
                                         animate={{ opacity: 1, scale: 1 }}
-                                        transition={{ delay: 0.5, type: "spring" }}
+                                        transition={{ delay: 0.5, type: "spring" as const }}
                                         className="flex gap-2"
                                     >
                                         <button className="p-3 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/30 transition-colors">
@@ -581,3 +581,4 @@ export default function PropertySection({
         </PropertySectionLayout>
     );
 }
+

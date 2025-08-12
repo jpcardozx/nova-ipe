@@ -170,7 +170,7 @@ export default function FooterAprimorado() {
                                         label="LinkedIn da Ipê Imóveis"
                                     />
                                     <SocialIcon
-                                        href="https://wa.me/5521990051961"
+                                        href="https://wa.me/5511981845016"
                                         icon={<Phone className="w-5 h-5" />}
                                         label="WhatsApp da Ipê Imóveis"
                                     />
@@ -265,9 +265,37 @@ export default function FooterAprimorado() {
 
                     {/* Rodapé final */}
                     <div className="mt-8 pt-6 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
-                        <p className="text-gray-400 text-sm text-center md:text-left">
-                            © {year} Ipê Imóveis. Todos os direitos reservados. CRECI-SP 12.345-J.
-                        </p>
+                        <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+                            <p className="text-gray-400 text-sm text-center md:text-left">
+                                © {year} Ipê Imóveis. Todos os direitos reservados. CRECI-SP 12.345-J.
+                            </p>
+                            {/* Developer Credit - S-Tier Elegant Design */}
+                            <div className="group relative flex items-center gap-1.5 opacity-50 hover:opacity-100 transition-all duration-700 ease-out">
+                                {/* Subtle glow effect on hover */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-amber-400/0 via-amber-400/5 to-amber-400/0 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+
+                                {/* Left decorative dot */}
+                                <div className="relative w-1 h-1 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full group-hover:scale-150 group-hover:shadow-amber-400/50 group-hover:shadow-md transition-all duration-500 ease-out"></div>
+
+                                {/* Main text with elegant typography */}
+                                <span className="relative text-xs text-gray-500 group-hover:text-gray-300 transition-colors duration-500 font-mono tracking-wider leading-relaxed">
+                                    desenvolvido por{' '}
+                                    <a
+                                        href="https://github.com/jpcardozx"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="relative text-amber-400/90 hover:text-amber-300 transition-all duration-300 font-medium tracking-normal group-hover:tracking-wide"
+                                    >
+                                        <span className="relative z-10">@jpcardozx</span>
+                                        {/* Subtle underline effect */}
+                                        <span className="absolute bottom-0 left-0 w-0 h-px bg-gradient-to-r from-amber-400 to-amber-500 group-hover:w-full transition-all duration-500 ease-out"></span>
+                                    </a>
+                                </span>
+
+                                {/* Right decorative dot */}
+                                <div className="relative w-1 h-1 bg-gradient-to-r from-amber-500 to-amber-400 rounded-full group-hover:scale-150 group-hover:shadow-amber-400/50 group-hover:shadow-md transition-all duration-500 ease-out delay-75"></div>
+                            </div>
+                        </div>
                         <div className="flex gap-6 text-sm">
                             <Link href="/privacidade" className="text-gray-400 hover:text-white transition-colors">
                                 Política de Privacidade

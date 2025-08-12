@@ -55,7 +55,7 @@ const StatItem = ({
             transition={{
                 duration: 0.5,
                 delay,
-                type: "spring",
+                type: "spring" as const,
                 stiffness: 100
             }}
             className="relative group"
@@ -255,3 +255,4 @@ export default {
     MarketAlert,
     StatItem
 };
+

@@ -36,6 +36,7 @@ export interface ImovelClient {
     finalidade?: 'Venda' | 'Aluguel' | 'Temporada'
     tipoImovel?: 'Casa' | 'Apartamento' | 'Terreno' | 'Comercial' | 'Outro'
     destaque?: boolean
+    emAlta?: boolean // Nova funcionalidade: Imóveis em Alta
     bairro?: string
     cidade?: string
     estado?: string

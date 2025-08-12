@@ -38,7 +38,7 @@ export default function HeroImovel({ imagem, titulo, cidade, tipo, metros, desta
             <motion.div
                 initial={{ opacity: 0, y: 60 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, ease: "easeOut" }}
+                transition={{ duration: 0.9, ease: "easeOut" as const }}
                 className="relative z-20 h-full w-full flex flex-col justify-end pb-24 px-6 md:px-14 max-w-7xl mx-auto"
             >
                 {destaque && (
@@ -78,3 +78,4 @@ export default function HeroImovel({ imagem, titulo, cidade, tipo, metros, desta
         </section>
     )
 }
+
