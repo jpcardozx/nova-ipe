@@ -108,10 +108,7 @@ export default function HomePageClient({
             </main>
 
             {/* Botão do WhatsApp fixo */}
-            <WhatsAppButton phoneNumber="+5511981845016" />
-
-            {/* Footer - Era o componente que estava faltando na página inicial */}
-            <FooterAprimorado />
+            <WhatsAppButton phoneNumber="+5511981845016" />;
         </OptimizationProvider>
     );
 }

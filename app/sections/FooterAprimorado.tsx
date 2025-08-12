@@ -296,7 +296,7 @@ export default function FooterAprimorado() {
                                 <div className="relative w-1 h-1 bg-gradient-to-r from-amber-500 to-amber-400 rounded-full group-hover:scale-150 group-hover:shadow-amber-400/50 group-hover:shadow-md transition-all duration-500 ease-out delay-75"></div>
                             </div>
                         </div>
-                        <div className="flex gap-6 text-sm">
+                        <div className="flex gap-6 text-sm items-center">
                             <Link href="/privacidade" className="text-gray-400 hover:text-white transition-colors">
                                 Política de Privacidade
                             </Link>
@@ -305,6 +305,30 @@ export default function FooterAprimorado() {
                             </Link>
                             <Link href="/cookies" className="text-gray-400 hover:text-white transition-colors">
                                 Cookies
+                            </Link>
+
+                            {/* Separador discreto */}
+                            <div className="w-px h-4 bg-gray-600"></div>
+
+                            {/* Botão de Login para Sócios - Discreto e Elegante */}
+                            <Link
+                                href="/login"
+                                className="group relative flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gray-800/50 border border-gray-700/50 hover:border-amber-400/50 hover:bg-gray-800/80 transition-all duration-300 opacity-75 hover:opacity-100"
+                                aria-label="Acesso exclusivo para sócios e associados"
+                            >
+                                {/* Ícone de chave discreto */}
+                                <div className="w-3 h-3 relative">
+                                    <div className="w-2 h-2 border border-gray-500 group-hover:border-amber-400 rounded-full transition-colors duration-300"></div>
+                                    <div className="absolute top-1 left-1.5 w-1.5 h-px bg-gray-500 group-hover:bg-amber-400 transition-colors duration-300"></div>
+                                </div>
+
+                                {/* Texto elegante */}
+                                <span className="text-xs text-gray-500 group-hover:text-amber-400 transition-colors duration-300 font-medium tracking-wide">
+                                    Sócios
+                                </span>
+
+                                {/* Indicador sutil de acesso */}
+                                <div className="w-1 h-1 bg-amber-400/60 rounded-full group-hover:bg-amber-400 group-hover:scale-125 transition-all duration-300"></div>
                             </Link>
                         </div>
                     </div>
