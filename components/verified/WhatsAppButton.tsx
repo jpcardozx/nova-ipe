@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Phone } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import SafeHydration from './SafeHydration';
 
 interface WhatsAppButtonProps {
@@ -21,7 +22,11 @@ export default function WhatsAppButton({
 }: WhatsAppButtonProps) {
     const [isVisible, setIsVisible] = useState(!showAfterScroll);
     const [isBusinessHours, setIsBusinessHours] = useState(false);
+    const pathname = usePathname();
     const ref = React.useRef(null);
+
+    // Não mostra em páginas do studio/admin
+    const isStudioPage = pathname?.startsWith('/studio') || pathname?.startsWith('/admin');
 
     // Verifica se está dentro do horário comercial
     useEffect(() => {
@@ -61,35 +66,37 @@ export default function WhatsAppButton({
 
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [showAfterScroll]); const encodedMessage = encodeURIComponent(message);
+    }, [showAfterScroll]);
+
+    const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${phoneNumber.replace(/\D/g, '')}?text=${encodedMessage}`;
 
-    // Só mostra o botão se estiver visível E dentro do horário comercial
-    const shouldShow = isVisible && isBusinessHours;
+    // Só mostra o botão se estiver visível E dentro do horário comercial E não estiver nas páginas do studio
+    const shouldShow = isVisible && isBusinessHours && !isStudioPage;
 
-    return (<SafeHydration>
-        <div ref={ref} className={`fixed bottom-24 right-8 z-40 ${shouldShow ? 'opacity-100' : 'opacity-0 pointer-events-none'} transition-opacity duration-300 ${className}`}>
-            <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`
-              flex items-center justify-center gap-2 
-              bg-gradient-to-r from-green-500 to-green-600
-              text-white text-base font-medium
-              py-3 px-4 rounded-full shadow-lg hover:shadow-xl
-              transition-all duration-200 hover:-translate-y-1
-              ${pulseAnimation ? 'animate-pulse-subtle' : ''}
-            `}
-                aria-label="Conversar no WhatsApp"
-            >
-                <div className="flex items-center justify-center w-8 h-8 bg-white bg-opacity-20 rounded-full">
-                    <Phone className="w-4 h-4" />
-                </div>
-                <span>Consultor online</span>
-            </a>
-        </div>
-    </SafeHydration>
+    return (
+        <SafeHydration>
+            <div ref={ref} className={`fixed bottom-24 right-20 z-30 ${shouldShow ? 'opacity-100' : 'opacity-0 pointer-events-none'} transition-opacity duration-300 ${className}`}>
+                <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`
+                      flex items-center justify-center gap-2 
+                      bg-gradient-to-r from-green-500 to-green-600
+                      text-white text-base font-medium
+                      py-3 px-4 rounded-full shadow-lg hover:shadow-xl
+                      transition-all duration-200 hover:-translate-y-1
+                      ${pulseAnimation ? 'animate-pulse-subtle' : ''}
+                    `}
+                    aria-label="Conversar no WhatsApp"
+                >
+                    <div className="flex items-center justify-center w-8 h-8 bg-white bg-opacity-20 rounded-full">
+                        <Phone className="w-4 h-4" />
+                    </div>
+                    <span>Consultor online</span>
+                </a>
+            </div>
+        </SafeHydration>
     );
 }
-

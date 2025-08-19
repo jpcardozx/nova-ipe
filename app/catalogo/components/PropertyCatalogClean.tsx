@@ -3,27 +3,19 @@
 import React, { useState, useMemo } from 'react'
 import { Search, Filter, Grid, List, MapPin, Heart } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import SimplePropertyCard from '@/app/components/SimplePropertyCard'
+import PropertyCardPremium from '@/app/components/PropertyCardPremium'
+import {
+    transformToUnifiedPropertyList,
+    toPropertyCardPremiumProps,
+    type UnifiedPropertyData
+} from '@/lib/unified-property-transformer'
+import type { ImovelClient } from '@/src/types/imovel-client'
 
-// Simplified interface for the clean catalog
-interface SimpleProperty {
-    id: string
-    title: string
-    location: string
-    price: number
-    propertyType: 'sale' | 'rent'
-    bedrooms?: number
-    bathrooms?: number
-    area?: number
-    mainImage?: { url: string }
-    description?: string
-}
-
-interface PropertyCatalogSimpleProps {
+interface PropertyCatalogCleanProps {
     searchParams?: Record<string, string>
     className?: string
     variant?: 'catalog' | 'home' | 'search'
-    initialProperties?: SimpleProperty[]
+    initialProperties?: ImovelClient[]
 }
 
 interface FilterState {
@@ -35,40 +27,80 @@ interface FilterState {
     bedrooms: string
 }
 
-// Mock data - replace with real data
-const mockProperties: SimpleProperty[] = [
+// Mock data para fallback
+const mockImovelClient: ImovelClient[] = [
     {
-        id: '1',
-        title: 'Casa em Guararema',
-        location: 'Centro, Guararema',
-        price: 350000,
-        propertyType: 'sale',
-        bedrooms: 3,
-        bathrooms: 2,
-        area: 120,
-        mainImage: { url: '/placeholder-house.jpg' },
-        description: 'Casa bem localizada no centro de Guararema'
+        _id: '1',
+        titulo: 'Casa Moderna em Guararema',
+        slug: 'casa-moderna-guararema',
+        preco: 450000,
+        finalidade: 'Venda',
+        bairro: 'Centro',
+        cidade: 'Guararema',
+        dormitorios: 3,
+        banheiros: 2,
+        areaUtil: 150,
+        vagas: 2,
+        tipoImovel: 'Casa',
+        descricao: 'Linda casa moderna com acabamento de primeira qualidade',
+        destaque: true,
+        imagem: {
+            imagemUrl: '/placeholder-house.jpg',
+            alt: 'Casa moderna em Guararema',
+            asset: { _type: 'sanity.imageAsset' }
+        },
+        dataPublicacao: new Date().toISOString()
     },
     {
-        id: '2',
-        title: 'Apartamento Moderno',
-        location: 'Bairro do Tanque, Guararema',
-        price: 280000,
-        propertyType: 'sale',
-        bedrooms: 2,
-        bathrooms: 1,
-        area: 80,
-        mainImage: { url: '/placeholder-apt.jpg' },
-        description: 'Apartamento novo em área nobre'
+        _id: '2',
+        titulo: 'Apartamento Confortável',
+        slug: 'apartamento-confortavel',
+        preco: 1800,
+        finalidade: 'Aluguel',
+        bairro: 'Bairro do Tanque',
+        cidade: 'Guararema',
+        dormitorios: 2,
+        banheiros: 1,
+        areaUtil: 80,
+        vagas: 1,
+        tipoImovel: 'Apartamento',
+        descricao: 'Apartamento bem localizado, ideal para casais',
+        imagem: {
+            imagemUrl: '/placeholder-apt.jpg',
+            alt: 'Apartamento confortável',
+            asset: { _type: 'sanity.imageAsset' }
+        }
+    },
+    {
+        _id: '3',
+        titulo: 'Casa com Piscina',
+        slug: 'casa-com-piscina',
+        preco: 650000,
+        finalidade: 'Venda',
+        bairro: 'Ponte Alta',
+        cidade: 'Guararema',
+        dormitorios: 4,
+        banheiros: 3,
+        areaUtil: 200,
+        vagas: 3,
+        tipoImovel: 'Casa',
+        descricao: 'Casa espaçosa com piscina e área de lazer completa',
+        possuiPiscina: true,
+        possuiJardim: true,
+        imagem: {
+            imagemUrl: '/placeholder-house-pool.jpg',
+            alt: 'Casa com piscina',
+            asset: { _type: 'sanity.imageAsset' }
+        }
     }
 ]
 
-export default function PropertyCatalogSimple({
+export default function PropertyCatalogClean({
     searchParams = {},
     className,
     variant = 'catalog',
     initialProperties = []
-}: PropertyCatalogSimpleProps) {
+}: PropertyCatalogCleanProps) {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
     const [showFilters, setShowFilters] = useState(false)
 
@@ -81,25 +113,51 @@ export default function PropertyCatalogSimple({
         bedrooms: '',
     })
 
-    // Use mock data if no initial properties
-    const properties = initialProperties.length > 0 ? initialProperties : mockProperties
+    // Usar dados reais ou mock como fallback
+    const sourceProperties = initialProperties.length > 0 ? initialProperties : mockImovelClient
 
-    // Simple filtering
+    // Transformar para formato unificado
+    const unifiedProperties = useMemo(() => {
+        try {
+            return transformToUnifiedPropertyList(sourceProperties)
+        } catch (error) {
+            console.error('Erro ao transformar propriedades:', error)
+            return []
+        }
+    }, [sourceProperties])
+
+    // Debug do mapeamento
+    React.useEffect(() => {
+        if (sourceProperties.length > 0) {
+            console.log('🏠 PropertyCatalogClean - Dados transformados:', {
+                original: sourceProperties[0],
+                unified: unifiedProperties[0]
+            })
+        }
+    }, [sourceProperties, unifiedProperties])
+
+    // Filtros aprimorados
     const filteredProperties = useMemo(() => {
-        return properties.filter(property => {
+        return unifiedProperties.filter(property => {
             const matchesSearch = !filters.search ||
                 property.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-                property.location.toLowerCase().includes(filters.search.toLowerCase())
+                property.location.toLowerCase().includes(filters.search.toLowerCase()) ||
+                property.description?.toLowerCase().includes(filters.search.toLowerCase())
 
             const matchesType = !filters.type || property.propertyType === filters.type
+
             const matchesLocation = !filters.location ||
-                property.location.toLowerCase().includes(filters.location.toLowerCase())
+                property.location.toLowerCase().includes(filters.location.toLowerCase()) ||
+                property.city.toLowerCase().includes(filters.location.toLowerCase())
+
             const matchesPrice = property.price >= filters.priceMin && property.price <= filters.priceMax
-            const matchesBedrooms = !filters.bedrooms || property.bedrooms === parseInt(filters.bedrooms)
+
+            const matchesBedrooms = !filters.bedrooms ||
+                (property.bedrooms !== undefined && property.bedrooms >= parseInt(filters.bedrooms))
 
             return matchesSearch && matchesType && matchesLocation && matchesPrice && matchesBedrooms
         })
-    }, [properties, filters])
+    }, [unifiedProperties, filters])
 
     const clearFilters = () => {
         setFilters({
@@ -271,24 +329,18 @@ export default function PropertyCatalogSimple({
                             ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6'
                             : 'space-y-4'
                     )}>
-                        {filteredProperties.map((property) => (
-                            <div key={property.id} className="group">
-                                <SimplePropertyCard
-                                    id={property.id}
-                                    title={property.title}
-                                    location={property.location}
-                                    price={property.price}
-                                    propertyType={property.propertyType}
-                                    bedrooms={property.bedrooms}
-                                    bathrooms={property.bathrooms}
-                                    area={property.area}
-                                    mainImage={property.mainImage}
-                                    description={property.description}
-                                    className="h-full"
-                                    showFavoriteButton
-                                />
-                            </div>
-                        ))}
+                        {filteredProperties.map((property) => {
+                            const cardProps = toPropertyCardPremiumProps(property)
+                            return (
+                                <div key={property.id} className="group">
+                                    <PropertyCardPremium
+                                        {...cardProps}
+                                        variant={viewMode === 'list' ? 'compact' : 'default'}
+                                        className="h-full"
+                                    />
+                                </div>
+                            )
+                        })}
                     </div>
                 )}
             </div>

@@ -224,46 +224,74 @@ const ImovelDetalhesNew: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [],
                                 {tipoPropriedade === 'rent' && <span className="text-lg text-slate-500 font-normal">/mês</span>}
                             </div>
 
-                            {/* Características */}
+                            {/* Características Melhoradas */}
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                                {/* Área */}
                                 {imovel.areaUtil && (
-                                    <div className="text-center p-4 bg-slate-50 rounded-lg">
+                                    <div className="text-center p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 hover:border-amber-300 transition-colors">
                                         <Square className="w-6 h-6 text-amber-500 mx-auto mb-2" />
-                                        <div className="font-semibold">{imovel.areaUtil} m²</div>
-                                        <div className="text-sm text-slate-500">Área útil</div>
+                                        <div className="font-bold text-xl text-slate-900">{imovel.areaUtil}</div>
+                                        <div className="text-sm text-slate-600 font-medium">m² úteis</div>
                                     </div>
                                 )}
 
-                                {imovel.dormitorios && (
-                                    <div className="text-center p-4 bg-slate-50 rounded-lg">
+                                {/* Dormitórios */}
+                                {imovel.dormitorios !== undefined && imovel.dormitorios > 0 && (
+                                    <div className="text-center p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 hover:border-amber-300 transition-colors">
                                         <Bed className="w-6 h-6 text-amber-500 mx-auto mb-2" />
-                                        <div className="font-semibold">{imovel.dormitorios}</div>
-                                        <div className="text-sm text-slate-500">
-                                            {imovel.dormitorios === 1 ? 'Quarto' : 'Quartos'}
+                                        <div className="font-bold text-xl text-slate-900">{imovel.dormitorios}</div>
+                                        <div className="text-sm text-slate-600 font-medium">
+                                            {imovel.dormitorios === 1 ? 'Dormitório' : 'Dormitórios'}
                                         </div>
                                     </div>
                                 )}
 
-                                {imovel.banheiros && (
-                                    <div className="text-center p-4 bg-slate-50 rounded-lg">
+                                {/* Banheiros */}
+                                {imovel.banheiros !== undefined && imovel.banheiros > 0 && (
+                                    <div className="text-center p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 hover:border-amber-300 transition-colors">
                                         <Bath className="w-6 h-6 text-amber-500 mx-auto mb-2" />
-                                        <div className="font-semibold">{imovel.banheiros}</div>
-                                        <div className="text-sm text-slate-500">
+                                        <div className="font-bold text-xl text-slate-900">{imovel.banheiros}</div>
+                                        <div className="text-sm text-slate-600 font-medium">
                                             {imovel.banheiros === 1 ? 'Banheiro' : 'Banheiros'}
                                         </div>
                                     </div>
                                 )}
 
-                                {imovel.vagas && (
-                                    <div className="text-center p-4 bg-slate-50 rounded-lg">
+                                {/* Vagas */}
+                                {imovel.vagas !== undefined && imovel.vagas > 0 && (
+                                    <div className="text-center p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 hover:border-amber-300 transition-colors">
                                         <Car className="w-6 h-6 text-amber-500 mx-auto mb-2" />
-                                        <div className="font-semibold">{imovel.vagas}</div>
-                                        <div className="text-sm text-slate-500">
+                                        <div className="font-bold text-xl text-slate-900">{imovel.vagas}</div>
+                                        <div className="text-sm text-slate-600 font-medium">
                                             {imovel.vagas === 1 ? 'Vaga' : 'Vagas'}
                                         </div>
                                     </div>
                                 )}
                             </div>
+
+                            {/* Informações Adicionais */}
+                            {(imovel.tipoImovel || imovel.finalidade) && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                                    {imovel.tipoImovel && (
+                                        <div className="flex items-center gap-3 p-4 bg-amber-50 rounded-xl border border-amber-200">
+                                            <Building2 className="w-5 h-5 text-amber-600" />
+                                            <div>
+                                                <div className="text-sm text-amber-800 font-medium">Tipo de Imóvel</div>
+                                                <div className="font-semibold text-amber-900">{imovel.tipoImovel}</div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {imovel.finalidade && (
+                                        <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                                            <Star className="w-5 h-5 text-blue-600" />
+                                            <div>
+                                                <div className="text-sm text-blue-800 font-medium">Finalidade</div>
+                                                <div className="font-semibold text-blue-900">{imovel.finalidade}</div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
                             {/* Descrição */}
                             {imovel.descricao && (

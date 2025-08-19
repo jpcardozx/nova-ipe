@@ -13,33 +13,13 @@ import { useInView } from 'react-intersection-observer';
 import { ExternalLink, Loader2, AlertTriangle } from 'lucide-react';
 import { getImoveisParaAlugar } from '@lib/sanity/fetchImoveis';
 import type { ImovelClient as Imovel } from '../../src/types/imovel-client';
-import { PropertyCarousel } from '@/app/components/ui/property/PropertyCarousel';
-import type { PropertyCardUnifiedProps } from '@/app/components/ui/property/PropertyCardUnified';
+import PropertyCardPremium from '@/app/components/PropertyCardPremium';
+import {
+    transformToUnifiedPropertyList,
+    toPropertyCardPremiumProps,
+    type UnifiedPropertyData
+} from '@/lib/unified-property-transformer';
 import { cn } from '@/lib/utils';
-
-// Função para transformar dados Sanity em PropertyCardUnifiedProps
-function transformImovelToPropertyCard(imovel: Imovel): PropertyCardUnifiedProps {
-    return {
-        id: imovel._id,
-        title: imovel.titulo || 'Imóvel para alugar',
-        slug: typeof imovel.slug === 'string' ? imovel.slug : imovel._id,
-        location: imovel.endereco || imovel.bairro || '',
-        city: imovel.cidade || '',
-        price: imovel.preco || 0,
-        propertyType: 'rent',
-        area: imovel.areaUtil,
-        bedrooms: imovel.dormitorios,
-        bathrooms: imovel.banheiros,
-        parkingSpots: imovel.vagas,
-        mainImage: {
-            url: imovel.imagem?.imagemUrl || imovel.galeria?.[0]?.imagemUrl || '/images/placeholder-property.jpg',
-            alt: imovel.imagem?.alt || imovel.titulo || 'Imóvel para alugar',
-            sanityImage: imovel.imagem
-        },
-        isHighlight: imovel.destaque || false,
-        isPremium: false // Campo não existe no ImovelClient
-    };
-}
 
 function useDestaquesAluguel(staleTime = 300_000) {
     const [data, setData] = useState<Imovel[]>([]);
@@ -185,13 +165,23 @@ export default function SecaoImoveisParaAlugar() {
                     <SectionState status={status} onRetry={refetch} emptyLink="/alugar" />
                 )}                {status === 'success' && data.length > 0 && (
                     <>
-                        <PropertyCarousel
-                            properties={data.map(transformImovelToPropertyCard)}
-                            slidesToShow={3}
-                            showControls={true}
-                            className="overflow-visible"
-                            variant="default"
-                        />
+                        {/* Grid de Cards Premium */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {(() => {
+                                const unifiedProperties = transformToUnifiedPropertyList(data.slice(0, 6))
+                                return unifiedProperties.map((property) => {
+                                    const cardProps = toPropertyCardPremiumProps(property)
+                                    return (
+                                        <PropertyCardPremium
+                                            key={property.id}
+                                            {...cardProps}
+                                            variant="default"
+                                            className="hover:shadow-xl transition-shadow duration-300"
+                                        />
+                                    )
+                                })
+                            })()}
+                        </div>
 
                         <div className="mt-12 text-center">
                             <Link

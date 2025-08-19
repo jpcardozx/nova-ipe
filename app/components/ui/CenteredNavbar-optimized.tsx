@@ -23,6 +23,9 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
     const [isMobile, setIsMobile] = useState(false);
     const pathname = usePathname();
 
+    // Não mostra navbar em páginas do studio/admin
+    const isStudioPage = pathname?.startsWith('/studio') || pathname?.startsWith('/admin');
+
     // Optimized scroll handler with throttling
     const handleScroll = useCallback(() => {
         setIsScrolled(window.scrollY > 20);
@@ -88,6 +91,11 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
             document.body.style.overflow = '';
         };
     }, [isOpen, isMobile]);
+
+    // Se estiver em página do studio, não renderiza a navbar
+    if (isStudioPage) {
+        return null;
+    }
 
     return (
         <>

@@ -85,12 +85,18 @@ export const queryImoveisDestaqueVenda = /* groq */ `
     areaUtil,
     vagas,
     destaque,
-    "imagem": {
-      "asset": imagem.asset->,
-      "_type": "image", 
-      "alt": imagem.alt,
-      "hotspot": imagem.hotspot
-    }
+    categoria->{
+      _id,
+      "categoriaTitulo": titulo,
+      "categoriaSlug": slug
+    },
+    imagem {
+      "asset": asset->,
+      "_type": "image",
+      "imagemUrl": asset->url,
+      "alt": alt
+    },
+    aceitaFinanciamento
   }
 `;
 
@@ -475,7 +481,7 @@ export const queryImoveisParaVenda = /* groq */ `
   *[
     _type == "imovel" &&
     status == "disponivel" &&
-    finalidade == "venda"
+    finalidade == "Venda"
   ] | order(_createdAt desc)[0...30] {
     _id,
     titulo,
@@ -485,6 +491,11 @@ export const queryImoveisParaVenda = /* groq */ `
     finalidade,
     bairro,
     cidade,
+    dormitorios,
+    banheiros,
+    vagas,
+    areaUtil,
+    area,
     categoria->{
       _id,
       "categoriaTitulo": titulo,
@@ -496,9 +507,7 @@ export const queryImoveisParaVenda = /* groq */ `
       "imagemUrl": asset->url,
       "alt": alt
     },
-    aceitaFinanciamento,
-    area,
-    areaUtil
+    aceitaFinanciamento
   }
 `;
 
@@ -516,6 +525,11 @@ export const queryImoveisParaAlugar = /* groq */ `
     finalidade,
     bairro,
     cidade,
+    dormitorios,
+    banheiros,
+    vagas,
+    areaUtil,
+    area,
     categoria->{
       _id,
       "categoriaTitulo": titulo,
@@ -527,9 +541,7 @@ export const queryImoveisParaAlugar = /* groq */ `
       "imagemUrl": asset->url,
       "alt": alt
     },
-    aceitaFinanciamento,
-    area,
-    areaUtil
+    aceitaFinanciamento
   }
 `;
 

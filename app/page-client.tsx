@@ -12,13 +12,13 @@ import { ProcessedProperty } from './types/property';
 import { transformPropertiesArrayToPremium } from './utils/property-transformer';
 import type { ImovelClient } from '../src/types/imovel-client';
 
-// Importando os componentes limpos e funcionais
-const CleanSalesSection = dynamic(() => import('./components/premium/CleanPropertySections').then(mod => ({ default: mod.CleanSalesSection })), {
+// Importando os componentes premium
+const DestaquesVendaPremium = dynamic(() => import('./sections/DestaquesVendaPremium'), {
     ssr: true,
     loading: () => <UnifiedLoading height="500px" title="Carregando imóveis para venda..." />
 });
 
-const CleanRentalsSection = dynamic(() => import('./components/premium/CleanPropertySections').then(mod => ({ default: mod.CleanRentalsSection })), {
+const SecaoImoveisParaAlugarPremium = dynamic(() => import('./sections/SecaoImoveisParaAlugarPremium'), {
     ssr: true,
     loading: () => <UnifiedLoading height="500px" title="Carregando imóveis para aluguel..." />
 });
@@ -77,24 +77,14 @@ export default function HomePageClient({
 
             {/* Conteúdo principal com espaçamento otimizado */}
             <main className="space-y-8 lg:space-y-12">
-                {/* Seção de Imóveis para Venda - Sistema Limpo e Funcional */}
-                <CleanSalesSection
-                    properties={propertiesForSale}
-                    title="Imóveis para Venda"
-                    subtitle="Encontre a casa dos seus sonhos em Guararema"
-                    maxItems={12}
-                />
+                {/* Seção de Imóveis para Venda - Sistema Premium */}
+                <DestaquesVendaPremium />
 
                 {/* Apresentação Institucional - IpeConcept original */}
                 <IpeConcept />
 
-                {/* Seção de Imóveis para Aluguel - Sistema Limpo e Funcional */}
-                <CleanRentalsSection
-                    properties={propertiesForRent}
-                    title="Imóveis para Aluguel"
-                    subtitle="Encontre o imóvel ideal para locação em Guararema"
-                    maxItems={12}
-                />
+                {/* Seção de Imóveis para Aluguel - Sistema Premium */}
+                <SecaoImoveisParaAlugarPremium />
 
                 {/* Análise de Mercado */}
                 <MarketAnalysisSection />

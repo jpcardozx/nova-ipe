@@ -10,7 +10,12 @@ import {
 } from 'lucide-react'
 
 // Components
-import SimplePropertyCard from './SimplePropertyCard'
+import PropertyCardPremium from './PropertyCardPremium'
+import {
+    transformToUnifiedPropertyList,
+    toPropertyCardPremiumProps,
+    type UnifiedPropertyData
+} from '@/lib/unified-property-transformer'
 
 // Types
 import type { ImovelClient } from '@/src/types/imovel-client'
@@ -802,24 +807,26 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
                                 className="transition-all duration-300"
                             >
                                 {imoveisEmAlta.length > 0 ? (
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                                        {imoveisEmAlta.slice(0, 6).map((imovel, index) => (
-                                            <SimplePropertyCard
-                                                key={imovel._id || index}
-                                                id={imovel._id || `featured-${index}`}
-                                                title={imovel.titulo || 'Imóvel em destaque'}
-                                                location={`${imovel.bairro || ''}, ${imovel.cidade || 'Guararema'}`}
-                                                price={imovel.preco || 0}
-                                                propertyType={imovel.finalidade === 'Venda' ? 'sale' : 'rent'}
-                                                bedrooms={imovel.dormitorios}
-                                                bathrooms={imovel.banheiros}
-                                                area={imovel.areaUtil}
-                                                mainImage={{ url: imovel.imagem?.imagemUrl || '/placeholder-house.jpg' }}
-                                                description={imovel.descricao}
-                                                showFavoriteButton={true}
-                                            />
-                                        ))}
-                                    </div>
+                                    (() => {
+                                        // Transformar dados para formato unificado
+                                        const unifiedProperties = transformToUnifiedPropertyList(imoveisEmAlta.slice(0, 6))
+
+                                        return (
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                                                {unifiedProperties.map((property, index) => {
+                                                    const cardProps = toPropertyCardPremiumProps(property)
+                                                    return (
+                                                        <PropertyCardPremium
+                                                            key={property.id || index}
+                                                            {...cardProps}
+                                                            variant="featured"
+                                                            className="transform hover:scale-105 transition-transform duration-300"
+                                                        />
+                                                    )
+                                                })}
+                                            </div>
+                                        )
+                                    })()
                                 ) : (
                                     <div className="text-center py-12 sm:py-16">
                                         <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl border border-amber-400/20 p-8 sm:p-12 max-w-2xl mx-auto shadow-xl">

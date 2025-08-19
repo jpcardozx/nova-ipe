@@ -15,21 +15,39 @@ import type { ImovelClient, ImovelProjetado } from '../../src/types/imovel-clien
 import { mapImovelToClient } from '../mapImovelToClient'
 
 
-// Server-side fetcher with caching
+// Server-side fetcher with enhanced logging and caching
 async function fetchWithCache<T>(
     query: string,
     params = {},
     tags: string[] = []
 ): Promise<T> {
-    try {        const data = await serverClient.fetch<T>(query, params, {
+    try {
+        console.log('🔍 Executando query Sanity:', { 
+            query: query.slice(0, 100) + '...', 
+            params,
+            tags 
+        });
+        
+        const data = await serverClient.fetch<T>(query, params, {
             next: { 
                 tags,
                 revalidate: 3600 // Default 1 hour cache
             },
         });
+        
+        console.log('✅ Query Sanity executada com sucesso:', {
+            resultCount: Array.isArray(data) ? data.length : 'single item',
+            tags
+        });
+        
         return data;
     } catch (err) {
-        console.error('Sanity fetch error:', err);
+        console.error('❌ Erro na query Sanity:', {
+            error: err,
+            query: query.slice(0, 200) + '...',
+            params,
+            tags
+        });
         throw new Error(`Failed to fetch from Sanity: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
 }
@@ -51,21 +69,51 @@ export async function getTodosImoveis(): Promise<ImovelClient[]> {
 }
 
 export async function getImoveisParaVenda(): Promise<ImovelClient[]> {
+    console.log('📋 Buscando imóveis para venda...');
     const data = await fetchWithCache<ImovelProjetado[]>(
         queryImoveisParaVenda,
         {},
         ['imoveis', 'venda']
-    )
-    return mapMany(data)
+    );
+    
+    console.log('🔄 Mapeando', data.length, 'imóveis de venda...');
+    const mapped = mapMany(data);
+    
+    // Validar campos críticos
+    mapped.forEach(imovel => {
+        if (!imovel.dormitorios && imovel.dormitorios !== 0) {
+            console.warn('⚠️ Dormitórios ausente:', imovel._id, imovel.titulo);
+        }
+        if (!imovel.banheiros && imovel.banheiros !== 0) {
+            console.warn('⚠️ Banheiros ausente:', imovel._id, imovel.titulo);
+        }
+    });
+    
+    return mapped;
 }
 
 export async function getImoveisParaAlugar(): Promise<ImovelClient[]> {
+    console.log('🏠 Buscando imóveis para alugar...');
     const data = await fetchWithCache<ImovelProjetado[]>(
         queryImoveisParaAlugar,
         {},
         ['imoveis', 'aluguel']
-    )
-    return mapMany(data)
+    );
+    
+    console.log('🔄 Mapeando', data.length, 'imóveis de aluguel...');
+    const mapped = mapMany(data);
+    
+    // Validar campos críticos
+    mapped.forEach(imovel => {
+        if (!imovel.dormitorios && imovel.dormitorios !== 0) {
+            console.warn('⚠️ Dormitórios ausente:', imovel._id, imovel.titulo);
+        }
+        if (!imovel.banheiros && imovel.banheiros !== 0) {
+            console.warn('⚠️ Banheiros ausente:', imovel._id, imovel.titulo);
+        }
+    });
+    
+    return mapped;
 }
 
 export async function getImoveisAluguelDestaque(): Promise<ImovelClient[]> {

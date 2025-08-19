@@ -19,6 +19,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 // Links para navegação do rodapé
@@ -78,9 +79,13 @@ const SocialIcon = ({ href, icon, label }: { href: string, icon: React.ReactNode
 
 export default function FooterAprimorado() {
     const [year] = useState(new Date().getFullYear());
+    const pathname = usePathname();
 
     // Estado para controle de scroll-to-top
     const [showScrollToTop, setShowScrollToTop] = useState(false);
+
+    // Não mostra scroll to top em páginas do studio/admin
+    const isStudioPage = pathname?.startsWith('/studio') || pathname?.startsWith('/admin');
 
     useEffect(() => {
         const handleScroll = () => {
@@ -93,7 +98,14 @@ export default function FooterAprimorado() {
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    }; return (
+    };
+
+    // Se estiver em página do studio, não renderiza o footer
+    if (isStudioPage) {
+        return null;
+    }
+
+    return (
         <footer className="relative w-full bg-gradient-to-b from-gray-900 to-gray-950 text-white overflow-hidden font-body">            {/* Fundo com textura e gradiente */}
             <div className="absolute inset-0">
                 <div className="relative w-full h-full">
@@ -296,7 +308,7 @@ export default function FooterAprimorado() {
                                 <div className="relative w-1 h-1 bg-gradient-to-r from-amber-500 to-amber-400 rounded-full group-hover:scale-150 group-hover:shadow-amber-400/50 group-hover:shadow-md transition-all duration-500 ease-out delay-75"></div>
                             </div>
                         </div>
-                        <div className="flex gap-6 text-sm items-center">
+                        <div className="flex gap-6 text-sm items-center mr-20">
                             <Link href="/privacidade" className="text-gray-400 hover:text-white transition-colors">
                                 Política de Privacidade
                             </Link>
@@ -335,17 +347,19 @@ export default function FooterAprimorado() {
                 </div>
             </div>
 
-            {/* Botão de voltar ao topo */}
-            <button
-                onClick={scrollToTop}
-                className={cn(
-                    "fixed bottom-8 right-8 w-12 h-12 rounded-full bg-amber-500 text-white flex items-center justify-center shadow-lg hover:bg-amber-600 hover:scale-110 transition-all z-50",
-                    !showScrollToTop && "pointer-events-none opacity-0"
-                )}
-                aria-label="Voltar ao topo"
-            >
-                <ArrowUp className="w-5 h-5" />
-            </button>
+            {/* Botão de voltar ao topo - não mostra em páginas do studio */}
+            {!isStudioPage && (
+                <button
+                    onClick={scrollToTop}
+                    className={cn(
+                        "fixed bottom-8 right-8 w-12 h-12 rounded-full bg-amber-500 text-white flex items-center justify-center shadow-lg hover:bg-amber-600 hover:scale-110 transition-all z-30",
+                        !showScrollToTop && "pointer-events-none opacity-0"
+                    )}
+                    aria-label="Voltar ao topo"
+                >
+                    <ArrowUp className="w-5 h-5" />
+                </button>
+            )}
         </footer>
     );
 }

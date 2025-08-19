@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, FC, useRef } from 'react';
 import { useInView } from 'react-intersection-observer';
-import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { ArrowRight, ChevronLeft, ChevronRight, Building, MapPin, Clock, Home, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatarMoeda } from '@/lib/utils';
@@ -11,41 +11,13 @@ import SanityImage from '@/app/components/SanityImage';
 import type { ImovelClient } from '../../src/types/imovel-client';
 import { normalizeDocuments } from '../../lib/sanity-utils';
 import Button from '@/components/ui/button';
-// import FeaturedProperty from '@/components/ui/FeaturedProperty'; // Temporarily disabled - empty component
-import type { ImovelClientType } from '../../types/imovel';
-import PropertyCardUnified from '@/app/components/ui/property/PropertyCardUnified';
-
-/**
- * Adapta os imóveis do formato ImovelClient para o formato ImovelClientType
- * necessário para o componente FeaturedProperty
- */
-const adaptImovelToClientType = (imoveis: ImovelClient[]): ImovelClientType[] => {
-    return imoveis.map(imovel => {
-        // Garante que propertyType seja apenas 'rent' ou 'sale'
-        const propertyType = imovel.finalidade === 'Venda' ? 'sale' : 'rent';
-
-        return {
-            id: imovel._id, // Mapeia _id para id
-            title: imovel.titulo || '',
-            slug: typeof imovel.slug === 'string' ? imovel.slug : '',
-            location: imovel.bairro || '',
-            city: imovel.cidade,
-            price: imovel.preco || 0,
-            propertyType, // Já garantido como 'rent' ou 'sale'
-            area: imovel.areaUtil,
-            bedrooms: imovel.dormitorios,
-            bathrooms: imovel.banheiros,
-            parkingSpots: imovel.vagas,
-            mainImage: {
-                url: imovel.imagem?.imagemUrl || '',
-                alt: imovel.imagem?.alt || imovel.titulo || '',
-                blurDataUrl: imovel.imagem?.imagemUrl
-            },
-            isHighlight: imovel.destaque,
-            status: 'available'
-        };
-    });
-};
+import PropertyCardPremium from '@/app/components/PropertyCardPremium';
+import PropertyCardUnified from '@/components/verified/PropertyCardUnified';
+import {
+    transformToUnifiedPropertyList,
+    toPropertyCardPremiumProps,
+    type UnifiedPropertyData
+} from '@/lib/unified-property-transformer';
 
 // Navigation button component
 interface NavButtonProps {
@@ -114,52 +86,52 @@ function useFavorites() {
 }
 
 // Featured Property Card Component
-const FeaturedPropertyCard: FC<{ property: ImovelClientType }> = ({ property }) => {
+const FeaturedPropertyCard: FC<{ property: ImovelClient }> = ({ property }) => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 rounded-xl overflow-hidden bg-white shadow-lg border border-emerald-100">
             <div className="relative aspect-[4/3] md:aspect-square overflow-hidden">
                 <SanityImage
-                    image={property.mainImage}
-                    alt={property.title}
+                    image={property.imagem}
+                    alt={property.titulo || 'Imóvel'}
                     fill
                     className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-amber-900/50 to-transparent"></div>
                 <div className="absolute bottom-4 left-4 bg-emerald-600 text-white px-4 py-2 rounded-lg font-semibold shadow-lg">
-                    {formatarMoeda(property.price)}
+                    {formatarMoeda(property.preco || 0)}
                 </div>
             </div>
 
             <div className="p-6 flex flex-col justify-between">
                 <div>
-                    <h3 className="text-2xl font-bold text-stone-800 mb-2">{property.title}</h3>
+                    <h3 className="text-2xl font-bold text-stone-800 mb-2">{property.titulo}</h3>
 
                     <div className="flex items-center text-stone-600 mb-4">
                         <MapPin className="w-5 h-5 mr-2 text-emerald-600" />
-                        <span>{property.location}{property.city ? `, ${property.city}` : ''}</span>
+                        <span>{property.bairro}{property.cidade ? `, ${property.cidade}` : ''}</span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 mb-6">
-                        {property.area && (
+                        {property.areaUtil && (
                             <div className="flex items-center gap-2">
                                 <div className="p-2 bg-emerald-100 rounded-md text-emerald-700">
                                     <TrendingUp className="w-5 h-5" />
                                 </div>
                                 <div>
                                     <p className="text-xs text-stone-500">Área</p>
-                                    <p className="font-medium">{property.area} m²</p>
+                                    <p className="font-medium">{property.areaUtil} m²</p>
                                 </div>
                             </div>
                         )}
 
-                        {property.bedrooms && (
+                        {property.dormitorios && (
                             <div className="flex items-center gap-2">
                                 <div className="p-2 bg-emerald-100 rounded-md text-emerald-700">
                                     <Home className="w-5 h-5" />
                                 </div>
                                 <div>
                                     <p className="text-xs text-stone-500">Dormitórios</p>
-                                    <p className="font-medium">{property.bedrooms}</p>
+                                    <p className="font-medium">{property.dormitorios}</p>
                                 </div>
                             </div>
                         )}
@@ -364,7 +336,7 @@ export default function DestaquesVendaSection() {
                 </div>
                 <div className="p-4 lg:p-0 border border-emerald-100 rounded-xl bg-white shadow-xl lg:border-0 lg:shadow-none lg:bg-transparent">
                     <FeaturedPropertyCard
-                        property={adaptImovelToClientType([imoveis[activeIndex]])[0]}
+                        property={imoveis[activeIndex]}
                     />
                 </div>
             </motion.div>
