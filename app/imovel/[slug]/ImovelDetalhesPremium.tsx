@@ -258,19 +258,19 @@ const ImovelDetalhesPremium: FC<ImovelDetalhesProps> = ({ imovel, relacionados =
                                 )}
                             </div>
 
-                            {/* Características em Grid */}
+                            {/* Características em Grid Premium */}
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                                 {unifiedProperty.area && (
-                                    <div className="text-center p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 hover:border-amber-300 transition-all duration-200 hover:shadow-md">
-                                        <Ruler className="w-8 h-8 text-amber-500 mx-auto mb-3" />
+                                    <div className="group text-center p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 hover:border-slate-300 transition-all duration-300 hover:shadow-md hover:scale-105">
+                                        <Ruler className="w-8 h-8 text-slate-600 mx-auto mb-3 group-hover:text-slate-700 transition-colors" />
                                         <div className="font-bold text-2xl text-slate-900">{unifiedProperty.area}</div>
                                         <div className="text-sm text-slate-600 font-medium">m² úteis</div>
                                     </div>
                                 )}
 
                                 {unifiedProperty.bedrooms !== undefined && unifiedProperty.bedrooms > 0 && (
-                                    <div className="text-center p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 hover:border-amber-300 transition-all duration-200 hover:shadow-md">
-                                        <Bed className="w-8 h-8 text-amber-500 mx-auto mb-3" />
+                                    <div className="group text-center p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 hover:border-slate-300 transition-all duration-300 hover:shadow-md hover:scale-105">
+                                        <Bed className="w-8 h-8 text-slate-600 mx-auto mb-3 group-hover:text-slate-700 transition-colors" />
                                         <div className="font-bold text-2xl text-slate-900">{unifiedProperty.bedrooms}</div>
                                         <div className="text-sm text-slate-600 font-medium">
                                             {unifiedProperty.bedrooms === 1 ? 'Dormitório' : 'Dormitórios'}
@@ -279,8 +279,8 @@ const ImovelDetalhesPremium: FC<ImovelDetalhesProps> = ({ imovel, relacionados =
                                 )}
 
                                 {unifiedProperty.bathrooms !== undefined && unifiedProperty.bathrooms > 0 && (
-                                    <div className="text-center p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 hover:border-amber-300 transition-all duration-200 hover:shadow-md">
-                                        <Bath className="w-8 h-8 text-amber-500 mx-auto mb-3" />
+                                    <div className="group text-center p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 hover:border-slate-300 transition-all duration-300 hover:shadow-md hover:scale-105">
+                                        <Bath className="w-8 h-8 text-slate-600 mx-auto mb-3 group-hover:text-slate-700 transition-colors" />
                                         <div className="font-bold text-2xl text-slate-900">{unifiedProperty.bathrooms}</div>
                                         <div className="text-sm text-slate-600 font-medium">
                                             {unifiedProperty.bathrooms === 1 ? 'Banheiro' : 'Banheiros'}
@@ -289,51 +289,11 @@ const ImovelDetalhesPremium: FC<ImovelDetalhesProps> = ({ imovel, relacionados =
                                 )}
 
                                 {unifiedProperty.parkingSpots !== undefined && unifiedProperty.parkingSpots > 0 && (
-                                    <div className="text-center p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 hover:border-amber-300 transition-all duration-200 hover:shadow-md">
-                                        <Car className="w-8 h-8 text-amber-500 mx-auto mb-3" />
+                                    <div className="group text-center p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 hover:border-slate-300 transition-all duration-300 hover:shadow-md hover:scale-105">
+                                        <Car className="w-8 h-8 text-slate-600 mx-auto mb-3 group-hover:text-slate-700 transition-colors" />
                                         <div className="font-bold text-2xl text-slate-900">{unifiedProperty.parkingSpots}</div>
                                         <div className="text-sm text-slate-600 font-medium">
                                             {unifiedProperty.parkingSpots === 1 ? 'Vaga' : 'Vagas'}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Características Principais */}
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                                {unifiedProperty.bedrooms && (
-                                    <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                                        <Bed className="w-6 h-6 text-amber-600" />
-                                        <div>
-                                            <div className="text-sm text-slate-600 font-medium">Quartos</div>
-                                            <div className="font-bold text-slate-900 text-lg">{unifiedProperty.bedrooms}</div>
-                                        </div>
-                                    </div>
-                                )}
-                                {unifiedProperty.bathrooms && (
-                                    <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                                        <Bath className="w-6 h-6 text-blue-600" />
-                                        <div>
-                                            <div className="text-sm text-slate-600 font-medium">Banheiros</div>
-                                            <div className="font-bold text-slate-900 text-lg">{unifiedProperty.bathrooms}</div>
-                                        </div>
-                                    </div>
-                                )}
-                                {unifiedProperty.parkingSpots && (
-                                    <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                                        <Car className="w-6 h-6 text-green-600" />
-                                        <div>
-                                            <div className="text-sm text-slate-600 font-medium">Vagas</div>
-                                            <div className="font-bold text-slate-900 text-lg">{unifiedProperty.parkingSpots}</div>
-                                        </div>
-                                    </div>
-                                )}
-                                {unifiedProperty.area && (
-                                    <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                                        <Ruler className="w-6 h-6 text-purple-600" />
-                                        <div>
-                                            <div className="text-sm text-slate-600 font-medium">Área Útil</div>
-                                            <div className="font-bold text-slate-900 text-lg">{unifiedProperty.area}m²</div>
                                         </div>
                                     </div>
                                 )}
@@ -363,15 +323,15 @@ const ImovelDetalhesPremium: FC<ImovelDetalhesProps> = ({ imovel, relacionados =
                                 </div>
                             )}
 
-                            {/* Descrição */}
+                            {/* Descrição Premium */}
                             {unifiedProperty.description && (
                                 <div className="mb-8">
                                     <h2 className="text-2xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
                                         <FileText className="w-6 h-6 text-amber-500" />
                                         Sobre este imóvel
                                     </h2>
-                                    <div className="prose prose-slate max-w-none">
-                                        <p className="text-slate-700 leading-relaxed text-lg">
+                                    <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-6 border border-slate-200 shadow-sm">
+                                        <p className="text-slate-700 leading-relaxed text-lg font-light">
                                             {unifiedProperty.description}
                                         </p>
                                     </div>
@@ -450,25 +410,33 @@ const ImovelDetalhesPremium: FC<ImovelDetalhesProps> = ({ imovel, relacionados =
                     {/* Sidebar de Contato */}
                     <div className="lg:col-span-1">
                         <div className="sticky top-24 space-y-6">
-                            {/* Card de Contato Principal */}
-                            <div className="bg-white rounded-2xl shadow-lg p-6 border border-slate-200">
-                                <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-                                    <Phone className="w-6 h-6 text-amber-500" />
-                                    Entre em Contato
-                                </h3>
+                            {/* Card de Contato Principal Premium */}
+                            <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl shadow-xl p-6 border border-slate-200">
+                                <div className="text-center mb-6">
+                                    <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-amber-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <Phone className="w-8 h-8 text-white" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-900 mb-1">
+                                        Interessado?
+                                    </h3>
+                                    <p className="text-slate-600 text-sm">
+                                        Fale conosco agora mesmo
+                                    </p>
+                                </div>
 
-                                <div className="space-y-4">
+                                <div className="space-y-3">
                                     <button
                                         onClick={handleWhatsAppClick}
-                                        className="w-full bg-green-500 hover:bg-green-600 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                                        className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                                     >
                                         <MessageSquare className="w-5 h-5" />
-                                        Conversar no WhatsApp
+                                        WhatsApp
+                                        <span className="text-xs bg-white/20 px-2 py-1 rounded-full">Mais rápido</span>
                                     </button>
 
                                     <button
                                         onClick={handlePhoneClick}
-                                        className="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                                        className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                                     >
                                         <Phone className="w-5 h-5" />
                                         Ligar Agora
@@ -476,19 +444,21 @@ const ImovelDetalhesPremium: FC<ImovelDetalhesProps> = ({ imovel, relacionados =
 
                                     <Link
                                         href="/visita"
-                                        className="w-full bg-amber-500 hover:bg-amber-600 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                                        className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                                     >
                                         <Calendar className="w-5 h-5" />
                                         Agendar Visita
                                     </Link>
                                 </div>
 
-                                <div className="mt-6 pt-6 border-t border-slate-200">
-                                    <div className="text-center text-sm text-slate-600">
-                                        <p className="mb-2">Central de Atendimento</p>
-                                        <p className="font-semibold text-slate-900">(11) 98184-5016</p>
-                                        <p className="text-xs mt-2">Segunda à Sexta: 8h30 - 18h</p>
-                                        <p className="text-xs">Sábado: 9h - 13h</p>
+                                <div className="mt-6 pt-6 border-t border-slate-200 text-center">
+                                    <div className="bg-slate-50 rounded-lg p-4">
+                                        <p className="text-xs text-slate-500 mb-2">Central de Atendimento</p>
+                                        <p className="font-bold text-lg text-slate-900">(11) 98184-5016</p>
+                                        <div className="text-xs text-slate-600 mt-2 space-y-1">
+                                            <p>📅 Segunda à Sexta: 8h30 - 18h</p>
+                                            <p>📅 Sábado: 9h - 13h</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -522,15 +492,23 @@ const ImovelDetalhesPremium: FC<ImovelDetalhesProps> = ({ imovel, relacionados =
                     </div>
                 </div>
 
-                {/* Imóveis Relacionados */}
+                {/* Imóveis Relacionados Premium */}
                 {unifiedRelated.length > 0 && (
                     <div className="mt-16">
-                        <div className="text-center mb-8">
-                            <h2 className="text-3xl font-bold text-slate-900 mb-2">Imóveis Similares</h2>
-                            <p className="text-slate-600">Outras opções que podem interessar você</p>
+                        <div className="text-center mb-12">
+                            <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
+                                <TrendingUp className="w-4 h-4" />
+                                Recomendações
+                            </div>
+                            <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-3">
+                                Imóveis Similares
+                            </h2>
+                            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+                                Outras opções cuidadosamente selecionadas que podem interessar você
+                            </p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {unifiedRelated.slice(0, 6).map((property) => {
                                 const cardProps = toPropertyCardPremiumProps(property)
                                 return (
@@ -543,12 +521,13 @@ const ImovelDetalhesPremium: FC<ImovelDetalhesProps> = ({ imovel, relacionados =
                             })}
                         </div>
 
-                        <div className="text-center mt-8">
+                        <div className="text-center mt-12">
                             <Link
                                 href="/catalogo"
-                                className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200"
+                                className="inline-flex items-center gap-3 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-900 hover:to-black text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                             >
-                                Ver Mais Imóveis
+                                <Eye className="w-5 h-5" />
+                                Ver Todos os Imóveis
                                 <ChevronRight className="w-5 h-5" />
                             </Link>
                         </div>

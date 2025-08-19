@@ -1,6 +1,7 @@
 // lib/sanity/fetchImoveis.ts
+// Enhanced Sanity fetchers with isomorphic caching and robust error handling
 
-import { serverClient } from './sanity.server';
+import { fetchWithIsomorphicCache, isomorphicQueries } from './isomorphic-sanity-service';
 import {
     queryTodosImoveis,
     queryImoveisParaVenda,
@@ -9,13 +10,12 @@ import {
     queryImovelEmDestaque,
     queryImoveisDestaqueVenda,
     queryImovelPorSlug,
-    queryImoveisEmAlta, // Nova query para imóveis em alta
+    queryImoveisEmAlta,
 } from '../queries'
 import type { ImovelClient, ImovelProjetado } from '../../src/types/imovel-client'
 import { mapImovelToClient } from '../mapImovelToClient'
 
-
-// Server-side fetcher with enhanced logging and caching
+// Enhanced fetcher with isomorphic caching and error handling
 async function fetchWithCache<T>(
     query: string,
     params = {},
@@ -25,14 +25,12 @@ async function fetchWithCache<T>(
         console.log('🔍 Executando query Sanity:', { 
             query: query.slice(0, 100) + '...', 
             params,
-            tags 
+            tags,
         });
         
-        const data = await serverClient.fetch<T>(query, params, {
-            next: { 
-                tags,
-                revalidate: 3600 // Default 1 hour cache
-            },
+        const data = await fetchWithIsomorphicCache<T>(query, params, {
+            tags,
+            revalidate: 3600 // Default 1 hour cache
         });
         
         console.log('✅ Query Sanity executada com sucesso:', {
@@ -43,22 +41,23 @@ async function fetchWithCache<T>(
         return data;
     } catch (err) {
         console.error('❌ Erro na query Sanity:', {
-            error: err,
             query: query.slice(0, 200) + '...',
             params,
-            tags
+            tags,
+            error: err instanceof Error ? err.message : String(err)
         });
-        throw new Error(`Failed to fetch from Sanity: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        throw err;
     }
 }
 
-// utilzinho para evitar repetição ↓
+// Utility function to map arrays
 const mapMany = (data: ImovelProjetado[]): ImovelClient[] =>
     data.map(mapImovelToClient)
 
 // ———————————————————————————————————————————————————————————————————
-// LISTAGENS
+// LISTAGENS OTIMIZADAS
 // ———————————————————————————————————————————————————————————————————
+
 export async function getTodosImoveis(): Promise<ImovelClient[]> {
     const data = await fetchWithCache<ImovelProjetado[]>(
         queryTodosImoveis,
@@ -93,27 +92,21 @@ export async function getImoveisParaVenda(): Promise<ImovelClient[]> {
 }
 
 export async function getImoveisParaAlugar(): Promise<ImovelClient[]> {
-    console.log('🏠 Buscando imóveis para alugar...');
-    const data = await fetchWithCache<ImovelProjetado[]>(
-        queryImoveisParaAlugar,
-        {},
-        ['imoveis', 'aluguel']
-    );
+    console.log('🏠 Buscando imóveis para alugar com cache isomórfico...');
     
-    console.log('🔄 Mapeando', data.length, 'imóveis de aluguel...');
-    const mapped = mapMany(data);
-    
-    // Validar campos críticos
-    mapped.forEach(imovel => {
-        if (!imovel.dormitorios && imovel.dormitorios !== 0) {
-            console.warn('⚠️ Dormitórios ausente:', imovel._id, imovel.titulo);
-        }
-        if (!imovel.banheiros && imovel.banheiros !== 0) {
-            console.warn('⚠️ Banheiros ausente:', imovel._id, imovel.titulo);
-        }
-    });
-    
-    return mapped;
+    try {
+        const data = await isomorphicQueries.getImoveisAluguel(9);
+        console.log('🔄 Mapeando', data.length, 'imóveis de aluguel...');
+        return data.map(mapImovelToClient);
+    } catch (error) {
+        console.warn('⚠️ Fallback para query tradicional:', error);
+        const data = await fetchWithCache<ImovelProjetado[]>(
+            queryImoveisParaAlugar,
+            {},
+            ['imoveis', 'aluguel']
+        );
+        return mapMany(data);
+    }
 }
 
 export async function getImoveisAluguelDestaque(): Promise<ImovelClient[]> {
@@ -126,21 +119,28 @@ export async function getImoveisAluguelDestaque(): Promise<ImovelClient[]> {
 }
 
 // ———————————————————————————————————————————————————————————————————
-// INDIVIDUAL
+// INDIVIDUAL OTIMIZADO
 // ———————————————————————————————————————————————————————————————————
+
 export async function getImovelPorSlug(
     slug: string
 ): Promise<ImovelClient | null> {
     try {
-        const data = await fetchWithCache<ImovelProjetado | null>(
-            queryImovelPorSlug,
-            { slug },
-            [`imovel:${slug}`]
-        )
-        return data ? mapImovelToClient(data) : null
+        console.log('🔍 Buscando imóvel por slug com cache isomórfico:', slug);
+        
+        // Usar query isomórfica
+        const result = await isomorphicQueries.getImovelBySlug(slug);
+        
+        if (result) {
+            console.log('✅ Imóvel encontrado:', result.titulo);
+            return result;
+        }
+        
+        console.log('⚠️ Imóvel não encontrado para slug:', slug);
+        return null;
     } catch (error) {
-        console.error(`Error fetching imovel with slug ${slug}:`, error)
-        return null
+        console.error(`❌ Erro ao buscar imóvel com slug ${slug}:`, error);
+        return null;
     }
 }
 
@@ -162,8 +162,9 @@ export async function getImovelPorId(
 }
 
 // ———————————————————————————————————————————————————————————————————
-// VITRINE (ex-home)
+// VITRINE OTIMIZADA
 // ———————————————————————————————————————————————————————————————————
+
 export async function getImovelEmDestaque(): Promise<ImovelClient[]> {
     const data = await fetchWithCache<ImovelProjetado[]>(
         queryImovelEmDestaque,
@@ -174,12 +175,23 @@ export async function getImovelEmDestaque(): Promise<ImovelClient[]> {
 }
 
 export async function getImoveisDestaqueVenda(): Promise<ImovelClient[]> {
-    const data = await fetchWithCache<ImovelProjetado[]>(
-        queryImoveisDestaqueVenda,
-        {},
-        ['imoveis', 'destaque', 'venda']
-    )
-    return mapMany(data)
+    console.log('🏆 Buscando imóveis destaque venda com cache isomórfico...');
+    
+    // Usar query isomórfica se disponível
+    try {
+        const data = await isomorphicQueries.getImoveisDestaque(9);
+        console.log('🔄 Mapeando', data.length, 'imóveis de destaque venda...');
+        return data.map(mapImovelToClient);
+    } catch (error) {
+        console.warn('⚠️ Fallback para query tradicional:', error);
+        // Fallback para query tradicional
+        const data = await fetchWithCache<ImovelProjetado[]>(
+            queryImoveisDestaqueVenda,
+            {},
+            ['imoveis', 'destaque', 'venda']
+        );
+        return mapMany(data);
+    }
 }
 
 export async function getImoveisDestaqueAluguel(): Promise<ImovelClient[]> {

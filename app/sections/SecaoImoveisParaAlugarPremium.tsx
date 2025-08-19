@@ -20,56 +20,27 @@ import {
     type UnifiedPropertyData
 } from '@/lib/unified-property-transformer';
 import { cn } from '@/lib/utils';
+import { useDataWithFallback } from '../../lib/hooks/useDataWithFallback';
+import { fallbackImoveisAluguel, fallbackMessage } from '../../lib/fallback/mock-data';
 
 function useDestaquesAluguel(staleTime = 300_000) {
-    const [data, setData] = useState<Imovel[]>([]);
-    const [status, setStatus] = useState<'loading' | 'success' | 'empty' | 'error'>('loading');
-    const [retry, setRetry] = useState(0);
-
-    const fetchData = useCallback(async () => {
-        setStatus('loading');
-        try {
-            const cacheKey = 'destaques-aluguel';
-            const cached = sessionStorage.getItem(cacheKey);
-            if (cached) {
-                const { data: d, timestamp } = JSON.parse(cached);
-                if (Date.now() - timestamp < staleTime) {
-                    setData(d);
-                    return setStatus(d.length ? 'success' : 'empty');
-                }
-            }
-
-            console.log('🔍 Buscando imóveis para alugar no Sanity...');
-            const d = await getImoveisParaAlugar();
-            console.log('✅ Dados recebidos do Sanity:', d?.length || 0, 'imóveis');
-
-            setData(d || []);
-            setStatus((d && d.length) ? 'success' : 'empty');
-
-            if (d && d.length > 0) {
-                sessionStorage.setItem(cacheKey, JSON.stringify({ data: d, timestamp: Date.now() }));
-            }
-        } catch (error) {
-            console.error('❌ Erro ao buscar imóveis para alugar:', error);
-            setStatus('error');
-        }
-    }, [staleTime, retry]);
-
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
-
-    return { data, status, retry: () => setRetry(r => r + 1) };
+    return useDataWithFallback({
+        fetchFunction: getImoveisParaAlugar,
+        fallbackData: fallbackImoveisAluguel,
+        cacheKey: 'imoveis-para-alugar',
+        staleTime,
+        fallbackMessage
+    });
 }
 
 export default function SecaoImoveisParaAlugarPremium() {
-    const { data: imoveis, status, retry } = useDestaquesAluguel();
+    const { data: imoveis, status, retry, isFallback, message } = useDestaquesAluguel();
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
     // Transform data
     const unifiedProperties = React.useMemo(() => {
-        if (!imoveis.length) return [];
+        if (!imoveis || !Array.isArray(imoveis) || !imoveis.length) return [];
         return transformToUnifiedPropertyList(imoveis.slice(0, 9));
     }, [imoveis]);
 
@@ -175,6 +146,28 @@ export default function SecaoImoveisParaAlugarPremium() {
     return (
         <section className="py-16 bg-gradient-to-br from-blue-50/50 to-slate-50">
             <div className="max-w-7xl mx-auto px-6">
+                {/* Notification for fallback data */}
+                {isFallback && message && (
+                    <div className="mb-8 mx-auto max-w-4xl">
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center gap-3">
+                            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span className="text-blue-600 text-sm">🔧</span>
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-blue-800 text-sm font-medium">
+                                    {message}
+                                </p>
+                            </div>
+                            <button
+                                onClick={retry}
+                                className="text-blue-600 hover:text-blue-800 text-sm font-medium underline"
+                            >
+                                Tentar reconectar
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 {/* Header Simplificado */}
                 <div className="text-center mb-12">
                     <div className="inline-flex items-center gap-2 bg-blue-100/80 border border-blue-200 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-4">

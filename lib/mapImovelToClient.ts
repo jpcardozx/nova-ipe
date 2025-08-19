@@ -66,20 +66,24 @@ export function mapImovelToClient(imovel: any): ImovelClient {
         slug: imovel.slug?.current || '',
         preco: imovel.preco || 0,
         finalidade: imovel.finalidade || 'Venda',
-        tipoImovel: imovel.tipo || 'Outro',
         destaque: imovel.destaque || false,
         emAlta: imovel.emAlta || false, // Nova funcionalidade: Imóveis em Alta
-        bairro: imovel.endereco?.bairro || '',
-        cidade: imovel.endereco?.cidade || '',
-        estado: imovel.endereco?.estado || '',
         descricao: imovel.descricao || '',
         mapaLink: imovel.mapaLink || '',
 
-        // Características principais
-        dormitorios: imovel.quartos || 0,
+        // Características principais - CAMPOS CORRIGIDOS
+        dormitorios: imovel.dormitorios || imovel.quartos || 0,
         banheiros: imovel.banheiros || 0,
-        areaUtil: imovel.area || 0,
+        areaUtil: imovel.areaUtil || imovel.area || 0,
         vagas: imovel.vagas || 0,
+
+        // Dados de localização - CAMPOS CORRIGIDOS
+        bairro: imovel.bairro || imovel.endereco?.bairro || '',
+        cidade: imovel.cidade || imovel.endereco?.cidade || '',
+        estado: imovel.estado || imovel.endereco?.estado || '',
+        
+        // Tipo do imóvel - CAMPO CORRIGIDO
+        tipoImovel: imovel.tipoImovel || imovel.tipo || 'Outro',
 
         // Flags
         aceitaFinanciamento: imovel.aceitaFinanciamento || false,

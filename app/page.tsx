@@ -1,56 +1,8 @@
-import { Metadata } from 'next';
 import { Suspense } from 'react';
 import HomePageClient from './page-client';
 import { fetchProperties } from '../lib/sanity/fetchImoveis';
 import { getImoveisEmAlta } from '../lib/sanity/fetchImoveis'; // Nova importação
 import type { ImovelClient } from '../src/types/imovel-client';
-
-export const metadata: Metadata = {
-  title: 'Ipê Imóveis - Especialistas em Guararema | Compra, Venda e Aluguel',
-  description: 'Encontre seu imóvel ideal em Guararema com a Ipê Imóveis. 15 anos de experiência, 500+ imóveis vendidos, atendimento personalizado. Casas, apartamentos e terrenos.',
-  keywords: 'imóveis Guararema, casas venda Guararema, apartamentos aluguel Guararema, terrenos Guararema, Ipê Imóveis, imobiliária Guararema SP',
-  authors: [{ name: 'Ipê Imóveis', url: 'https://ipeimoveis.vercel.app' }],
-  creator: 'Ipê Imóveis',
-  publisher: 'Ipê Imóveis',
-  metadataBase: new URL('https://ipeimoveis.vercel.app'),
-  alternates: {
-    canonical: '/',
-  },
-  openGraph: {
-    title: 'Ipê Imóveis - Especialistas em Imóveis em Guararema',
-    description: 'Encontre seu imóvel ideal em Guararema. 15 anos de experiência, 500+ imóveis vendidos. Atendimento personalizado e conhecimento local.',
-    url: 'https://ipeimoveis.vercel.app',
-    siteName: 'Ipê Imóveis',
-    images: [
-      {
-        url: '/images/og-banner-guararema.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Ipê Imóveis - Especialistas em Guararema'
-      }
-    ],
-    locale: 'pt_BR',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Ipê Imóveis - Guararema, SP',
-    description: 'Especialistas em imóveis em Guararema há 15 anos. Encontre sua casa ideal conosco.',
-    images: ['/images/og-banner-guararema.jpg'],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-  category: 'business',
-};
 
 async function getProperties() {
   try {
