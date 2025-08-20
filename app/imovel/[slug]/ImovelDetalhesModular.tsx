@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { transformToUnifiedProperty, transformToUnifiedPropertyList } from '@/lib/unified-property-transformer';
 import { useAnalytics } from '@/app/hooks/useAnalytics';
 import { Building2, ArrowLeft } from 'lucide-react';
@@ -41,6 +41,9 @@ const ImovelDetalhesModular: FC<ImovelDetalhesProps> = ({
     const unifiedRelated = React.useMemo(() => {
         return transformToUnifiedPropertyList(relacionados)
     }, [relacionados])
+
+    // Estados locais
+    const [isFavorite, setIsFavorite] = useState(false);
 
     // Analytics hook
     const {
@@ -105,7 +108,19 @@ const ImovelDetalhesModular: FC<ImovelDetalhesProps> = ({
             {/* Header */}
             <PropertyHeader
                 title={unifiedProperty.title}
-                description={unifiedProperty.description}
+                isFavorite={isFavorite}
+                onFavoriteToggle={() => setIsFavorite(!isFavorite)}
+                onShare={() => {
+                    if (navigator.share) {
+                        navigator.share({
+                            title: unifiedProperty.title,
+                            text: unifiedProperty.description,
+                            url: window.location.href
+                        });
+                    } else {
+                        navigator.clipboard.writeText(window.location.href);
+                    }
+                }}
             />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
@@ -132,6 +147,7 @@ const ImovelDetalhesModular: FC<ImovelDetalhesProps> = ({
                                 title={unifiedProperty.title}
                                 location={unifiedProperty.location}
                                 price={unifiedProperty.price}
+                                propertyType={unifiedProperty.propertyType}
                             />
 
                             {/* Características do Imóvel */}
@@ -143,10 +159,9 @@ const ImovelDetalhesModular: FC<ImovelDetalhesProps> = ({
                             />
                         </div>
 
-                        {/* Descrição e Comodidades */}
+                        {/* Descrição */}
                         <PropertyDescription
                             description={unifiedProperty.description}
-                            amenities={unifiedProperty.amenities}
                         />
 
                         {/* Imóveis Relacionados */}

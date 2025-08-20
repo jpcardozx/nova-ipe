@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { ChevronLeft, ChevronRight, X, ZoomIn } from 'lucide-react';
 
 interface PropertyGalleryProps {
-    images: string[];
+    images: (string | undefined)[];
     propertyTitle?: string;
 }
 
@@ -16,14 +16,17 @@ export default function PropertyGallery({
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    if (!images || images.length === 0) return null;
+    // Filtrar imagens válidas
+    const validImages = images.filter((img): img is string => img !== undefined && img !== null && img.trim() !== '');
+
+    if (!validImages || validImages.length === 0) return null;
 
     const nextImage = () => {
-        setCurrentImageIndex((prev) => (prev + 1) % images.length);
+        setCurrentImageIndex((prev) => (prev + 1) % validImages.length);
     };
 
     const prevImage = () => {
-        setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+        setCurrentImageIndex((prev) => (prev - 1 + validImages.length) % validImages.length);
     };
 
     const openModal = (index: number) => {
@@ -42,7 +45,7 @@ export default function PropertyGallery({
                 {/* Imagem Principal */}
                 <div className="relative aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] rounded-xl overflow-hidden bg-slate-200 mb-3 sm:mb-4 group cursor-pointer">
                     <Image
-                        src={images[currentImageIndex]}
+                        src={validImages[currentImageIndex]}
                         alt={`${propertyTitle} - Foto ${currentImageIndex + 1}`}
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -99,8 +102,8 @@ export default function PropertyGallery({
                                 key={index}
                                 onClick={() => setCurrentImageIndex(index)}
                                 className={`relative flex-shrink-0 w-20 h-20 lg:w-24 lg:h-24 rounded-lg overflow-hidden transition-all duration-300 ${index === currentImageIndex
-                                        ? 'ring-2 ring-blue-500 opacity-100'
-                                        : 'opacity-70 hover:opacity-100'
+                                    ? 'ring-2 ring-blue-500 opacity-100'
+                                    : 'opacity-70 hover:opacity-100'
                                     }`}
                             >
                                 <Image

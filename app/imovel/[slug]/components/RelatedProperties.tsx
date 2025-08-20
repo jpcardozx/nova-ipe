@@ -11,7 +11,7 @@ interface RelatedProperty {
     title: string;
     price: number;
     location: string;
-    images: string[];
+    images: (string | undefined)[];
     area?: number;
     bedrooms?: number;
     bathrooms?: number;
@@ -50,7 +50,7 @@ export default function RelatedProperties({
                     >
                         {/* Imagem */}
                         <div className="relative aspect-[4/3] bg-slate-200">
-                            {property.images && property.images.length > 0 ? (
+                            {property.images && property.images.length > 0 && property.images[0] ? (
                                 <Image
                                     src={property.images[0]}
                                     alt={property.title}
