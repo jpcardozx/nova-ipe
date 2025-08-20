@@ -85,8 +85,6 @@ const JuliaLinktreeSimple: React.FC = () => {
 
     const stats = [
         { number: '-45min', label: 'Tempo médio de resposta', icon: Award },
-        { number: '30+', label: 'Imóveis analisados', icon: Home },
-        { number: '50+', label: 'Famílias atendidas', icon: Heart },
         { number: '4.9', label: 'Avaliação média', icon: Star }
     ];
 
