@@ -50,6 +50,7 @@ interface UiState {
     showAdvancedSearch: boolean
     showSearchErrors: boolean
     isSearchFocused: boolean
+    manualSearchTriggered: boolean // Add flag to prevent auto-search
 }
 
 export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) {
@@ -74,7 +75,8 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
         isSearching: false,
         showAdvancedSearch: false,
         showSearchErrors: false,
-        isSearchFocused: false
+        isSearchFocused: false,
+        manualSearchTriggered: false
     })
 
     const [searchErrors, setSearchErrors] = useState<SearchErrors>({})
@@ -82,9 +84,13 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
 
     const router = useRouter()
 
-    // Simplified debounced search functionality
+    // Fixed debounced search functionality - removed searchTimeout dependency
     const debouncedSearch = useCallback((params: URLSearchParams) => {
-        if (searchTimeout) clearTimeout(searchTimeout)
+        // Clear previous timeout using current searchTimeout state
+        setSearchTimeout(prevTimeout => {
+            if (prevTimeout) clearTimeout(prevTimeout)
+            return null
+        })
 
         const timeout = setTimeout(() => {
             setUiState(prev => ({ ...prev, isSearching: false }))
@@ -92,14 +98,19 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
         }, 500)
 
         setSearchTimeout(timeout)
-    }, [router, searchTimeout])
+    }, [router])
 
     useEffect(() => {
         setUiState(prev => ({ ...prev, isMounted: true, isLoaded: true }))
+
+        // Cleanup function to clear any pending timeout on unmount
         return () => {
-            if (searchTimeout) clearTimeout(searchTimeout)
+            setSearchTimeout(prevTimeout => {
+                if (prevTimeout) clearTimeout(prevTimeout)
+                return null
+            })
         }
-    }, [searchTimeout])
+    }, []) // Remove searchTimeout dependency
 
     // Form validation
     const validateSearch = useCallback(() => {
@@ -125,7 +136,8 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
     const handleSearch = useCallback(() => {
         if (!validateSearch()) return
 
-        setUiState(prev => ({ ...prev, isSearching: true }))
+        // Set manual search flag to true to indicate user initiated search
+        setUiState(prev => ({ ...prev, isSearching: true, manualSearchTriggered: true }))
 
         const params = new URLSearchParams()
         if (searchState.query) params.append('busca', searchState.query)
