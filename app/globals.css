@@ -8,6 +8,10 @@
  * @date August 2025
  */
 
+/* Critical above-the-fold styles - load first */
+.hero-section { background: linear-gradient(135deg, #1a6f5c, #3a8f7c); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+.navbar { position: fixed; top: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); z-index: 1000; }
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

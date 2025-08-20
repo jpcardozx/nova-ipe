@@ -1,6 +1,6 @@
 import React from 'react'
 import { Metadata } from 'next'
-import VisitaHeroClean from './components/VisitaHeroClean'
+import { Calendar, Clock, MapPin, Users, CheckCircle, Phone, MessageCircle, Shield, Award, ArrowRight, Send } from 'lucide-react'
 
 export const metadata: Metadata = {
     title: 'Agende sua Visita | Ipê Concept',
@@ -9,99 +9,277 @@ export const metadata: Metadata = {
 
 export default function VisitaPage() {
     return (
-        <main className="min-h-screen">
-            <VisitaHeroClean />
+        <div className="min-h-screen bg-gray-50">
+            {/* Professional Header Section */}
+            <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white py-20">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center">
+                        {/* Company Badge */}
+                        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2 rounded-full mb-6">
+                            <Calendar className="w-4 h-4 text-amber-400" />
+                            <span className="text-sm font-medium">Agendamento de Visitas</span>
+                        </div>
 
-            {/* Simple visit form section */}
-            <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                <div className="bg-white rounded-2xl shadow-xl p-8">
-                    <div className="text-center mb-8">
-                        <h2 className="text-3xl font-bold text-slate-900 mb-4">
-                            Como prefere agendar?
-                        </h2>
-                        <p className="text-lg text-slate-600">
-                            Escolha a forma mais conveniente para você
+                        {/* Main Title */}
+                        <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                            Agende Sua Visita
+                        </h1>
+
+                        {/* Subtitle */}
+                        <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+                            Visite nossos imóveis com acompanhamento especializado. Atendimento personalizado e sem compromisso.
                         </p>
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* WhatsApp Option */}
-                        <div className="text-center p-6 border-2 border-amber-200 rounded-xl hover:border-amber-500 transition-colors">
-                            <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.525 3.687" />
-                                </svg>
-                            </div>
-                            <h3 className="text-xl font-semibold text-slate-900 mb-2">
-                                Via WhatsApp
-                            </h3>
-                            <p className="text-slate-600 mb-4">
-                                Resposta imediata e agendamento rápido
-                            </p>
+                        {/* CTA Buttons */}
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
                             <a
                                 href="https://wa.me/5511999999999?text=Olá! Gostaria de agendar uma visita"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center justify-center w-full bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                                className="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:scale-105"
                             >
+                                <MessageCircle className="w-6 h-6" />
                                 Agendar no WhatsApp
                             </a>
-                        </div>
-
-                        {/* Phone Option */}
-                        <div className="text-center p-6 border-2 border-slate-200 rounded-xl hover:border-slate-400 transition-colors">
-                            <div className="w-16 h-16 bg-slate-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-xl font-semibold text-slate-900 mb-2">
-                                Por Telefone
-                            </h3>
-                            <p className="text-slate-600 mb-4">
-                                Fale diretamente com nossos especialistas
-                            </p>
                             <a
                                 href="tel:+5511999999999"
-                                className="inline-flex items-center justify-center w-full bg-slate-500 hover:bg-slate-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                                className="inline-flex items-center gap-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-8 py-4 rounded-2xl font-bold text-lg backdrop-blur-sm transition-all duration-200"
                             >
-                                (11) 9 9999-9999
+                                <Phone className="w-6 h-6" />
+                                Ligar Agora
                             </a>
                         </div>
                     </div>
 
-                    {/* Additional info */}
-                    <div className="mt-8 p-6 bg-amber-50 rounded-xl">
-                        <h4 className="font-semibold text-slate-900 mb-2">O que está incluso na visita:</h4>
-                        <ul className="space-y-2 text-slate-700">
-                            <li className="flex items-start gap-2">
-                                <svg className="w-5 h-5 text-amber-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                </svg>
-                                Visita acompanhada por corretor especializado
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <svg className="w-5 h-5 text-amber-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                </svg>
-                                Informações completas sobre o imóvel e região
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <svg className="w-5 h-5 text-amber-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                </svg>
-                                Orientação sobre documentação e financiamento
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <svg className="w-5 h-5 text-amber-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                </svg>
-                                Atendimento sem compromisso
-                            </li>
-                        </ul>
+                    {/* Stats Section */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div className="text-center">
+                            <div className="w-12 h-12 bg-amber-500/20 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                <Clock className="w-6 h-6 text-amber-400" />
+                            </div>
+                            <div className="text-2xl font-bold text-white mb-1">24h</div>
+                            <div className="text-sm text-gray-300">Resposta garantida</div>
+                        </div>
+                        <div className="text-center">
+                            <div className="w-12 h-12 bg-amber-500/20 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                <Users className="w-6 h-6 text-amber-400" />
+                            </div>
+                            <div className="text-2xl font-bold text-white mb-1">500+</div>
+                            <div className="text-sm text-gray-300">Visitas realizadas</div>
+                        </div>
+                        <div className="text-center">
+                            <div className="w-12 h-12 bg-amber-500/20 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                <Award className="w-6 h-6 text-amber-400" />
+                            </div>
+                            <div className="text-2xl font-bold text-white mb-1">100%</div>
+                            <div className="text-sm text-gray-300">Gratuitas</div>
+                        </div>
+                        <div className="text-center">
+                            <div className="w-12 h-12 bg-amber-500/20 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                <Shield className="w-6 h-6 text-amber-400" />
+                            </div>
+                            <div className="text-2xl font-bold text-white mb-1">15+</div>
+                            <div className="text-sm text-gray-300">Anos de experiência</div>
+                        </div>
                     </div>
                 </div>
             </section>
-        </main>
+
+            {/* Main Visit Scheduling Section */}
+            <section className="py-16">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid lg:grid-cols-5 gap-12">
+
+                        {/* Visit Information Sidebar */}
+                        <div className="lg:col-span-2 space-y-6">
+
+                            {/* Contact Methods */}
+                            <div className="bg-white rounded-lg border border-gray-200 p-6">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                                    Formas de Agendamento
+                                </h3>
+
+                                <div className="space-y-4">
+                                    {/* WhatsApp */}
+                                    <a
+                                        href="https://wa.me/5511999999999?text=Olá! Gostaria de agendar uma visita"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-green-300 transition-colors group"
+                                    >
+                                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-4 group-hover:bg-green-200 transition-colors">
+                                            <MessageCircle className="w-5 h-5 text-green-600" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h4 className="font-semibold text-gray-900">WhatsApp</h4>
+                                            <p className="text-gray-600">Resposta imediata</p>
+                                            <p className="text-sm text-gray-500">(11) 9 9999-9999</p>
+                                        </div>
+                                        <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-green-600 transition-colors" />
+                                    </a>
+
+                                    {/* Phone */}
+                                    <a
+                                        href="tel:+5511999999999"
+                                        className="flex items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-amber-300 transition-colors group"
+                                    >
+                                        <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mr-4 group-hover:bg-amber-200 transition-colors">
+                                            <Phone className="w-5 h-5 text-amber-600" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h4 className="font-semibold text-gray-900">Telefone</h4>
+                                            <p className="text-gray-600">Atendimento direto</p>
+                                            <p className="text-sm text-gray-500">(11) 9 9999-9999</p>
+                                        </div>
+                                        <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-amber-600 transition-colors" />
+                                    </a>
+                                </div>
+                            </div>
+
+                            {/* Visit Hours */}
+                            <div className="bg-gray-900 text-white p-6 rounded-lg">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <Clock className="w-5 h-5 text-amber-400" />
+                                    <h4 className="font-semibold">Horários de Visita</h4>
+                                </div>
+                                <div className="space-y-2 text-sm">
+                                    <div className="flex justify-between">
+                                        <span>Segunda - Sexta</span>
+                                        <span>9:00 - 18:00</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>Sábados</span>
+                                        <span>9:00 - 16:00</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>Domingos</span>
+                                        <span>9:00 - 14:00</span>
+                                    </div>
+                                    <div className="flex justify-between pt-2 border-t border-gray-700">
+                                        <span>Agendamento antecipado</span>
+                                        <span className="text-amber-400">Recomendado</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Location Info */}
+                            <div className="bg-amber-50 border border-amber-200 p-6 rounded-lg">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <MapPin className="w-5 h-5 text-amber-600" />
+                                    <h4 className="font-semibold text-gray-900">Regiões Atendidas</h4>
+                                </div>
+                                <div className="text-sm text-gray-700 space-y-1">
+                                    <div>• Guararema Centro</div>
+                                    <div>• Itapema</div>
+                                    <div>• Portal do Paraíso</div>
+                                    <div>• Mogi das Cruzes</div>
+                                    <div>• Jacareí</div>
+                                    <div>• Suzano</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Main Content */}
+                        <div className="lg:col-span-3">
+                            <div className="bg-white rounded-lg border border-gray-200 p-8">
+                                <div className="mb-8">
+                                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                                        Escolha a Melhor Forma para Você
+                                    </h2>
+                                    <p className="text-gray-600">
+                                        Oferecemos diferentes canais de atendimento para sua conveniência
+                                    </p>
+                                </div>
+
+                                {/* Contact Options Grid */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                    {/* WhatsApp Option */}
+                                    <div className="text-center p-6 border-2 border-green-200 rounded-xl hover:border-green-400 transition-colors group">
+                                        <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                                            <MessageCircle className="w-8 h-8 text-white" />
+                                        </div>
+                                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                                            Via WhatsApp
+                                        </h3>
+                                        <p className="text-gray-600 mb-4">
+                                            Resposta imediata e agendamento rápido
+                                        </p>
+                                        <a
+                                            href="https://wa.me/5511999999999?text=Olá! Gostaria de agendar uma visita"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center justify-center w-full bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                                        >
+                                            Agendar no WhatsApp
+                                        </a>
+                                    </div>
+
+                                    {/* Phone Option */}
+                                    <div className="text-center p-6 border-2 border-amber-200 rounded-xl hover:border-amber-400 transition-colors group">
+                                        <div className="w-16 h-16 bg-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                                            <Phone className="w-8 h-8 text-white" />
+                                        </div>
+                                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                                            Por Telefone
+                                        </h3>
+                                        <p className="text-gray-600 mb-4">
+                                            Fale diretamente com nossos especialistas
+                                        </p>
+                                        <a
+                                            href="tel:+5511999999999"
+                                            className="inline-flex items-center justify-center w-full bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                                        >
+                                            (11) 9 9999-9999
+                                        </a>
+                                    </div>
+                                </div>
+
+                                {/* What's Included Section */}
+                                <div className="bg-amber-50 border border-amber-200 p-6 rounded-xl mb-8">
+                                    <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                        <CheckCircle className="w-5 h-5 text-amber-600" />
+                                        O que está incluído na visita:
+                                    </h4>
+                                    <div className="grid md:grid-cols-2 gap-3">
+                                        <div className="flex items-start gap-2">
+                                            <CheckCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                                            <span className="text-gray-700">Visita acompanhada por corretor especializado</span>
+                                        </div>
+                                        <div className="flex items-start gap-2">
+                                            <CheckCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                                            <span className="text-gray-700">Informações completas sobre o imóvel</span>
+                                        </div>
+                                        <div className="flex items-start gap-2">
+                                            <CheckCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                                            <span className="text-gray-700">Orientação sobre documentação</span>
+                                        </div>
+                                        <div className="flex items-start gap-2">
+                                            <CheckCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                                            <span className="text-gray-700">Atendimento sem compromisso</span>
+                                        </div>
+                                        <div className="flex items-start gap-2">
+                                            <CheckCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                                            <span className="text-gray-700">Análise da região e infraestrutura</span>
+                                        </div>
+                                        <div className="flex items-start gap-2">
+                                            <CheckCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                                            <span className="text-gray-700">Suporte para financiamento</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Privacy Notice */}
+                                <div className="text-center pt-6 border-t border-gray-200">
+                                    <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+                                        <Shield className="w-4 h-4 text-amber-600" />
+                                        <span>Atendimento profissional e respeitoso garantido</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
     )
 }

@@ -26,7 +26,8 @@
       "Bash(timeout 30s npm run build)",
       "Bash(git config:*)",
       "Bash(true)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(npm run analyze:*)"
     ],
     "deny": []
   },

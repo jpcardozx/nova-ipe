@@ -3,7 +3,10 @@ const nextConfig = {
   reactStrictMode: false, // Desabilitar temporariamente para evitar erros
   
   images: {
-    unoptimized: true, // Bypass image optimization temporariamente
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 31536000,
     remotePatterns: [
       {
         protocol: 'https',
@@ -18,7 +21,6 @@ const nextConfig = {
 
   serverExternalPackages: ['sanity'],
   
-  // Webpack simplificado para evitar erros
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -27,10 +29,26 @@ const nextConfig = {
       };
     }
     
-    // Evitar bundle splitting problemático
+    // Optimize bundle splitting for better performance
     config.optimization = {
       ...config.optimization,
-      splitChunks: false,
+      splitChunks: {
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+            maxSize: 250000,
+          },
+          common: {
+            name: 'common',
+            minChunks: 2,
+            chunks: 'all',
+            enforce: true,
+          },
+        },
+      },
     };
 
     return config;
