@@ -194,7 +194,7 @@ export default function SecaoImoveisParaAlugarPremium() {
                         >
                             {Array.from({ length: slidesCount }).map((_, slideIndex) => (
                                 <div key={slideIndex} className="w-full flex-shrink-0">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 p-2 sm:p-4">
                                         {unifiedProperties
                                             .slice(slideIndex * 3, (slideIndex + 1) * 3)
                                             .map((property) => {
@@ -203,7 +203,7 @@ export default function SecaoImoveisParaAlugarPremium() {
                                                     <div key={property.id} className="transform hover:scale-[1.02] transition-all duration-300">
                                                         <PropertyCardPremium
                                                             {...cardProps}
-                                                            variant="default"
+                                                            variant="compact"
                                                             className="h-full shadow-md hover:shadow-lg"
                                                         />
                                                     </div>

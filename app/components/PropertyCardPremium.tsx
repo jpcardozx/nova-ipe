@@ -108,7 +108,7 @@ export default function PropertyCardPremium({
             {/* Image Container */}
             <div className={cn(
                 "relative overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200",
-                isCompact ? "aspect-[4/3]" : "aspect-[16/11]"
+                isCompact ? "aspect-[5/4]" : "aspect-[16/11]"
             )}>
                 {mainImage?.url ? (
                     <Image

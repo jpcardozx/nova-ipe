@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { UnifiedLoading } from './components/ui/UnifiedComponents';
 import OptimizationProvider from './components/OptimizationProvider';
+import WebVitalsOptimizer from './components/WebVitalsOptimizer';
 import WhatsAppButton from './components/WhatsAppButton';
-import EnhancedNotificationBanner from './components/EnhancedNotificationBanner';
 import EnhancedTestimonials from './components/EnhancedTestimonials';
 import MobileFirstHeroClean from './components/MobileFirstHeroClean';
 import { ProcessedProperty } from './types/property';
@@ -40,10 +40,6 @@ const IpeConcept = dynamic(() => import('./components/ipeConcept'), {
     loading: () => <UnifiedLoading height="550px" title="Carregando..." />,
 });
 
-const FooterAprimorado = dynamic(() => import('./sections/FooterAprimorado'), {
-    loading: () => <UnifiedLoading height="300px" title="Carregando rodapé..." />,
-});
-
 interface HomePageClientProps {
     propertiesForSale: ImovelClient[];
     propertiesForRent: ImovelClient[];
@@ -60,18 +56,12 @@ export default function HomePageClient({
     const [isLoaded, setIsLoaded] = useState(false);
     useEffect(() => {
         setIsLoaded(true);
-    }, []); return (
+    }, []);
+
+    return (
         <OptimizationProvider>
-            {/* Navbar e Hero */}
-            <header className="relative">
-                <EnhancedNotificationBanner
-                    message="Novos imóveis disponíveis! Confira nosso catálogo atualizado"
-                    link="/contato"
-                    linkText="Entre em contato"
-                    variant="promotional"
-                    storageKey="home_notification_dismissed"
-                />
-            </header>
+            <WebVitalsOptimizer />
+            {/* Hero sem navbar sobreposta */}
             <MobileFirstHeroClean imoveisEmAlta={hotProperties} />
             <BlocoExploracaoGuararema />
 
@@ -98,7 +88,7 @@ export default function HomePageClient({
             </main>
 
             {/* Botão do WhatsApp fixo */}
-            <WhatsAppButton phoneNumber="+5511981845016" />;
+            <WhatsAppButton phoneNumber="+5511981845016" />
         </OptimizationProvider>
     );
 }

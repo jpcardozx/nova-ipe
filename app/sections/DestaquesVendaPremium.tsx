@@ -201,7 +201,7 @@ export default function DestaquesVendaPremium() {
                         >
                             {Array.from({ length: slidesCount }).map((_, slideIndex) => (
                                 <div key={slideIndex} className="w-full flex-shrink-0">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 p-2 sm:p-4">
                                         {unifiedProperties
                                             .slice(slideIndex * 3, (slideIndex + 1) * 3)
                                             .map((property) => {
@@ -210,7 +210,7 @@ export default function DestaquesVendaPremium() {
                                                     <div key={property.id} className="transform hover:scale-[1.02] transition-all duration-300">
                                                         <PropertyCardPremium
                                                             {...cardProps}
-                                                            variant="default"
+                                                            variant="compact"
                                                             className="h-full shadow-md hover:shadow-lg"
                                                         />
                                                     </div>
@@ -222,23 +222,23 @@ export default function DestaquesVendaPremium() {
                         </div>
                     </div>
 
-                    {/* Navigation Arrows */}
+                    {/* Navigation Arrows - Responsivos */}
                     {slidesCount > 1 && (
                         <>
                             <button
                                 onClick={prevSlide}
-                                className="absolute left-4 top-1/2 -translate-y-1/2 bg-white hover:bg-amber-50 text-slate-700 shadow-lg hover:shadow-xl rounded-full p-3 transition-all duration-300 z-10 border border-slate-200"
+                                className="absolute left-2 lg:left-4 top-1/2 -translate-y-1/2 bg-white hover:bg-amber-50 text-slate-700 shadow-lg hover:shadow-xl rounded-full p-2 lg:p-3 transition-all duration-300 z-10 border border-slate-200"
                                 aria-label="Imóvel anterior"
                             >
-                                <ChevronLeft className="w-5 h-5" />
+                                <ChevronLeft className="w-4 h-4 lg:w-5 lg:h-5" />
                             </button>
 
                             <button
                                 onClick={nextSlide}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 bg-white hover:bg-amber-50 text-slate-700 shadow-lg hover:shadow-xl rounded-full p-3 transition-all duration-300 z-10 border border-slate-200"
+                                className="absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 bg-white hover:bg-amber-50 text-slate-700 shadow-lg hover:shadow-xl rounded-full p-2 lg:p-3 transition-all duration-300 z-10 border border-slate-200"
                                 aria-label="Próximo imóvel"
                             >
-                                <ChevronRight className="w-5 h-5" />
+                                <ChevronRight className="w-4 h-4 lg:w-5 lg:h-5" />
                             </button>
                         </>
                     )}

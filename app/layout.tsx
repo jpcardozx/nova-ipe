@@ -1,8 +1,18 @@
 import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import { Providers } from './providers/QueryProvider';
 import CenteredNavbar from './components/ui/CenteredNavbar-optimized';
 import FooterAprimorado from './sections/FooterAprimorado';
 import './globals.css';
+
+// Otimização de fontes com next/font
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+  variable: '--font-inter',
+  fallback: ['system-ui', 'arial']
+});
 
 export const metadata: Metadata = {
   title: {
@@ -129,7 +139,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
-      <body className="font-sans antialiased bg-white text-gray-900">
+      <body className={`${inter.variable} font-sans antialiased bg-white text-gray-900`}>
         <Providers>
           <CenteredNavbar />
           <main role="main">

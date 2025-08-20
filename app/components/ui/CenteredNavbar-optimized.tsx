@@ -99,7 +99,7 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
 
     return (
         <>
-            {/* Fixed navbar with CSS-only transitions */}
+            {/* Fixed navbar with CSS-only transitions - Removido margin top em mobile */}
             <nav
                 className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled
                     ? 'bg-white/95 backdrop-blur-xl shadow-lg border-b border-gray-200'
@@ -107,7 +107,7 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
                     } ${className || ''}`}
             >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="h-18 flex items-center">
+                    <div className="h-16 sm:h-18 flex items-center">
 
                         {/* Mobile Layout */}
                         {isMobile ? (

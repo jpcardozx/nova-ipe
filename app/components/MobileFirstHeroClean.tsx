@@ -337,7 +337,7 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
 
     return (
         <section
-            className="relative min-h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
+            className="relative min-h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 pt-4 sm:pt-8"
             role="banner"
             aria-label="Página inicial da Ipê Imóveis"
         >
@@ -371,24 +371,24 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
                 {/* Header Section - Espaçamento otimizado */}
                 <header className="text-center relative z-10">
                     {/* Professional badge with better contrast */}
-                    <div className="inline-flex items-center gap-3 px-6 py-3 bg-slate-900/40 backdrop-blur-xl border border-amber-400/30 rounded-full text-white text-sm font-medium mb-6 sm:mb-8 shadow-2xl hover:bg-slate-800/50 hover:border-amber-300/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-900">
+                    <div className="inline-flex items-center gap-3 px-6 py-3 bg-slate-900/40 backdrop-blur-xl border border-amber-400/30 rounded-full text-white text-sm font-medium mb-3 sm:mb-4 shadow-2xl hover:bg-slate-800/50 hover:border-amber-300/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-900">
                         <Award className="w-4 h-4 text-amber-400" aria-hidden="true" />
                         <span className="font-semibold text-slate-100">Ipê Imóveis - 15 anos em Guararema</span>
                         <Star className="w-4 h-4 text-amber-400" aria-hidden="true" />
                     </div>
 
                     {/* Main title with beautiful gradient */}
-                    <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-light text-white mb-4 sm:mb-6 leading-tight tracking-tight" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.8), 0 1px 3px rgba(0,0,0,0.9)' }}>
+                    <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-light text-white mb-3 sm:mb-4 leading-tight tracking-tight" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.8), 0 1px 3px rgba(0,0,0,0.9)' }}>
                         <span className="block text-white">Encontre seu</span>
                         <span className="block font-semibold bg-gradient-to-r from-orange-400 via-amber-500 to-yellow-400 bg-clip-text text-transparent" style={{ textShadow: '0 0 8px rgba(251, 146, 60, 0.3)' }}>
                             lar ideal
                         </span>
-                        <span className="block text-xl sm:text-2xl lg:text-3xl xl:text-4xl mt-2 text-slate-100 font-light">
+                        <span className="block text-xl sm:text-2xl lg:text-3xl xl:text-4xl mt-1 text-slate-100 font-light">
                             em Guararema
                         </span>
                     </h1>
 
-                    <p className="text-base sm:text-lg lg:text-xl text-slate-400 mb-6 sm:mb-8 font-light max-w-3xl mx-auto leading-relaxed" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.7)' }}>
+                    <p className="text-base sm:text-lg lg:text-xl text-slate-400 mb-4 sm:mb-6 font-light max-w-3xl mx-auto leading-relaxed" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.7)' }}>
                         Corretores locais com experiência no mercado imobiliário de Guararema e região
                     </p>
 
@@ -451,9 +451,15 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
                                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                                             {unifiedProperties.map((property, index) => {
                                                 const cardProps = toPropertyCardPremiumProps(property)
+                                                const propertyUrl = `/imovel/${property.slug || property.id}`
                                                 return (
-                                                    <div key={property.id || index} className="group">
-                                                        <div className="relative bg-gradient-to-br from-slate-900/70 to-slate-800/70 backdrop-blur-xl border border-slate-600/30 rounded-xl overflow-hidden hover:border-amber-400/50 transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-xl group-hover:shadow-amber-500/5">
+                                                    <Link
+                                                        key={property.id || index}
+                                                        href={propertyUrl}
+                                                        className="group"
+                                                        aria-label={`Ver detalhes do imóvel ${cardProps.title}`}
+                                                    >
+                                                        <div className="relative bg-gradient-to-br from-slate-900/70 to-slate-800/70 backdrop-blur-xl border border-slate-600/30 rounded-xl overflow-hidden hover:border-amber-400/50 transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-xl group-hover:shadow-amber-500/5 cursor-pointer">
                                                             {/* Imagem Compacta */}
                                                             <div className="aspect-[4/3] relative overflow-hidden">
                                                                 <img
@@ -522,7 +528,7 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    </Link>
                                                 )
                                             })}
                                         </div>
