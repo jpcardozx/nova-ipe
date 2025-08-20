@@ -4,6 +4,7 @@ import { Providers } from './providers/QueryProvider';
 import CenteredNavbar from './components/ui/CenteredNavbar-optimized';
 import FooterAprimorado from './sections/FooterAprimorado';
 import './globals.css';
+import { usePathname } from 'next/navigation';
 
 // Otimização de fontes com next/font
 const inter = Inter({
@@ -75,11 +76,12 @@ export const metadata: Metadata = {
   manifest: '/site.webmanifest',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // Detect current pathname
+  let isJulia = false;
+  if (typeof window !== 'undefined') {
+    isJulia = window.location.pathname.startsWith('/julia');
+  }
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "RealEstateAgent",
@@ -141,11 +143,11 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} font-sans antialiased bg-white text-gray-900`}>
         <Providers>
-          <CenteredNavbar />
+          {!isJulia && <CenteredNavbar />}
           <main role="main">
             {children}
           </main>
-          <FooterAprimorado />
+          {!isJulia && <FooterAprimorado />}
         </Providers>
       </body>
     </html>

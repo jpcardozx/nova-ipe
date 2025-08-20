@@ -78,19 +78,13 @@ const JuliaLinktreeSimple: React.FC = () => {
         {
             id: 'instagram',
             icon: Instagram,
-            url: 'https://instagram.com/julia.ipeimoveis',
+            url: 'https://instagram.com/juliapcmello',
             gradient: 'from-pink-500 to-purple-600'
         },
-        {
-            id: 'linkedin',
-            icon: Linkedin,
-            url: 'https://linkedin.com/in/julia-mello-imoveis',
-            gradient: 'from-blue-600 to-blue-700'
-        }
     ];
 
     const stats = [
-        { number: '2+', label: 'Anos de experiência', icon: Award },
+        { number: '-45min', label: 'Tempo médio de resposta', icon: Award },
         { number: '30+', label: 'Imóveis analisados', icon: Home },
         { number: '50+', label: 'Famílias atendidas', icon: Heart },
         { number: '4.9', label: 'Avaliação média', icon: Star }
@@ -108,14 +102,14 @@ const JuliaLinktreeSimple: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-            
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden mt-8 sm:mt-12">
+
             {/* Simple Background */}
             <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-transparent to-green-500/5" />
 
             {/* Main Content */}
             <div className="relative z-10 max-w-md mx-auto px-6 py-12 min-h-screen flex flex-col justify-center">
-                
+
                 {/* Profile Header */}
                 <div className="text-center mb-8">
                     {/* Profile Image */}
@@ -124,15 +118,15 @@ const JuliaLinktreeSimple: React.FC = () => {
                             <div className="absolute inset-0 rounded-full p-1 bg-gradient-to-r from-amber-500 to-orange-500">
                                 <div className="w-full h-full rounded-full bg-slate-900 p-1">
                                     <div className="w-full h-full rounded-full overflow-hidden">
-                                        <img 
-                                            src="/images/julia.png" 
-                                            alt="Julia de Mello" 
+                                        <img
+                                            src="/images/julia.png"
+                                            alt="Julia de Mello"
                                             className="w-full h-full object-cover"
                                         />
                                     </div>
                                 </div>
                             </div>
-                            
+
                             {/* Online Status */}
                             <div className="absolute bottom-2 right-2 w-6 h-6 bg-green-500 rounded-full border-4 border-slate-900">
                                 <div className="w-2 h-2 bg-white rounded-full mx-auto mt-1" />
@@ -144,7 +138,7 @@ const JuliaLinktreeSimple: React.FC = () => {
                     <h1 className="text-3xl font-bold text-white mb-2">
                         Julia de Mello
                     </h1>
-                    
+
                     <p className="text-slate-400 text-lg mb-6">
                         Corretora Imobiliária
                         <span className="block text-amber-400 text-sm mt-1">
@@ -155,9 +149,9 @@ const JuliaLinktreeSimple: React.FC = () => {
                     {/* Company Badge */}
                     <div className="inline-flex items-center gap-3 bg-gradient-to-r from-amber-50/90 to-orange-50/90 border border-amber-200/50 rounded-full px-4 py-3 mb-8 shadow-xl">
                         <div className="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center">
-                            <img 
-                                src="/images/darkLogo.png" 
-                                alt="Ipê Imóveis" 
+                            <img
+                                src="/images/ipeLogo.png"
+                                alt="Ipê Imóveis"
                                 className="w-4 h-4 object-contain"
                             />
                         </div>
@@ -191,7 +185,7 @@ const JuliaLinktreeSimple: React.FC = () => {
                 <div className="space-y-4 mb-8">
                     {primaryLinks.map((link) => {
                         const IconComponent = link.icon;
-                        
+
                         return (
                             <button
                                 key={link.id}
@@ -206,7 +200,7 @@ const JuliaLinktreeSimple: React.FC = () => {
                                     <div className="p-3 rounded-xl bg-white/20 backdrop-blur-sm">
                                         <IconComponent className="w-6 h-6 text-white" />
                                     </div>
-                                    
+
                                     <div className="flex-1 text-left">
                                         <h3 className="font-bold text-lg text-white mb-1">
                                             {link.title}
@@ -215,7 +209,7 @@ const JuliaLinktreeSimple: React.FC = () => {
                                             {link.subtitle}
                                         </p>
                                     </div>
-                                    
+
                                     <ArrowUpRight className="w-5 h-5 text-white/80 group-hover:rotate-45 transition-transform duration-300" />
                                 </div>
                             </button>
@@ -249,7 +243,7 @@ const JuliaLinktreeSimple: React.FC = () => {
                             Corretora Certificada CRECI
                         </span>
                     </div>
-                    
+
                     <div className="space-y-2 text-slate-400 text-sm">
                         <div className="flex items-center justify-center gap-2">
                             <Phone className="w-4 h-4" />
@@ -267,7 +261,7 @@ const JuliaLinktreeSimple: React.FC = () => {
 
                     <div className="mt-4 pt-4 border-t border-slate-700/50">
                         <p className="text-slate-400 text-xs leading-relaxed">
-                            Especializada no mercado imobiliário de Guararema. 
+                            Especializada no mercado imobiliário de Guararema.
                             Ajudo famílias a realizarem o sonho do imóvel ideal com transparência e dedicação.
                         </p>
                     </div>
