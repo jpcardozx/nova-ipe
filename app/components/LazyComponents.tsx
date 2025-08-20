@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 
 // Lazy load heavy components with loading states
 export const LazyIpeConcept = dynamic(
-  () => import('./ipeConcept').then(mod => ({ default: mod.IpeConcept })),
+  () => import('./ipeConcept'),
   {
     loading: () => (
       <div className="h-96 bg-gradient-to-r from-gray-100 to-gray-200 animate-pulse rounded-lg flex items-center justify-center">
@@ -53,7 +53,7 @@ export const LazyContactSection = dynamic(
 );
 
 export const LazyPropertyCard = dynamic(
-  () => import('./PropertyCard').then(mod => ({ default: mod.PropertyCard })),
+  () => import('./ui/PropertyCard'),
   {
     loading: () => (
       <div className="h-80 bg-white border border-gray-200 rounded-lg animate-pulse">
