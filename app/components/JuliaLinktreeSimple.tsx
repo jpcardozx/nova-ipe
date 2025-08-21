@@ -100,19 +100,19 @@ const JuliaLinktreeSimple: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden mt-8 sm:mt-12">
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
 
             {/* Simple Background */}
             <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-transparent to-green-500/5" />
 
             {/* Main Content */}
-            <div className="relative z-10 max-w-md mx-auto px-6 py-12 min-h-screen flex flex-col justify-center">
+            <div className="relative z-10 max-w-md mx-auto px-4 sm:px-6 py-8 sm:py-12 min-h-screen flex flex-col justify-center">
 
                 {/* Profile Header */}
                 <div className="text-center mb-8">
                     {/* Profile Image */}
                     <div className="relative mb-6">
-                        <div className="relative w-32 h-32 mx-auto">
+                        <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto">
                             <div className="absolute inset-0 rounded-full p-1 bg-gradient-to-r from-amber-500 to-orange-500">
                                 <div className="w-full h-full rounded-full bg-slate-900 p-1">
                                     <div className="w-full h-full rounded-full overflow-hidden">
@@ -133,11 +133,11 @@ const JuliaLinktreeSimple: React.FC = () => {
                     </div>
 
                     {/* Name and Title */}
-                    <h1 className="text-3xl font-bold text-white mb-2">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
                         Julia de Mello
                     </h1>
 
-                    <p className="text-slate-400 text-lg mb-6">
+                    <p className="text-slate-400 text-base sm:text-lg mb-6">
                         Corretora Imobiliária
                         <span className="block text-amber-400 text-sm mt-1">
                             Guararema & Região
@@ -145,7 +145,7 @@ const JuliaLinktreeSimple: React.FC = () => {
                     </p>
 
                     {/* Company Badge */}
-                    <div className="inline-flex items-center gap-3 bg-gradient-to-r from-amber-50/90 to-orange-50/90 border border-amber-200/50 rounded-full px-4 py-3 mb-8 shadow-xl">
+                    <div className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-amber-50/90 to-orange-50/90 border border-amber-200/50 rounded-full px-3 sm:px-4 py-2 sm:py-3 mb-6 sm:mb-8 shadow-xl">
                         <div className="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center">
                             <img
                                 src="/images/ipeLogo.png"
@@ -153,7 +153,7 @@ const JuliaLinktreeSimple: React.FC = () => {
                                 className="w-4 h-4 object-contain"
                             />
                         </div>
-                        <span className="text-amber-800 font-semibold text-sm">
+                        <span className="text-amber-800 font-semibold text-xs sm:text-sm">
                             Corretora Parceira Ipê Imóveis
                         </span>
                         <Star className="w-4 h-4 text-amber-500" />
@@ -161,26 +161,26 @@ const JuliaLinktreeSimple: React.FC = () => {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-2 gap-4 mb-8">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
                     {stats.map((stat, index) => {
                         const IconComponent = stat.icon;
                         return (
                             <div
                                 key={index}
-                                className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-4 text-center hover:border-amber-400/40 transition-all duration-300"
+                                className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center hover:border-amber-400/40 transition-all duration-300"
                             >
                                 <div className="w-8 h-8 bg-amber-600/20 rounded-lg flex items-center justify-center mx-auto mb-2">
                                     <IconComponent className="w-4 h-4 text-amber-400" />
                                 </div>
-                                <div className="text-lg font-bold text-white mb-1">{stat.number}</div>
-                                <div className="text-xs text-slate-400">{stat.label}</div>
+                                <div className="text-base sm:text-lg font-bold text-white mb-1">{stat.number}</div>
+                                <div className="text-xs text-slate-400 leading-tight">{stat.label}</div>
                             </div>
                         );
                     })}
                 </div>
 
                 {/* Primary Links */}
-                <div className="space-y-4 mb-8">
+                <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
                     {primaryLinks.map((link) => {
                         const IconComponent = link.icon;
 
@@ -194,16 +194,16 @@ const JuliaLinktreeSimple: React.FC = () => {
                                 <div className={`absolute inset-0 bg-gradient-to-r ${link.gradient}`} />
 
                                 {/* Content */}
-                                <div className="relative p-6 flex items-center gap-4">
+                                <div className="relative p-4 sm:p-6 flex items-center gap-3 sm:gap-4">
                                     <div className="p-3 rounded-xl bg-white/20 backdrop-blur-sm">
                                         <IconComponent className="w-6 h-6 text-white" />
                                     </div>
 
                                     <div className="flex-1 text-left">
-                                        <h3 className="font-bold text-lg text-white mb-1">
+                                        <h3 className="font-bold text-base sm:text-lg text-white mb-1">
                                             {link.title}
                                         </h3>
-                                        <p className="text-sm text-white/80">
+                                        <p className="text-xs sm:text-sm text-white/80">
                                             {link.subtitle}
                                         </p>
                                     </div>
@@ -216,7 +216,7 @@ const JuliaLinktreeSimple: React.FC = () => {
                 </div>
 
                 {/* Social Links */}
-                <div className="flex justify-center gap-4 mb-8">
+                <div className="flex justify-center gap-4 mb-6 sm:mb-8">
                     {socialLinks.map((social) => {
                         const IconComponent = social.icon;
                         return (
@@ -234,7 +234,7 @@ const JuliaLinktreeSimple: React.FC = () => {
                 </div>
 
                 {/* Contact Info */}
-                <div className="bg-slate-800/20 backdrop-blur-xl border border-slate-700/30 rounded-3xl p-6 text-center shadow-2xl">
+                <div className="bg-slate-800/20 backdrop-blur-xl border border-slate-700/30 rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center shadow-2xl">
                     <div className="flex items-center justify-center gap-2 mb-4">
                         <Shield className="w-4 h-4 text-amber-400" />
                         <span className="text-slate-300 font-semibold text-sm">

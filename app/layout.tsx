@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import LayoutWithNavFooter from './components/LayoutWithNavFooter';
+import { Providers } from './providers/QueryProvider';
+import ConditionalLayout from './components/ConditionalLayout';
 import './globals.css';
-import { usePathname } from 'next/navigation';
 
 // Otimização de fontes com next/font
 const inter = Inter({
@@ -74,67 +74,77 @@ export const metadata: Metadata = {
   manifest: '/site.webmanifest',
 };
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "RealEstateAgent",
-  "name": "Ipê Imóveis",
-  "description": "Especialistas em imóveis em Guararema com mais de 15 anos de experiência",
-  "url": "https://ipeimoveis.vercel.app",
-  "telephone": "+55-11-99999-9999",
-  "address": {
-    "@type": "PostalAddress",
-    "addressLocality": "Guararema",
-    "addressRegion": "SP",
-    "addressCountry": "BR"
-  },
-  "geo": {
-    "@type": "GeoCoordinates",
-    "latitude": "-23.4004",
-    "longitude": "-46.0318"
-  },
-  "openingHours": "Mo,Tu,We,Th,Fr 08:00-18:00",
-  "priceRange": "$$",
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.8",
-    "reviewCount": "150"
-  },
-  "areaServed": [
-    {
-      "@type": "City",
-      "name": "Guararema",
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    "name": "Ipê Imóveis",
+    "description": "Especialistas em imóveis em Guararema com mais de 15 anos de experiência",
+    "url": "https://ipeimoveis.vercel.app",
+    "telephone": "+55-11-99999-9999",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Guararema",
       "addressRegion": "SP",
       "addressCountry": "BR"
-    }
-  ]
-};
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "-23.4004",
+      "longitude": "-46.0318"
+    },
+    "openingHours": "Mo,Tu,We,Th,Fr 08:00-18:00",
+    "priceRange": "$$",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "reviewCount": "150"
+    },
+    "areaServed": [
+      {
+        "@type": "City",
+        "name": "Guararema",
+        "addressRegion": "SP",
+        "addressCountry": "BR"
+      }
+    ]
+  };
 
-return (
-  <html lang="pt-BR">
-    <head>
-      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-      <meta name="theme-color" content="#1a6f5c" />
+  return (
+    <html lang="pt-BR">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+        <meta name="theme-color" content="#1a6f5c" />
 
-      {/* Google tag (gtag.js) - Google Ads Conversion Tracking */}
-      <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17457190449"></script>
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
+        {/* Google tag (gtag.js) - Google Ads Conversion Tracking */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17457190449"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
               gtag('config', 'AW-17457190449');
             `,
-        }}
-      />
+          }}
+        />
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
-    </head>
-    <body className={`${inter.variable} font-sans antialiased bg-white text-gray-900`}>
-      <LayoutWithNavFooter>{children}</LayoutWithNavFooter>
-    </body>
-  </html>
-);
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      </head>
+      <body className={`${inter.variable} font-sans antialiased bg-white text-gray-900`}>
+        <Providers>
+          <ConditionalLayout>
+            {children}
+          </ConditionalLayout>
+        </Providers>
+      </body>
+    </html>
+  );
+}

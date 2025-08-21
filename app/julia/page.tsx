@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import JuliaLinktreeSimple from '../components/JuliaLinktreeSimple'
+import JuliaLinktreeEnhanced from '../components/JuliaLinktreeEnhanced'
 
 export const metadata: Metadata = {
   title: 'Julia de Mello - Corretora Imobiliária',
@@ -12,5 +12,5 @@ export const metadata: Metadata = {
 }
 
 export default function JuliaPage() {
-  return <JuliaLinktreeSimple />
+  return <JuliaLinktreeEnhanced />
 }
