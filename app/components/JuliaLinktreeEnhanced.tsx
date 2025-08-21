@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     MessageCircle, Globe, Home, Star, Phone,
@@ -26,11 +26,6 @@ interface SocialItem {
 }
 
 const JuliaLinktreeEnhanced: React.FC = () => {
-    const [isLoaded, setIsLoaded] = useState(false);
-
-    useEffect(() => {
-        setIsLoaded(true);
-    }, []);
 
     const handleWhatsApp = () => {
         const message = encodeURIComponent('Olá Julia! Vi seu perfil e tenho interesse em conversar sobre imóveis em Guararema.');
@@ -89,27 +84,6 @@ const JuliaLinktreeEnhanced: React.FC = () => {
         { number: '4.9', label: 'Avaliação média', icon: Star }
     ];
 
-    if (!isLoaded) {
-        return (
-            <div className="min-h-screen flex items-center justify-center" style={{
-                background: `linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%)`
-            }}>
-                <motion.div
-                    className="text-center"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.6 }}
-                >
-                    <motion.div
-                        className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full mx-auto mb-4"
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    />
-                    <p className="text-slate-400 text-sm">Carregando...</p>
-                </motion.div>
-            </div>
-        );
-    }
 
     return (
         <motion.div
@@ -120,28 +94,30 @@ const JuliaLinktreeEnhanced: React.FC = () => {
             style={{
                 minHeight: '100dvh',
                 background: `
-                    radial-gradient(circle at 20% 50%, rgba(245, 158, 11, 0.12) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
-                    radial-gradient(circle at 40% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-                    linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%)
+                    radial-gradient(ellipse 80% 50% at 20% -20%, rgba(120,119,198,0.12), transparent 60%),
+                    radial-gradient(ellipse 60% 80% at 80% 50%, rgba(59,130,246,0.08), transparent 70%),
+                    radial-gradient(ellipse 70% 70% at 20% 90%, rgba(245,158,11,0.06), transparent 60%),
+                    linear-gradient(135deg, #0a0f1c 0%, #0f172a 30%, #1e293b 60%, #334155 90%, #1e293b 100%)
                 `
             }}
         >
-            {/* Textured Overlay - Teoria da Cartolina */}
+            {/* Subtle Texture Overlay */}
             <div
-                className="absolute inset-0 opacity-[0.015]"
+                className="absolute inset-0 opacity-[0.02]"
                 style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3Ccircle cx='27' cy='7' r='1'/%3E%3Ccircle cx='47' cy='7' r='1'/%3E%3Ccircle cx='7' cy='27' r='1'/%3E%3Ccircle cx='27' cy='27' r='1'/%3E%3Ccircle cx='47' cy='27' r='1'/%3E%3Ccircle cx='7' cy='47' r='1'/%3E%3Ccircle cx='27' cy='47' r='1'/%3E%3Ccircle cx='47' cy='47' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.5'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3Ccircle cx='27' cy='7' r='1'/%3E%3Ccircle cx='47' cy='7' r='1'/%3E%3Ccircle cx='7' cy='27' r='1'/%3E%3Ccircle cx='27' cy='27' r='1'/%3E%3Ccircle cx='47' cy='27' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
                 }}
             />
 
-            {/* Atmospheric Light Effects */}
+            {/* Refined Atmospheric Effects */}
             <motion.div
-                className="absolute top-0 left-1/4 w-96 h-96 blur-3xl"
-                style={{ background: `radial-gradient(circle, rgba(245, 158, 11, 0.04) 0%, transparent 70%)` }}
+                className="absolute top-0 left-1/4 w-96 h-96 blur-3xl opacity-20"
+                style={{
+                    background: `radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 70%)`
+                }}
                 animate={{
                     scale: [1, 1.1, 1],
-                    opacity: [0.4, 0.6, 0.4]
+                    opacity: [0.15, 0.25, 0.15]
                 }}
                 transition={{
                     duration: 8,
@@ -150,16 +126,33 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                 }}
             />
             <motion.div
-                className="absolute bottom-0 right-1/4 w-96 h-96 blur-3xl"
-                style={{ background: `radial-gradient(circle, rgba(59, 130, 246, 0.04) 0%, transparent 70%)` }}
+                className="absolute bottom-0 right-1/4 w-80 h-80 blur-3xl opacity-15"
+                style={{
+                    background: `radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%)`
+                }}
                 animate={{
-                    scale: [1.1, 1, 1.1],
-                    opacity: [0.3, 0.5, 0.3]
+                    scale: [1.1, 0.9, 1.1],
+                    opacity: [0.12, 0.20, 0.12]
+                }}
+                transition={{
+                    duration: 6,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                }}
+            />
+            <motion.div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 blur-2xl opacity-10"
+                style={{
+                    background: `radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 80%)`
+                }}
+                animate={{
+                    scale: [0.8, 1.2, 0.8],
+                    rotate: [0, 180, 360]
                 }}
                 transition={{
                     duration: 10,
                     repeat: Infinity,
-                    ease: "easeInOut"
+                    ease: "linear"
                 }}
             />
 
@@ -297,40 +290,48 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                         return (
                             <motion.div
                                 key={index}
-                                className="text-center backdrop-blur-xl rounded-xl sm:rounded-2xl p-3 sm:p-4 group cursor-default"
+                                className="text-center backdrop-blur-xl rounded-xl sm:rounded-2xl p-3 sm:p-4 group cursor-default border"
                                 style={{
                                     background: `
-                                        linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(51, 65, 85, 0.4)),
-                                        linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%)
+                                        linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(51, 65, 85, 0.6)),
+                                        linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.08) 50%, transparent 70%)
                                     `,
-                                    border: `1px solid rgba(71, 85, 105, 0.5)`,
+                                    borderColor: `rgba(71, 85, 105, 0.4)`,
                                     boxShadow: `
-                                        0 4px 24px -4px rgba(0, 0, 0, 0.3),
-                                        inset 0 1px 0 rgba(255, 255, 255, 0.1)
+                                        0 2px 16px -4px rgba(0, 0, 0, 0.4),
+                                        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                                        inset 0 -1px 0 rgba(0, 0, 0, 0.2)
                                     `
                                 }}
                                 whileHover={{
-                                    scale: 1.02,
-                                    y: -2,
+                                    scale: 1.03,
+                                    y: -3,
                                     boxShadow: `
-                                        0 8px 32px -4px rgba(0, 0, 0, 0.4),
-                                        inset 0 1px 0 rgba(255, 255, 255, 0.1),
-                                        0 0 0 1px rgba(245, 158, 11, 0.3)
+                                        0 4px 24px -4px rgba(0, 0, 0, 0.5),
+                                        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                                        inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+                                        0 0 0 1px rgba(245, 158, 11, 0.4)
                                     `
                                 }}
-                                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 25 }}
                             >
                                 <div
-                                    className="w-8 h-8 rounded-lg flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform duration-300"
+                                    className="w-8 h-8 rounded-lg flex items-center justify-center mx-auto mb-2 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300"
                                     style={{
-                                        background: `linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.3))`,
-                                        boxShadow: `inset 0 1px 2px rgba(245, 158, 11, 0.3)`
+                                        background: `
+                                            linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(217, 119, 6, 0.4)),
+                                            linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.2) 50%, transparent 70%)
+                                        `,
+                                        boxShadow: `
+                                            inset 0 1px 2px rgba(245, 158, 11, 0.4),
+                                            0 2px 8px rgba(245, 158, 11, 0.2)
+                                        `
                                     }}
                                 >
-                                    <IconComponent className="w-4 h-4 text-amber-400" />
+                                    <IconComponent className="w-4 h-4 text-amber-300 drop-shadow-sm" />
                                 </div>
-                                <div className="text-base sm:text-lg font-bold text-white mb-1">{stat.number}</div>
-                                <div className="text-xs text-slate-400 leading-tight">{stat.label}</div>
+                                <div className="text-base sm:text-lg font-bold text-white mb-1 drop-shadow-sm">{stat.number}</div>
+                                <div className="text-xs text-slate-300 leading-tight">{stat.label}</div>
                             </motion.div>
                         );
                     })}
@@ -350,53 +351,69 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                             <motion.button
                                 key={link.id}
                                 onClick={link.action}
-                                className="w-full group relative overflow-hidden rounded-2xl shadow-xl backdrop-blur-sm"
+                                className="w-full group relative overflow-hidden rounded-2xl backdrop-blur-md border transition-all duration-300"
                                 style={{
                                     background: link.id === 'whatsapp'
-                                        ? `linear-gradient(135deg, #10b981, #059669)`
+                                        ? `linear-gradient(135deg, rgba(16,185,129,0.9) 0%, rgba(5,150,105,0.95) 100%),
+                                           linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%)`
                                         : link.id === 'website'
-                                            ? `linear-gradient(135deg, #f59e0b, #d97706)`
-                                            : `linear-gradient(135deg, #3b82f6, #1d4ed8)`,
+                                            ? `linear-gradient(135deg, rgba(245,158,11,0.9) 0%, rgba(217,119,6,0.95) 100%),
+                                           linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%)`
+                                            : `linear-gradient(135deg, rgba(59,130,246,0.9) 0%, rgba(29,78,216,0.95) 100%),
+                                           linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%)`,
+                                    borderColor: link.id === 'whatsapp'
+                                        ? 'rgba(16, 185, 129, 0.3)'
+                                        : link.id === 'website'
+                                            ? 'rgba(245, 158, 11, 0.3)'
+                                            : 'rgba(59, 130, 246, 0.3)',
                                     boxShadow: `
-                                        0 8px 32px -8px ${link.id === 'whatsapp' ? 'rgba(16, 185, 129, 0.4)'
-                                            : link.id === 'website' ? 'rgba(245, 158, 11, 0.4)'
-                                                : 'rgba(59, 130, 246, 0.4)'
+                                        0 4px 20px -4px ${link.id === 'whatsapp' ? 'rgba(16, 185, 129, 0.3)'
+                                            : link.id === 'website' ? 'rgba(245, 158, 11, 0.3)'
+                                                : 'rgba(59, 130, 246, 0.3)'
                                         },
-                                        inset 0 1px 0 rgba(255, 255, 255, 0.2)
+                                        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                                        inset 0 -1px 0 rgba(0, 0, 0, 0.1)
                                     `
                                 }}
                                 whileHover={{
                                     scale: 1.02,
                                     y: -2,
                                     boxShadow: `
-                                        0 12px 40px -8px ${link.id === 'whatsapp' ? 'rgba(16, 185, 129, 0.5)'
-                                            : link.id === 'website' ? 'rgba(245, 158, 11, 0.5)'
-                                                : 'rgba(59, 130, 246, 0.5)'
+                                        0 8px 32px -4px ${link.id === 'whatsapp' ? 'rgba(16, 185, 129, 0.4)'
+                                            : link.id === 'website' ? 'rgba(245, 158, 11, 0.4)'
+                                                : 'rgba(59, 130, 246, 0.4)'
                                         },
-                                        inset 0 1px 0 rgba(255, 255, 255, 0.3)
+                                        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                                        inset 0 -1px 0 rgba(0, 0, 0, 0.1)
                                     `
                                 }}
                                 whileTap={{ scale: 0.98 }}
                                 initial={{ y: 20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{
-                                    duration: 0.6,
+                                    duration: 0.5,
                                     delay: 0.7 + index * 0.1,
                                     type: "spring",
-                                    stiffness: 300,
+                                    stiffness: 400,
                                     damping: 30
                                 }}
                             >
                                 {/* Content */}
                                 <div className="relative p-4 sm:p-6 flex items-center gap-3 sm:gap-4">
                                     <div
-                                        className="p-3 rounded-xl backdrop-blur-sm group-hover:scale-110 transition-transform duration-300"
+                                        className="p-3 rounded-xl backdrop-blur-sm group-hover:scale-110 transition-all duration-300 group-hover:rotate-3"
                                         style={{
-                                            background: `rgba(255, 255, 255, 0.2)`,
-                                            boxShadow: `inset 0 1px 2px rgba(255, 255, 255, 0.3)`
+                                            background: `
+                                                linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15)),
+                                                linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.1) 50%, transparent 60%)
+                                            `,
+                                            boxShadow: `
+                                                inset 0 1px 2px rgba(255, 255, 255, 0.4),
+                                                0 2px 8px rgba(0, 0, 0, 0.1)
+                                            `
                                         }}
                                     >
-                                        <IconComponent className="w-6 h-6 text-white" />
+                                        <IconComponent className="w-6 h-6 text-white drop-shadow-sm" />
                                     </div>
 
                                     <div className="flex-1 text-left">
@@ -408,7 +425,7 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                                         </p>
                                     </div>
 
-                                    <ArrowUpRight className="w-5 h-5 text-white/80 group-hover:rotate-45 group-hover:scale-110 transition-all duration-300" />
+                                    <ArrowUpRight className="w-5 h-5 text-white/90 group-hover:rotate-45 group-hover:scale-110 transition-all duration-300 drop-shadow-sm" />
                                 </div>
                             </motion.button>
                         );
@@ -430,26 +447,33 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                                 href={social.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="p-3 rounded-xl shadow-lg backdrop-blur-sm"
+                                className="p-3 rounded-xl shadow-lg backdrop-blur-md border transition-all duration-300"
                                 style={{
-                                    background: `linear-gradient(135deg, #ec4899, #8b5cf6)`,
+                                    background: `
+                                        linear-gradient(135deg, rgba(236, 72, 153, 0.9), rgba(139, 92, 246, 0.9)),
+                                        linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.15) 50%, transparent 70%)
+                                    `,
+                                    borderColor: 'rgba(236, 72, 153, 0.3)',
                                     boxShadow: `
-                                        0 8px 32px -8px rgba(236, 72, 153, 0.4),
-                                        inset 0 1px 0 rgba(255, 255, 255, 0.2)
+                                        0 4px 20px -4px rgba(236, 72, 153, 0.4),
+                                        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                                        inset 0 -1px 0 rgba(0, 0, 0, 0.1)
                                     `
                                 }}
                                 whileHover={{
                                     scale: 1.1,
                                     y: -2,
+                                    rotate: 5,
                                     boxShadow: `
-                                        0 12px 40px -8px rgba(236, 72, 153, 0.5),
-                                        inset 0 1px 0 rgba(255, 255, 255, 0.3)
+                                        0 8px 32px -4px rgba(236, 72, 153, 0.5),
+                                        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                                        inset 0 -1px 0 rgba(0, 0, 0, 0.1)
                                     `
                                 }}
                                 whileTap={{ scale: 0.95 }}
-                                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 25 }}
                             >
-                                <IconComponent className="w-5 h-5 text-white" />
+                                <IconComponent className="w-5 h-5 text-white drop-shadow-sm" />
                             </motion.a>
                         );
                     })}
@@ -457,21 +481,22 @@ const JuliaLinktreeEnhanced: React.FC = () => {
 
                 {/* Contact Info */}
                 <motion.div
-                    className="backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center"
+                    className="backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center border"
                     style={{
                         background: `
-                            linear-gradient(135deg, rgba(30, 41, 59, 0.3), rgba(51, 65, 85, 0.2)),
-                            linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.03) 50%, transparent 70%)
+                            linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(51, 65, 85, 0.4)),
+                            linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%)
                         `,
-                        border: `1px solid rgba(71, 85, 105, 0.3)`,
+                        borderColor: `rgba(71, 85, 105, 0.4)`,
                         boxShadow: `
-                            0 8px 32px -8px rgba(0, 0, 0, 0.4),
-                            inset 0 1px 0 rgba(255, 255, 255, 0.1)
+                            0 4px 24px -4px rgba(0, 0, 0, 0.4),
+                            inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                            inset 0 -1px 0 rgba(0, 0, 0, 0.2)
                         `
                     }}
                     initial={{ y: 30, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.8, delay: 1.2 }}
+                    transition={{ duration: 0.6, delay: 1.0 }}
                 >
                     <div className="flex items-center justify-center gap-2 mb-4">
                         <Shield className="w-4 h-4 text-amber-400" />
@@ -497,59 +522,92 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                 </motion.div>
 
                 {/* Developer Credit */}
-                <motion.div
-                    className="mt-8 text-center group cursor-default"
+                <motion.a
+                    href="https://github.com/jpcardozx"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-8 text-center group cursor-pointer block"
                     initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 0.4, y: 0 }}
+                    animate={{ opacity: 0.9, y: 0 }}
                     transition={{ duration: 1, delay: 1.5 }}
-                    whileHover={{ opacity: 1 }}
+                    whileHover={{ 
+                        opacity: 1,
+                        scale: 1.05,
+                        y: -3
+                    }}
                 >
                     <motion.div
-                        className="inline-flex items-center gap-2 px-3 py-2 rounded-full backdrop-blur-sm transition-all duration-500"
+                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-md transition-all duration-500"
                         style={{
                             background: `
-                                linear-gradient(135deg, rgba(15, 23, 42, 0.3), rgba(30, 41, 59, 0.2)),
-                                linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.02) 50%, transparent 70%)
+                                linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(30, 41, 59, 0.75)),
+                                linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.12) 50%, transparent 60%)
                             `,
-                            border: `1px solid rgba(71, 85, 105, 0.2)`,
+                            border: `1px solid rgba(99, 102, 241, 0.3)`,
                             boxShadow: `
-                                0 2px 16px -4px rgba(0, 0, 0, 0.2),
-                                inset 0 1px 0 rgba(255, 255, 255, 0.05)
+                                0 4px 16px -4px rgba(0, 0, 0, 0.3),
+                                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                                0 0 0 1px rgba(99, 102, 241, 0.1)
                             `
                         }}
                         whileHover={{
-                            scale: 1.05,
+                            scale: 1.08,
+                            rotate: [0, -1, 1, 0],
                             boxShadow: `
-                                0 4px 24px -4px rgba(0, 0, 0, 0.3),
-                                inset 0 1px 0 rgba(255, 255, 255, 0.1),
-                                0 0 0 1px rgba(99, 102, 241, 0.2)
+                                0 8px 32px -8px rgba(99, 102, 241, 0.4),
+                                inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                                0 0 0 2px rgba(99, 102, 241, 0.3),
+                                0 0 20px rgba(99, 102, 241, 0.2)
+                            `,
+                            background: `
+                                linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.8)),
+                                linear-gradient(45deg, transparent 30%, rgba(99, 102, 241, 0.1) 50%, transparent 70%)
                             `
                         }}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        transition={{ 
+                            type: "spring", 
+                            stiffness: 300, 
+                            damping: 20,
+                            rotate: { duration: 0.4, ease: "easeInOut" }
+                        }}
                     >
                         {/* Code Icon */}
                         <motion.div
-                            className="w-4 h-4 rounded flex items-center justify-center"
+                            className="w-3.5 h-3.5 rounded flex items-center justify-center"
                             style={{
-                                background: `linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.3))`,
-                                color: '#818cf8'
+                                background: `linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(139, 92, 246, 0.5))`,
+                                color: '#e0e7ff'
                             }}
-                            whileHover={{ rotate: 360 }}
+                            whileHover={{ 
+                                rotate: 360,
+                                scale: 1.2,
+                                background: `linear-gradient(135deg, rgba(99, 102, 241, 0.6), rgba(139, 92, 246, 0.7))`
+                            }}
                             transition={{ duration: 0.6, ease: "easeInOut" }}
                         >
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0L19.2 12l-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
                             </svg>
                         </motion.div>
 
                         {/* Text */}
                         <motion.div className="flex items-center gap-1 text-xs">
-                            <span className="text-slate-500 group-hover:text-slate-400 transition-colors duration-300">desenvolvido por</span>
+                            <motion.span 
+                                className="text-slate-300 transition-colors duration-300"
+                                whileHover={{ 
+                                    color: "#f1f5f9",
+                                    scale: 1.1
+                                }}
+                            >
+                                dev
+                            </motion.span>
                             <motion.span
                                 className="font-medium bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent"
                                 whileHover={{
                                     backgroundSize: "200% 100%",
-                                    backgroundPosition: "100% 0"
+                                    backgroundPosition: "100% 0",
+                                    scale: 1.05,
+                                    filter: "brightness(1.2)"
                                 }}
                                 transition={{ duration: 0.5 }}
                                 style={{ backgroundSize: "200% 100%" }}
@@ -559,14 +617,18 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                         </motion.div>
 
                         {/* Decorative Dots */}
-                        <motion.div className="flex gap-1 opacity-60 group-hover:opacity-100 transition-opacity duration-300">
+                        <motion.div className="flex gap-0.5 opacity-60 group-hover:opacity-100 transition-opacity duration-300">
                             {[0, 1, 2].map((i) => (
                                 <motion.div
                                     key={i}
                                     className="w-1 h-1 rounded-full bg-gradient-to-r from-indigo-400 to-purple-400"
                                     animate={{
-                                        scale: [1, 1.2, 1],
+                                        scale: [1, 1.4, 1],
                                         opacity: [0.6, 1, 0.6]
+                                    }}
+                                    whileHover={{
+                                        scale: 2,
+                                        background: "linear-gradient(to right, #8b5cf6, #3b82f6)"
                                     }}
                                     transition={{
                                         duration: 2,
@@ -578,7 +640,7 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                             ))}
                         </motion.div>
                     </motion.div>
-                </motion.div>
+                </motion.a>
             </div>
         </motion.div>
     );
