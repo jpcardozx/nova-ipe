@@ -94,13 +94,13 @@ const JuliaLinktreeEnhanced: React.FC = () => {
             <div className="min-h-screen flex items-center justify-center" style={{
                 background: `linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%)`
             }}>
-                <motion.div 
+                <motion.div
                     className="text-center"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.6 }}
                 >
-                    <motion.div 
+                    <motion.div
                         className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full mx-auto mb-4"
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
@@ -112,8 +112,9 @@ const JuliaLinktreeEnhanced: React.FC = () => {
     }
 
     return (
-        <motion.div 
+        <motion.div
             className="min-h-screen relative overflow-hidden"
+            style={{ minHeight: '100vh', minHeight: '100dvh' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
@@ -127,15 +128,15 @@ const JuliaLinktreeEnhanced: React.FC = () => {
             }}
         >
             {/* Textured Overlay - Teoria da Cartolina */}
-            <div 
+            <div
                 className="absolute inset-0 opacity-[0.015]"
                 style={{
                     backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3Ccircle cx='27' cy='7' r='1'/%3E%3Ccircle cx='47' cy='7' r='1'/%3E%3Ccircle cx='7' cy='27' r='1'/%3E%3Ccircle cx='27' cy='27' r='1'/%3E%3Ccircle cx='47' cy='27' r='1'/%3E%3Ccircle cx='7' cy='47' r='1'/%3E%3Ccircle cx='27' cy='47' r='1'/%3E%3Ccircle cx='47' cy='47' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
                 }}
             />
-            
+
             {/* Atmospheric Light Effects */}
-            <motion.div 
+            <motion.div
                 className="absolute top-0 left-1/4 w-96 h-96 blur-3xl"
                 style={{ background: `radial-gradient(circle, rgba(245, 158, 11, 0.04) 0%, transparent 70%)` }}
                 animate={{
@@ -148,7 +149,7 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                     ease: "easeInOut"
                 }}
             />
-            <motion.div 
+            <motion.div
                 className="absolute bottom-0 right-1/4 w-96 h-96 blur-3xl"
                 style={{ background: `radial-gradient(circle, rgba(59, 130, 246, 0.04) 0%, transparent 70%)` }}
                 animate={{
@@ -163,23 +164,23 @@ const JuliaLinktreeEnhanced: React.FC = () => {
             />
 
             {/* Main Content */}
-            <div className="relative z-10 max-w-md mx-auto px-4 sm:px-6 py-8 sm:py-12 min-h-screen flex flex-col justify-center">
+            <div className="relative z-10 max-w-md mx-auto px-4 sm:px-6 py-8 sm:py-12 flex flex-col justify-center" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
 
                 {/* Profile Header */}
-                <motion.div 
+                <motion.div
                     className="text-center mb-8"
                     initial={{ y: 30, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
                 >
                     {/* Profile Image */}
-                    <motion.div 
+                    <motion.div
                         className="relative mb-6"
                         whileHover={{ scale: 1.05 }}
                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     >
                         <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto">
-                            <div 
+                            <div
                                 className="absolute inset-0 rounded-full p-1 shadow-2xl"
                                 style={{
                                     background: `
@@ -193,7 +194,7 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                                     `
                                 }}
                             >
-                                <div 
+                                <div
                                     className="w-full h-full rounded-full p-1"
                                     style={{
                                         background: `linear-gradient(145deg, #0f172a, #1e293b)`,
@@ -211,7 +212,7 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                             </div>
 
                             {/* Online Status */}
-                            <motion.div 
+                            <motion.div
                                 className="absolute bottom-2 right-2 w-6 h-6 rounded-full border-4"
                                 style={{
                                     background: `linear-gradient(135deg, #10b981, #059669)`,
@@ -221,7 +222,7 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                                         0 4px 12px rgba(16, 185, 129, 0.4)
                                     `
                                 }}
-                                animate={{ 
+                                animate={{
                                     scale: [1, 1.1, 1],
                                     boxShadow: [
                                         '0 0 0 2px rgba(16, 185, 129, 0.3), 0 4px 12px rgba(16, 185, 129, 0.4)',
@@ -229,10 +230,10 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                                         '0 0 0 2px rgba(16, 185, 129, 0.3), 0 4px 12px rgba(16, 185, 129, 0.4)'
                                     ]
                                 }}
-                                transition={{ 
+                                transition={{
                                     duration: 2,
                                     repeat: Infinity,
-                                    ease: "easeInOut" 
+                                    ease: "easeInOut"
                                 }}
                             >
                                 <div className="w-2 h-2 bg-white rounded-full mx-auto mt-1 shadow-sm" />
@@ -253,7 +254,7 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                     </p>
 
                     {/* Company Badge */}
-                    <motion.div 
+                    <motion.div
                         className="inline-flex items-center gap-2 sm:gap-3 rounded-full px-3 sm:px-4 py-2 sm:py-3 mb-6 sm:mb-8 backdrop-blur-sm"
                         style={{
                             background: `
@@ -285,7 +286,7 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                 </motion.div>
 
                 {/* Stats Grid */}
-                <motion.div 
+                <motion.div
                     className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8"
                     initial={{ y: 30, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
@@ -319,7 +320,7 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                                 }}
                                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
                             >
-                                <div 
+                                <div
                                     className="w-8 h-8 rounded-lg flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform duration-300"
                                     style={{
                                         background: `linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.3))`,
@@ -336,7 +337,7 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                 </motion.div>
 
                 {/* Primary Links */}
-                <motion.div 
+                <motion.div
                     className="space-y-3 sm:space-y-4 mb-6 sm:mb-8"
                     initial={{ y: 30, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
@@ -351,16 +352,15 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                                 onClick={link.action}
                                 className="w-full group relative overflow-hidden rounded-2xl shadow-xl backdrop-blur-sm"
                                 style={{
-                                    background: link.id === 'whatsapp' 
+                                    background: link.id === 'whatsapp'
                                         ? `linear-gradient(135deg, #10b981, #059669)`
                                         : link.id === 'website'
-                                        ? `linear-gradient(135deg, #f59e0b, #d97706)`
-                                        : `linear-gradient(135deg, #3b82f6, #1d4ed8)`,
+                                            ? `linear-gradient(135deg, #f59e0b, #d97706)`
+                                            : `linear-gradient(135deg, #3b82f6, #1d4ed8)`,
                                     boxShadow: `
-                                        0 8px 32px -8px ${
-                                            link.id === 'whatsapp' ? 'rgba(16, 185, 129, 0.4)'
+                                        0 8px 32px -8px ${link.id === 'whatsapp' ? 'rgba(16, 185, 129, 0.4)'
                                             : link.id === 'website' ? 'rgba(245, 158, 11, 0.4)'
-                                            : 'rgba(59, 130, 246, 0.4)'
+                                                : 'rgba(59, 130, 246, 0.4)'
                                         },
                                         inset 0 1px 0 rgba(255, 255, 255, 0.2)
                                     `
@@ -369,10 +369,9 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                                     scale: 1.02,
                                     y: -2,
                                     boxShadow: `
-                                        0 12px 40px -8px ${
-                                            link.id === 'whatsapp' ? 'rgba(16, 185, 129, 0.5)'
+                                        0 12px 40px -8px ${link.id === 'whatsapp' ? 'rgba(16, 185, 129, 0.5)'
                                             : link.id === 'website' ? 'rgba(245, 158, 11, 0.5)'
-                                            : 'rgba(59, 130, 246, 0.5)'
+                                                : 'rgba(59, 130, 246, 0.5)'
                                         },
                                         inset 0 1px 0 rgba(255, 255, 255, 0.3)
                                     `
@@ -380,17 +379,17 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                                 whileTap={{ scale: 0.98 }}
                                 initial={{ y: 20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
-                                transition={{ 
-                                    duration: 0.6, 
+                                transition={{
+                                    duration: 0.6,
                                     delay: 0.7 + index * 0.1,
-                                    type: "spring", 
-                                    stiffness: 300, 
-                                    damping: 30 
+                                    type: "spring",
+                                    stiffness: 300,
+                                    damping: 30
                                 }}
                             >
                                 {/* Content */}
                                 <div className="relative p-4 sm:p-6 flex items-center gap-3 sm:gap-4">
-                                    <div 
+                                    <div
                                         className="p-3 rounded-xl backdrop-blur-sm group-hover:scale-110 transition-transform duration-300"
                                         style={{
                                             background: `rgba(255, 255, 255, 0.2)`,
@@ -417,7 +416,7 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                 </motion.div>
 
                 {/* Social Links */}
-                <motion.div 
+                <motion.div
                     className="flex justify-center gap-4 mb-6 sm:mb-8"
                     initial={{ y: 30, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
@@ -439,8 +438,8 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                                         inset 0 1px 0 rgba(255, 255, 255, 0.2)
                                     `
                                 }}
-                                whileHover={{ 
-                                    scale: 1.1, 
+                                whileHover={{
+                                    scale: 1.1,
                                     y: -2,
                                     boxShadow: `
                                         0 12px 40px -8px rgba(236, 72, 153, 0.5),
@@ -457,7 +456,7 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                 </motion.div>
 
                 {/* Contact Info */}
-                <motion.div 
+                <motion.div
                     className="backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center"
                     style={{
                         background: `
@@ -495,13 +494,90 @@ const JuliaLinktreeEnhanced: React.FC = () => {
                             <span>Seg-Sex: 9h-18h | Sáb: 9h-14h</span>
                         </div>
                     </div>
+                </motion.div>
 
-                    <div className="mt-4 pt-4 border-t border-slate-700/50">
-                        <p className="text-slate-400 text-xs leading-relaxed">
-                            Especializada no mercado imobiliário de Guararema.
-                            Ajudo famílias a realizarem o sonho do imóvel ideal com transparência e dedicação.
-                        </p>
-                    </div>
+                {/* Developer Credit */}
+                <motion.div
+                    className="mt-8 text-center group cursor-default"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 0.4, y: 0 }}
+                    transition={{ duration: 1, delay: 1.5 }}
+                    whileHover={{ opacity: 1 }}
+                >
+                    <motion.div
+                        className="inline-flex items-center gap-2 px-3 py-2 rounded-full backdrop-blur-sm transition-all duration-500"
+                        style={{
+                            background: `
+                                linear-gradient(135deg, rgba(15, 23, 42, 0.3), rgba(30, 41, 59, 0.2)),
+                                linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.02) 50%, transparent 70%)
+                            `,
+                            border: `1px solid rgba(71, 85, 105, 0.2)`,
+                            boxShadow: `
+                                0 2px 16px -4px rgba(0, 0, 0, 0.2),
+                                inset 0 1px 0 rgba(255, 255, 255, 0.05)
+                            `
+                        }}
+                        whileHover={{
+                            scale: 1.05,
+                            boxShadow: `
+                                0 4px 24px -4px rgba(0, 0, 0, 0.3),
+                                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                                0 0 0 1px rgba(99, 102, 241, 0.2)
+                            `
+                        }}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    >
+                        {/* Code Icon */}
+                        <motion.div
+                            className="w-4 h-4 rounded flex items-center justify-center"
+                            style={{
+                                background: `linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.3))`,
+                                color: '#818cf8'
+                            }}
+                            whileHover={{ rotate: 360 }}
+                            transition={{ duration: 0.6, ease: "easeInOut" }}
+                        >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0L19.2 12l-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
+                            </svg>
+                        </motion.div>
+
+                        {/* Text */}
+                        <motion.div className="flex items-center gap-1 text-xs">
+                            <span className="text-slate-500 group-hover:text-slate-400 transition-colors duration-300">desenvolvido por</span>
+                            <motion.span
+                                className="font-medium bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent"
+                                whileHover={{
+                                    backgroundSize: "200% 100%",
+                                    backgroundPosition: "100% 0"
+                                }}
+                                transition={{ duration: 0.5 }}
+                                style={{ backgroundSize: "200% 100%" }}
+                            >
+                                @jpcardozx
+                            </motion.span>
+                        </motion.div>
+
+                        {/* Decorative Dots */}
+                        <motion.div className="flex gap-1 opacity-60 group-hover:opacity-100 transition-opacity duration-300">
+                            {[0, 1, 2].map((i) => (
+                                <motion.div
+                                    key={i}
+                                    className="w-1 h-1 rounded-full bg-gradient-to-r from-indigo-400 to-purple-400"
+                                    animate={{
+                                        scale: [1, 1.2, 1],
+                                        opacity: [0.6, 1, 0.6]
+                                    }}
+                                    transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        delay: i * 0.2,
+                                        ease: "easeInOut"
+                                    }}
+                                />
+                            ))}
+                        </motion.div>
+                    </motion.div>
                 </motion.div>
             </div>
         </motion.div>
