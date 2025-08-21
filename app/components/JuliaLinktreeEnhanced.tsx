@@ -114,11 +114,11 @@ const JuliaLinktreeEnhanced: React.FC = () => {
     return (
         <motion.div
             className="min-h-screen relative overflow-hidden"
-            style={{ minHeight: '100vh', minHeight: '100dvh' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
             style={{
+                minHeight: '100dvh',
                 background: `
                     radial-gradient(circle at 20% 50%, rgba(245, 158, 11, 0.12) 0%, transparent 50%),
                     radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
@@ -164,7 +164,7 @@ const JuliaLinktreeEnhanced: React.FC = () => {
             />
 
             {/* Main Content */}
-            <div className="relative z-10 max-w-md mx-auto px-4 sm:px-6 py-8 sm:py-12 flex flex-col justify-center" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
+            <div className="relative z-10 max-w-md mx-auto px-4 sm:px-6 py-8 sm:py-12 flex flex-col justify-center" style={{ minHeight: '100dvh' }}>
 
                 {/* Profile Header */}
                 <motion.div
