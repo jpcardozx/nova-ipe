@@ -152,7 +152,7 @@ const SectionWrapper: React.FC<SectionWrapperProps> = ({
         backgroundVariants[background],
 
         // Padding
-        !noPadding && "py-16 md:py-20 lg:py-24",
+        !noPadding && "py-12 md:py-16 lg:py-20",
 
         // Animation
         animate && "animate-fade-in-up",

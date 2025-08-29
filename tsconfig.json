@@ -11,6 +11,7 @@
     "strict": true,
     "noEmit": true,
     "incremental": true,
+    "tsBuildInfoFile": ".next/cache/tsbuildinfo.json",
     "target": "es2022",
     "module": "esnext",
     "esModuleInterop": true,

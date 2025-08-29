@@ -1,266 +1,217 @@
 "use client"
 
-// Removido useState, não é mais necessário para hover
-import { Home, MapPin, ShoppingBag, Search, Trees, Building2, Car, TrendingUp, ArrowRight, Sparkles, Target } from "lucide-react"
+import { Home, MapPin, Trees, Building2, Car, TrendingUp, ArrowRight, Sparkles, Search, Target, ShoppingBag } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import SectionWrapper from "@/app/components/ui/SectionWrapper"
 
-// Categorias de imóveis em Guararema com design premium
-const categoriasDestaque = [
+// [FINAL] Conteúdo dos cards com consistência de paleta e UI refinada
+const cenariosDeMoradia = [
     {
-        label: "Casas",
-        icone: <Home className="w-6 h-6" />,
-        href: "/buscar?tipo=casa&bairro=centro",
-        descricao: "Imóveis residenciais em localização estratégica",
-        bgImage: "/houses.jpg",
-        quantidadeMedia: "Catálogo exclusivo",
-        highlightColor: "from-emerald-500 to-teal-600",
-        stats: "15+ disponíveis"
+        label: "Lar para Família",
+        icone: <Home className="w-6 h-6 text-white" />,
+        href: "/alugar?tipo=casa",
+        descricao: "Espaço, conforto e segurança para sua família em nossas melhores casas e sobrados.",
+        bgImage: "/images/imagensExploracao/family.png",
+        tag: "Ideal para Famílias",
+        accentColor: "amber",
+        cta: "Explorar Casas"
     },
     {
-        label: "Terrenos",
-        icone: <MapPin className="w-6 h-6" />,
-        href: "/buscar?tipo=terreno",
-        descricao: "Lotes para projetos personalizados",
-        bgImage: "/terreno.jpg",
-        quantidadeMedia: "Para construção",
-        highlightColor: "from-amber-500 to-orange-600",
-        stats: "8+ oportunidades"
+        label: "Condomínios Fechados",
+        icone: <Building2 className="w-6 h-6 text-white" />,
+        href: "/alugar?tipo=condominio",
+        descricao: "Segurança, lazer e qualidade de vida para sua família em condomínios selecionados.",
+        bgImage: "/images/imagensExploracao/condominios.jpg",
+        tag: "Lazer e Segurança",
+        accentColor: "blue", // Azul para condomínios
+        cta: "Ver Condomínios"
     },
     {
-        label: "Comércios",
-        icone: <ShoppingBag className="w-6 h-6" />,
-        href: "/buscar?tipo=comercial",
-        descricao: "Pontos comerciais em localização nobre",
-        bgImage: "/comerciais.jpg",
-        quantidadeMedia: "Investimento",
-        highlightColor: "from-blue-500 to-indigo-600",
-        stats: "5+ espaços"
+        label: "Imóveis Comerciais",
+        icone: <ShoppingBag className="w-6 h-6 text-white" />,
+        href: "/comprar?tipo=comercial",
+        descricao: "Lojas, salas e prédios para o seu negócio prosperar no coração de Guararema.",
+        bgImage: "/images/imagensExploracao/comerciais.jpg",
+        tag: "Para Investir",
+        accentColor: "green", // Verde para comerciais
+        cta: "Ver Pontos Comerciais"
     },
 ]
 
-// Filtros de bairros reais de Guararema com estatísticas
 const filtrosBairros = [
-    { label: "Centro", icon: <Building2 className="w-4 h-4" />, href: "/buscar?bairro=centro", count: "12 imóveis" },
-    { label: "Nogueira", icon: <Trees className="w-4 h-4" />, href: "/buscar?bairro=nogueira", count: "8 imóveis" },
-    { label: "Itaoca", icon: <Home className="w-4 h-4" />, href: "/buscar?bairro=itaoca", count: "6 imóveis" },
-    { label: "Parque Agrinco", icon: <MapPin className="w-4 h-4" />, href: "/buscar?bairro=parque-agrinco", count: "4 imóveis" },
-    { label: "Guanabara", icon: <Building2 className="w-4 h-4" />, href: "/buscar?bairro=guanabara", count: "7 imóveis" },
-    { label: "Lagoa Nova", icon: <Trees className="w-4 h-4" />, href: "/buscar?bairro=lagoa-nova", count: "5 imóveis" },
+    { label: "Centro", icon: <Building2 className="w-4 h-4" />, href: "/alugar?bairro=centro", count: "12" },
+    { label: "Nogueira", icon: <Trees className="w-4 h-4" />, href: "/alugar?bairro=nogueira", count: "8" },
+    { label: "Itaoca", icon: <Home className="w-4 h-4" />, href: "/alugar?bairro=itaoca", count: "6" },
+    { label: "P. Agrinco", icon: <MapPin className="w-4 h-4" />, href: "/alugar?bairro=parque-agrinco", count: "4" },
+    { label: "Guanabara", icon: <Building2 className="w-4 h-4" />, href: "/alugar?bairro=guanabara", count: "7" },
+    { label: "Lagoa Nova", icon: <Trees className="w-4 h-4" />, href: "/alugar?bairro=lagoa-nova", count: "5" },
 ]
 
-// Buscas mais procuradas com informações de tendência
 const buscasFrequentes = [
-    { label: "Até R$ 500 mil", href: "/catalogo?preco=ate-500k", trend: "Custo x Benefício" },
-    { label: "Casas com quintal", href: "/catalogo?caracteristica=quintal", trend: "Alta demanda" },
-    { label: "Próximo à estação", href: "/catalogo?proximo=estacao", trend: "Região em crescimento" },
+    { label: "Aluguel até R$ 2.000", href: "/alugar?precoMax=2000", trend: "Mais buscado" },
+    { label: "Casas com quintal", href: "/alugar?tipo=casa&caracteristica=quintal", trend: "Alta demanda" },
+    { label: "Perto do Centro", href: "/alugar?bairro=centro", trend: "Conveniência" },
 ]
+
+// Mapeamento de classes para evitar problemas com o JIT compiler do Tailwind
+const iconBgClasses = {
+  amber: 'bg-gradient-to-br from-amber-500 to-amber-600',
+  blue: 'bg-gradient-to-br from-blue-500 to-blue-600',
+  green: 'bg-gradient-to-br from-green-500 to-green-600',
+};
+
+const shadowHoverClasses = {
+    amber: 'group-hover:shadow-amber-500/20',
+    blue: 'group-hover:shadow-blue-500/20',
+    green: 'group-hover:shadow-green-500/20',
+}
 
 export default function BlocoExploracaoGuararema() {
-    // Removido estado de hover e animações
-
-
-
     return (
         <SectionWrapper
-            background="gradient"
-            className="relative overflow-hidden"
+            background="white"
+            className="relative overflow-hidden pt-16 pb-24"
         >
-            {/* Background decorativo */}
-            <div className="absolute inset-0 opacity-40">
-                <div className="absolute top-0 left-0 w-72 h-72 bg-amber-200/30 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 right-0 w-96 h-96 bg-orange-200/20 rounded-full blur-3xl" />
-                <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-yellow-100/25 rounded-full blur-2xl transform -translate-x-1/2 -translate-y-1/2" />
+            <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-0 left-0 w-96 h-96 bg-amber-200/30 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-200/20 rounded-full blur-3xl" />
             </div>
 
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Cabeçalho premium */}
                 <div className="text-center mb-20">
-                    <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 rounded-full text-amber-700 text-sm font-semibold mb-8 shadow-lg backdrop-blur-sm">
-                        <Sparkles className="w-4 h-4 text-amber-500" />
-                        Descubra Guararema
-                        <MapPin className="w-4 h-4 text-amber-600" />
+                    <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 bg-amber-100/60 border border-amber-200/80 rounded-full text-amber-800 text-sm font-semibold shadow-sm">
+                        <Sparkles className="w-4 h-4 text-amber-600" />
+                        Curadoria Especial de Aluguel
                     </div>
-                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
-                        Encontre seu
-                        <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-orange-600">
-                            Espaço Ideal
+                    <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">
+                        Alugue em Guararema: <span className="block sm:inline-block bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
+                             Do seu Jeito
                         </span>
                     </h2>
-                    <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                        Explore nossa seleção exclusiva de imóveis em Guararema.
-                        <span className="text-amber-600 font-semibold"> Atualizada semanalmente</span> com as
-                        melhores oportunidades do mercado local.
+                    <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                        Nossa curadoria de imóveis para alugar em Guararema. Explore por tipo, bairro ou características.
                     </p>
                 </div>
 
-                {/* Cards de categorias com design premium */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-                    {categoriasDestaque.map((categoria, idx) => (
-                        <div
-                            key={idx}
-                            className="group relative overflow-hidden rounded-2xl border border-gray-200 hover:border-amber-300 transition-colors duration-200 shadow-lg hover:shadow-xl"
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-16">
+                    {cenariosDeMoradia.map((cenario) => (
+                        <Link
+                            key={cenario.label}
+                            href={cenario.href}
+                            className="group block"
                         >
-                            <Link href={categoria.href}>
-                                <div className="relative h-64 w-full">
-                                    {/* Overlay gradiente */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent z-10" />
+                            <div className="relative">
+                                <div className="relative h-56 w-full rounded-2xl overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow duration-300">
                                     <Image
-                                        src={categoria.bgImage}
-                                        alt={categoria.label}
+                                        src={cenario.bgImage}
+                                        alt={cenario.label}
                                         fill
-                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                        className="object-cover"
+                                        sizes="(max-width: 768px) 100vw, 33vw"
+                                        className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
                                     />
-                                    {/* Conteúdo do card */}
-                                    <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
-                                        <div className="flex items-center justify-between mb-3">
-                                            <div className="p-3 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg">
-                                                {categoria.icone}
-                                            </div>
-                                            <div className="flex flex-col items-end gap-1">
-                                                <span className="text-xs font-semibold text-white bg-amber-600/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-amber-400/30">
-                                                    {categoria.quantidadeMedia}
-                                                </span>
-                                                <span className="text-xs font-medium text-amber-200 bg-black/20 backdrop-blur-sm px-2 py-1 rounded-full">
-                                                    {categoria.stats}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <h3 className="text-xl font-bold text-white mb-2">
-                                            {categoria.label}
-                                        </h3>
-                                        <p className="text-sm text-white/90 leading-relaxed mb-3">
-                                            {categoria.descricao}
-                                        </p>
-                                        {/* Highlight gradient bar */}
-                                        <div className={`h-1 w-full bg-gradient-to-r ${categoria.highlightColor} rounded-full mb-3 opacity-80`} />
-                                        {/* Indicador de hover simplificado */}
-                                        <div className="flex items-center gap-2 text-amber-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                            <span className="text-sm font-medium">Explorar</span>
-                                            <ArrowRight className="w-4 h-4" />
-                                        </div>
+                                    <div className="absolute inset-0 bg-black/20"></div>
+                                    <div className={`absolute top-3 right-3 text-xs font-semibold text-white bg-black/30 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20`}>
+                                        {cenario.tag}
                                     </div>
                                 </div>
-                            </Link>
-                        </div>
+
+                                <div className="absolute -top-6 left-6">
+                                    <div className={`p-4 rounded-2xl shadow-lg border-2 border-white/80 ${iconBgClasses[cenario.accentColor as keyof typeof iconBgClasses]}`}>
+                                        {cenario.icone}
+                                    </div>
+                                </div>
+
+                                <div className={`relative bg-gradient-to-b from-white to-gray-50 border border-gray-200/80 rounded-2xl pt-14 pb-6 px-6 -mt-10 shadow-md transition-all duration-300 group-hover:shadow-xl ${shadowHoverClasses[cenario.accentColor as keyof typeof shadowHoverClasses]}`}>
+                                    <h3 className="text-xl font-bold text-gray-800 mb-2">{cenario.label}</h3>
+                                    <p className="text-sm text-gray-600 leading-relaxed mb-4 h-12">{cenario.descricao}</p>
+                                    <div className="flex items-center justify-end gap-2 text-sm font-semibold text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <span>{cenario.cta}</span>
+                                        <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                                    </div>
+                                </div>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            </div>
+
+            <div className="mt-24 bg-white/80 backdrop-blur-lg rounded-2xl p-8 border border-gray-200/70 shadow-xl max-w-7xl mx-auto">
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                    <div>
+                        <h3 className="text-2xl font-bold text-gray-900">Explore Aluguéis por Bairro</h3>
+                        <p className="text-gray-600">Encontre a localização perfeita para você.</p>
+                    </div>
+                    <Link
+                        href="/mapa-de-alugueis"
+                        className="inline-flex items-center gap-2 text-sm text-amber-700 hover:text-amber-800 font-semibold bg-amber-100/80 px-5 py-3 rounded-xl border border-amber-200/80 hover:bg-amber-200/70 transition-all duration-300 shadow-sm hover:shadow-md"
+                    >
+                        <MapPin className="w-4 h-4" />
+                        Ver Mapa de Aluguéis
+                    </Link>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                    {filtrosBairros.map((filtro) => (
+                        <Link
+                            key={filtro.label}
+                            href={filtro.href}
+                            className="group p-3 bg-white rounded-xl border-2 border-gray-200/90 hover:border-amber-400/80 hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1 shadow-md"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 rounded-lg bg-gray-100 border border-gray-200/90 shadow-sm">
+                                    {filtro.icon}
+                                </div>
+                                <div>
+                                    <span className="font-semibold text-gray-800">{filtro.label}</span>
+                                    <span className="block text-xs text-gray-500 group-hover:text-amber-600">{filtro.count} aluguéis</span>
+                                </div>
+                            </div>
+                        </Link>
                     ))}
                 </div>
 
-                {/* Seção de filtros por bairro melhorada */}
-                <div
-                    className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-8 border border-amber-200 shadow-lg"
-                >
-                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-                        <div>
-                            <h3 className="text-xl font-bold text-gray-900 font-display mb-2">Explore por Bairro</h3>
-                            <p className="text-gray-600 font-body">Cada região tem sua personalidade única. Descubra a sua!</p>
-                        </div>
-                        <div
-                        >
+                <div className="pt-8 mt-8 border-t border-gray-200/90">
+                    <p className="text-base font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5 text-amber-600" />
+                        Atalhos para seu Aluguel Ideal
+                    </p>
+                    <div className="flex flex-wrap gap-3">
+                        {buscasFrequentes.map((busca) => (
                             <Link
-                                href="/mapa"
-                                className="inline-flex items-center gap-2 text-sm text-amber-700 hover:text-amber-800 font-semibold bg-white px-6 py-3 rounded-xl border border-amber-200 hover:bg-amber-50 transition-all duration-300 shadow-md hover:shadow-lg"
+                                key={busca.label}
+                                href={busca.href}
+                                className="group inline-flex items-center gap-2 text-sm text-gray-700 hover:text-amber-800 bg-white px-4 py-2 rounded-full border-2 border-gray-200/90 font-medium transition-all duration-200 shadow-md hover:shadow-lg hover:border-amber-300/80"
                             >
-                                <Car className="w-4 h-4" />
-                                Ver no Mapa Interativo
+                                <span>{busca.label}</span>
+                                <span className="text-xs text-gray-500 group-hover:text-amber-600 border-l-2 border-gray-200/90 pl-2 ml-1 transition-colors duration-200">
+                                    {busca.trend}
+                                </span>
                             </Link>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                        {filtrosBairros.map((filtro, idx) => (
-                            <div
-                                key={idx}
-                            >
-                                <Link
-                                    href={filtro.href}
-                                    className="group flex items-center justify-between text-sm px-4 py-3.5 
-                                             bg-white text-gray-700 rounded-xl border border-gray-200
-                                             hover:bg-amber-50 hover:border-amber-300 hover:text-amber-800
-                                             transition-colors duration-200 shadow-sm hover:shadow-md"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-1.5 rounded-lg bg-gray-100 group-hover:bg-amber-100 transition-colors duration-200">
-                                            {filtro.icon}
-                                        </div>
-                                        <span className="font-medium">{filtro.label}</span>
-                                    </div>
-                                    <span className="text-xs text-gray-500 group-hover:text-amber-600">
-                                        {filtro.count}
-                                    </span>
-                                </Link>
-                            </div>
                         ))}
                     </div>
+                </div>
+            </div>
 
-                    {/* Buscas frequentes aprimoradas */}
-                    <div className="pt-6 border-t border-amber-200">
-                        <p className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                            <TrendingUp className="w-4 h-4 text-amber-600" />
-                            Buscas em Alta:
-                        </p>                        <div className="flex flex-wrap gap-3">
-                            {buscasFrequentes.map((busca, idx) => (
-                                <div
-                                    key={idx}
-                                >
-                                    <Link
-                                        href={busca.href}
-                                        className="group inline-flex items-center gap-2 text-sm text-amber-700 hover:text-amber-800 
-                                                 bg-white hover:bg-amber-50 px-4 py-2.5 rounded-lg border border-amber-200
-                                                 font-medium transition-colors duration-200 shadow-sm hover:shadow-md"
-                                    >
-                                        <span>{busca.label}</span>
-                                        <span className="text-xs text-gray-500 group-hover:text-amber-600 border-l border-amber-200 pl-2 ml-1">
-                                            {busca.trend}
-                                        </span>
-                                    </Link>
-                                </div>
-                            ))}
-                        </div>
+            <div className="mt-16 text-center max-w-7xl mx-auto">
+                <div className="bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-10 text-white shadow-2xl">
+                    <div className="flex items-center justify-center gap-3 mb-4">
+                        <Target className="w-5 h-5 text-amber-400" />
+                        <span className="text-sm font-medium text-amber-400 uppercase tracking-wider">
+                            Precisa de ajuda?
+                        </span>
                     </div>
-                </div>                {/* Chamada para ação elegante */}
-                <div className="mt-16 text-center">
-                    <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-8 text-white shadow-2xl">
-                        <div className="flex items-center justify-center gap-2 mb-4">
-                            <Target className="w-5 h-5 text-amber-400" />
-                            <span className="text-sm font-medium text-amber-400 uppercase tracking-wide">
-                                Busca Especializada
-                            </span>
-                        </div>
-
-                        <h3 className="text-2xl font-bold mb-3">Atendimento Personalizado</h3>
-                        <p className="text-gray-300 mb-6 max-w-lg mx-auto">
-                            Nossos corretores podem te auxiliar a criar uma busca direcionada às suas necessidades. Conte-nos sobre seu imóvel ideal.
-                        </p>
-
-                        <div>
-                            <Link
-                                href="/contato"
-                                className="inline-flex items-center gap-3 px-8 py-4 
-                                         bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-semibold
-                                         hover:from-amber-600 hover:to-orange-600 transition-colors duration-200 
-                                         shadow-lg hover:shadow-xl border border-amber-400/20"
-                            >
-                                <Search className="w-5 h-5" />
-                                Solicitar Análise Gratuita
-                                <ArrowRight className="w-4 h-4" />
-                            </Link>
-                        </div>
-
-                        {/* Stats row */}
-                        <div className="mt-6 pt-6 border-t border-gray-700 flex justify-center items-center gap-8 text-sm text-gray-400">
-                            <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                                <span>Resposta em 24h</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-amber-400 rounded-full" />
-                                <span>Sem compromisso</span>
-                            </div>
-                        </div>
-                    </div>
+                    <h3 className="text-3xl font-bold mb-3">Fale com um Especialista em Locação</h3>
+                    <p className="text-gray-300 mb-8 max-w-lg mx-auto">
+                        Nossa equipe pode criar uma busca direcionada para encontrar seu imóvel ideal para alugar.
+                    </p>
+                    <Link
+                        href="/contato?assunto=aluguel"
+                        className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-semibold hover:from-amber-600 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                    >
+                        <Search className="w-5 h-5" />
+                        Busca Personalizada de Aluguel
+                    </Link>
                 </div>
             </div>
         </SectionWrapper>

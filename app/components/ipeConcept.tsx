@@ -2,424 +2,228 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-    MapPin,
-    Clock,
-    Star,
-    CheckCircle2,
-    ArrowRight,
-    Users,
-    Award,
-    ShieldCheck,
-    FileText,
-    Phone,
-    Calendar,
-    Building2,
-    Search,
-    Scale,
-    Eye,
-    Target,
-    Briefcase,
-    Home,
-    ChevronRight,
-    ExternalLink
+    MapPin, Star, CheckCircle2, Users, Award, FileText, Building2, Home, Briefcase, ClipboardSignature, Megaphone, Handshake, Compass, Network, ShieldCheck, TrendingUp, Sparkles
 } from 'lucide-react';
 
-interface UXOptimizedSectionProps {
-    className?: string;
-}
+// --- DATA (Elevated & Final) ---
+const processos = [
+    {
+        icon: <ClipboardSignature className="w-7 h-7 text-amber-700" />,
+        titulo: "Análise e Estratégia",
+        descricao: "Avaliamos seu imóvel e definimos um plano de marketing e divulgação direcionado."
+    },
+    {
+        icon: <Megaphone className="w-7 h-7 text-amber-700" />,
+        titulo: "Divulgação e Visitas",
+        descricao: "Coordenamos a apresentação do seu imóvel a compradores qualificados em nossa rede."
+    },
+    {
+        icon: <Handshake className="w-7 h-7 text-amber-700" />,
+        titulo: "Negociação e Fechamento",
+        descricao: "Conduzimos as negociações e a documentação necessária até a conclusão da venda."
+    },
+    {
+        icon: <Sparkles className="w-7 h-7 text-amber-700" />,
+        titulo: "Pós-Venda e Relacionamento",
+        descricao: "Oferecemos suporte para a transição pós-venda e mantemos um relacionamento para futuras oportunidades."
+    }
+];
 
-export default function UXOptimizedNovaIpeSection({ className }: UXOptimizedSectionProps) {
-    const [isVisible, setIsVisible] = useState(false);
-    const [activeStep, setActiveStep] = useState(0);
-    const [hoveredDifferential, setHoveredDifferential] = useState<number | null>(null);
-    const sectionRef = useRef<HTMLDivElement>(null);
+const diferenciais = [
+    {
+        icon: <Compass className="w-8 h-8 text-amber-600" />,
+        metrica: "Expertise Local",
+        descricao: "Mapeamento profundo de Guararema, com histórico de preços e tendências de valorização."
+    },
+    {
+        icon: <Network className="w-8 h-8 text-amber-600" />,
+        metrica: "Rede de Contatos",
+        descricao: "Base consolidada de compradores pré-aprovados e parceiros, agilizando transações."
+    },
+    {
+        icon: <ShieldCheck className="w-8 h-8 text-amber-600" />,
+        metrica: "Suporte Técnico",
+        descricao: "Nossos corretores oferecem orientação técnica sobre o imóvel, documentação e o mercado."
+    },
+    {
+        icon: <TrendingUp className="w-8 h-8 text-amber-600" />,
+        metrica: "Inteligência de Mercado",
+        descricao: "Anos de experiência focados exclusivamente no mercado imobiliário de Guararema e região."
+    }
+];
 
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    setIsVisible(true);
-                }
-            },
-            { threshold: 0.2 }
-        );
+const garantias = [
+    "Análise de mercado detalhada.",
+    "Estratégia de divulgação personalizada.",
+    "Filtro de compradores qualificados.",
+    "Comunicação clara e contínua.",
+    "Suporte profissional em todas as etapas."
+];
 
-        if (sectionRef.current) {
-            observer.observe(sectionRef.current);
-        }
+// --- SUB-COMPONENTS (Elevated & Final) ---
+const ProcessStep = ({ step, isActive, onHover }: { step: any; isActive: any; onHover: any }) => {
+    return (
+        <div 
+            className={`flex items-start gap-6 transition-all duration-500 ease-in-out ${isActive ? 'filter-none' : 'filter saturate-50 opacity-70'}`}
+            onMouseEnter={onHover}
+        >
+            <div className={`flex-shrink-0 w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-500 ${isActive ? 'bg-gradient-to-br from-amber-500 to-orange-500 transform scale-100' : 'bg-gray-100 transform scale-90'}`}>
+                {step.icon}
+            </div>
+            <div>
+                <h4 className="text-xl font-bold text-slate-900 mb-2">{step.titulo}</h4>
+                <p className="text-slate-600 leading-relaxed">{step.descricao}</p>
+            </div>
+        </div>
+    );
+};
 
-        // Auto-advance through steps
-        const interval = setInterval(() => {
-            setActiveStep(prev => (prev + 1) % 3);
-        }, 4000);
-
-        return () => {
-            observer.disconnect();
-            clearInterval(interval);
-        };
-    }, []);
-
-    const processos = [
-        {
-            numero: "01",
-            titulo: "Análise de Mercado",
-            descricao: "Avaliamos seu imóvel baseado em dados históricos de vendas na região, características específicas e tendências atuais.",
-            tempo: "2-3 dias úteis",
-            icon: <Search className="w-5 h-5" />,
-            details: ["Comparação com vendas recentes", "Análise de potencial de valorização", "Relatório de precificação"]
-        },
-        {
-            numero: "02",
-            titulo: "Estratégia de Venda",
-            descricao: "Definimos preço competitivo, plano de marketing direcionado e cronograma realista para seu imóvel.",
-            tempo: "1 semana",
-            icon: <Target className="w-5 h-5" />,
-            details: ["Plano de marketing personalizado", "Definição de público-alvo", "Cronograma de ações"]
-        },
-        {
-            numero: "03",
-            titulo: "Execução e Acompanhamento",
-            descricao: "Coordenamos visitas qualificadas, negociações e toda documentação necessária até a conclusão.",
-            tempo: "Até a conclusão",
-            icon: <ShieldCheck className="w-5 h-5" />,
-            details: ["Agendamento de visitas", "Suporte nas negociações", "Acompanhamento jurídico"]
-        }
-    ];
-
-    const diferenciais = [
-        {
-            titulo: "Conhecimento Local Profundo",
-            descricao: "15 anos mapeando Guararema. Conhecemos histórico de preços, características de cada bairro e tendências de valorização.",
-            metric: "15 bairros mapeados",
-            icon: <MapPin className="w-5 h-5" />
-        },
-        {
-            titulo: "Rede Qualificada de Contatos",
-            descricao: "Base consolidada de compradores pré-aprovados e parcerias com construtoras, facilitando transações mais rápidas.",
-            metric: "300+ contatos ativos",
-            icon: <Users className="w-5 h-5" />
-        },
-        {
-            titulo: "Processos Documentais Seguros",
-            descricao: "Verificação completa por advogado especializado. Checklist detalhado para eliminar riscos jurídicos.",
-            metric: "0 problemas legais",
-            icon: <FileText className="w-5 h-5" />
-        },
-        {
-            titulo: "Transparência Total",
-            descricao: "Relatórios semanais de atividades, feedback de visitas e comunicação clara sobre cada etapa do processo.",
-            metric: "Relatórios semanais",
-            icon: <Eye className="w-5 h-5" />
-        }
-    ];
+const DifferentialCard = ({ item }: { item: any }) => {
+    const [isHovered, setIsHovered] = useState(false);
 
     return (
-        <section ref={sectionRef} className={`py-24 lg:py-32 bg-gradient-to-b from-white via-amber-50/20 to-white relative overflow-hidden ${className}`}>
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-[0.02]">
-                <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <pattern id="grid-pattern" width="60" height="60" patternUnits="userSpaceOnUse">
-                            <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgb(251 191 36)" strokeWidth="1" />
-                        </pattern>
-                    </defs>
-                    <rect width="100%" height="100%" fill="url(#grid-pattern)" />
-                </svg>
-            </div>
+        <motion.div 
+            layout
+            onMouseEnter={() => setIsHovered(true)} 
+            onMouseLeave={() => setIsHovered(false)}
+            className="bg-white rounded-xl p-6 border-2 border-gray-100 hover:border-amber-300 transition-colors duration-300 cursor-pointer overflow-hidden shadow-sm hover:shadow-xl"
+            transition={{ layout: { duration: 0.4, type: "spring", stiffness: 300, damping: 30 } }}
+        >
+            <motion.div layout="position" className="flex flex-col items-center text-center">
+                {item.icon}
+                <h4 className="text-lg font-bold text-slate-800 mt-3">{item.metrica}</h4>
+            </motion.div>
+            <AnimatePresence>
+                {isHovered && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                        animate={{ opacity: 1, height: 'auto', marginTop: '1rem' }}
+                        exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                    >
+                        <p className="text-sm text-slate-600 text-center">{item.descricao}</p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </motion.div>
+    );
+};
+
+// --- MAIN COMPONENT (Elevated & Final) ---
+export default function UXOptimizedNovaIpeSection({ className }: { className?: string }) {
+    const [activeStep, setActiveStep] = useState(0);
+    const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+    useEffect(() => {
+        const observers: IntersectionObserver[] = [];
+        stepRefs.current.forEach((ref, index) => {
+            const observer = new IntersectionObserver(
+                ([entry]) => {
+                    if (entry.isIntersecting) {
+                        setActiveStep(index);
+                    }
+                },
+                { threshold: 0.6, rootMargin: '-45% 0px -45% 0px' }
+            );
+            if (ref) observer.observe(ref);
+            observers.push(observer);
+        });
+        return () => observers.forEach(observer => observer.disconnect());
+    }, []);
+
+    return (
+        <section className={`py-20 lg:py-28 bg-white relative overflow-x-hidden ${className}`}>
+            <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'url(/grid-pattern.svg)', backgroundSize: '60px' }} />
 
             <div className="container mx-auto px-6 relative z-10">
                 <div className="max-w-7xl mx-auto">
-
-                    {/* Enhanced Header */}
                     <div className="text-center mb-20">
-                        {/* Animated Badge */}
-                        <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 rounded-full mb-8 shadow-sm hover:shadow-md transition-shadow duration-300">
-                            <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-                            <Building2 className="w-4 h-4 text-amber-600" />
-                            <span className="text-sm text-amber-800 font-semibold">Especialistas em Guararema • 16 anos</span>
+                        <div className="inline-flex items-center gap-3 px-5 py-2 bg-amber-100/60 border border-amber-200/80 rounded-full mb-6 shadow-sm">
+                            <Award className="w-5 h-5 text-amber-700" />
+                            <span className="text-sm text-amber-800 font-semibold">Expertise e Confiança em Guararema</span>
                         </div>
-
-                        {/* Improved Typography */}
-                        <h2 className="text-4xl lg:text-6xl font-light text-slate-900 mb-6 leading-[1.1] tracking-tight">
-                            Como trabalhamos
-                            <span className="block font-medium bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
-                                com seu imóvel
-                            </span>
+                        <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-4 leading-tight tracking-tight">
+                            Nossa Forma de <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">Trabalhar</span>
                         </h2>
-
-                        <p className="text-xl lg:text-2xl text-slate-600 max-w-4xl mx-auto leading-relaxed font-light">
-                            Metodologia estruturada desenvolvida ao longo de <strong className="text-amber-700">16 anos</strong> para
-                            maximizar o valor do seu imóvel e minimizar o tempo de venda.
+                        <p className="text-lg text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                            Entenda a metodologia que garante segurança e eficiência em cada transação imobiliária.
                         </p>
                     </div>
 
-                    <div className="grid lg:grid-cols-12 gap-16 xl:gap-20 items-start">
-
-                        {/* Enhanced Content Column */}
-                        <div className="lg:col-span-7 space-y-12">
-
-                            {/* Interactive Process Steps */}
-                            <div>
-                                <div className="flex items-center gap-4 mb-12">
-                                    <h3 className="text-2xl font-bold text-slate-900">
-                                        Nosso processo estruturado
-                                    </h3>
-                                    <div className="flex-1 h-px bg-amber-200" />
-                                </div>
-
-                                <div className="space-y-6">
-                                    {processos.map((processo, index) => (
-                                        <div
-                                            key={index}
-                                            className={`group relative transition-all duration-500 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-                                                } ${activeStep === index ? 'scale-[1.02]' : ''
-                                                }`}
-                                            style={{ transitionDelay: `${index * 200}ms` }}
-                                            onMouseEnter={() => setActiveStep(index)}
-                                        >
-                                            {/* Enhanced Card */}
-                                            <div className={`bg-white rounded-2xl p-8 border-2 transition-all duration-300 cursor-pointer relative overflow-hidden ${activeStep === index
-                                                    ? 'border-amber-300 shadow-xl bg-gradient-to-br from-amber-50/50 to-orange-50/30'
-                                                    : 'border-slate-100 hover:border-amber-200 hover:shadow-lg'
-                                                }`}>
-                                                {/* Progress Indicator */}
-                                                {activeStep === index && (
-                                                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-orange-500" />
-                                                )}
-
-                                                <div className="flex items-start gap-6">
-                                                    {/* Enhanced Number Badge */}
-                                                    <div className={`relative flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center font-bold text-xl shadow-lg transition-all duration-300 ${activeStep === index
-                                                            ? 'bg-gradient-to-br from-amber-500 to-orange-500 text-white scale-110'
-                                                            : 'bg-amber-100 text-amber-700 group-hover:bg-amber-200'
-                                                        }`}>
-                                                        {activeStep === index ? processo.icon : processo.numero}
-                                                    </div>
-
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="flex items-center justify-between mb-4">
-                                                            <h4 className="text-xl font-bold text-slate-900 group-hover:text-amber-700 transition-colors">
-                                                                {processo.titulo}
-                                                            </h4>
-                                                            <span className={`text-sm font-semibold px-3 py-1 rounded-full transition-colors ${activeStep === index
-                                                                    ? 'bg-amber-500 text-white'
-                                                                    : 'bg-amber-100 text-amber-700'
-                                                                }`}>
-                                                                {processo.tempo}
-                                                            </span>
-                                                        </div>
-
-                                                        <p className="text-slate-600 leading-relaxed text-lg mb-4">
-                                                            {processo.descricao}
-                                                        </p>
-
-                                                        {/* Expandable Details */}
-                                                        {activeStep === index && (
-                                                            <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
-                                                                {processo.details.map((detail, detailIndex) => (
-                                                                    <div key={detailIndex} className="flex items-center gap-2 text-sm text-slate-500">
-                                                                        <CheckCircle2 className="w-4 h-4 text-amber-500" />
-                                                                        {detail}
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Connection Line */}
-                                            {index < processos.length - 1 && (
-                                                <div className="flex justify-center mt-4 mb-2">
-                                                    <ChevronRight className={`w-6 h-6 transition-colors duration-300 ${activeStep === index ? 'text-amber-500' : 'text-slate-300'
-                                                        }`} />
-                                                </div>
-                                            )}
+                    <div className="grid lg:grid-cols-12 gap-16 xl:gap-24">
+                        <div className="lg:col-span-7">
+                            <div className="relative pl-12 mb-24">
+                                <div className="absolute left-[48px] top-0 h-full w-1 bg-amber-100 rounded-full" />
+                                <motion.div 
+                                    className="absolute left-[48px] top-0 h-full w-1 bg-gradient-to-b from-amber-400 to-orange-500 rounded-full"
+                                    style={{ scaleY: 0, originY: 0 }} 
+                                    animate={{ scaleY: activeStep / (processos.length - 1) }} 
+                                    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                                />
+                                <div className="space-y-20">
+                                    {processos.map((step, index) => (
+                                        <div key={index} ref={el => { if (stepRefs.current) stepRefs.current[index] = el; }} onMouseEnter={() => setActiveStep(index)}>
+                                            <ProcessStep step={step} isActive={activeStep >= index} onHover={() => setActiveStep(index)} />
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Enhanced Differentials */}
-                            <div>
-                                <div className="flex items-center gap-4 mb-10">
-                                    <h3 className="text-2xl font-bold text-slate-900">
-                                        Nossos diferenciais
-                                    </h3>
-                                    <div className="flex-1 h-px bg-amber-200" />
-                                </div>
-
-                                <div className="grid gap-4">
-                                    {diferenciais.map((diferencial, index) => (
-                                        <div
-                                            key={index}
-                                            className={`group bg-white rounded-xl p-6 border transition-all duration-300 cursor-pointer ${hoveredDifferential === index
-                                                    ? 'border-amber-300 shadow-lg bg-gradient-to-r from-amber-50/50 to-orange-50/50'
-                                                    : 'border-amber-100 hover:border-amber-200 hover:shadow-md'
-                                                }`}
-                                            onMouseEnter={() => setHoveredDifferential(index)}
-                                            onMouseLeave={() => setHoveredDifferential(null)}
-                                        >
-                                            <div className="flex items-start gap-4">
-                                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors duration-300 ${hoveredDifferential === index
-                                                        ? 'bg-amber-500 text-white'
-                                                        : 'bg-amber-100 text-amber-600'
-                                                    }`}>
-                                                    {diferencial.icon}
-                                                </div>
-
-                                                <div className="flex-1">
-                                                    <div className="flex items-center justify-between mb-2">
-                                                        <h4 className="text-lg font-semibold text-slate-900 group-hover:text-amber-700 transition-colors">
-                                                            {diferencial.titulo}
-                                                        </h4>
-                                                        <span className="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-1 rounded-full">
-                                                            {diferencial.metric}
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-slate-600 leading-relaxed">
-                                                        {diferencial.descricao}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
+                            <div className="mb-24">
+                                <h3 className="text-3xl font-bold text-slate-900 mb-8 text-center">Nossos Diferenciais</h3>
+                                <div className="grid grid-cols-2 gap-6">
+                                    {diferenciais.map((item, index) => (
+                                        <DifferentialCard key={index} item={item} />
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Enhanced Guarantees */}
-                            <div className="relative bg-gradient-to-br from-amber-600 via-orange-600 to-amber-700 rounded-2xl p-8 text-white overflow-hidden">
-                                <div className="absolute inset-0 bg-black/10" />
-                                <div className="relative z-10">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <ShieldCheck className="w-6 h-6 text-amber-100" />
-                                        <h3 className="text-xl font-bold">
-                                            Nossas garantias
-                                        </h3>
-                                    </div>
-
-                                    <div className="grid sm:grid-cols-2 gap-4">
-                                        {[
-                                            "Avaliação gratuita sem compromisso",
-                                            "Documentação verificada por advogado",
-                                            "Relatórios semanais de atividades",
-                                            "Suporte até a escritura final"
-                                        ].map((garantia, index) => (
-                                            <div key={index} className="flex items-start gap-3 p-3 bg-white/10 rounded-lg backdrop-blur-sm">
-                                                <CheckCircle2 className="w-5 h-5 text-amber-100 mt-0.5 flex-shrink-0" />
-                                                <span className="text-amber-50 text-sm leading-relaxed">{garantia}</span>
-                                            </div>
-                                        ))}
-                                    </div>
+                            <div className="bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-8 text-white shadow-2xl border-t-4 border-amber-500 mb-16">
+                                <div className="flex items-center gap-4 mb-6">
+                                    <Award className="w-8 h-8 text-amber-400" />
+                                    <h3 className="text-2xl font-bold">Nossas Garantias</h3>
                                 </div>
+                                <ul className="space-y-4">
+                                    {garantias.map((garantia, index) => (
+                                        <li key={index} className="flex items-start gap-3">
+                                            <CheckCircle2 className="w-5 h-5 text-amber-400 mt-1 flex-shrink-0" />
+                                            <span className="text-gray-300 leading-relaxed">{garantia}</span>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
 
-                            {/* Enhanced CTAs */}
                             <div className="flex flex-col sm:flex-row gap-4">
-                                <button className="group flex-1 bg-amber-600 hover:bg-amber-700 text-white px-8 py-5 rounded-2xl font-semibold text-lg transition-all duration-300 hover:scale-[1.02] shadow-lg hover:shadow-xl">
-                                    <div className="flex items-center justify-center gap-3">
-                                        <Calendar className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                                        Solicitar avaliação gratuita
-                                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                    </div>
-                                </button>
-                                <button className="group bg-white border-2 border-amber-200 hover:border-amber-300 text-amber-700 px-8 py-5 rounded-2xl font-semibold text-lg transition-all duration-300 hover:shadow-lg">
-                                    <div className="flex items-center justify-center gap-3">
-                                        <Phone className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                                        (11) 98184-5016
-                                    </div>
-                                </button>
+                                <Link href="/contato?assunto=avaliacao" className="group flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-3">
+                                    <Home className="w-5 h-5" />
+                                    <span>Solicitar Avaliação</span>
+                                </Link>
+                                <Link href="/contato?assunto=venda" className="group flex-1 bg-white hover:bg-amber-50 border-2 border-amber-200 hover:border-amber-400 text-amber-700 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-3">
+                                    <Briefcase className="w-5 h-5" />
+                                    <span>Vender Imóvel</span>
+                                </Link>
                             </div>
                         </div>
 
-                        {/* Enhanced Image Column */}
                         <div className="lg:col-span-5">
-                            <div className="sticky top-8">
+                            <div className="sticky top-24 pb-12">
                                 <div className="relative group">
-                                    {/* Refined Neon Effect */}
-                                    <div className="absolute -inset-2 bg-gradient-to-r from-amber-400/30 via-orange-400/30 to-amber-400/30 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-lg" />
-                                    <div className="absolute -inset-1 bg-gradient-to-r from-amber-300/40 via-orange-300/40 to-amber-300/40 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-md" />
-
-                                    {/* Image Container */}
-                                    <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 shadow-xl group-hover:shadow-2xl transition-shadow duration-500">
+                                    <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 opacity-80 blur-md group-hover:opacity-100 transition-all duration-500" />
+                                    <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-white p-1">
                                         <Image
                                             src="/images/predioIpe.png"
                                             alt="Nova Ipê Imóveis - Escritório em Guararema"
                                             fill
-                                            className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
-                                            sizes="(max-width: 768px) 100vw, 42vw"
+                                            className="object-cover object-center rounded-xl"
+                                            sizes="(max-width: 1024px) 100vw, 40vw"
                                             priority
                                         />
-
-                                        {/* Interactive Overlay */}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-amber-900/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                                        {/* Floating Badge */}
-                                        <div className="absolute top-6 right-6 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg">
-                                            ⭐ CRECI 152.847-F
-                                        </div>
                                     </div>
-
-                                    {/* Enhanced Location Card */}
-                                    <div className="absolute -bottom-6 -left-6 bg-white/95 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-amber-100 max-w-sm">
-                                        <div className="flex items-start gap-4">
-                                            <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center shadow-md">
-                                                <MapPin className="w-6 h-6 text-white" />
-                                            </div>
-                                            <div>
-                                                <p className="font-bold text-slate-900 text-base mb-1">
-                                                    Praça 9 de Julho, 65
-                                                </p>
-                                                <p className="text-slate-600 text-sm font-medium mb-2">
-                                                    Centro • Guararema/SP
-                                                </p>
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                                                    <span className="text-xs text-green-600 font-semibold">Seg-Sex: 8h às 18h</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Enhanced Stats */}
-                                <div className="mt-8 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-100">
-                                    <div className="grid grid-cols-3 gap-6 text-center">
-                                        <div className="group cursor-pointer">
-                                            <div className="text-2xl font-bold text-amber-700 mb-1 group-hover:scale-110 transition-transform">16</div>
-                                            <div className="text-xs text-slate-600 font-medium">Anos</div>
-                                        </div>
-                                        <div className="group cursor-pointer">
-                                            <div className="text-2xl font-bold text-amber-700 mb-1 group-hover:scale-110 transition-transform">4.8</div>
-                                            <div className="text-xs text-slate-600 font-medium">Rating</div>
-                                        </div>
-                                        <div className="group cursor-pointer">
-                                            <div className="text-2xl font-bold text-amber-700 mb-1 group-hover:scale-110 transition-transform">340+</div>
-                                            <div className="text-xs text-slate-600 font-medium">Vendas</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Enhanced Testimonial */}
-                                <div className="mt-6 bg-white border border-amber-100 rounded-2xl p-6 hover:shadow-md transition-shadow duration-300">
-                                    <div className="flex items-center gap-1 mb-4">
-                                        {[...Array(5)].map((_, i) => (
-                                            <Star key={i} className="w-4 h-4 text-amber-400 fill-current" />
-                                        ))}
-                                        <span className="ml-2 text-sm font-semibold text-slate-700">5.0</span>
-                                    </div>
-                                    <p className="text-sm text-slate-600 mb-4 leading-relaxed italic">
-                                        "Processo transparente e profissional. Venderam nossa casa dentro do prazo estimado sem complicações."
-                                    </p>
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
-                                            <Users className="w-4 h-4 text-amber-600" />
-                                        </div>
-                                        <div>
-                                            <p className="text-xs font-semibold text-slate-900">Roberto S.</p>
-                                            <p className="text-xs text-slate-500">Cliente 2024</p>
-                                        </div>
+                                    <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-md text-white px-4 py-2 rounded-xl font-semibold text-sm shadow-lg border border-white/20">
+                                        CRECI 152.847-F
                                     </div>
                                 </div>
                             </div>

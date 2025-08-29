@@ -18,23 +18,65 @@ function normalizarImageAPI(imovel: any) {
 }
 
 // Rota GET da API
-export async function GET() {
+export async function GET(request: Request) {
     try {
-        const imoveis = await getImovelEmDestaque()
+        // Extrair parâmetros da URL
+        const { searchParams } = new URL(request.url)
+        const finalidade = searchParams.get('finalidade')
+        const destaque = searchParams.get('destaque')
+        
+        // Buscar todos os imóveis em destaque primeiro
+        let imoveis = await getImovelEmDestaque()
+        
+        // Se não há imóveis em destaque e foi solicitado uma finalidade específica, 
+        // buscar todos os imóveis dessa finalidade
+        if (imoveis.length === 0 && finalidade) {
+            console.log('📋 Nenhum imóvel em destaque encontrado, buscando todos os imóveis da finalidade:', finalidade)
+            
+            // Importar as funções específicas por finalidade
+            const { getTodosImoveis } = await import('../../../lib/sanity/fetchImoveis')
+            const todosImoveis = await getTodosImoveis()
+            
+            // Filtrar por finalidade
+            imoveis = todosImoveis.filter(imovel => 
+                imovel.finalidade && imovel.finalidade.toLowerCase() === finalidade.toLowerCase()
+            ).slice(0, 12) // Limitar a 12 imóveis
+        }
 
-        console.log('API destaques - primeiro imóvel:',
-            imoveis[0]
+        // Aplicar filtros adicionais
+        let imoveisFiltrados = imoveis
+        
+        if (finalidade && imoveis.length > 0) {
+            imoveisFiltrados = imoveisFiltrados.filter(imovel => 
+                imovel.finalidade && imovel.finalidade.toLowerCase() === finalidade.toLowerCase()
+            )
+        }
+        
+        if (destaque) {
+            const isDestaque = destaque.toLowerCase() === 'true'
+            imoveisFiltrados = imoveisFiltrados.filter(imovel => 
+                Boolean(imovel.destaque) === isDestaque
+            )
+        }
+
+        console.log('API destaques - finalidade:', finalidade)
+        console.log('API destaques - destaque:', destaque)
+        console.log('API destaques - total imóveis:', imoveis.length)
+        console.log('API destaques - imóveis filtrados:', imoveisFiltrados.length)
+        console.log('API destaques - primeiro imóvel filtrado:',
+            imoveisFiltrados[0]
                 ? JSON.stringify({
-                    id: imoveis[0]._id,
-                    temImagem: !!imoveis[0].imagem,
-                    formatoImagem: imoveis[0].imagem
-                        ? Object.keys(imoveis[0].imagem)
+                    id: imoveisFiltrados[0]._id,
+                    finalidade: imoveisFiltrados[0].finalidade,
+                    temImagem: !!imoveisFiltrados[0].imagem,
+                    formatoImagem: imoveisFiltrados[0].imagem
+                        ? Object.keys(imoveisFiltrados[0].imagem)
                         : 'sem imagem',
                 })
                 : 'sem imóveis'
         )
 
-        const imoveisProcessados = imoveis.map(normalizarImageAPI)
+        const imoveisProcessados = imoveisFiltrados.map(normalizarImageAPI)
 
         return NextResponse.json(imoveisProcessados)
     } catch (err: any) {
