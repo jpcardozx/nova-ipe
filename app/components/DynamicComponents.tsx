@@ -1,7 +1,12 @@
 'use client';
 
 import { Suspense, lazy, ComponentType } from 'react';
-import { motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
+
+// Lazy import framer-motion to avoid SSR issues
+const motion = dynamic(() => import('framer-motion').then(mod => ({ default: mod.motion })), {
+  ssr: false,
+}) as any;
 
 // Loading fallback component
 const LoadingSpinner = () => (
@@ -23,9 +28,16 @@ export function createDynamicComponent(importFn: () => Promise<{ default: Compon
   };
 }
 
-// Motion wrapper for better performance
-export const MotionDiv = motion.div;
-export const MotionSection = motion.section;
+// Motion wrapper for better performance - dynamically imported
+export const MotionDiv = dynamic(() => 
+  import('framer-motion').then(mod => ({ default: mod.motion.div })), 
+  { ssr: false }
+);
+
+export const MotionSection = dynamic(() => 
+  import('framer-motion').then(mod => ({ default: mod.motion.section })), 
+  { ssr: false }
+);
 
 // Lazy loaded components for better code splitting
 export const LazyBlocoExploracaoSimbolica = createDynamicComponent(
