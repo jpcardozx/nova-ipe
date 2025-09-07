@@ -17,7 +17,7 @@ import PropertyFeatures from './components/PropertyFeatures';
 import PropertyDescription from './components/PropertyDescription';
 import PropertyDetails from './components/PropertyDetails';
 import LocationInfo from './components/LocationInfo';
-import PropertyContact from './components/PropertyContact';
+import PropertySidebar from './components/PropertySidebar';
 import RelatedProperties from './components/RelatedProperties';
 
 interface ImovelDetalhesProps {
@@ -163,13 +163,6 @@ const ImovelDetalhesModular: FC<ImovelDetalhesProps> = ({
 
                         {/* Informações Principais */}
                         <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6 lg:p-8 space-y-6">
-                            {/* Badges de Status */}
-                            <PropertyBadges
-                                isPremium={unifiedProperty.isPremium}
-                                status={unifiedProperty.status}
-                                propertyType={unifiedProperty.propertyType}
-                            />
-
                             {/* Título, Localização e Preço */}
                             <PropertyMainInfo
                                 title={unifiedProperty.title}
@@ -185,6 +178,26 @@ const ImovelDetalhesModular: FC<ImovelDetalhesProps> = ({
                                 bedrooms={unifiedProperty.bedrooms}
                                 bathrooms={unifiedProperty.bathrooms}
                                 parkingSpots={unifiedProperty.parkingSpots}
+                            />
+                        </div>
+
+                        {/* CTA Mobile - Exibido apenas no mobile após as informações principais */}
+                        <div className="block lg:hidden">
+                            <PropertySidebar
+                                phoneNumber="+5511981845016"
+                                whatsappNumber="11981845016"
+                                price={unifiedProperty.price}
+                                propertyId={unifiedProperty.id}
+                                propertyTitle={unifiedProperty.title}
+                                acceptsFinancing={unifiedProperty.acceptsFinancing}
+                                documentationOk={unifiedProperty.documentationOk}
+                                features={unifiedProperty.features}
+                                propertyTypeDetail={unifiedProperty.propertyTypeDetail}
+                                publishedDate={unifiedProperty.publishedDate}
+                                hasGarden={unifiedProperty.hasGarden}
+                                hasPool={unifiedProperty.hasPool}
+                                address={unifiedProperty.address}
+                                codigo={unifiedProperty.codigo}
                             />
                         </div>
 
@@ -209,18 +222,14 @@ const ImovelDetalhesModular: FC<ImovelDetalhesProps> = ({
                         )}
                     </div>
 
-                    {/* Sidebar de Contato e Detalhes */}
-                    <div className="lg:col-span-4 space-y-6">
-                        <PropertyContact
+                    {/* Sidebar de Contato e Detalhes - Agrupados */}
+                    <div className="hidden lg:block lg:col-span-4">
+                        <PropertySidebar
                             phoneNumber="+5511981845016"
                             whatsappNumber="11981845016"
                             price={unifiedProperty.price}
                             propertyId={unifiedProperty.id}
                             propertyTitle={unifiedProperty.title}
-                        />
-                        
-                        {/* Informações Detalhadas movidas para sidebar */}
-                        <PropertyDetails
                             acceptsFinancing={unifiedProperty.acceptsFinancing}
                             documentationOk={unifiedProperty.documentationOk}
                             features={unifiedProperty.features}

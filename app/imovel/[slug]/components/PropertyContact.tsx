@@ -60,11 +60,11 @@ export default function PropertyContact({
     };
 
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="bg-white rounded-2xl border border-slate-200 shadow-sm sticky top-4"
+            className="bg-white rounded-2xl border border-slate-200 shadow-sm"
         >
             {/* Header com preço e corretor */}
             <div className="p-6 border-b border-slate-100">
@@ -76,17 +76,6 @@ export default function PropertyContact({
                         </h3>
                     </div>
                 )}
-                
-                {/* Corretor info */}
-                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-                        <User className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                        <p className="font-semibold text-slate-900">Nova Ipê Imóveis</p>
-                        <p className="text-sm text-slate-600">Corretor especializado</p>
-                    </div>
-                </div>
             </div>
 
             {/* CTAs principais */}
@@ -134,11 +123,10 @@ export default function PropertyContact({
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={toggleFavorite}
-                        className={`flex-1 p-3 rounded-xl border-2 transition-colors duration-200 flex items-center justify-center gap-2 ${
-                            isFavorited 
-                                ? 'bg-red-50 border-red-200 text-red-700' 
-                                : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
-                        }`}
+                        className={`flex-1 p-3 rounded-xl border-2 transition-colors duration-200 flex items-center justify-center gap-2 ${isFavorited
+                            ? 'bg-red-50 border-red-200 text-red-700'
+                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                            }`}
                     >
                         <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
                         <span className="hidden sm:inline text-sm font-medium">

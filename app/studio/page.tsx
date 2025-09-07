@@ -1,7 +1,7 @@
 // app/studio/page.tsx
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { authManager } from '@/lib/auth/enhanced-auth-manager'
@@ -52,7 +52,7 @@ const StudioConfig = dynamic(
 
 type StudioState = 'loading' | 'checking-auth' | 'authenticated' | 'error' | 'config-error'
 
-export default function StudioPage() {
+function StudioPageContent() {
     const [state, setState] = useState<StudioState>('loading')
     const [error, setError] = useState<string | null>(null)
     const [isRetrying, setIsRetrying] = useState(false)
@@ -263,5 +263,20 @@ export default function StudioPage() {
                 <p className="text-gray-600">Carregando...</p>
             </div>
         </div>
+    )
+}
+
+export default function StudioPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="text-center">
+                    <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-amber-600" />
+                    <p className="text-gray-600">Carregando Studio...</p>
+                </div>
+            </div>
+        }>
+            <StudioPageContent />
+        </Suspense>
     )
 }
