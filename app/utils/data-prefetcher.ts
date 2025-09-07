@@ -7,7 +7,7 @@
  */
 
 import { cache } from 'react';
-import { getImoveisParaVenda, getImoveisParaAlugar } from '@/lib/sanity/fetchImoveis';
+import { getImoveisParaVenda, getImoveisParaAlugar } from '../../lib/sanity/fetchImoveis';
 import type { ImovelClient } from '../../src/types/imovel-client';
 
 /**

@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import Image from 'next/image'
+import LazyImage from './LazyImage'
 import Link from 'next/link'
 import {
     MapPin,
@@ -111,7 +111,7 @@ export default function PropertyCardPremium({
                 isCompact ? "aspect-[5/4]" : "aspect-[16/11]"
             )}>
                 {mainImage?.url ? (
-                    <Image
+                    <LazyImage
                         src={mainImage.url}
                         alt={mainImage.alt || title}
                         fill

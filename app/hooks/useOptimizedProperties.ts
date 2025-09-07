@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { getImoveisParaVenda, getImoveisParaAlugar } from '@/lib/sanity/fetchImoveis';
+import { getImoveisParaVenda, getImoveisParaAlugar } from '../../lib/sanity/fetchImoveis';
 import type { ImovelClient } from '../../src/types/imovel-client';
 
 interface UseOptimizedPropertiesOptions {

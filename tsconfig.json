@@ -42,7 +42,8 @@
         "components/*"
       ],
       "@/components/ui/*": [
-        "app/components/ui/*"
+        "app/components/ui/*",
+        "components/ui/*"
       ],
       "@hooks/*": [
         "app/hooks/*"

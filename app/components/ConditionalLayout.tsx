@@ -10,12 +10,17 @@ interface ConditionalLayoutProps {
 
 const ConditionalLayout = ({ children }: ConditionalLayoutProps) => {
   const pathname = usePathname();
-  
+
   // Páginas que devem renderizar sem navbar/footer
-  const noLayoutPages = ['/julia'];
-  
-  const showNavFooter = !noLayoutPages.includes(pathname);
-  
+  const noLayoutPages = ['/julia', '/dashboard', '/admin', '/studio', '/structure'];
+
+  const showNavFooter = !noLayoutPages.some(page => pathname.startsWith(page));
+
+  // Para páginas especiais como studio, não envolvemos em main
+  if (noLayoutPages.some(page => pathname.startsWith(page))) {
+    return <>{children}</>;
+  }
+
   return (
     <>
       {showNavFooter && <CenteredNavbar />}

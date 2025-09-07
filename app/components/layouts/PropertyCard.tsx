@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { formatarMoeda } from '@/lib/utils'
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { MapPin, Home, Maximize2, BedDouble, Bath, Star, Building2 } from 'lucide-react';
@@ -37,7 +38,7 @@ export default function PropertyCard({
 
     // Formatações e valores default
     const imageUrl = photos && photos.length > 0 ? photos[0].url : '/images/property-placeholder.jpg';
-    const formattedPrice = priceFormatted || `R$ ${price?.toLocaleString('pt-BR') || '---'}`; const formattedArea = area ? `${area} m²` : '---';
+    const formattedPrice = priceFormatted || formatarMoeda(price || 0); const formattedArea = area ? `${area} m²` : '---';
     const shortDescription = description && description.length > 120
         ? `${description.substring(0, 120)}...`
         : description; const displayLocation = typeof location === 'object' && location?.neighborhood

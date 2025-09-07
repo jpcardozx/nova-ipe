@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { serverFetch } from '../../../lib/sanity/sanity.server';
-import { queryImoveisParaAlugar, queryImoveisParaVenda } from '../../../lib/queries';
+import { queries } from '../../../lib/sanity/queries';
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
@@ -9,15 +9,9 @@ export async function GET(request: NextRequest) {
     try {
         let data;
         if (type === 'aluguel') {
-            data = await serverFetch({
-                query: queryImoveisParaAlugar,
-                tags: ['imoveis', 'aluguel']
-            });
+            data = await serverFetch(queries.rentalProperties());
         } else if (type === 'venda') {
-            data = await serverFetch({
-                query: queryImoveisParaVenda,
-                tags: ['imoveis', 'venda']
-            });
+            data = await serverFetch(queries.saleProperties());
         } else {
             return new Response(JSON.stringify({ error: 'Invalid type parameter' }), {
                 status: 400,

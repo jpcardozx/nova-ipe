@@ -12,9 +12,27 @@ export default function PropertyDescription({
 }: PropertyDescriptionProps) {
     const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
-    if (!description) return null;
+    // Verificar se existe descrição válida
+    if (!description || description.trim() === '') {
+        return (
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 text-center">
+                <div className="text-slate-500">
+                    <p className="text-lg font-medium mb-2">Descrição não disponível</p>
+                    <p className="text-sm">Entre em contato para mais informações sobre este imóvel.</p>
+                </div>
+            </div>
+        );
+    }
 
-    const shouldTruncateDescription = description && description.length > 200;
+    // Limpar e formatar a descrição
+    const cleanDescription = description
+        .replace(/\\n/g, '\n')     // Converter \\n em quebras reais
+        .replace(/\r\n/g, '\n')    // Normalizar quebras do Windows
+        .replace(/\r/g, '\n')      // Normalizar quebras do Mac
+        .replace(/\n{3,}/g, '\n\n') // Limitar quebras múltiplas
+        .trim();
+
+    const shouldTruncateDescription = cleanDescription && cleanDescription.length > 300;
 
     return (
         <div className="space-y-8 sm:space-y-10">
@@ -55,10 +73,10 @@ export default function PropertyDescription({
                         <div className="absolute inset-0 bg-gradient-to-r from-slate-50/30 via-transparent to-slate-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
 
                         <div className="relative prose prose-slate max-w-none">
-                            <p className="text-sm sm:text-base lg:text-lg text-slate-700 leading-relaxed sm:leading-loose font-medium">
+                            <p className="text-sm sm:text-base lg:text-lg text-slate-700 leading-relaxed sm:leading-loose font-medium whitespace-pre-line">
                                 {shouldTruncateDescription && !isDescriptionExpanded
-                                    ? `${description.substring(0, 200)}...`
-                                    : description
+                                    ? `${cleanDescription.substring(0, 300)}...`
+                                    : cleanDescription
                                 }
                             </p>
                         </div>

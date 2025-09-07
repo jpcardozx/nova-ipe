@@ -8,7 +8,7 @@ import {
     MapPin, Bed, Bath, Ruler, Heart, Eye, Star, ArrowRight,
     Car, Wifi, Droplets, Trees, Zap, Shield, Camera
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, formatarMoeda } from '@/lib/utils'
 import type { PropertyData } from '@/app/types/property'
 
 interface PropertyCardProps {
@@ -135,7 +135,7 @@ function PropertyCard({
                 <div className="flex items-center justify-between">
                     <div>
                         <span className="text-2xl font-bold text-blue-600">
-                            R$ {(property.preco || property.price)?.toLocaleString('pt-BR')}
+                            {formatarMoeda(property.preco || property.price || 0)}
                         </span>
                         {property.finalidade === 'Aluguel' && (
                             <span className="text-gray-500 text-sm">/mês</span>

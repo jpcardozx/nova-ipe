@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import Footer from '@sections/Footer';
 import Valor from '@sections/Valor';
 import { PropertyCardUnified } from '@/app/components/ui/property/PropertyCardUnified';
-import { getImoveisParaVenda } from '@lib/sanity/fetchImoveis';
+import { getImoveisParaVenda } from '../../lib/sanity/fetchImoveis';
 import type { ImovelClient } from '../../src/types/imovel-client';
 import { Search, Filter, MapPin, TrendingUp, Building2, Award } from 'lucide-react';
 
@@ -110,8 +110,8 @@ export default function ComprarPage() {
                                         key={filtro.id}
                                         onClick={() => setFiltroAtivo(filtro.id)}
                                         className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${filtroAtivo === filtro.id
-                                                ? 'bg-amber-500 text-white shadow-lg'
-                                                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                            ? 'bg-amber-500 text-white shadow-lg'
+                                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                                             }`}
                                     >
                                         <Icon className="w-4 h-4" />

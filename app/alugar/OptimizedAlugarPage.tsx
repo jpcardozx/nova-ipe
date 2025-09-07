@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import dynamic from 'next/dynamic';
-import { getImoveisParaAlugar } from '@lib/sanity/fetchImoveis';
+import { getRentalProperties, transformPropertyToImovelClient } from '../../lib/sanity/queries';
 import { useInView } from 'react-intersection-observer';
 import type { ImovelClient } from '../../src/types/imovel-client';
 import { OptimizedIcons } from '@/app/utils/optimized-icons';
@@ -79,7 +79,7 @@ export default function OptimizedAlugarPage() {
         const fetchImoveis = async () => {
             try {
                 const startTime = performance.now();
-                const data = await getImoveisParaAlugar();
+                const data = await getRentalProperties();
                 const fetchTime = performance.now() - startTime;
 
                 // Log performance metric for analysis
@@ -88,7 +88,8 @@ export default function OptimizedAlugarPage() {
                 }
 
                 // Process data with optimized memory usage
-                setImoveis(data);
+                const imoveisClient = data.map(transformPropertyToImovelClient);
+                setImoveis(imoveisClient);
             } catch (err) {
                 console.error('Erro ao buscar imóveis:', err);
                 setError(err instanceof Error ? err.message : 'Erro ao carregar imóveis');
@@ -147,7 +148,7 @@ export default function OptimizedAlugarPage() {
                         {/* Badge Premium */}
                         <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-200 rounded-full text-amber-800 font-medium mb-6">
                             <OptimizedIcons.MapPin className="w-4 h-4" />
-                            <span>Seleção Premium • Guararema & Região</span>
+                            <span>Guararema & Região</span>
                         </div>
 
                         <h1 className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-700 bg-clip-text text-transparent mb-6">
@@ -188,8 +189,11 @@ export default function OptimizedAlugarPage() {
                                 onClick={() => {
                                     setIsLoading(true);
                                     setError(null);
-                                    getImoveisParaAlugar()
-                                        .then(data => setImoveis(data))
+                                    getRentalProperties()
+                                        .then(data => {
+                                            const imoveisClient = data.map(transformPropertyToImovelClient);
+                                            setImoveis(imoveisClient);
+                                        })
                                         .catch(err => setError(err instanceof Error ? err.message : 'Erro ao carregar'))
                                         .finally(() => setIsLoading(false));
                                 }}

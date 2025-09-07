@@ -18,6 +18,7 @@ export default defineConfig({
   title: 'Nova Ipê - CMS',
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
+  basePath: '/studio',
   plugins: [
     deskTool(),
     ...(visionTool ? [visionTool()] : [])

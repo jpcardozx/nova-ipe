@@ -1,7 +1,7 @@
 import React from 'react';
 // file: app/components/server/PropertyShowcaseServer.tsx
 import { Suspense } from 'react';
-import { getImoveisDestaque, getImoveisAluguel } from '@/lib/queries';
+import { getImoveisDestaque, getImoveisAluguel } from '../../../lib/sanity/queries';
 import { normalizeDocuments } from '@/lib/sanity-utils';
 import { UnifiedLoading } from '../ui/UnifiedComponents';
 import { transformPropertyData } from '@/lib/property-transformers';

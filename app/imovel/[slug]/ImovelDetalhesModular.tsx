@@ -10,10 +10,13 @@ import type { ImovelClient as ImovelDataType } from '@/src/types/imovel-client';
 // Importar todos os componentes modulares
 import PropertyHeader from './components/PropertyHeader';
 import PropertyGallery from './components/PropertyGallery';
+import PropertyGalleryMobile from './components/PropertyGalleryMobile';
 import PropertyMainInfo from './components/PropertyMainInfo';
 import PropertyBadges from './components/PropertyBadges';
 import PropertyFeatures from './components/PropertyFeatures';
 import PropertyDescription from './components/PropertyDescription';
+import PropertyDetails from './components/PropertyDetails';
+import LocationInfo from './components/LocationInfo';
 import PropertyContact from './components/PropertyContact';
 import RelatedProperties from './components/RelatedProperties';
 
@@ -86,8 +89,25 @@ const ImovelDetalhesModular: FC<ImovelDetalhesProps> = ({
         );
     }
 
-    // Preparar dados para os componentes
-    const images = unifiedProperty.gallery?.map(img => img.url) || [unifiedProperty.mainImage?.url].filter(Boolean) || [];
+    // Preparar todas as imagens - incluir imagem principal + galeria
+    const images = (() => {
+        const galleryUrls = unifiedProperty.gallery?.map(img => img.url).filter(Boolean) || [];
+        const mainImageUrl = unifiedProperty.mainImage?.url;
+
+        // Combinar imagem principal com galeria, evitando duplicatas
+        const allImages: string[] = [];
+
+        // Adicionar imagem principal primeiro
+        if (mainImageUrl && !galleryUrls.includes(mainImageUrl)) {
+            allImages.push(mainImageUrl);
+        }
+
+        // Adicionar galeria
+        allImages.push(...galleryUrls);
+
+        // Se não tem nenhuma imagem, retornar array vazio
+        return allImages.length > 0 ? allImages : [];
+    })();
 
     const relatedPropertiesData = unifiedRelated.map(prop => ({
         id: prop.id,
@@ -123,15 +143,23 @@ const ImovelDetalhesModular: FC<ImovelDetalhesProps> = ({
                 }}
             />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
-                <div className="lg:grid lg:grid-cols-3 lg:gap-8 space-y-6 lg:space-y-0">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+                <div className="lg:grid lg:grid-cols-12 lg:gap-8 space-y-8 lg:space-y-0">
                     {/* Coluna Principal */}
-                    <div className="lg:col-span-2 space-y-6 sm:space-y-8">
-                        {/* Galeria de Imagens */}
-                        <PropertyGallery
-                            images={images}
-                            propertyTitle={unifiedProperty.title}
-                        />
+                    <div className="lg:col-span-8 space-y-6 sm:space-y-8">
+                        {/* Galeria de Imagens - Mobile First */}
+                        <div className="block sm:hidden">
+                            <PropertyGalleryMobile
+                                images={images}
+                                propertyTitle={unifiedProperty.title}
+                            />
+                        </div>
+                        <div className="hidden sm:block">
+                            <PropertyGallery
+                                images={images}
+                                propertyTitle={unifiedProperty.title}
+                            />
+                        </div>
 
                         {/* Informações Principais */}
                         <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6 lg:p-8 space-y-6">
@@ -153,6 +181,7 @@ const ImovelDetalhesModular: FC<ImovelDetalhesProps> = ({
                             {/* Características do Imóvel */}
                             <PropertyFeatures
                                 area={unifiedProperty.area}
+                                totalArea={unifiedProperty.totalArea}
                                 bedrooms={unifiedProperty.bedrooms}
                                 bathrooms={unifiedProperty.bathrooms}
                                 parkingSpots={unifiedProperty.parkingSpots}
@@ -164,6 +193,13 @@ const ImovelDetalhesModular: FC<ImovelDetalhesProps> = ({
                             description={unifiedProperty.description}
                         />
 
+                        {/* Informações de Localização */}
+                        <LocationInfo
+                            city={unifiedProperty.city}
+                            location={unifiedProperty.location}
+                            address={unifiedProperty.address}
+                        />
+
                         {/* Imóveis Relacionados */}
                         {relatedPropertiesData.length > 0 && (
                             <RelatedProperties
@@ -173,14 +209,27 @@ const ImovelDetalhesModular: FC<ImovelDetalhesProps> = ({
                         )}
                     </div>
 
-                    {/* Sidebar de Contato */}
-                    <div className="lg:col-span-1">
+                    {/* Sidebar de Contato e Detalhes */}
+                    <div className="lg:col-span-4 space-y-6">
                         <PropertyContact
                             phoneNumber="+5511981845016"
                             whatsappNumber="11981845016"
                             price={unifiedProperty.price}
                             propertyId={unifiedProperty.id}
                             propertyTitle={unifiedProperty.title}
+                        />
+                        
+                        {/* Informações Detalhadas movidas para sidebar */}
+                        <PropertyDetails
+                            acceptsFinancing={unifiedProperty.acceptsFinancing}
+                            documentationOk={unifiedProperty.documentationOk}
+                            features={unifiedProperty.features}
+                            propertyTypeDetail={unifiedProperty.propertyTypeDetail}
+                            publishedDate={unifiedProperty.publishedDate}
+                            hasGarden={unifiedProperty.hasGarden}
+                            hasPool={unifiedProperty.hasPool}
+                            address={unifiedProperty.address}
+                            codigo={unifiedProperty.codigo}
                         />
                     </div>
                 </div>

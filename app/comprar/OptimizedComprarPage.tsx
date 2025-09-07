@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense, useCallback } from 'react';
 import dynamic from 'next/dynamic';
-import { getImoveisParaVenda } from '@lib/sanity/fetchImoveis';
+import { getImoveisParaVenda } from '../../lib/sanity/fetchImoveis';
 import type { ImovelClient } from '../../src/types/imovel-client';
 import { OptimizedIcons } from '@/app/utils/optimized-icons';
 import { usePathname } from 'next/navigation';

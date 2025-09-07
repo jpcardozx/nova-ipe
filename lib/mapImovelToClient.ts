@@ -64,17 +64,20 @@ export function mapImovelToClient(imovel: any): ImovelClient {
         _type: imovel._type || 'imovel',
         titulo: imovel.titulo || '',
         slug: imovel.slug?.current || '',
+        codigo: imovel.codigo || imovel.codigoInterno || '000000',
         preco: imovel.preco || 0,
         finalidade: imovel.finalidade || 'Venda',
         destaque: imovel.destaque || false,
         emAlta: imovel.emAlta || false, // Nova funcionalidade: Imóveis em Alta
         descricao: imovel.descricao || '',
         mapaLink: imovel.mapaLink || '',
+        dataPublicacao: imovel.dataPublicacao || imovel._createdAt || '',
 
         // Características principais - CAMPOS CORRIGIDOS
         dormitorios: imovel.dormitorios || imovel.quartos || 0,
         banheiros: imovel.banheiros || 0,
-        areaUtil: imovel.areaUtil || imovel.area || 0,
+        areaUtil: imovel.areaUtil || 0,
+        area: imovel.area || imovel.areaTotal || 0, // área total
         vagas: imovel.vagas || 0,
 
         // Dados de localização - CAMPOS CORRIGIDOS
@@ -88,6 +91,11 @@ export function mapImovelToClient(imovel: any): ImovelClient {
         // Flags
         aceitaFinanciamento: imovel.aceitaFinanciamento || false,
         documentacaoOk: imovel.documentacaoOk || false,
+
+        // Características e recursos do imóvel
+        caracteristicas: imovel.caracteristicas || [],
+        possuiJardim: imovel.possuiJardim || false,
+        possuiPiscina: imovel.possuiPiscina || false,
 
         // Categoria
         categoria: imovel.categoria ? {

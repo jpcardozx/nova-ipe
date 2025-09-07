@@ -11,17 +11,11 @@ import MobileFirstHeroClean from './components/MobileFirstHeroClean';
 import { ProcessedProperty } from './types/property';
 import { transformPropertiesArrayToPremium } from './utils/property-transformer';
 import type { ImovelClient } from '../src/types/imovel-client';
+import { LazyComponent } from '../lib/hooks/useLazyLoad';
 
-// Importando os componentes premium
-const DestaquesVendaPremium = dynamic(() => import('./sections/DestaquesVendaPremium'), {
-    ssr: true,
-    loading: () => <UnifiedLoading height="500px" title="Carregando imóveis para venda..." />
-});
-
-const SecaoImoveisParaAlugarPremium = dynamic(() => import('./sections/SecaoImoveisParaAlugarPremium'), {
-    ssr: true,
-    loading: () => <UnifiedLoading height="500px" title="Carregando imóveis para aluguel..." />
-});
+// Importação direta sem dynamic - props já têm os dados
+import DestaquesVendaPremium from './sections/DestaquesVendaPremium';
+import SecaoImoveisParaAlugarPremium from './sections/SecaoImoveisParaAlugarPremium';
 
 const ValorAprimorado = dynamic(() => import('./sections/ValorAprimoradoV4'), {
     loading: () => <UnifiedLoading height="500px" title="Carregando..." />,
@@ -44,46 +38,65 @@ interface HomePageClientProps {
     propertiesForSale: ImovelClient[];
     propertiesForRent: ImovelClient[];
     featuredProperties: ImovelClient[];
-    hotProperties?: ImovelClient[]; // Nova prop para imóveis em alta
 }
 
 export default function HomePageClient({
     propertiesForSale,
     propertiesForRent,
     featuredProperties,
-    hotProperties = [] // Default vazio para imóveis em alta
 }: HomePageClientProps) {
-    const [isLoaded, setIsLoaded] = useState(false);
-    useEffect(() => {
-        setIsLoaded(true);
-    }, []);
 
     return (
         <OptimizationProvider>
             <WebVitalsOptimizer />
             {/* Hero sem navbar sobreposta */}
-            <MobileFirstHeroClean imoveisEmAlta={hotProperties} />
+            <MobileFirstHeroClean imoveisEmAlta={featuredProperties} />
             <BlocoExploracaoGuararema />
 
             {/* Conteúdo principal com espaçamento otimizado */}
-            <main className="space-y-8 lg:space-y-12">
+            <main>
                 {/* Seção de Imóveis para Venda - Sistema Premium */}
-                <DestaquesVendaPremium />
+                <DestaquesVendaPremium properties={propertiesForSale} />
 
                 {/* Apresentação Institucional - IpeConcept original */}
-                <IpeConcept />
+                <LazyComponent 
+                    rootMargin="200px 0px"
+                    fallback={<div className="h-96 bg-gray-50 animate-pulse" />}
+                >
+                    <IpeConcept />
+                </LazyComponent>
 
                 {/* Seção de Imóveis para Aluguel - Sistema Premium */}
-                <SecaoImoveisParaAlugarPremium />
+                <LazyComponent 
+                    rootMargin="150px 0px"
+                    fallback={<div className="h-64 bg-gray-50 animate-pulse" />}
+                >
+                    <SecaoImoveisParaAlugarPremium properties={propertiesForRent} />
+                </LazyComponent>
 
                 {/* Análise de Mercado */}
-                <MarketAnalysisSection />
+                <LazyComponent 
+                    rootMargin="200px 0px"
+                    fallback={<div className="h-80 bg-gray-50 animate-pulse" />}
+                >
+                    <MarketAnalysisSection />
+                </LazyComponent>
 
                 {/* Seção de Precificação */}
-                <ValorAprimorado />
+                <LazyComponent 
+                    rootMargin="200px 0px"
+                    fallback={<div className="h-96 bg-gray-50 animate-pulse" />}
+                >
+                    <ValorAprimorado />
+                </LazyComponent>
 
                 {/* Banner de depoimentos para aumentar a confiança */}
-                <EnhancedTestimonials />
+                <LazyComponent 
+                    rootMargin="100px 0px"
+                    fallback={<div className="h-48 bg-gray-50 animate-pulse" />}
+                >
+                    <EnhancedTestimonials />
+                </LazyComponent>
 
             </main>
 

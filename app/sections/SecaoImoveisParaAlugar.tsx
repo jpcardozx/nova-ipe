@@ -10,8 +10,8 @@ import React, {
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useInView } from 'react-intersection-observer';
-import { ExternalLink, Loader2, AlertTriangle } from 'lucide-react';
-import { getImoveisParaAlugar } from '@lib/sanity/fetchImoveis';
+import { ExternalLink, Loader2, AlertTriangle, Key, Award, Home } from 'lucide-react';
+import { getImoveisParaAlugar } from '../../lib/sanity/fetchImoveis';
 import type { ImovelClient as Imovel } from '../../src/types/imovel-client';
 import PropertyCardPremium from '@/app/components/PropertyCardPremium';
 import {
@@ -66,18 +66,32 @@ function SectionWrapper({
     children: React.ReactNode;
 }) {
     return (
-        <section className="relative py-16 bg-gradient-to-b from-blue-50 to-white overflow-hidden">
+        <section className="relative py-16 bg-gradient-to-br from-slate-50 via-green-50/20 to-emerald-50/30 overflow-hidden">
             <div className="absolute inset-0 opacity-5 pointer-events-none bg-pattern-dots" />
-            <div className="relative z-10 max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-                <header className="mb-12 text-center max-w-3xl mx-auto">
-                    <div className="inline-flex items-center mb-3 px-4 py-1.5 border border-blue-200 bg-blue-50 text-blue-800 rounded-full text-sm font-medium">
-                        {subtitle}
+            <div className="relative z-10 max-w-7xl mx-auto px-6">
+                {/* Header Premium S-Tier */}
+                <div className="text-center mb-16">
+                    {/* Badge S-Tier */}
+                    <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-100 to-green-100 border border-emerald-200/50 text-emerald-800 px-5 py-2.5 rounded-full text-sm font-semibold mb-6 shadow-sm">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                        <Key className="w-4 h-4" />
+                        Locações Exclusivas
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                     </div>
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4 text-blue-900">
-                        {title}
+
+                    <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-6 leading-tight">
+                        Imóveis para{' '}
+                        <span className="bg-gradient-to-r from-emerald-600 via-green-500 to-emerald-700 bg-clip-text text-transparent">
+                            Aluguel
+                        </span>
                     </h2>
-                    <p className="text-stone-600 text-lg">{description}</p>
-                </header>
+
+                    <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                        Espaços selecionados em Guararema com{' '}
+                        <span className="font-semibold text-emerald-700">localização privilegiada</span>{' '}
+                        e total conforto para sua família
+                    </p>
+                </div>
                 {children}
             </div>
         </section>
@@ -156,9 +170,9 @@ export default function SecaoImoveisParaAlugar() {
 
     return (
         <SectionWrapper
-            title="Imóveis para aluguel"
-            subtitle="Aluguéis exclusivos"
-            description="Espaços selecionados por localização, qualidade e conforto para toda a família."
+            title=""
+            subtitle=""
+            description=""
         >
             <div ref={sectionRef} tabIndex={0} onKeyDown={handleKeyNav}>
                 {status !== 'success' && (
@@ -166,31 +180,41 @@ export default function SecaoImoveisParaAlugar() {
                 )}                {status === 'success' && data.length > 0 && (
                     <>
                         {/* Grid de Cards Premium */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {(() => {
                                 const unifiedProperties = transformToUnifiedPropertyList(data.slice(0, 6))
-                                return unifiedProperties.map((property) => {
+                                return unifiedProperties.map((property, index) => {
                                     const cardProps = toPropertyCardPremiumProps(property)
                                     return (
                                         <PropertyCardPremium
                                             key={property.id}
                                             {...cardProps}
                                             variant="default"
-                                            className="hover:shadow-xl transition-shadow duration-300"
+                                            className="hover:shadow-xl hover:scale-[1.02] transition-all duration-300 border-0 shadow-md"
                                         />
                                     )
                                 })
                             })()}
                         </div>
 
-                        <div className="mt-12 text-center">
-                            <Link
-                                href="/alugar"
-                                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition font-medium"
-                            >
-                                Ver mais opções para alugar
-                                <ExternalLink className="w-4 h-4" />
-                            </Link>
+                        {/* CTA Section Premium */}
+                        <div className="mt-16 text-center">
+                            <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl p-8 border border-emerald-100/50 shadow-sm">
+                                <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                                    Encontre seu Lar Ideal
+                                </h3>
+                                <p className="text-slate-600 mb-6 max-w-xl mx-auto">
+                                    Explore nossa seleção completa de imóveis para locação em Guararema
+                                </p>
+                                <Link
+                                    href="/alugar"
+                                    className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-xl shadow-lg hover:from-emerald-700 hover:to-green-700 transition-all duration-300 font-semibold"
+                                >
+                                    <Home className="w-5 h-5" />
+                                    Ver Todos os Aluguéis
+                                    <ExternalLink className="w-4 h-4" />
+                                </Link>
+                            </div>
                         </div>
                     </>
                 )}

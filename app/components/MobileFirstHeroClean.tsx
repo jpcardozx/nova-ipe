@@ -11,6 +11,7 @@ import {
 
 // Components
 import PropertyCardPremium from './PropertyCardPremium'
+import HeroStyleCarousel from './HeroStyleCarousel'
 import {
     transformToUnifiedPropertyList,
     toPropertyCardPremiumProps,
@@ -454,98 +455,136 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
                             </div>
                         </div>
 
-                        {/* Properties Grid - Design Premium */}
+                        {/* Properties Carousel - Cards originais do hero com carrossel sutil */}
                         <div className="transition-all duration-500">
                             {imoveisEmAlta.length > 0 ? (
-                                (() => {
-                                    const unifiedProperties = transformToUnifiedPropertyList(imoveisEmAlta.slice(0, 3))
-                                    return (
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                                            {unifiedProperties.map((property, index) => {
-                                                const cardProps = toPropertyCardPremiumProps(property)
-                                                const propertyUrl = `/imovel/${property.slug || property.id}`
-                                                return (
-                                                    <Link
-                                                        key={property.id || index}
-                                                        href={propertyUrl}
-                                                        className="group"
-                                                        aria-label={`Ver detalhes do imóvel ${cardProps.title}`}
-                                                    >
-                                                        <div className="relative bg-gradient-to-br from-slate-900/70 to-slate-800/70 backdrop-blur-xl border border-slate-600/30 rounded-xl overflow-hidden hover:border-amber-400/50 transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-xl group-hover:shadow-amber-500/5 cursor-pointer">
-                                                            {/* Imagem Compacta */}
-                                                            <div className="aspect-[4/3] relative overflow-hidden">
-                                                                <img
-                                                                    src={cardProps.mainImage?.url || '/placeholder-property.jpg'}
-                                                                    alt={cardProps.title}
-                                                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                                                />
-                                                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent"></div>
+                                <HeroStyleCarousel
+                                    title=""
+                                    subtitle=""
+                                    className="py-0 bg-transparent" // Background transparente
+                                    itemsPerView={{ mobile: 1, tablet: 2, desktop: 3 }}
+                                >
+                                    {imoveisEmAlta.map((imovel, index) => {
+                                        // Garantir que slug seja sempre uma string
+                                        const slugString = typeof imovel.slug === 'object' && imovel.slug && 'current' in imovel.slug
+                                            ? (imovel.slug as any).current
+                                            : typeof imovel.slug === 'string'
+                                                ? imovel.slug
+                                                : `imovel-${index}`
 
-                                                                {/* Badge de Preço Compacto */}
-                                                                <div className="absolute top-2 left-2">
-                                                                    <div className="bg-gradient-to-r from-amber-500/90 to-amber-600/90 backdrop-blur-sm text-white px-2 py-1 rounded-lg text-xs font-bold shadow-lg border border-amber-300/20">
-                                                                        {typeof cardProps.price === 'number'
-                                                                            ? `R$ ${cardProps.price.toLocaleString('pt-BR')}`
-                                                                            : cardProps.price
-                                                                        }
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                        const propertyUrl = `/imovel/${slugString}`
 
-                                                            {/* Informações Compactas */}
-                                                            <div className="p-3">
-                                                                <h3 className="text-white font-bold text-sm mb-2 line-clamp-1 leading-tight">
-                                                                    {cardProps.title}
-                                                                </h3>
+                                        // Melhor tratamento de imagens com múltiplos fallbacks
+                                        const getImageUrl = () => {
+                                            // Tentar múltiplas fontes de imagem
+                                            if (imovel.galeria && imovel.galeria.length > 0 && imovel.galeria[0]?.imagemUrl) {
+                                                return imovel.galeria[0].imagemUrl
+                                            }
+                                            if (imovel.imagem?.imagemUrl) {
+                                                return imovel.imagem.imagemUrl
+                                            }
+                                            // Fallback para placeholder
+                                            return '/images/placeholder-property.jpg'
+                                        }
 
-                                                                <div className="flex items-center gap-1 text-slate-300 text-xs mb-3">
-                                                                    <MapPin className="w-3 h-3 text-amber-400" />
-                                                                    <span className="line-clamp-1">{cardProps.location}</span>
-                                                                </div>
+                                        return (
+                                            <Link
+                                                key={imovel.id || index}
+                                                href={propertyUrl}
+                                                className="group"
+                                                aria-label={`Ver detalhes do imóvel ${imovel.titulo}`}
+                                            >
+                                                <div className="relative bg-gradient-to-br from-slate-900/70 to-slate-800/70 backdrop-blur-xl border border-slate-600/30 rounded-xl overflow-hidden hover:border-amber-400/50 transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-xl group-hover:shadow-amber-500/5 cursor-pointer">
+                                                    {/* Imagem Compacta */}
+                                                    <div className="aspect-[4/3] relative overflow-hidden">
+                                                        <img
+                                                            src={getImageUrl()}
+                                                            alt={imovel.titulo || 'Imóvel em destaque'}
+                                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                            onError={(e) => {
+                                                                // Fallback em caso de erro
+                                                                const target = e.target as HTMLImageElement
+                                                                target.src = '/images/placeholder-property.jpg'
+                                                            }}
+                                                            loading="lazy"
+                                                        />
+                                                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent"></div>
 
-                                                                {/* Características Compactas com Vagas */}
-                                                                <div className="flex items-center justify-between text-xs">
-                                                                    <div className="flex items-center gap-3 text-slate-400">
-                                                                        {cardProps.area && (
-                                                                            <div className="flex items-center gap-1">
-                                                                                <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
-                                                                                <span className="font-medium">{cardProps.area}m²</span>
-                                                                            </div>
-                                                                        )}
-                                                                        {cardProps.bedrooms && cardProps.bedrooms > 0 && (
-                                                                            <div className="flex items-center gap-1 text-blue-400">
-                                                                                <Bed className="w-3 h-3" />
-                                                                                <span className="font-medium">{cardProps.bedrooms}</span>
-                                                                            </div>
-                                                                        )}
-                                                                        {cardProps.bathrooms && cardProps.bathrooms > 0 && (
-                                                                            <div className="flex items-center gap-1 text-green-400">
-                                                                                <Bath className="w-3 h-3" />
-                                                                                <span className="font-medium">{cardProps.bathrooms}</span>
-                                                                            </div>
-                                                                        )}
-                                                                        {/* Vagas de Garagem */}
-                                                                        {cardProps.parkingSpots && cardProps.parkingSpots > 0 && (
-                                                                            <div className="flex items-center gap-1 text-purple-400">
-                                                                                <Car className="w-3 h-3" />
-                                                                                <span className="font-medium">{cardProps.parkingSpots}</span>
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-
-                                                                    {/* CTA Menor */}
-                                                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                                        <ArrowRight className="w-3 h-3 text-amber-400" />
-                                                                    </div>
-                                                                </div>
+                                                        {/* Badge de Preço Compacto */}
+                                                        <div className="absolute top-2 left-2">
+                                                            <div className="bg-gradient-to-r from-amber-500/90 to-amber-600/90 backdrop-blur-sm text-white px-2 py-1 rounded-lg text-xs font-bold shadow-lg border border-amber-300/20">
+                                                                {imovel.preco
+                                                                    ? `R$ ${imovel.preco.toLocaleString('pt-BR')}`
+                                                                    : 'Consulte-nos'
+                                                                }
                                                             </div>
                                                         </div>
-                                                    </Link>
-                                                )
-                                            })}
-                                        </div>
-                                    )
-                                })()
+
+                                                        {/* Badge "EM ALTA" se aplicável */}
+                                                        {imovel.emAlta && (
+                                                            <div className="absolute top-2 right-2">
+                                                                <div className="bg-gradient-to-r from-red-500/90 to-orange-500/90 backdrop-blur-sm text-white px-2 py-1 rounded-lg text-xs font-bold shadow-lg border border-red-300/20 flex items-center gap-1">
+                                                                    <TrendingUp className="w-3 h-3" />
+                                                                    EM ALTA
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Informações Compactas */}
+                                                    <div className="p-3">
+                                                        <h3 className="text-white font-bold text-sm mb-2 line-clamp-1 leading-tight">
+                                                            {imovel.titulo || 'Imóvel em Destaque'}
+                                                        </h3>
+
+                                                        <div className="flex items-center gap-1 text-slate-300 text-xs mb-3">
+                                                            <MapPin className="w-3 h-3 text-amber-400" />
+                                                            <span className="line-clamp-1">
+                                                                {imovel.cidade || imovel.bairro || 'Guararema, SP'}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Características Compactas com Vagas */}
+                                                        <div className="flex items-center justify-between text-xs">
+                                                            <div className="flex items-center gap-3 text-slate-400">
+                                                                {imovel.areaUtil && (
+                                                                    <div className="flex items-center gap-1">
+                                                                        <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
+                                                                        <span className="font-medium">{imovel.areaUtil}m²</span>
+                                                                    </div>
+                                                                )}
+                                                                {imovel.dormitorios && imovel.dormitorios > 0 && (
+                                                                    <div className="flex items-center gap-1 text-blue-400">
+                                                                        <Bed className="w-3 h-3" />
+                                                                        <span className="font-medium">{imovel.dormitorios}</span>
+                                                                    </div>
+                                                                )}
+                                                                {imovel.banheiros && imovel.banheiros > 0 && (
+                                                                    <div className="flex items-center gap-1 text-green-400">
+                                                                        <Bath className="w-3 h-3" />
+                                                                        <span className="font-medium">{imovel.banheiros}</span>
+                                                                    </div>
+                                                                )}
+                                                                {/* Vagas de Garagem */}
+                                                                {imovel.vagas && imovel.vagas > 0 && (
+                                                                    <div className="flex items-center gap-1 text-purple-400">
+                                                                        <Car className="w-3 h-3" />
+                                                                        <span className="font-medium">{imovel.vagas}</span>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+
+                                                            {/* CTA Menor */}
+                                                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                                <ArrowRight className="w-3 h-3 text-amber-400" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </Link>
+                                        )
+                                    })}
+                                </HeroStyleCarousel>
                             ) : (
                                 <div className="text-center py-8 sm:py-12">
                                     <div className="bg-gradient-to-br from-slate-900/60 to-slate-800/60 backdrop-blur-xl rounded-2xl border border-amber-400/20 p-6 sm:p-8 max-w-md mx-auto shadow-2xl">

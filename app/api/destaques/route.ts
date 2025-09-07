@@ -1,10 +1,10 @@
 // app/api/destaques/route.ts
 import { NextResponse } from 'next/server'
-import { getImovelEmDestaque } from '../../../lib/sanity/fetchImoveis'
+import { getFeaturedProperties, getAllProperties, Property } from '../../../lib/sanity/queries'
 
 // Função para normalizar a estrutura da imagem
-function normalizarImageAPI(imovel: any) {
-    const imovelProcessado = { ...imovel }
+function normalizarImageAPI(imovel: Property) {
+    const imovelProcessado = { ...imovel } as any
 
     if (imovel.imagem?.asset?.url) {
         imovelProcessado.imagemUrl = imovel.imagem.asset.url
@@ -26,7 +26,7 @@ export async function GET(request: Request) {
         const destaque = searchParams.get('destaque')
         
         // Buscar todos os imóveis em destaque primeiro
-        let imoveis = await getImovelEmDestaque()
+        let imoveis = await getFeaturedProperties()
         
         // Se não há imóveis em destaque e foi solicitado uma finalidade específica, 
         // buscar todos os imóveis dessa finalidade
@@ -34,11 +34,10 @@ export async function GET(request: Request) {
             console.log('📋 Nenhum imóvel em destaque encontrado, buscando todos os imóveis da finalidade:', finalidade)
             
             // Importar as funções específicas por finalidade
-            const { getTodosImoveis } = await import('../../../lib/sanity/fetchImoveis')
-            const todosImoveis = await getTodosImoveis()
+            const todosImoveis = await getAllProperties()
             
             // Filtrar por finalidade
-            imoveis = todosImoveis.filter(imovel => 
+            imoveis = todosImoveis.filter((imovel: Property) => 
                 imovel.finalidade && imovel.finalidade.toLowerCase() === finalidade.toLowerCase()
             ).slice(0, 12) // Limitar a 12 imóveis
         }

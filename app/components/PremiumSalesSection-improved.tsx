@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import PropertyCardUnified from '@/app/components/ui/property/PropertyCardUnified';
-import { getImoveisDestaqueVenda } from '@/lib/queries';
+import { getImoveisDestaqueVenda } from '../../lib/sanity/queries';
 import { loadImage } from '@/lib/enhanced-image-loader';
 import { extractSlugString } from '@/app/PropertyTypeFix';
 import type { ImovelClient } from '@/src/types/imovel-client';

@@ -1,121 +1,798 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import Footer from '../sections/Footer'
+import { useState, useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { supabase } from '@/lib/supabase'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Image from 'next/image'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { PillSelector } from '@/components/ui/pill-selector'
+import { ArrowRight, Building2, User, AlertTriangle, Eye, EyeOff, UserPlus, ArrowLeft, Sparkles } from 'lucide-react'
+import { SimpleAuthManager } from '@/lib/auth-simple'
+import { EnhancedAuthManager, type LoginMode } from '@/lib/auth/enhanced-auth-manager'
 
-const AUTH_COOKIE_NAME = 'admin-auth'
+// Schemas
+const loginSchema = z.object({
+  email: z.string().email({ message: 'Email inválido.' }),
+  password: z.string().min(6, { message: 'Senha deve ter pelo menos 6 caracteres.' }),
+})
+
+const signupSchema = z.object({
+  full_name: z.string().min(2, { message: 'Nome muito curto' }),
+  email: z.string().email({ message: 'Email inválido' }),
+  phone: z.string().min(10, { message: 'Telefone inválido' }),
+  department: z.string().min(1, { message: 'Selecione um setor' }),
+  justification: z.string().min(10, { message: 'Conte-nos mais sobre você' }),
+})
+
+type LoginFormValues = z.infer<typeof loginSchema>
+type SignupFormValues = z.infer<typeof signupSchema>
+
+type ViewMode = 'login' | 'signup' | 'success'
+
+const departments = [
+  { value: 'vendas', label: '💼 Vendas', desc: 'Vendas de imóveis' },
+  { value: 'locacao', label: '🏠 Locação', desc: 'Aluguel de imóveis' },
+  { value: 'marketing', label: '📱 Marketing', desc: 'Marketing e divulgação' },
+  { value: 'admin', label: '📊 Administrativo', desc: 'Gestão e administração' },
+]
 
 export default function LoginPage() {
-  const [senha, setSenha] = useState('')
-  const [erro, setErro] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [viewMode, setViewMode] = useState<ViewMode>('login')
+  const [loginMode, setLoginMode] = useState<LoginMode>('dashboard')
+  const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [selectedDepartment, setSelectedDepartment] = useState('')
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const authManager = new SimpleAuthManager()
 
-  const redirecionarParaStudio = useCallback(() => {
-    window.location.assign('/studio')
-  }, [])
+  // Handle URL parameters
+  useEffect(() => {
+    const mode = searchParams?.get('mode') as LoginMode
+    const error = searchParams?.get('error')
 
-  const autenticarSenha = useCallback(async () => {
-    setErro('')
-    setLoading(true)
+    if (mode && (mode === 'dashboard' || mode === 'studio')) {
+      setLoginMode(mode)
+    }
+
+    if (error) {
+      setErrorMessage(getErrorMessageFromCode(error))
+    }
+  }, [searchParams])
+
+  const getErrorMessageFromCode = (errorCode: string): string => {
+    switch (errorCode) {
+      case 'AUTH_REQUIRED':
+        return 'Autenticação necessária para acessar o Studio.'
+      case 'NO_AUTH_TOKEN':
+        return 'Sessão expirada. Faça login novamente.'
+      case 'INVALID_TOKEN':
+        return 'Token de autenticação inválido.'
+      case 'CONFIG_ERROR':
+        return 'Erro de configuração do sistema.'
+      case 'VERIFICATION_ERROR':
+        return 'Erro na verificação de autenticação.'
+      default:
+        return 'Erro de autenticação. Tente novamente.'
+    }
+  }
+
+  // Login form
+  const loginForm = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+  })
+
+  // Signup form
+  const signupForm = useForm<SignupFormValues>({
+    resolver: zodResolver(signupSchema),
+    mode: 'onChange'
+  })
+
+  const onLoginSubmit = async (data: LoginFormValues) => {
+    console.log('🔄 Iniciando login para:', data.email)
+    setIsLoading(true)
+    setErrorMessage('')
 
     try {
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ senha }),
+      console.log('📡 Tentando autenticação no Supabase...')
+
+      // Authenticate with Supabase
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
       })
 
-      if (res.ok) {
-        redirecionarParaStudio()
-      } else {
-        setErro('Senha incorreta. Verifique e tente novamente.')
+      if (authError) {
+        console.error('❌ Erro de login:', authError)
+        console.error('❌ Código do erro:', authError.status)
+        console.error('❌ Mensagem completa:', authError.message)
+
+        // Handle different error types
+        if (authError.message.includes('Invalid login credentials')) {
+          setErrorMessage('❌ Credenciais inválidas. Verifique seu email e senha.')
+        } else if (authError.message.includes('Email not confirmed')) {
+          setErrorMessage('📧 Email não confirmado. Verifique sua caixa de entrada.')
+        } else if (authError.message.includes('Too many requests')) {
+          setErrorMessage('⏰ Muitas tentativas. Tente novamente em alguns minutos.')
+        } else if (authError.message.includes('signup')) {
+          setErrorMessage('🚫 Usuário não encontrado. Use "Solicitar acesso" para se cadastrar.')
+        } else {
+          setErrorMessage(`❌ Erro: ${authError.message}`)
+        }
+        return
       }
-    } catch {
-      setErro('Erro de rede. Tente novamente em instantes.')
+
+      if (!authData.user) {
+        console.error('❌ Usuário não retornado após autenticação')
+        setErrorMessage('❌ Erro na autenticação. Tente novamente.')
+        return
+      }
+
+      console.log('✅ Autenticação bem-sucedida para:', authData.user.email)
+
+      // Check if user has a profile, create one if needed
+      let profile = null
+
+      try {
+        console.log('🔍 Verificando profile do usuário...')
+
+        const { data: existingProfile, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', authData.user.id)
+          .single()
+
+        if (profileError && profileError.code !== 'PGRST116') {
+          console.warn('⚠️ Erro ao buscar profile:', profileError.message)
+        }
+
+        if (existingProfile) {
+          console.log('✅ Profile encontrado:', existingProfile.email)
+          profile = existingProfile
+        } else {
+          console.log('🔧 Criando profile para usuário...')
+
+          // Create a basic profile for the user
+          const userEmail = authData.user.email || ''
+          const { data: newProfile, error: createError } = await supabase
+            .from('profiles')
+            .insert([{
+              id: authData.user.id,
+              email: userEmail,
+              full_name: authData.user.user_metadata?.full_name || userEmail.split('@')[0],
+              role: 'user',
+              is_active: true,
+              is_approved: true
+            }])
+            .select()
+            .single()
+
+          if (createError) {
+            console.warn('⚠️ Não foi possível criar profile, continuando com dados básicos:', createError.message)
+            // Proceed with basic user data
+            profile = {
+              id: authData.user.id,
+              email: userEmail,
+              full_name: userEmail.split('@')[0],
+              role: 'user'
+            }
+          } else {
+            console.log('✅ Profile criado com sucesso')
+            profile = newProfile
+          }
+        }
+      } catch (error) {
+        console.warn('⚠️ Erro na verificação de profile, continuando com autenticação básica:', error)
+        const userEmail = authData.user.email || ''
+        profile = {
+          id: authData.user.id,
+          email: userEmail,
+          full_name: userEmail.split('@')[0],
+          role: 'user'
+        }
+      }
+
+      console.log('✅ Login bem-sucedido para usuário:', profile.email)
+
+      // Log successful login (optional - continue even if this fails)
+      try {
+        const { error: logError } = await supabase
+          .from('login_attempts')
+          .insert([{
+            email: data.email,
+            success: true,
+            attempted_at: new Date().toISOString()
+          }])
+
+        if (logError) {
+          console.warn('⚠️ Não foi possível registrar tentativa de login:', logError.message)
+        }
+      } catch (logError) {
+        console.warn('⚠️ Não foi possível registrar tentativa de login:', logError instanceof Error ? logError.message : String(logError))
+      }
+
+      // Redirect based on mode
+      console.log('🚀 Redirecionando para:', loginMode === 'studio' ? '/structure' : '/dashboard')
+
+      if (loginMode === 'studio') {
+        router.push('/structure')
+      } else {
+        router.push('/dashboard')
+      }
+
+    } catch (error) {
+      console.error('❌ Erro crítico no login:', error)
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      setErrorMessage(`❌ Erro interno: ${errorMessage}`)
     } finally {
-      setLoading(false)
+      console.log('🏁 Finalizando processo de login')
+      setIsLoading(false)
     }
-  }, [senha, redirecionarParaStudio])
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    autenticarSenha()
   }
 
-  const handleLogout = async () => {
-    await fetch('/api/logout', { method: 'POST' })
-    router.refresh()
+  const onSignupSubmit = async (data: SignupFormValues) => {
+    setIsLoading(true)
+    setErrorMessage('')
+
+    try {
+      // Check if email already exists in access requests
+      const { data: existingRequest } = await supabase
+        .from('access_requests')
+        .select('id, status')
+        .eq('email', data.email)
+        .single()
+
+      if (existingRequest) {
+        if (existingRequest.status === 'pending') {
+          setErrorMessage('Já existe uma solicitação pendente para este email.')
+        } else if (existingRequest.status === 'approved') {
+          setErrorMessage('Este email já foi aprovado. Tente fazer login.')
+        } else if (existingRequest.status === 'rejected') {
+          setErrorMessage('Sua solicitação anterior foi rejeitada. Entre em contato com o administrador.')
+        }
+        return
+      }
+
+      // Create access request
+      const { data: newRequest, error: requestError } = await supabase
+        .from('access_requests')
+        .insert([{
+          email: data.email,
+          full_name: data.full_name,
+          phone: data.phone,
+          department: data.department,
+          justification: data.justification,
+          status: 'pending'
+        }])
+        .select()
+        .single()
+
+      if (requestError) {
+        console.error('Error creating access request:', requestError)
+        setErrorMessage('Erro ao criar solicitação. Tente novamente.')
+        return
+      }
+
+      // Log activity
+      await supabase.rpc('log_activity', {
+        p_action: 'access_request_created',
+        p_entity_type: 'access_request',
+        p_entity_id: newRequest.id,
+        p_details: {
+          email: data.email,
+          department: data.department,
+          full_name: data.full_name
+        }
+      })
+
+      // Success
+      setViewMode('success')
+      signupForm.reset()
+      setSelectedDepartment('')
+    } catch (error) {
+      console.error('Erro:', error)
+      setErrorMessage('Erro interno. Tente novamente.')
+    } finally {
+      setIsLoading(false)
+    }
   }
+
+  const handleDepartmentSelect = (dept: string) => {
+    setSelectedDepartment(dept)
+    signupForm.setValue('department', dept, { shouldValidate: true })
+  }
+
+  const switchToSignup = () => {
+    setErrorMessage('')
+    setViewMode('signup')
+  }
+
+  const switchToLogin = () => {
+    setErrorMessage('')
+    setViewMode('login')
+  }
+
+  const watchedSignupFields = signupForm.watch()
 
   return (
-    <div className="flex flex-col min-h-screen bg-neutral-50 text-neutral-800"
-      style={{ paddingTop: '80px' }} // Offset para navbar fixa
-    >
+    <div className="relative min-h-screen w-full font-lexend">
+      {/* Background com overlay - sempre presente */}
+      <Image
+        src="/images/login.png"
+        alt="Ipê Imóveis"
+        fill
+        style={{ objectFit: 'cover' }}
+        className="z-0"
+        priority
+      />
+      <div className="absolute inset-0 bg-black bg-opacity-60 bg-gradient-to-t from-black via-transparent to-black" />
 
-      <main className="flex flex-1 items-center justify-center px-4 py-20">
-        <div className="w-full max-w-md p-8 rounded-2xl bg-white shadow-xl border border-neutral-200 space-y-6">
-          <header className="text-center space-y-1">
-            <h1 className="text-2xl font-semibold text-neutral-900">Acesso Restrito</h1>
-            <p className="text-sm text-neutral-500">
-              Área exclusiva para sócios e administradores da Ipê Imóveis
-            </p>
-          </header>
-
-          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            <div>
-              <label htmlFor="senha" className="block text-sm font-medium text-neutral-700 mb-1">
-                Senha de acesso
-              </label>
-              <input
-                id="senha"
-                type="password"
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-                placeholder="••••••••"
-                className="w-full px-4 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 transition-all"
-                required
-                disabled={loading}
-                aria-describedby={erro ? 'erro-senha' : undefined}
-              />
-            </div>
-
-            {erro && (
-              <div
-                id="erro-senha"
-                role="alert"
-                className="text-sm text-red-600 bg-red-50 border border-red-200 p-2 rounded"
+      {/* Container principal */}
+      <div className="relative z-10 flex min-h-screen items-center justify-center p-4 sm:p-6 lg:p-12">
+        <AnimatePresence mode="wait">
+          {/* LOGIN VIEW */}
+          {viewMode === 'login' && (
+            <motion.div
+              key="login"
+              layoutId="auth-card"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
+              className="w-full max-w-md space-y-8 rounded-2xl bg-white/20 p-8 shadow-2xl backdrop-blur-2xl border border-white/30"
+            >
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.1 }}
               >
-                {erro}
-              </div>
-            )}
+                <h2 className="mt-6 bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-center text-4xl font-bold tracking-tight text-transparent font-serif">
+                  Acesse sua Conta
+                </h2>
+                <p className="mt-2 text-center text-sm text-gray-300">
+                  Bem-vindo de volta à Ipê Imóveis.
+                </p>
+              </motion.div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-2 rounded-md text-white bg-emerald-600 hover:bg-emerald-700 transition-all font-medium disabled:opacity-60"
+              <motion.div
+                className="flex justify-center"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                <PillSelector
+                  options={[
+                    { label: 'Dashboard', value: 'dashboard' },
+                    { label: 'Estúdio', value: 'studio' },
+                  ]}
+                  value={loginMode}
+                  onChange={(value) => setLoginMode(value as LoginMode)}
+                />
+              </motion.div>
+
+              <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-6">
+                <motion.div
+                  className="space-y-4"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <div>
+                    <Label htmlFor="email" className="text-gray-200">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="seu@email.com"
+                      {...loginForm.register('email')}
+                      className={`mt-1 bg-white/10 text-white placeholder-white/50 border-white/20 focus:border-amber-400 focus:ring-amber-400 ${loginForm.formState.errors.email ? 'border-red-500' : ''
+                        }`}
+                    />
+                    {loginForm.formState.errors.email && (
+                      <p className="text-red-400 text-sm mt-1">{loginForm.formState.errors.email.message}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="password" className="text-gray-200">Senha</Label>
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Sua senha"
+                        {...loginForm.register('password')}
+                        className={`mt-1 bg-white/10 text-white placeholder-white/50 border-white/20 focus:border-amber-400 focus:ring-amber-400 pr-10 ${loginForm.formState.errors.password ? 'border-red-500' : ''
+                          }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors mt-0.5"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                    {loginForm.formState.errors.password && (
+                      <p className="text-red-400 text-sm mt-1">{loginForm.formState.errors.password.message}</p>
+                    )}
+                  </div>
+                </motion.div>
+
+                {errorMessage && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-red-500/20 border border-red-500/30 rounded-lg p-3 flex items-center gap-2"
+                  >
+                    <AlertTriangle className="h-4 w-4 text-red-400" />
+                    <span className="text-red-300 text-sm">{errorMessage}</span>
+                  </motion.div>
+                )}
+
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button
+                    type="submit"
+                    disabled={isLoading || !loginForm.formState.isValid}
+                    className={`group relative mx-auto flex w-3/4 justify-center shadow-lg transform transition-all duration-300 ${isLoading
+                      ? 'bg-gradient-to-r from-amber-400 to-amber-500 cursor-wait'
+                      : !loginForm.formState.isValid
+                        ? 'bg-gradient-to-r from-gray-500 to-gray-600 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 hover:shadow-amber-500/40'
+                      }`}
+                  >
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                      {isLoading ? (
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                      ) : loginMode === 'dashboard' ? (
+                        <User className="h-5 w-5 text-amber-300 transition-all group-hover:text-white" />
+                      ) : (
+                        <Building2 className="h-5 w-5 text-amber-300 transition-all group-hover:text-white" />
+                      )}
+                    </span>
+                    {isLoading ? (
+                      <span className="flex items-center gap-2">
+                        <span>Autenticando</span>
+                        <span className="animate-pulse">...</span>
+                      </span>
+                    ) : (
+                      loginMode === 'dashboard' ? 'Entrar no Dashboard' : 'Acessar Studio'
+                    )}
+                    {!isLoading && (
+                      <span className="absolute inset-y-0 right-0 flex items-center pr-3">
+                        <ArrowRight className="h-5 w-5 text-amber-300 transition-transform group-hover:translate-x-1 group-hover:text-white" />
+                      </span>
+                    )}
+                  </Button>
+                </motion.div>
+              </form>
+            </motion.div>
+          )}
+
+          {/* SIGNUP VIEW */}
+          {viewMode === 'signup' && (
+            <motion.div
+              key="signup"
+              layoutId="auth-card"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
+              className="w-full max-w-2xl space-y-8 rounded-2xl bg-white/20 p-8 shadow-2xl backdrop-blur-2xl border border-white/30"
             >
-              {loading ? 'Validando acesso...' : 'Acessar painel'}
-            </button>
-          </form>
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.1 }}
+                className="text-center"
+              >
+                <div className="w-16 h-16 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <UserPlus className="h-8 w-8 text-white" />
+                </div>
+                <h2 className="bg-gradient-to-r from-amber-300 to-orange-500 bg-clip-text text-4xl font-bold text-transparent font-serif mb-2">
+                  Junte-se à Equipe
+                </h2>
+                <p className="text-gray-300">
+                  Preencha seus dados para solicitar acesso
+                </p>
+              </motion.div>
 
-          <div className="pt-2 text-center text-xs text-neutral-400 border-t border-neutral-200">
-            Sessão ativa?{' '}
-            <button
-              onClick={handleLogout}
-              className="text-amber-400 hover:underline font-medium"
+              <form onSubmit={signupForm.handleSubmit(onSignupSubmit)} className="space-y-6">
+                <motion.div
+                  className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <div>
+                    <Label htmlFor="full_name" className="text-gray-200">Nome completo</Label>
+                    <Input
+                      id="full_name"
+                      {...signupForm.register('full_name')}
+                      placeholder="João Silva"
+                      className={`mt-1 bg-white/10 text-white placeholder-white/50 border-white/20 focus:border-amber-400 transition-all duration-200 ${signupForm.formState.errors.full_name
+                        ? 'border-red-500'
+                        : watchedSignupFields.full_name
+                          ? 'border-green-400'
+                          : 'border-white/20'
+                        }`}
+                    />
+                    {signupForm.formState.errors.full_name && (
+                      <p className="text-red-400 text-sm mt-1">{signupForm.formState.errors.full_name.message}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="email" className="text-gray-200">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      {...signupForm.register('email')}
+                      placeholder="joao@email.com"
+                      className={`mt-1 bg-white/10 text-white placeholder-white/50 border-white/20 focus:border-amber-400 transition-all duration-200 ${signupForm.formState.errors.email
+                        ? 'border-red-500'
+                        : watchedSignupFields.email
+                          ? 'border-green-400'
+                          : 'border-white/20'
+                        }`}
+                    />
+                    {signupForm.formState.errors.email && (
+                      <p className="text-red-400 text-sm mt-1">{signupForm.formState.errors.email.message}</p>
+                    )}
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <Label htmlFor="phone" className="text-gray-200">WhatsApp</Label>
+                  <Input
+                    id="phone"
+                    {...signupForm.register('phone')}
+                    placeholder="(11) 99999-9999"
+                    className={`mt-1 bg-white/10 text-white placeholder-white/50 border-white/20 focus:border-amber-400 transition-all duration-200 ${signupForm.formState.errors.phone
+                      ? 'border-red-500'
+                      : watchedSignupFields.phone
+                        ? 'border-green-400'
+                        : 'border-white/20'
+                      }`}
+                  />
+                  {signupForm.formState.errors.phone && (
+                    <p className="text-red-400 text-sm mt-1">{signupForm.formState.errors.phone.message}</p>
+                  )}
+                </motion.div>
+
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="space-y-3"
+                >
+                  <Label className="text-gray-200">Em qual setor você vai trabalhar?</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {departments.map((dept, index) => (
+                      <motion.button
+                        key={dept.value}
+                        type="button"
+                        onClick={() => handleDepartmentSelect(dept.value)}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 + index * 0.1 }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className={`p-4 rounded-xl border-2 text-left transition-all duration-200 ${selectedDepartment === dept.value
+                          ? 'border-amber-400 bg-amber-500/20 shadow-lg'
+                          : 'border-white/20 hover:border-amber-300 hover:bg-white/10'
+                          }`}
+                      >
+                        <div className="font-medium text-white">{dept.label}</div>
+                        <div className="text-xs text-gray-300 mt-1">{dept.desc}</div>
+                      </motion.button>
+                    ))}
+                  </div>
+                  {signupForm.formState.errors.department && (
+                    <p className="text-red-400 text-sm">{signupForm.formState.errors.department.message}</p>
+                  )}
+                </motion.div>
+
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                >
+                  <Label htmlFor="justification" className="text-gray-200">Conte um pouco sobre você</Label>
+                  <textarea
+                    id="justification"
+                    {...signupForm.register('justification')}
+                    placeholder="Ex: Sou corretor há 3 anos, especializado em imóveis residenciais..."
+                    rows={3}
+                    className={`mt-1 w-full p-3 rounded-lg bg-white/10 text-white placeholder-white/50 border-2 focus:outline-none transition-all duration-200 resize-none ${signupForm.formState.errors.justification
+                      ? 'border-red-500'
+                      : watchedSignupFields.justification
+                        ? 'border-green-400'
+                        : 'border-white/20 focus:border-amber-400'
+                      }`}
+                  />
+                  {signupForm.formState.errors.justification && (
+                    <p className="text-red-400 text-sm mt-1">{signupForm.formState.errors.justification.message}</p>
+                  )}
+                </motion.div>
+
+                {errorMessage && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-red-500/20 border border-red-500/30 rounded-lg p-3 flex items-center gap-2"
+                  >
+                    <AlertTriangle className="h-4 w-4 text-red-400" />
+                    <span className="text-red-300 text-sm">{errorMessage}</span>
+                  </motion.div>
+                )}
+
+                <motion.div
+                  className="flex flex-col sm:flex-row gap-4 pt-2"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.7 }}
+                >
+                  <motion.button
+                    type="button"
+                    onClick={switchToLogin}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex-1 h-12 rounded-xl border-2 border-white/20 text-white hover:border-amber-300 hover:bg-white/10 transition-all duration-200 flex items-center justify-center gap-2"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Voltar
+                  </motion.button>
+
+                  <motion.button
+                    type="submit"
+                    disabled={isLoading || !signupForm.formState.isValid}
+                    whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                    whileTap={{ scale: isLoading ? 1 : 0.98 }}
+                    className={`flex-1 h-12 rounded-xl font-medium transition-all duration-300 flex items-center justify-center gap-2 ${isLoading || !signupForm.formState.isValid
+                      ? 'bg-gray-500/50 text-gray-300 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg hover:shadow-xl'
+                      }`}
+                  >
+                    {isLoading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                        Enviando...
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="h-4 w-4" />
+                        Solicitar Acesso
+                        <Sparkles className="h-4 w-4" />
+                      </>
+                    )}
+                  </motion.button>
+                </motion.div>
+              </form>
+            </motion.div>
+          )}
+
+          {/* SUCCESS VIEW */}
+          {viewMode === 'success' && (
+            <motion.div
+              key="success"
+              layoutId="auth-card"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
+              className="w-full max-w-md space-y-8 rounded-2xl bg-white/20 p-8 shadow-2xl backdrop-blur-2xl border border-white/30 text-center"
             >
-              Finalizar acesso
-            </button>
-          </div>
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="relative"
+              >
+                <div className="w-20 h-20 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.4 }}
+                  >
+                    <Sparkles className="h-10 w-10 text-white" />
+                  </motion.div>
+                </div>
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ delay: 0.6, type: "spring" }}
+                  className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center"
+                >
+                  <Sparkles className="h-4 w-4 text-yellow-800" />
+                </motion.div>
+              </motion.div>
 
-          <footer className="text-center text-xs text-neutral-400 pt-4">
-            Ipê Imóveis · Painel Administrativo
-          </footer>
-        </div>
-      </main>
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-emerald-300 to-teal-400 bg-clip-text text-transparent font-serif mb-3">
+                  Tudo Certo!
+                </h2>
+                <p className="text-gray-300 text-lg">
+                  Sua solicitação foi enviada com sucesso
+                </p>
+              </motion.div>
 
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-2xl p-6 text-left border border-emerald-400/30"
+              >
+                <h3 className="font-bold text-emerald-300 mb-3 flex items-center gap-2">
+                  <span className="w-2 h-2 bg-emerald-400 rounded-full"></span>
+                  O que acontece agora?
+                </h3>
+                <div className="space-y-2 text-sm text-emerald-200">
+                  <motion.div
+                    className="flex items-center gap-2"
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    <span className="text-emerald-400">1.</span>
+                    <span>Nossa equipe analisa sua solicitação</span>
+                  </motion.div>
+                  <motion.div
+                    className="flex items-center gap-2"
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.6 }}
+                  >
+                    <span className="text-emerald-400">2.</span>
+                    <span>Você recebe um email em até 24h</span>
+                  </motion.div>
+                  <motion.div
+                    className="flex items-center gap-2"
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.7 }}
+                  >
+                    <span className="text-emerald-400">3.</span>
+                    <span>Se aprovado, suas credenciais chegam por WhatsApp</span>
+                  </motion.div>
+                </div>
+              </motion.div>
+
+              <motion.button
+                onClick={switchToLogin}
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.8 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl h-12 flex items-center justify-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Voltar ao Login
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   )
 }

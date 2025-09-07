@@ -1,15 +1,24 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from 'next-sanity';
-import { projectId, dataset, apiVersion } from '@/studio/env';
+import { EnvironmentManager } from '@/lib/environment-config';
 
 // Removed edge runtime to support @sanity/client
 export const revalidate = 3600; // Revalidate hourly
 
+// Get validated Sanity configuration
+const sanityConfig = EnvironmentManager.getSanityConfig();
+
+// Validate configuration before creating client
+if (!sanityConfig.configured) {
+  console.error('API route Sanity configuration is incomplete');
+  console.error(EnvironmentManager.getConfigErrorMessage('Sanity'));
+}
+
 // Create edge-compatible Sanity client
 const sanityClient = createClient({
-  projectId,
-  dataset,
-  apiVersion,
+  projectId: sanityConfig.projectId,
+  dataset: sanityConfig.dataset,
+  apiVersion: sanityConfig.apiVersion,
   useCdn: true, // Use CDN for better edge performance
 });
 

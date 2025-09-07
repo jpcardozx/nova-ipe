@@ -9,7 +9,7 @@ export default function AnimatedCTASection() {
     return (
         <section className="bg-slate-900 relative overflow-hidden py-20">
             {/* Enhanced background patterns */}
-            <div className="absolute inset-0 bg-[url('/images/wood-pattern.svg')] opacity-5"></div>
+            <div className="absolute inset-0 bg-[url('/images/wood-pattern.png')] opacity-5"></div>
             <div className="absolute top-0 left-0 w-full h-full">
                 <div className="absolute top-10 left-10 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl animate-pulse"></div>
                 <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>

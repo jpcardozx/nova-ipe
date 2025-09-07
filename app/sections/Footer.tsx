@@ -11,7 +11,12 @@ export default function Footer() {
 
     useEffect(() => {
         setYear(new Date().getFullYear());
-    }, []); useEffect(() => {
+    }, []);
+
+    useEffect(() => {
+        // Only run on client side
+        if (typeof window === 'undefined') return;
+
         const elements = document.querySelectorAll(".footer-animate");
         const observer = new IntersectionObserver(
             (entries: IntersectionObserverEntry[]) => {

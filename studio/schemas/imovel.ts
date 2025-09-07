@@ -21,6 +21,14 @@ export default defineType({
       description: 'Nome de exibição do imóvel (ex: Casa com quintal em Guararema)'
     }),
     defineField({
+      name: 'slug',
+      title: 'URL amigável',
+      type: 'slug',
+      fieldset: 'info',
+      options: { source: 'titulo', maxLength: 96 },
+      validation: Rule => Rule.required()
+    }),
+    defineField({
       name: 'categoria',
       title: 'Categoria',
       type: 'reference',
@@ -59,9 +67,17 @@ export default defineType({
     }),
     defineField({
       name: 'areaUtil',
-      title: '📐 Área útil (m²)',
+      title: '🏠 Área construída (m²)',
       type: 'number',
-      fieldset: 'info'
+      fieldset: 'info',
+      description: 'Área construída/habitável do imóvel'
+    }),
+    defineField({
+      name: 'areaTotal',
+      title: '📏 Área do terreno (m²)',
+      type: 'number',
+      fieldset: 'info',
+      description: 'Área total do terreno/lote'
     }),
     defineField({
       name: 'vagas',
@@ -125,6 +141,7 @@ export default defineType({
       fieldset: 'info',
       initialValue: true
     }),
+
 
     // MÍDIA E VISUAL
     defineField({
@@ -191,14 +208,6 @@ export default defineType({
 
     // SEO
     defineField({
-      name: 'slug',
-      title: 'URL amigável',
-      type: 'slug',
-      fieldset: 'seo',
-      options: { source: 'titulo', maxLength: 96 },
-      validation: Rule => Rule.required()
-    }),
-    defineField({
       name: 'metaTitle',
       title: 'Título para Google',
       type: 'string',
@@ -260,36 +269,51 @@ export default defineType({
       fieldset: 'controle'
     }),
     defineField({
-      name: 'dataDeExpiracao',
-      title: '⏳ Expira em',
-      type: 'datetime',
-      fieldset: 'controle'
-    }),
-    defineField({
-      name: 'origemLeadSugerida',
-      title: '📡 Origem da campanha',
-      type: 'string',
-      fieldset: 'controle',
-      options: {
-        list: [
-          { title: 'WhatsApp', value: 'whatsapp' },
-          { title: 'Instagram', value: 'instagram' },
-          { title: 'Google Ads', value: 'google' },
-          { title: 'Indicação', value: 'indicacao' }
-        ]
-      }
-    }),
-    defineField({
-      name: 'valorCampanha',
-      title: '📈 Valor da campanha (R$)',
-      type: 'number',
-      fieldset: 'controle'
-    }),
-    defineField({
       name: 'codigoInterno',
       title: '🔐 Código interno',
       type: 'string',
-      fieldset: 'controle'
+      fieldset: 'controle',
+      initialValue: () => {
+        // Gera código de 8 caracteres: 2 letras + 2 especiais + 4 números
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const specials = '@#$%*&+!';
+        const numbers = '0123456789';
+        
+        let code = '';
+        // 2 letras
+        code += letters[Math.floor(Math.random() * letters.length)];
+        code += letters[Math.floor(Math.random() * letters.length)];
+        // 2 caracteres especiais  
+        code += specials[Math.floor(Math.random() * specials.length)];
+        code += specials[Math.floor(Math.random() * specials.length)];
+        // 4 números
+        for(let i = 0; i < 4; i++) {
+          code += numbers[Math.floor(Math.random() * numbers.length)];
+        }
+        
+        return code;
+      },
+      validation: Rule => Rule.required().custom(async (value, context) => {
+        if (!value) return 'Código interno é obrigatório';
+        
+        // Valida formato: 8 caracteres
+        if (value.length !== 8) {
+          return 'Código deve ter exatamente 8 caracteres';
+        }
+        
+        // Verifica duplicidade no banco
+        const client = context.getClient({apiVersion: '2024-01-01'});
+        const existing = await client.fetch(
+          `*[_type == "imovel" && codigoInterno == $codigo && _id != $currentId]`,
+          { codigo: value, currentId: context.document?._id }
+        );
+        
+        if (existing.length > 0) {
+          return 'Este código já existe. Clique no botão de regenerar.';
+        }
+        
+        return true;
+      })
     }),
     defineField({
       name: 'observacoesInternas',

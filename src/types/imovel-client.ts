@@ -32,6 +32,7 @@ export interface ImovelClient {
     _type?: string
     titulo?: string
     slug: string
+    codigo?: string // Internal property code
     preco?: number
     finalidade?: 'Venda' | 'Aluguel' | 'Temporada'
     tipoImovel?: 'Casa' | 'Apartamento' | 'Terreno' | 'Comercial' | 'Outro'
@@ -47,7 +48,8 @@ export interface ImovelClient {
     // Características principais
     dormitorios?: number
     banheiros?: number
-    areaUtil?: number
+    areaUtil?: number       // área útil
+    area?: number          // área total
     vagas?: number
 
     // Flags

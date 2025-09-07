@@ -11,22 +11,24 @@ export interface UnifiedPropertyData {
     _id?: string
     title: string
     slug: string
-    
+    codigo?: string // Internal property code
+
     // Localização
     location: string
     city: string
     address?: string
-    
+
     // Valores
     price: number
     propertyType: 'sale' | 'rent'
-    
+
     // Características físicas (com validação)
     area?: number           // m² úteis
+    totalArea?: number      // m² totais
     bedrooms?: number       // dormitórios
     bathrooms?: number      // banheiros
     parkingSpots?: number   // vagas de garagem
-    
+
     // Imagens
     mainImage?: {
         url: string
@@ -36,25 +38,25 @@ export interface UnifiedPropertyData {
         url: string
         alt?: string
     }>
-    
+
     // Informações adicionais
     description?: string
     propertyTypeDetail?: string // Casa, Apartamento, etc.
     purpose?: string            // Venda, Aluguel, etc.
-    
+
     // Status e flags
     isHighlight?: boolean
     isPremium?: boolean
     isNew?: boolean
     status?: 'available' | 'sold' | 'rented' | 'reserved'
-    
+
     // Características especiais
     features?: string[]
     hasGarden?: boolean
     hasPool?: boolean
     acceptsFinancing?: boolean
     documentationOk?: boolean
-    
+
     // Metadados
     publishedDate?: string
     metaTitle?: string
@@ -75,15 +77,21 @@ export function transformToUnifiedProperty(imovel: ImovelClient): UnifiedPropert
     console.log('🔄 Transformando imóvel:', {
         id: imovel._id,
         titulo: imovel.titulo,
+        codigo: imovel.codigo,
         dormitorios: imovel.dormitorios,
         banheiros: imovel.banheiros,
         areaUtil: imovel.areaUtil,
-        vagas: imovel.vagas
+        area: imovel.area,
+        vagas: imovel.vagas,
+        imagem: imovel.imagem,
+        galeria: imovel.galeria?.length || 0,
+        'imagem.asset.url': (imovel.imagem?.asset as any)?.url,
+        'galeria[0]': imovel.galeria?.[0]
     })
 
     // Normalizar slug com tipo seguro
-    const slug = typeof imovel.slug === 'string' 
-        ? imovel.slug 
+    const slug = typeof imovel.slug === 'string'
+        ? imovel.slug
         : (imovel.slug as any)?.current || imovel._id
 
     // Normalizar localização
@@ -92,82 +100,124 @@ export function transformToUnifiedProperty(imovel: ImovelClient): UnifiedPropert
         .join(', ') || 'Localização não informada'
 
     // Normalizar tipo de propriedade
-    const propertyType: 'sale' | 'rent' = 
-        imovel.finalidade?.toLowerCase() === 'venda' || 
-        imovel.finalidade?.toLowerCase() === 'sale' 
-            ? 'sale' 
+    const propertyType: 'sale' | 'rent' =
+        imovel.finalidade?.toLowerCase() === 'venda' ||
+            imovel.finalidade?.toLowerCase() === 'sale'
+            ? 'sale'
             : 'rent'
 
-    // Normalizar imagem principal com validação
-    const mainImage = imovel.imagem?.imagemUrl 
+    // Normalizar imagem principal com validação (suporta múltiplos formatos)
+    const mainImage = imovel.imagem?.imagemUrl
         ? {
             url: imovel.imagem.imagemUrl,
             alt: imovel.imagem.alt || imovel.titulo || 'Imóvel'
-          }
-        : undefined
+        }
+        : (imovel.imagem?.asset as any)?.url
+            ? {
+                url: (imovel.imagem?.asset as any).url,
+                alt: imovel.imagem?.alt || imovel.titulo || 'Imóvel'
+            }
+            : undefined
 
-    // Normalizar galeria
-    const gallery = imovel.galeria
-        ?.filter(img => img.imagemUrl)
-        .map(img => ({
-            url: img.imagemUrl!,
-            alt: img.alt || imovel.titulo || 'Imagem do imóvel'
-        })) || []
+    // Normalizar galeria com múltiplos formatos
+    const gallery = (() => {
+        if (!imovel.galeria || !Array.isArray(imovel.galeria)) {
+            return [];
+        }
+
+        return imovel.galeria
+            .map(img => {
+                // Formato 1: imagemUrl direto
+                if (img.imagemUrl) {
+                    return {
+                        url: img.imagemUrl,
+                        alt: img.alt || imovel.titulo || 'Imagem do imóvel'
+                    };
+                }
+                
+                // Formato 2: asset.url (formato Sanity)
+                if (img.asset && (img.asset as any).url) {
+                    return {
+                        url: (img.asset as any).url,
+                        alt: img.alt || imovel.titulo || 'Imagem do imóvel'
+                    };
+                }
+
+                return null;
+            })
+            .filter((img): img is { url: string; alt: string } => img !== null);
+    })();
 
     // Verificar se é novo (últimos 30 dias)
-    const isNew = imovel.dataPublicacao 
+    const isNew = imovel.dataPublicacao
         ? new Date(imovel.dataPublicacao) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
         : false
 
-    return {
+    const transformedProperty = {
         // Identificação
         id: imovel._id,
         _id: imovel._id,
         title: imovel.titulo || 'Imóvel disponível',
         slug,
-        
+        codigo: imovel.codigo || '000000',
+
         // Localização
         location,
         city: imovel.cidade || 'Guararema',
         address: imovel.endereco,
-        
+
         // Valores
         price: imovel.preco || 0,
         propertyType,
-        
+
         // Características físicas (resolvendo inconsistências)
         area: imovel.areaUtil,
+        totalArea: imovel.area,
         bedrooms: imovel.dormitorios,
         bathrooms: imovel.banheiros,
         parkingSpots: imovel.vagas,
-        
+
         // Imagens
         mainImage,
         gallery,
-        
+
         // Informações adicionais
         description: imovel.descricao,
         propertyTypeDetail: imovel.tipoImovel,
         purpose: imovel.finalidade,
-        
+
         // Status e flags
         isHighlight: Boolean(imovel.destaque),
         isPremium: Boolean(imovel.destaque), // Usando destaque como premium por enquanto
         isNew,
-        status: 'available', // Por padrão, assumir disponível
-        
+        status: 'available' as const, // Por padrão, assumir disponível
+
         // Características especiais
         features: imovel.caracteristicas || [],
         hasGarden: imovel.possuiJardim,
         hasPool: imovel.possuiPiscina,
         acceptsFinancing: imovel.aceitaFinanciamento,
         documentationOk: imovel.documentacaoOk,
-        
+
         // Metadados
         publishedDate: imovel.dataPublicacao,
         metaTitle: imovel.metaTitle,
         metaDescription: imovel.metaDescription,
-    }
+    };
+
+    // Debug de saída
+    console.log('✅ Imóvel transformado:', {
+        id: transformedProperty.id,
+        title: transformedProperty.title,
+        codigo: transformedProperty.codigo,
+        area: transformedProperty.area,
+        totalArea: transformedProperty.totalArea,
+        mainImage: transformedProperty.mainImage?.url,
+        galleryCount: transformedProperty.gallery?.length || 0,
+        description: transformedProperty.description ? 'Presente' : 'Ausente'
+    });
+
+    return transformedProperty;
 }
 
 /**
@@ -264,9 +314,11 @@ export function debugPropertyMapping(imovel: ImovelClient): void {
         original: {
             _id: imovel._id,
             titulo: imovel.titulo,
+            codigo: imovel.codigo,
             dormitorios: imovel.dormitorios,
             banheiros: imovel.banheiros,
             areaUtil: imovel.areaUtil,
+            area: imovel.area,
             vagas: imovel.vagas,
             finalidade: imovel.finalidade,
             imagem: imovel.imagem,
@@ -275,11 +327,49 @@ export function debugPropertyMapping(imovel: ImovelClient): void {
     })
 }
 
+// Transformer para PropertyCardSection
+export function toPropertyCardSectionProps(property: UnifiedPropertyData): {
+    id: string
+    title: string
+    slug?: string
+    price: number
+    type: 'venda' | 'aluguel'
+    bedrooms: number
+    bathrooms: number
+    garage: number
+    area: number
+    location: string
+    mainImage: {
+        url: string
+        alt: string
+    }
+    isHighlighted?: boolean
+} {
+    return {
+        id: property.id,
+        title: property.title || 'Propriedade sem título',
+        slug: property.slug,
+        price: property.price || 0,
+        type: property.propertyType === 'sale' ? 'venda' : 'aluguel',
+        bedrooms: property.bedrooms || 0,
+        bathrooms: property.bathrooms || 0,
+        garage: property.parkingSpots || 0,
+        area: property.area || 0,
+        location: property.location || property.city || 'Localização não informada',
+        mainImage: {
+            url: property.mainImage?.url || '/placeholder-property.jpg',
+            alt: property.mainImage?.alt || property.title || 'Imagem da propriedade'
+        },
+        isHighlighted: property.isHighlight || property.isPremium || false
+    }
+}
+
 export default {
     transformToUnifiedProperty,
     transformToUnifiedPropertyList,
     toSimplePropertyCardProps,
     toPropertyCardPremiumProps,
     toPropertyCardUnifiedProps,
+    toPropertyCardSectionProps,
     debugPropertyMapping
 }

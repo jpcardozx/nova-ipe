@@ -1,0 +1,78 @@
+[
+  {
+    "_id": "mock-1",
+    "titulo": "Casa Moderna em Condomínio",
+    "slug": {
+      "current": "casa-moderna-condominio"
+    },
+    "preco": 850000,
+    "finalidade": "Venda",
+    "tipoImovel": "Casa",
+    "bairro": "Jardim Europa",
+    "cidade": "São Paulo",
+    "estado": "SP",
+    "dormitorios": 3,
+    "banheiros": 2,
+    "areaUtil": 180,
+    "vagas": 2,
+    "destaque": true,
+    "status": "disponivel",
+    "imagem": {
+      "asset": {
+        "url": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800"
+      },
+      "alt": "Casa moderna"
+    }
+  },
+  {
+    "_id": "mock-2",
+    "titulo": "Apartamento Luxuoso Centro",
+    "slug": {
+      "current": "apartamento-luxuoso-centro"
+    },
+    "preco": 3500,
+    "finalidade": "Aluguel",
+    "tipoImovel": "Apartamento",
+    "bairro": "Centro",
+    "cidade": "São Paulo",
+    "estado": "SP",
+    "dormitorios": 2,
+    "banheiros": 1,
+    "areaUtil": 85,
+    "vagas": 1,
+    "destaque": true,
+    "status": "disponivel",
+    "imagem": {
+      "asset": {
+        "url": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800"
+      },
+      "alt": "Apartamento moderno"
+    }
+  },
+  {
+    "_id": "mock-3",
+    "titulo": "Cobertura com Vista Panorâmica",
+    "slug": {
+      "current": "cobertura-vista-panoramica"
+    },
+    "preco": 1200000,
+    "finalidade": "Venda",
+    "tipoImovel": "Cobertura",
+    "bairro": "Vila Madalena",
+    "cidade": "São Paulo",
+    "estado": "SP",
+    "dormitorios": 4,
+    "banheiros": 3,
+    "areaUtil": 220,
+    "vagas": 3,
+    "destaque": true,
+    "status": "disponivel",
+    "emAlta": true,
+    "imagem": {
+      "asset": {
+        "url": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800"
+      },
+      "alt": "Cobertura luxuosa"
+    }
+  }
+]

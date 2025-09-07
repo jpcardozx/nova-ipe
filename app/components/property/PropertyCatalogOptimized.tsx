@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useDebounce } from '@/app/hooks/useDebounce'
 import { cn } from '@/lib/utils'
 import PropertyCardSimple from '@/app/components/ui/PropertyCardSimple'
-import { getTodosImoveis } from '@/lib/sanity/fetchImoveis'
+import { getTodosImoveis } from '../../../lib/sanity/fetchImoveis'
 import type { ImovelClient } from '@/src/types/imovel-client'
 
 // Lazy load components for performance

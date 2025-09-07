@@ -110,7 +110,7 @@ export default function FooterAprimorado() {
             <div className="absolute inset-0">
                 <div className="relative w-full h-full">
                     <Image
-                        src="/images/wood-pattern.svg"
+                        src="/images/wood-pattern.png"
                         alt="Textura de fundo do rodapé"
                         fill
                         className="object-cover object-center opacity-10"

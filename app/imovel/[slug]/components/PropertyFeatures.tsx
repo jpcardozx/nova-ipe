@@ -1,10 +1,11 @@
 'use client';
 
 import React from 'react';
-import { Ruler, Bed, Bath, Car } from 'lucide-react';
+import { Ruler, Home, Bed, Bath, Car } from 'lucide-react';
 
 interface PropertyFeaturesProps {
-    area?: number;
+    area?: number;          // área construída
+    totalArea?: number;     // área do terreno
     bedrooms?: number;
     bathrooms?: number;
     parkingSpots?: number;
@@ -12,102 +13,177 @@ interface PropertyFeaturesProps {
 
 export default function PropertyFeatures({
     area,
+    totalArea,
     bedrooms,
     bathrooms,
     parkingSpots
 }: PropertyFeaturesProps) {
     const features = [
         {
-            icon: Ruler,
+            icon: Home,
             value: area,
-            label: 'm² úteis',
-            show: !!area
+            label: 'Área Construída',
+            unit: 'm²',
+            show: !!area,
+            color: 'blue',
+            priority: 1
+        },
+        {
+            icon: Ruler,
+            value: totalArea,
+            label: 'Área do Terreno',
+            unit: 'm²',
+            show: !!totalArea && totalArea !== area,
+            color: 'emerald',
+            priority: 2
         },
         {
             icon: Bed,
             value: bedrooms,
             label: bedrooms === 1 ? 'Dormitório' : 'Dormitórios',
-            show: bedrooms !== undefined && bedrooms > 0
+            unit: '',
+            show: bedrooms !== undefined && bedrooms > 0,
+            color: 'purple',
+            priority: 3
         },
         {
             icon: Bath,
             value: bathrooms,
             label: bathrooms === 1 ? 'Banheiro' : 'Banheiros',
-            show: bathrooms !== undefined && bathrooms > 0
+            unit: '',
+            show: bathrooms !== undefined && bathrooms > 0,
+            color: 'cyan',
+            priority: 4
         },
         {
             icon: Car,
             value: parkingSpots,
             label: parkingSpots === 1 ? 'Vaga' : 'Vagas',
-            show: parkingSpots !== undefined && parkingSpots > 0
+            unit: '',
+            show: parkingSpots !== undefined && parkingSpots > 0,
+            color: 'amber',
+            priority: 5
         }
-    ].filter(feature => feature.show);
+    ].filter(feature => feature.show).sort((a, b) => a.priority - b.priority);
 
     if (features.length === 0) return null;
 
+    const getColorClasses = (color: string) => {
+        const colors = {
+            blue: {
+                bg: 'from-blue-50 via-blue-50 to-blue-100',
+                border: 'border-blue-200',
+                icon: 'text-blue-600',
+                text: 'text-blue-900',
+                accent: 'bg-blue-500'
+            },
+            emerald: {
+                bg: 'from-emerald-50 via-emerald-50 to-emerald-100',
+                border: 'border-emerald-200',
+                icon: 'text-emerald-600',
+                text: 'text-emerald-900',
+                accent: 'bg-emerald-500'
+            },
+            purple: {
+                bg: 'from-purple-50 via-purple-50 to-purple-100',
+                border: 'border-purple-200',
+                icon: 'text-purple-600',
+                text: 'text-purple-900',
+                accent: 'bg-purple-500'
+            },
+            cyan: {
+                bg: 'from-cyan-50 via-cyan-50 to-cyan-100',
+                border: 'border-cyan-200',
+                icon: 'text-cyan-600',
+                text: 'text-cyan-900',
+                accent: 'bg-cyan-500'
+            },
+            amber: {
+                bg: 'from-amber-50 via-amber-50 to-amber-100',
+                border: 'border-amber-200',
+                icon: 'text-amber-600',
+                text: 'text-amber-900',
+                accent: 'bg-amber-500'
+            }
+        };
+        return colors[color as keyof typeof colors] || colors.blue;
+    };
+
     return (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-10">
-            {features.map((feature, index) => {
-                const IconComponent = feature.icon;
-                return (
-                    <div
-                        key={index}
-                        className="group relative overflow-hidden"
-                    >
-                        {/* Multiple background layers for sophisticated depth */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-100 rounded-2xl"></div>
-                        <div className="absolute inset-0 bg-gradient-to-tr from-slate-100/40 via-transparent to-slate-200/30 rounded-2xl"></div>
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-transparent to-slate-100/80 rounded-2xl group-hover:from-white/80 group-hover:to-slate-50/90 transition-all duration-500"></div>
+        <div className="space-y-6">
+            <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-gradient-to-r from-slate-600 to-slate-800 rounded-lg flex items-center justify-center">
+                        <Ruler className="w-4 h-4 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-900">
+                        Características do Imóvel
+                    </h3>
+                </div>
+                <div className="flex-1 h-px bg-gradient-to-r from-slate-200 via-slate-300 to-transparent"></div>
+                <span className="text-sm text-slate-500 font-medium">
+                    {features.length} {features.length === 1 ? 'característica' : 'características'}
+                </span>
+            </div>
 
-                        {/* Animated border with glassmorphism */}
-                        <div className="absolute inset-0 border border-slate-200/60 rounded-2xl group-hover:border-slate-300/80 transition-all duration-300"></div>
-                        <div className="absolute inset-0 border border-white/40 rounded-2xl"></div>
+            <div className={`grid gap-4 ${features.length === 1 ? 'grid-cols-1 max-w-xs' :
+                features.length === 2 ? 'grid-cols-1 sm:grid-cols-2' :
+                    features.length === 3 ? 'grid-cols-1 sm:grid-cols-3' :
+                        'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5'
+                }`}>
+                {features.map((feature, index) => {
+                    const IconComponent = feature.icon;
+                    const colorClasses = getColorClasses(feature.color);
 
-                        {/* Hover glow effect */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                    return (
+                        <div
+                            key={index}
+                            className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white hover:shadow-xl transition-all duration-500 hover:scale-[1.02] hover:-translate-y-1"
+                        >
+                            {/* Background gradients */}
+                            <div className={`absolute inset-0 bg-gradient-to-br ${colorClasses.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
+                            <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50/80 to-slate-100/60"></div>
 
-                        {/* Subtle floating shadow */}
-                        <div className="absolute inset-x-2 -bottom-1 h-3 bg-gradient-to-r from-transparent via-slate-400/15 to-transparent rounded-full blur-sm group-hover:via-slate-500/20 transition-all duration-300"></div>
-
-                        <div className="relative text-center p-4 sm:p-5 lg:p-7 group-hover:scale-[1.02] transition-all duration-300">
-                            {/* Enhanced icon with multiple effects */}
-                            <div className="relative mb-3 sm:mb-4">
-                                <div className="relative mx-auto w-fit">
-                                    {/* Icon background glow */}
-                                    <div className="absolute inset-0 bg-gradient-to-r from-slate-400/20 via-slate-500/30 to-slate-400/20 rounded-full blur-lg scale-150 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-
-                                    {/* Primary icon */}
-                                    <IconComponent className="relative w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-slate-600 group-hover:text-slate-800 group-hover:scale-110 transition-all duration-300" />
-
-                                    {/* Icon reflection effect */}
-                                    <IconComponent className="absolute inset-0 w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-slate-400 opacity-0 group-hover:opacity-30 transition-all duration-300 blur-sm scale-125" />
+                            {/* Content */}
+                            <div className="relative p-6">
+                                {/* Icon section */}
+                                <div className="flex justify-center mb-4">
+                                    <div className="relative">
+                                        {/* Icon background with glassmorphism */}
+                                        <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg group-hover:shadow-xl transition-all duration-500"></div>
+                                        <div className={`absolute inset-0 bg-gradient-to-br ${colorClasses.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl`}></div>
+                                        <div className={`relative w-14 h-14 bg-gradient-to-br from-white to-slate-50 rounded-2xl flex items-center justify-center border ${colorClasses.border} group-hover:border-opacity-60 transition-all duration-500`}>
+                                            <IconComponent className={`w-6 h-6 ${colorClasses.icon} group-hover:scale-110 transition-transform duration-300`} />
+                                        </div>
+                                        {/* Accent dot */}
+                                        <div className={`absolute -top-1 -right-1 w-4 h-4 ${colorClasses.accent} rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 scale-0 group-hover:scale-100`}></div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            {/* Enhanced value display */}
-                            <div className="relative mb-1 sm:mb-2">
-                                <div className="font-bold text-xl sm:text-2xl lg:text-3xl text-slate-900 group-hover:text-slate-800 transition-colors duration-300">
-                                    <span className="relative">
-                                        {feature.value}
-                                        {/* Value glow */}
-                                        <span className="absolute inset-0 font-bold text-xl sm:text-2xl lg:text-3xl text-slate-700 opacity-0 group-hover:opacity-20 transition-all duration-300 blur-sm">
+                                {/* Value and label */}
+                                <div className="text-center space-y-2">
+                                    <div className="flex items-baseline justify-center gap-1">
+                                        <span className={`text-2xl font-bold ${colorClasses.text} group-hover:scale-105 transition-transform duration-300`}>
                                             {feature.value}
                                         </span>
-                                    </span>
+                                        {feature.unit && (
+                                            <span className="text-sm font-semibold text-slate-500">
+                                                {feature.unit}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="text-sm font-medium text-slate-600 group-hover:text-slate-800 transition-colors duration-300">
+                                        {feature.label}
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Enhanced label */}
-                            <div className="text-xs sm:text-sm text-slate-600 font-medium leading-tight group-hover:text-slate-700 transition-colors duration-300">
-                                {feature.label}
-                            </div>
+                            {/* Bottom accent line */}
+                            <div className={`absolute bottom-0 left-0 right-0 h-1 ${colorClasses.accent} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left`}></div>
                         </div>
-
-                        {/* Subtle inner highlight */}
-                        <div className="absolute top-1 inset-x-1 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent rounded-full"></div>
-                    </div>
-                );
-            })}
+                    );
+                })}
+            </div>
         </div>
     );
 }

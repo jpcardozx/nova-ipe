@@ -1,217 +1,104 @@
-// lib/sanity/fetchImoveis.ts
-// Enhanced Sanity fetchers with isomorphic caching and robust error handling
+/**
+ * Property fetch functions - Compatibility layer
+ * Maps to the new sanity/queries functions
+ */
+import { 
+  getRentalProperties, 
+  getSaleProperties, 
+  getFeaturedProperties,
+  getAllProperties,
+  getPropertyBySlug,
+  transformPropertyToImovelClient
+} from './queries'
+import type { ImovelClient } from '@/src/types/imovel-client'
+import type { Property } from './queries'
 
-import { fetchWithIsomorphicCache, isomorphicQueries } from './isomorphic-sanity-service';
-import {
-    queryTodosImoveis,
-    queryImoveisParaVenda,
-    queryImoveisParaAlugar,
-    queryImoveisAluguelDestaque,
-    queryImovelEmDestaque,
-    queryImoveisDestaqueVenda,
-    queryImovelPorSlug,
-    queryImoveisEmAlta,
-} from '../queries'
-import type { ImovelClient, ImovelProjetado } from '../../src/types/imovel-client'
-import { mapImovelToClient } from '../mapImovelToClient'
-
-// Enhanced fetcher with isomorphic caching and error handling
-async function fetchWithCache<T>(
-    query: string,
-    params = {},
-    tags: string[] = []
-): Promise<T> {
-    try {
-        console.log('🔍 Executando query Sanity:', { 
-            query: query.slice(0, 100) + '...', 
-            params,
-            tags,
-        });
-        
-        const data = await fetchWithIsomorphicCache<T>(query, params, {
-            tags,
-            revalidate: 3600 // Default 1 hour cache
-        });
-        
-        console.log('✅ Query Sanity executada com sucesso:', {
-            resultCount: Array.isArray(data) ? data.length : 'single item',
-            tags
-        });
-        
-        return data;
-    } catch (err) {
-        console.error('❌ Erro na query Sanity:', {
-            query: query.slice(0, 200) + '...',
-            params,
-            tags,
-            error: err instanceof Error ? err.message : String(err)
-        });
-        throw err;
-    }
+// Re-export query functions for compatibility
+export { 
+  getRentalProperties, 
+  getSaleProperties, 
+  getFeaturedProperties,
+  getAllProperties,
+  getPropertyBySlug
 }
 
-// Utility function to map arrays
-const mapMany = (data: ImovelProjetado[]): ImovelClient[] =>
-    data.map(mapImovelToClient)
-
-// ———————————————————————————————————————————————————————————————————
-// LISTAGENS OTIMIZADAS
-// ———————————————————————————————————————————————————————————————————
-
-export async function getTodosImoveis(): Promise<ImovelClient[]> {
-    const data = await fetchWithCache<ImovelProjetado[]>(
-        queryTodosImoveis,
-        {},
-        ['imoveis']
-    )
-    return mapMany(data)
-}
-
+// Compatibility exports with the expected function names
 export async function getImoveisParaVenda(): Promise<ImovelClient[]> {
-    console.log('📋 Buscando imóveis para venda...');
-    const data = await fetchWithCache<ImovelProjetado[]>(
-        queryImoveisParaVenda,
-        {},
-        ['imoveis', 'venda']
-    );
-    
-    console.log('🔄 Mapeando', data.length, 'imóveis de venda...');
-    const mapped = mapMany(data);
-    
-    // Validar campos críticos
-    mapped.forEach(imovel => {
-        if (!imovel.dormitorios && imovel.dormitorios !== 0) {
-            console.warn('⚠️ Dormitórios ausente:', imovel._id, imovel.titulo);
-        }
-        if (!imovel.banheiros && imovel.banheiros !== 0) {
-            console.warn('⚠️ Banheiros ausente:', imovel._id, imovel.titulo);
-        }
-    });
-    
-    return mapped;
+  const properties = await getSaleProperties()
+  return properties.map(transformPropertyToImovelClient)
 }
 
 export async function getImoveisParaAlugar(): Promise<ImovelClient[]> {
-    console.log('🏠 Buscando imóveis para alugar com cache isomórfico...');
-    
-    try {
-        const data = await isomorphicQueries.getImoveisAluguel(9);
-        console.log('🔄 Mapeando', data.length, 'imóveis de aluguel...');
-        return data.map(mapImovelToClient);
-    } catch (error) {
-        console.warn('⚠️ Fallback para query tradicional:', error);
-        const data = await fetchWithCache<ImovelProjetado[]>(
-            queryImoveisParaAlugar,
-            {},
-            ['imoveis', 'aluguel']
-        );
-        return mapMany(data);
-    }
+  const properties = await getRentalProperties()
+  return properties.map(transformPropertyToImovelClient)
 }
-
-export async function getImoveisAluguelDestaque(): Promise<ImovelClient[]> {
-    const data = await fetchWithCache<ImovelProjetado[]>(
-        queryImoveisAluguelDestaque,
-        {},
-        ['imoveis', 'aluguel', 'destaque']
-    )
-    return mapMany(data)
-}
-
-// ———————————————————————————————————————————————————————————————————
-// INDIVIDUAL OTIMIZADO
-// ———————————————————————————————————————————————————————————————————
-
-export async function getImovelPorSlug(
-    slug: string
-): Promise<ImovelClient | null> {
-    try {
-        console.log('🔍 Buscando imóvel por slug com cache isomórfico:', slug);
-        
-        // Usar query isomórfica
-        const result = await isomorphicQueries.getImovelBySlug(slug);
-        
-        if (result) {
-            console.log('✅ Imóvel encontrado:', result.titulo);
-            return result;
-        }
-        
-        console.log('⚠️ Imóvel não encontrado para slug:', slug);
-        return null;
-    } catch (error) {
-        console.error(`❌ Erro ao buscar imóvel com slug ${slug}:`, error);
-        return null;
-    }
-}
-
-// consulta por ID se precisar (usa a mesma query; slug é ignorado)
-export async function getImovelPorId(
-    id: string
-): Promise<ImovelClient | null> {
-    try {
-        const data = await fetchWithCache<ImovelProjetado | null>(
-            queryImovelPorSlug,
-            { id },
-            [`imovel:${id}`]
-        )
-        return data ? mapImovelToClient(data) : null
-    } catch (error) {
-        console.error(`Error fetching imovel with id ${id}:`, error)
-        return null
-    }
-}
-
-// ———————————————————————————————————————————————————————————————————
-// VITRINE OTIMIZADA
-// ———————————————————————————————————————————————————————————————————
 
 export async function getImovelEmDestaque(): Promise<ImovelClient[]> {
-    const data = await fetchWithCache<ImovelProjetado[]>(
-        queryImovelEmDestaque,
-        {},
-        ['imoveis', 'destaque']
-    )
-    return mapMany(data)
+  const properties = await getFeaturedProperties()
+  return properties.map(transformPropertyToImovelClient)
 }
 
-export async function getImoveisDestaqueVenda(): Promise<ImovelClient[]> {
-    console.log('🏆 Buscando imóveis destaque venda com cache isomórfico...');
-    
-    // Usar query isomórfica se disponível
-    try {
-        const data = await isomorphicQueries.getImoveisDestaque(9);
-        console.log('🔄 Mapeando', data.length, 'imóveis de destaque venda...');
-        return data.map(mapImovelToClient);
-    } catch (error) {
-        console.warn('⚠️ Fallback para query tradicional:', error);
-        // Fallback para query tradicional
-        const data = await fetchWithCache<ImovelProjetado[]>(
-            queryImoveisDestaqueVenda,
-            {},
-            ['imoveis', 'destaque', 'venda']
-        );
-        return mapMany(data);
-    }
+export async function getTodosImoveis(): Promise<ImovelClient[]> {
+  const properties = await getAllProperties()
+  return properties.map(transformPropertyToImovelClient)
 }
 
-export async function getImoveisDestaqueAluguel(): Promise<ImovelClient[]> {
-    const data = await fetchWithCache<ImovelProjetado[]>(
-        queryImoveisAluguelDestaque,
-        {},
-        ['imoveis', 'destaque', 'aluguel']
-    )
-    return mapMany(data)
+export async function getImovelPorSlug(slug: string): Promise<ImovelClient | null> {
+  const property = await getPropertyBySlug(slug)
+  return property ? transformPropertyToImovelClient(property) : null
 }
 
-// Nova funcionalidade: Imóveis em Alta
-export async function getImoveisEmAlta(): Promise<ImovelClient[]> {
-    const data = await fetchWithCache<ImovelProjetado[]>(
-        queryImoveisEmAlta,
-        {},
-        ['imoveis', 'emAlta']
-    )
-    return mapMany(data)
+// Make transformPropertyToImovelClient available externally
+function transformPropertyToImovelClientLocal(property: Property): ImovelClient {
+  return {
+    _id: property._id,
+    id: property._id,
+    titulo: property.titulo,
+    slug: typeof property.slug === 'object' ? property.slug.current : property.slug,
+    preco: property.preco,
+    finalidade: property.finalidade,
+    tipoImovel: property.tipoImovel as 'Casa' | 'Apartamento' | 'Terreno' | 'Comercial' | 'Outro',
+    bairro: property.bairro,
+    cidade: property.cidade,
+    dormitorios: property.dormitorios,
+    banheiros: property.banheiros,
+    areaUtil: property.areaUtil,
+    vagas: property.vagas,
+    destaque: property.destaque,
+    // Campos adicionais importantes
+    descricao: property.descricao,
+    endereco: property.endereco,
+    estado: property.estado,
+    aceitaFinanciamento: property.aceitaFinanciamento,
+    documentacaoOk: property.documentacaoOk,
+    caracteristicas: property.caracteristicas,
+    status: property.status as 'disponivel' | 'reservado' | 'vendido',
+    categoria: property.categoria ? {
+      _id: property.categoria._id,
+      titulo: property.categoria.categoriaTitulo,
+      slug: typeof property.categoria.categoriaSlug === 'object' 
+        ? property.categoria.categoriaSlug.current 
+        : property.categoria.categoriaSlug
+    } : undefined,
+    // Transform Sanity image structure to ImovelClient structure
+    imagem: property.imagem ? {
+      imagemUrl: property.imagem.asset?.url,
+      alt: property.imagem.alt,
+      asset: {
+        _ref: property.imagem.asset?._id,
+        _type: 'sanity.imageAsset'
+      }
+    } : undefined,
+    // Transform galeria properly
+    galeria: property.galeria?.map(img => ({
+      imagemUrl: img.asset?.url,
+      alt: img.alt || img.titulo,
+      asset: {
+        _ref: img.asset?._id,
+        _type: 'sanity.imageAsset'
+      }
+    })) || []
+  }
 }
 
-// Alias para compatibilidade
-export const fetchProperties = getTodosImoveis;
+export { transformPropertyToImovelClientLocal as transformPropertyToImovelClient }

@@ -11,7 +11,7 @@ import {
     ArrowUpRight
 } from 'lucide-react'
 import PremiumPropertyCardOptimized from '@/app/components/premium/PremiumPropertyCardOptimized'
-import { getTodosImoveis } from '@/lib/sanity/fetchImoveis'
+import { getAllProperties } from '@/lib/sanity/queries'
 
 interface Property {
     id: string
@@ -59,7 +59,7 @@ export default function CatalogoPage({ searchParams }: CatalogoPageProps) {
         const loadProperties = async () => {
             try {
                 setIsLoading(true)
-                const sanityProperties = await getTodosImoveis()
+                const sanityProperties = await getAllProperties()
 
                 const transformedProperties: Property[] = sanityProperties.map((prop: any) => ({
                     id: prop._id,

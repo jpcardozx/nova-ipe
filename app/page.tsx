@@ -1,42 +1,9 @@
 import { Suspense } from 'react';
 import HomePageClient from './page-client';
-import { fetchProperties } from '../lib/sanity/fetchImoveis';
-import { getImoveisEmAlta } from '../lib/sanity/fetchImoveis'; // Nova importação
-import type { ImovelClient } from '../src/types/imovel-client';
-
-async function getProperties() {
-  try {
-    const [imoveis, imoveisEmAlta] = await Promise.all([
-      fetchProperties(),
-      getImoveisEmAlta() // Nova busca para imóveis em alta
-    ]);
-
-    const propertiesForSale = imoveis.filter(p => p.finalidade === 'Venda').slice(0, 12);
-    const propertiesForRent = imoveis.filter(p => p.finalidade === 'Aluguel').slice(0, 12);
-    const featuredProperties = imoveis.filter(p => p.destaque).slice(0, 6);
-
-    return {
-      propertiesForSale,
-      propertiesForRent,
-      featuredProperties,
-      hotProperties: imoveisEmAlta // Novos imóveis em alta
-    };
-  } catch (error) {
-    console.error('Error fetching properties:', error);
-    return {
-      propertiesForSale: [],
-      propertiesForRent: [],
-      featuredProperties: [],
-      hotProperties: [] // Fallback para imóveis em alta
-    };
-  }
-}
+import { getHomePageData } from '../lib/queries';
 
 export default async function HomePage() {
-  const { propertiesForSale, propertiesForRent, featuredProperties, hotProperties } = await getProperties();
-
-  // Redirect para a versão premium com IpeConcept
-  const { default: IpeConceptHomePage } = await import('./page-client');
+  const { featuredProperties, rentalProperties, saleProperties } = await getHomePageData();
 
   return (
     <Suspense fallback={
@@ -48,11 +15,10 @@ export default async function HomePage() {
         </div>
       </div>
     }>
-      <IpeConceptHomePage
-        propertiesForSale={propertiesForSale}
-        propertiesForRent={propertiesForRent}
+      <HomePageClient
+        propertiesForSale={saleProperties}
+        propertiesForRent={rentalProperties}
         featuredProperties={featuredProperties}
-        hotProperties={hotProperties}
       />
     </Suspense>
   );

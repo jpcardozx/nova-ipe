@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import { formatarMoeda } from '@/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
 import { MapPin, Bed, Bath, Ruler } from 'lucide-react';
@@ -79,7 +79,7 @@ const MobilePropertyCard: React.FC<MobilePropertyCardProps> = ({ property, class
 
                     {property.preco && (
                         <div className="text-2xl font-bold text-blue-600">
-                            R$ {property.preco.toLocaleString('pt-BR')}
+                            {formatarMoeda(property.preco)}
                         </div>
                     )}
                 </div>

@@ -2,8 +2,8 @@
 import React, { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { serverClient as sanityServer, serverFetch as sanityFetch } from '@/lib/sanity/sanity.server';
-import { queryImovelPorSlug, queryImoveisRelacionados } from '@lib/queries';
-import { getImovelPorSlug } from '@lib/sanity/fetchImoveis';
+import { queryImovelPorSlug, queryImoveisRelacionados } from '../../../lib/sanity/queries';
+import { getImovelPorSlug } from '../../../lib/sanity/fetchImoveis';
 import type { Metadata } from 'next';
 import type { ImovelProjetado, ImovelClient as ImovelDataType } from '../../../src/types/imovel-client';
 import { mapImovelToClient } from '@lib/mapImovelToClient';
@@ -19,11 +19,24 @@ import ImovelDetalhesClient from './ImovelDetalhesClient';
 
 // Geração estática das rotas dinâmicas
 export async function generateStaticParams() {
-  const slugs: { slug: { current: string } }[] = await sanityFetch({
-    query: `*[_type == "imovel" && defined(slug.current)]{ slug }`,
-    tags: ['imoveis'] // Tag para revalidação
-  });
-  return slugs.map(({ slug }) => ({ slug: slug.current }));
+  try {
+    const slugs: { slug: { current: string } }[] = await sanityFetch(
+      `*[_type == "imovel" && defined(slug.current)]{ slug }`
+    );
+
+    // Verifica se slugs é um array válido
+    if (!Array.isArray(slugs)) {
+      console.warn('Sanity returned invalid data for generateStaticParams, returning empty array');
+      return [];
+    }
+
+    return slugs.map(({ slug }) => ({ slug: slug.current }));
+  } catch (error) {
+    console.error('Error in generateStaticParams:', error);
+    // Retorna array vazio para permitir que o build continue
+    // As páginas serão geradas sob demanda (ISR)
+    return [];
+  }
 }
 
 // SSR Metadata com gerador otimizado para redes sociais
@@ -36,11 +49,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
 
-  const imovel: ImovelProjetado | null = await sanityFetch({
-    query: queryImovelPorSlug,
-    params: { slug },
-    tags: ['imovel', `imovel-${slug}`]
-  });
+  const imovel: ImovelProjetado | null = await sanityFetch(
+    queryImovelPorSlug,
+    { slug }
+  );
 
   if (!imovel) return {};
 
@@ -97,8 +109,8 @@ async function ImovelPage({ slug }: { slug: string }) {
     if (!imovelClient && slug.includes('-')) {
       console.log(`🔄 Tentando buscar por ID: ${slug}`);
 
-      const imovelDireto: ImovelProjetado | null = await sanityFetch({
-        query: `*[_type == "imovel" && _id == $id][0] {
+      const imovelDireto: ImovelProjetado | null = await sanityFetch(
+        `*[_type == "imovel" && _id == $id][0] {
           _id, titulo, slug, preco, destaque, finalidade, bairro, cidade,
           descricao, endereco, estado, aceitaFinanciamento, area, areaUtil,
           documentacaoOk, videoTour, dormitorios, banheiros, vagas, tipoImovel,
@@ -109,9 +121,8 @@ async function ImovelPage({ slug }: { slug: string }) {
           "_type": "image", "imagemUrl": asset->url, "alt": alt }, corretor,
           valorCondominio, iptu, localizacao
         }`,
-        params: { id: slug },
-        tags: ['imovel', `imovel-${slug}`]
-      });
+        { id: slug }
+      );
 
       if (imovelDireto) {
         imovelClient = mapImovelToClient(imovelDireto);
@@ -144,15 +155,14 @@ async function ImovelPage({ slug }: { slug: string }) {
 
     if (categoriaId) {
       try {
-        relacionados = await sanityFetch({
-          query: queryImoveisRelacionados,
-          params: {
+        relacionados = await sanityFetch(
+          queryImoveisRelacionados,
+          {
             imovelId: imovelClient._id,
             categoriaId,
             cidade: imovelClient.cidade,
-          },
-          tags: ['imoveis', `categoria-${categoriaId}`]
-        }) || [];
+          }
+        ) || [];
       } catch (error) {
         console.error('Erro ao buscar imóveis relacionados:', error);
         relacionados = []; // Fallback seguro

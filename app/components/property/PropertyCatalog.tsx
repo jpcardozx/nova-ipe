@@ -504,7 +504,7 @@ async function fetchProperties(params: {
     filters: any
     sort: string
 }) {
-    const { getTodosImoveis } = await import('@/lib/sanity/fetchImoveis')
+    const { getTodosImoveis } = await import('../../../lib/sanity/fetchImoveis')
 
     // This would be replaced with actual API call with pagination and filtering
     const allProperties = await getTodosImoveis()

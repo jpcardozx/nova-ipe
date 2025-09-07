@@ -8,7 +8,7 @@ import {
     MapPin, Bed, Bath, Ruler, Heart, Eye, Star, ArrowRight,
     Car, Wifi, Droplets, Trees, Zap, Shield, Camera
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { formatarMoeda, cn } from '@/lib/utils'
 import type { PropertyData } from '@/app/types/property'
 
 interface PropertyCardProps {
@@ -81,12 +81,7 @@ export const PropertyCard = memo<PropertyCardProps>(({
     const allImages = [propertyData.image, ...propertyData.gallery].filter(Boolean)
 
     const formatPrice = (price: number) => {
-        if (price >= 1000000) {
-            return `R$ ${(price / 1000000).toFixed(1)}M`
-        } else if (price >= 1000) {
-            return `R$ ${(price / 1000).toFixed(0)}K`
-        }
-        return `R$ ${price.toLocaleString('pt-BR')}`
+        return formatarMoeda(price)
     }
 
     if (viewMode === 'list') {

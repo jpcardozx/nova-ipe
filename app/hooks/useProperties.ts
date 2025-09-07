@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { getImoveisDestaqueVenda, getImoveisAluguel } from '@/lib/queries';
+import { getImoveisDestaqueVenda, getImoveisAluguel } from '../../lib/sanity/queries';
 import { loadImage } from '@/lib/enhanced-image-loader';
 import { extractSlugString } from '@/app/PropertyTypeFix';
 import type { ImovelClient } from '@/src/types/imovel-client';

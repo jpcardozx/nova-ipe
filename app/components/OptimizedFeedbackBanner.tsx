@@ -53,7 +53,7 @@ export function OptimizedFeedbackBanner() {
             // });
 
             // Simulando envio bem-sucedido
-            logger.log('Feedback enviado:', feedback);
+            logger.info('Feedback enviado:', { metadata: { feedback } });
             setSubmitted(true);
 
             // Limpar formulário
@@ -69,7 +69,7 @@ export function OptimizedFeedbackBanner() {
             });
 
         } catch (error) {
-            logger.error('Erro ao enviar feedback:', error);
+            logger.error('Erro ao enviar feedback:', { metadata: { error: error instanceof Error ? error.message : String(error) } });
             setIsSubmitting(false);
             // Usar uma notificação menos intrusiva
             console.error('Houve um erro ao enviar seu feedback. Tente novamente mais tarde.');

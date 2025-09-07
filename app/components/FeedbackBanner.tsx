@@ -28,7 +28,7 @@ export function FeedbackBanner() {
             // });
 
             // Simulando envio bem-sucedido
-            logger.log('Feedback enviado:', feedback);
+            logger.info('Feedback enviado:', { metadata: { feedback } });
             setSubmitted(true);
 
             // Limpar formulário
@@ -42,7 +42,7 @@ export function FeedbackBanner() {
                 setTimeout(() => setSubmitted(false), 300);
             }, 3000);
         } catch (error) {
-            logger.error('Erro ao enviar feedback:', error);
+            logger.error('Erro ao enviar feedback:', { metadata: { error: error instanceof Error ? error.message : String(error) } });
             alert('Houve um erro ao enviar seu feedback. Tente novamente mais tarde.');
         }
     };
@@ -97,8 +97,8 @@ export function FeedbackBanner() {
                                         type="button"
                                         onClick={() => setFeedback({ ...feedback, rating })}
                                         className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${feedback.rating >= rating
-                                                ? 'bg-gradient-to-br from-amber-700 to-amber-600 text-amber-50 shadow-md'
-                                                : 'bg-amber-50 text-amber-700 hover:bg-amber-100'
+                                            ? 'bg-gradient-to-br from-amber-700 to-amber-600 text-amber-50 shadow-md'
+                                            : 'bg-amber-50 text-amber-700 hover:bg-amber-100'
                                             }`}
                                     >
                                         ★

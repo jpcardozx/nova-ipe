@@ -18,30 +18,22 @@ import {
     DollarSign,
     Users
 } from 'lucide-react';
-import { getImoveisDestaqueVenda } from '@lib/sanity/fetchImoveis';
 import type { ImovelClient as Imovel } from '../../src/types/imovel-client';
-import PropertyCardPremium from '@/app/components/PropertyCardPremium';
+import PropertyCardNew from '../components/PropertyCardNew'
+import HeroStyleCarousel from '../components/HeroStyleCarousel'
 import {
     transformToUnifiedPropertyList,
-    toPropertyCardPremiumProps,
+    toPropertyCardSectionProps,
     type UnifiedPropertyData
-} from '@/lib/unified-property-transformer';
+} from '@/lib/unified-property-transformer'
 import { cn } from '@/lib/utils';
-import { useDataWithFallback } from '../../lib/hooks/useDataWithFallback';
-import { fallbackImoveisVenda, fallbackMessage } from '../../lib/fallback/mock-data';
 
-function useDestaquesVenda(staleTime = 300_000) {
-    return useDataWithFallback({
-        fetchFunction: getImoveisDestaqueVenda,
-        fallbackData: fallbackImoveisVenda,
-        cacheKey: 'imoveis-destaque-venda',
-        staleTime,
-        fallbackMessage
-    });
+interface DestaquesVendaPremiumProps {
+    properties: Imovel[];
 }
 
-export default function DestaquesVendaPremium() {
-    const { data: imoveis, status, retry, isFallback, message } = useDestaquesVenda();
+export default function DestaquesVendaPremium({ properties }: DestaquesVendaPremiumProps) {
+    const imoveis = properties;
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
@@ -50,6 +42,11 @@ export default function DestaquesVendaPremium() {
         if (!imoveis || !imoveis.length) return [];
         return transformToUnifiedPropertyList(imoveis.slice(0, 9));
     }, [imoveis]);
+
+    // Determine loading/error states based on data
+    const isLoading = !properties; // Se properties é undefined/null
+    const isEmpty = !unifiedProperties.length;
+    const hasError = false; // Por enquanto sempre false, pode ser estendido
 
     // Auto-slide functionality
     useEffect(() => {
@@ -76,7 +73,7 @@ export default function DestaquesVendaPremium() {
         goToSlide(currentSlide === 0 ? Math.ceil(unifiedProperties.length / 3) - 1 : currentSlide - 1);
     };
 
-    if (status === 'loading') {
+    if (isLoading) {
         return (
             <section className="py-16 bg-gradient-to-br from-amber-50 via-white to-orange-50">
                 <div className="max-w-7xl mx-auto px-6">
@@ -89,7 +86,7 @@ export default function DestaquesVendaPremium() {
         );
     }
 
-    if (status === 'error') {
+    if (hasError) {
         return (
             <section className="py-16 bg-gradient-to-br from-amber-50 via-white to-red-50">
                 <div className="max-w-7xl mx-auto px-6">
@@ -102,7 +99,7 @@ export default function DestaquesVendaPremium() {
                             Não foi possível carregar os imóveis em destaque no momento.
                         </p>
                         <button
-                            onClick={retry}
+                            onClick={() => window.location.reload()}
                             className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
                         >
                             Tentar Novamente
@@ -113,7 +110,7 @@ export default function DestaquesVendaPremium() {
         );
     }
 
-    if (status === 'empty' || !unifiedProperties.length) {
+    if (isEmpty) {
         return (
             <section className="py-16 bg-gradient-to-br from-amber-50 via-white to-orange-50">
                 <div className="max-w-7xl mx-auto px-6">
@@ -153,142 +150,100 @@ export default function DestaquesVendaPremium() {
     return (
         <section className="py-16 bg-gradient-to-br from-slate-50 to-amber-50/30">
             <div className="max-w-7xl mx-auto px-6">
-                {/* Notification for fallback data */}
-                {isFallback && message && (
-                    <div className="mb-8 mx-auto max-w-4xl">
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center gap-3">
-                            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                <span className="text-blue-600 text-sm">🔧</span>
-                            </div>
-                            <div className="flex-1">
-                                <p className="text-blue-800 text-sm font-medium">
-                                    {message}
-                                </p>
-                            </div>
-                            <button
-                                onClick={retry}
-                                className="text-blue-600 hover:text-blue-800 text-sm font-medium underline"
-                            >
-                                Tentar reconectar
-                            </button>
-                        </div>
-                    </div>
-                )}
 
-                {/* Header Simplificado */}
-                <div className="text-center mb-12">
-                    <div className="inline-flex items-center gap-2 bg-amber-100/80 border border-amber-200 text-amber-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+                {/* Header Premium S-Tier */}
+                <div className="text-center mb-4">
+                    {/* Badge S-Tier */}
+                    <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-200/50 text-amber-800 px-5 py-2.5 rounded-full text-sm font-semibold mb-6 shadow-sm">
+                        <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
                         <Star className="w-4 h-4" />
-                        Imóveis em Destaque
+                        Seleçionados pela nossa equipe
+                        <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
                     </div>
 
-                    <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">
-                        Oportunidades para Venda
+                    <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-6 leading-tight">
+                        Imóveis à{' '}
+                        <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 bg-clip-text text-transparent">
+                            Venda
+                        </span>
                     </h2>
 
-                    <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-                        Seleção especial de imóveis em Guararema com as melhores condições.
+                    <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                        Oportunidades exclusivas em Guararema com{' '}
+                        <span className="font-semibold text-amber-500">as melhores condições</span>{' '}
+                        do mercado imobiliário
                     </p>
                 </div>
 
-                {/* Carousel Container */}
-                <div className="relative">
-                    {/* Properties Carousel */}
-                    <div className="overflow-hidden rounded-2xl">
-                        <div
-                            className="flex transition-transform duration-700 ease-out"
-                            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-                        >
-                            {Array.from({ length: slidesCount }).map((_, slideIndex) => (
-                                <div key={slideIndex} className="w-full flex-shrink-0">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 p-2 sm:p-4">
-                                        {unifiedProperties
-                                            .slice(slideIndex * 3, (slideIndex + 1) * 3)
-                                            .map((property) => {
-                                                const cardProps = toPropertyCardPremiumProps(property);
-                                                return (
-                                                    <div key={property.id} className="transform hover:scale-[1.02] transition-all duration-300">
-                                                        <PropertyCardPremium
-                                                            {...cardProps}
-                                                            variant="compact"
-                                                            className="h-full shadow-md hover:shadow-lg"
-                                                        />
-                                                    </div>
-                                                );
-                                            })}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Navigation Arrows - Responsivos */}
-                    {slidesCount > 1 && (
-                        <>
-                            <button
-                                onClick={prevSlide}
-                                className="absolute left-2 lg:left-4 top-1/2 -translate-y-1/2 bg-white hover:bg-amber-50 text-slate-700 shadow-lg hover:shadow-xl rounded-full p-2 lg:p-3 transition-all duration-300 z-10 border border-slate-200"
-                                aria-label="Imóvel anterior"
-                            >
-                                <ChevronLeft className="w-4 h-4 lg:w-5 lg:h-5" />
-                            </button>
-
-                            <button
-                                onClick={nextSlide}
-                                className="absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 bg-white hover:bg-amber-50 text-slate-700 shadow-lg hover:shadow-xl rounded-full p-2 lg:p-3 transition-all duration-300 z-10 border border-slate-200"
-                                aria-label="Próximo imóvel"
-                            >
-                                <ChevronRight className="w-4 h-4 lg:w-5 lg:h-5" />
-                            </button>
-                        </>
-                    )}
-
-                    {/* Dots Indicator */}
-                    {slidesCount > 1 && (
-                        <div className="flex justify-center gap-2 mt-6">
-                            {Array.from({ length: slidesCount }).map((_, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => goToSlide(index)}
-                                    className={cn(
-                                        "transition-all duration-300 rounded-full",
-                                        index === currentSlide
-                                            ? "w-6 h-2 bg-amber-500"
-                                            : "w-2 h-2 bg-slate-300 hover:bg-slate-400"
-                                    )}
-                                    aria-label={`Ir para slide ${index + 1}`}
+                {/* Carrossel Premium */}
+                <div className="relative px-4 sm:px-8">
+                    <HeroStyleCarousel
+                        title=""
+                        subtitle=""
+                        itemsPerView={{ mobile: 1, tablet: 2, desktop: 3 }}
+                        autoPlay={true}
+                        autoPlayInterval={6000}
+                        className="bg-transparent"
+                    >
+                        {unifiedProperties.map((property, index) => {
+                            const cardProps = toPropertyCardSectionProps(property);
+                            return (
+                                <PropertyCardNew
+                                    key={property.id}
+                                    {...cardProps}
+                                    isHighlighted={index < 3}
+                                    className="h-full transform hover:scale-[1.02] transition-all duration-300"
                                 />
-                            ))}
-                        </div>
-                    )}
+                            );
+                        })}
+                    </HeroStyleCarousel>
                 </div>
 
-                {/* CTA Section Simplificado */}
-                <div className="text-center mt-12">
-                    <div className="bg-white rounded-2xl p-8 shadow-md border border-slate-200">
-                        <h3 className="text-2xl font-bold text-slate-900 mb-4">
-                            Encontre seu Imóvel Ideal
-                        </h3>
-                        <p className="text-slate-600 mb-6 max-w-xl mx-auto">
-                            Navegue por nossa seleção completa ou fale conosco para um atendimento personalizado.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Link
-                                href="/catalogo?tipo=venda"
-                                className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
-                            >
-                                <Eye className="w-5 h-5" />
-                                Ver Todos para Venda
-                            </Link>
+                {/* Dots Indicator */}
+                {slidesCount > 1 && (
+                    <div className="flex justify-center gap-2 mt-6">
+                        {Array.from({ length: slidesCount }).map((_, index) => (
+                            <button
+                                key={index}
+                                onClick={() => goToSlide(index)}
+                                className={cn(
+                                    "transition-all duration-300 rounded-full",
+                                    index === currentSlide
+                                        ? "w-6 h-2 bg-amber-500"
+                                        : "w-2 h-2 bg-slate-300 hover:bg-slate-400"
+                                )}
+                                aria-label={`Ir para slide ${index + 1}`}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
 
-                            <Link
-                                href="/contato"
-                                className="border border-amber-500 text-amber-600 hover:bg-amber-50 px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
-                            >
-                                <MapPin className="w-5 h-5" />
-                                Fale Conosco
-                            </Link>
-                        </div>
+            {/* CTA Section Simplificado */}
+            <div className="text-center mt-12">
+                <div className="bg-white rounded-2xl p-8 shadow-md border border-slate-200">
+                    <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                        Encontre seu Imóvel Ideal
+                    </h3>
+                    <p className="text-slate-600 mb-6 max-w-xl mx-auto">
+                        Navegue por nossa seleção completa ou fale conosco para um atendimento personalizado.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <Link
+                            href="/catalogo?tipo=venda"
+                            className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                        >
+                            <Eye className="w-5 h-5" />
+                            Ver Todos para Venda
+                        </Link>
+
+                        <Link
+                            href="/contato"
+                            className="border border-amber-500 text-amber-600 hover:bg-amber-50 px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                        >
+                            <MapPin className="w-5 h-5" />
+                            Fale Conosco
+                        </Link>
                     </div>
                 </div>
             </div>

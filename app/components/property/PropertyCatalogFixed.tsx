@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Search, Filter, Grid, List, SlidersHorizontal, X, ArrowUpDown, Building2, Eye, Loader2 } from 'lucide-react'
 import { useDebounce } from '@/app/hooks/useDebounce'
 import { cn } from '@/lib/utils'
-import { getTodosImoveis } from '@/lib/sanity/fetchImoveis'
+import { getTodosImoveis } from '../../../lib/sanity/fetchImoveis'
 import type { ImovelClient } from '@/src/types/imovel-client'
 
 // Intersection Observer hook for lazy loading

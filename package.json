@@ -20,6 +20,8 @@
     "build:clean": "pnpm run clean && next build",
     "start:clean": "pnpm run clean && next start",
     "diagnostic": "node scripts/check-build-health.js",
+    "check-supabase": "node scripts/check-supabase-setup.js",
+    "test-login": "node scripts/test-login.js",
     "analyze": "ANALYZE=true next build",
     "perf:audit": "lighthouse http://localhost:3000 --output json --output html",
     "perf:bundle": "npx @next/bundle-analyzer .next/static/chunks/*.js"
@@ -29,6 +31,7 @@
     "@portabletext/react": "^3.0.15",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-label": "2.1.7",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-toast": "^1.1.5",
@@ -38,6 +41,7 @@
     "@sanity/types": "^4.3",
     "@sanity/ui": "^2.16.12",
     "@sanity/vision": "^3.20.0",
+    "@supabase/supabase-js": "2.57.0",
     "@tanstack/react-query": "^5.8.4",
     "@tanstack/react-virtual": "3.13.12",
     "@types/react-window": "1.8.8",
@@ -66,6 +70,7 @@
     "styled-components": "6.1.19",
     "tailwind-merge": "^2.0.0",
     "web-vitals": "5.1.0",
+    "yet-another-react-lightbox": "3.25.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
@@ -73,9 +78,11 @@
     "@types/react": "^18.2.42",
     "@types/react-dom": "^18.2.17",
     "autoprefixer": "^10.4.16",
+    "dotenv": "17.2.2",
     "eslint": "^8.55.0",
     "eslint-config-next": "^14.0.4",
     "postcss": "^8.4.32",
+    "supabase": "2.39.2",
     "tailwindcss": "^3.3.6",
     "typescript": "^5.3.3"
   }
