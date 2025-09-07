@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -49,6 +49,7 @@ function LoginPageContent() {
   const [showPassword, setShowPassword] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [selectedDepartment, setSelectedDepartment] = useState('')
+  const [portfolioClicks, setPortfolioClicks] = useState(0)
   const router = useRouter()
   const searchParams = useSearchParams()
   const authManager = new SimpleAuthManager()
@@ -309,6 +310,32 @@ function LoginPageContent() {
     signupForm.setValue('department', dept, { shouldValidate: true })
   }
 
+  // Handle hidden portfolio access - only when form is empty/invalid
+  const handlePortfolioAccess = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    
+    // Only allow portfolio access if login form is not filled/valid
+    const isFormEmptyOrInvalid = !loginForm.formState.isValid || 
+      (!loginForm.getValues('email') && !loginForm.getValues('password'))
+    
+    if (!isFormEmptyOrInvalid) {
+      return // Don't allow portfolio access when form is valid/filled
+    }
+    
+    const newClickCount = portfolioClicks + 1
+    setPortfolioClicks(newClickCount)
+    
+    if (newClickCount >= 5) {
+      router.push('/jpcardozx')
+      setPortfolioClicks(0)
+    } else {
+      // Reset click count after 3 seconds of inactivity
+      setTimeout(() => {
+        setPortfolioClicks(0)
+      }, 3000)
+    }
+  }, [portfolioClicks, router, loginForm])
+
   const switchToSignup = () => {
     setErrorMessage('')
     setViewMode('signup')
@@ -353,7 +380,20 @@ function LoginPageContent() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.1 }}
               >
-                <h2 className="mt-6 bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-center text-4xl font-bold tracking-tight text-transparent font-serif">
+                <h2 
+                  onClick={handlePortfolioAccess}
+                  className={`mt-6 bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-center text-4xl font-bold tracking-tight text-transparent font-serif transition-all duration-200 select-none ${
+                    // Only show as clickable when form is empty/invalid
+                    (!loginForm.formState.isValid || (!loginForm.watch('email') && !loginForm.watch('password')))
+                      ? `cursor-pointer ${portfolioClicks > 0 ? 'brightness-125 scale-105' : 'hover:brightness-110'}`
+                      : 'cursor-default'
+                  }`}
+                  title={
+                    (!loginForm.formState.isValid || (!loginForm.watch('email') && !loginForm.watch('password'))) && portfolioClicks > 0 
+                      ? `${portfolioClicks}/5` 
+                      : undefined
+                  }
+                >
                   Acesse sua Conta
                 </h2>
                 <p className="mt-2 text-center text-sm text-gray-300">

@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Phone, MessageCircle, X, Menu, Home, Building, Key, Mail } from 'lucide-react';
+import { Phone, MessageCircle, X, Menu, Home, Building, Key, Mail, User } from 'lucide-react';
 
 const navItems = [
     { label: 'Início', href: '/', icon: Home },
@@ -79,6 +79,7 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
         setIsOpen(false);
     }, [pathname]);
 
+
     // Prevent body scroll when mobile menu is open
     useEffect(() => {
         if (isOpen && isMobile) {
@@ -112,16 +113,16 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
                         {/* Mobile Layout */}
                         {isMobile ? (
                             <div className="flex items-center justify-between w-full">
-                                <Link href="/" aria-label="Ir para página inicial" className="flex-shrink-0">
+                                <div className="flex-shrink-0">
                                     <Image
                                         src="/images/ipeLogoWritten.png"
                                         alt="Ipê Imóveis"
                                         width={150}
                                         height={45}
-                                        className="object-contain transition-all duration-300"
+                                        className="object-contain"
                                         priority
                                     />
-                                </Link>
+                                </div>
 
                                 <button
                                     onClick={() => setIsOpen(!isOpen)}
@@ -138,18 +139,18 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
 
                                 {/* Logo - Esquerda */}
                                 <div className="flex justify-start">
-                                    <Link href="/" aria-label="Ir para página inicial" className="group">
-                                        <div className="relative overflow-hidden rounded-xl p-2 transition-colors duration-200 hover:bg-amber-50/50">
+                                    <div>
+                                        <div className="relative overflow-hidden rounded-xl p-2 transition-all duration-200 hover:bg-amber-50/50">
                                             <Image
                                                 src="/images/ipeLogoWritten.png"
                                                 alt="Ipê Imóveis"
                                                 width={150}
                                                 height={45}
-                                                className="object-contain transition-all duration-300"
+                                                className="object-contain"
                                                 priority
                                             />
                                         </div>
-                                    </Link>
+                                    </div>
                                 </div>
 
                                 {/* Navegação Central */}
@@ -196,6 +197,15 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
                                         <MessageCircle className="w-4 h-4" />
                                         <span className="hidden xl:block">WhatsApp</span>
                                     </a>
+
+                                    {/* Login discreto */}
+                                    <Link
+                                        href="/login"
+                                        className="flex items-center justify-center w-9 h-9 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-xl transition-colors duration-200"
+                                        title="Acesso para sócios"
+                                    >
+                                        <User className="w-4 h-4" />
+                                    </Link>
                                 </div>
                             </div>
                         )}

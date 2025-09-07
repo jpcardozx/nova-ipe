@@ -89,7 +89,15 @@ export default function FooterAprimorado() {
 
     useEffect(() => {
         const handleScroll = () => {
-            setShowScrollToTop(window.scrollY > 500);
+            const scrollY = window.scrollY;
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+            const footerHeight = 400; // Altura estimada do footer
+            
+            // Mostra o botão quando o usuário scrollou mais de 500px
+            // mas esconde quando está próximo do final da página (no footer)
+            const nearFooter = scrollY + windowHeight > documentHeight - footerHeight;
+            setShowScrollToTop(scrollY > 500 && !nearFooter);
         };
 
         window.addEventListener('scroll', handleScroll);

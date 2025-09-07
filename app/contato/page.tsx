@@ -103,7 +103,7 @@ export default function ContactPage() {
     {
       icon: MapPin,
       title: 'Endereço',
-      content: 'Centro de Guararema, SP',
+      content: 'Praca 9 de Julho, 65 | Guararema, SP',
       subtitle: 'Atendimento presencial',
       href: 'https://maps.google.com/?q=Guararema,SP'
     }
@@ -129,7 +129,7 @@ export default function ContactPage() {
     <div className="min-h-screen bg-gray-50">
 
       {/* Header */}
-      <section className="bg-white border-b border-gray-200">
+      <section className="bg-white border-b border-gray-200 pt-6 sm:pt-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <div className="inline-block px-4 py-2 bg-amber-100 text-amber-800 text-sm font-medium rounded-lg mb-6">
@@ -176,8 +176,8 @@ export default function ContactPage() {
             <div className="lg:col-span-2">
 
               {/* Office Image */}
-              <div className="relative mb-8">
-                <div className="h-64 rounded-lg overflow-hidden bg-gray-200">
+              <div className="relative mb-8 rounded-md overflow-hidden shadow-lg">
+                <div className="h-64 rounded-md overflow-hidden bg-gray-200">
                   <img
                     src="/images/escritorioInterior.jpg"
                     alt="Escritório Ipê Imóveis"
@@ -185,8 +185,8 @@ export default function ContactPage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                   <div className="absolute bottom-4 left-4 text-white">
-                    <h3 className="font-semibold">Escritório Central</h3>
-                    <p className="text-sm opacity-90">Centro de Guararema</p>
+                    <h3 className="font-semibold">Nosso Escritório</h3>
+                    <p className="text-sm opacity-60">Seja atendido presencialmente</p>
                   </div>
                   <div className="absolute top-4 right-4 bg-amber-500 text-white px-3 py-1 rounded text-xs font-medium">
                     Desde 2008
@@ -228,15 +228,15 @@ export default function ContactPage() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span>Segunda - Sexta</span>
-                    <span>9:00 - 18:00</span>
+                    <span>9:00 - 17:00</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Sábados</span>
-                    <span>9:00 - 14:00</span>
+                    <span>9:00 - 13:00</span>
                   </div>
                   <div className="flex justify-between pt-2 border-t border-gray-700">
-                    <span>Atendimento de emergência</span>
-                    <span className="text-amber-400">Sob consulta</span>
+                    <span>Atendimento via WhatsApp</span>
+                    <span className="text-amber-400">Disponível</span>
                   </div>
                 </div>
               </div>
@@ -461,7 +461,7 @@ export default function ContactPage() {
                   <div className="text-center pt-4 border-t border-gray-200">
                     <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
                       <Shield className="w-4 h-4 text-amber-600" />
-                      <span>Seus dados são tratados conforme nossa política de privacidade</span>
+                      <span>Seus dados são tratados de acordo com a LGPD</span>
                     </div>
                   </div>
                 </form>
