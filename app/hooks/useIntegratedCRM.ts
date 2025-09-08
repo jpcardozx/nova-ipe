@@ -144,7 +144,7 @@ export function useIntegratedCRM({
 
     const addActivity = useCallback(async (activityData: {
         lead_id?: string
-        activity_type: string
+        activity_type: 'document' | 'task' | 'viewing' | 'call' | 'email' | 'whatsapp' | 'meeting'
         subject: string
         description?: string
         outcome?: string
@@ -209,9 +209,9 @@ export function useIntegratedCRM({
         document_id?: string
         title: string
         description?: string
-        task_type: string
+        task_type: 'review' | 'approve' | 'sign' | 'collect' | 'send' | 'update'
         assigned_to?: string
-        priority?: string
+        priority?: 'low' | 'medium' | 'high' | 'urgent'
         due_date?: string
     }) => {
         try {
@@ -273,16 +273,15 @@ export function useIntegratedCRM({
                 title: metadata.title || file.name.replace(/\.[^/.]+$/, ''),
                 description: metadata.description,
                 file_name: file.name,
-                original_file_name: file.name,
                 file_size: file.size,
                 file_type: file.type,
-                file_path: path,
+                file_path: path || undefined,
                 lead_id: metadata.lead_id || leadId,
                 property_id: metadata.property_id,
                 contract_id: metadata.contract_id,
                 document_type_id: metadata.document_type_id,
                 requires_signature: metadata.requires_signature || false,
-                status: 'draft'
+                status: 'draft' as const
             })
 
             if (error) throw error
@@ -323,8 +322,8 @@ export function useIntegratedCRM({
             }
 
             const { data, error } = await CRMService.downloadFile(document.file_path)
-            
             if (error) throw error
+            if (!data) throw new Error('Dados do arquivo não encontrados')
 
             const url = URL.createObjectURL(data)
             const a = window.document.createElement('a')
@@ -363,7 +362,7 @@ export function useIntegratedCRM({
                 lead_id: leadId,
                 title: 'Follow-up agendado',
                 description: notes,
-                task_type: 'follow-up',
+                task_type: 'review',
                 due_date: date.toISOString(),
                 priority: 'medium'
             })
@@ -387,7 +386,7 @@ export function useIntegratedCRM({
         return createTask({
             document_id: documentId,
             title: taskTitles[taskType as keyof typeof taskTitles] || 'Tarefa do documento',
-            task_type: taskType,
+            task_type: taskType as 'review' | 'approve' | 'sign' | 'collect' | 'send' | 'update',
             assigned_to: assignedTo,
             priority: taskType === 'sign' ? 'high' : 'medium'
         })

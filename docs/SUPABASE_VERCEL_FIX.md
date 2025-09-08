@@ -40,7 +40,7 @@ Garanta que as seguintes variáveis estão configuradas na Vercel:
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=https://ifhfpaehnjpdwdocdzwd.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmaGZwYWVobmpwZHdkb2NkendkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwMDMxMzIsImV4cCI6MjA3MjU3OTEzMn0.-YL0e3oE6mRqL0K432iP3dlbTRPz8G07QJLOI0Ulcyk
-NEXT_PUBLIC_SITE_URL=https://nova-ipe.vercel.app
+NEXT_PUBLIC_SITE_URL=https://ipeimoveis.vercel.app
 ```
 
 ### 2. Comandos na Vercel CLI

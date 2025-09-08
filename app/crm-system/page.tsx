@@ -3,12 +3,11 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import IntegratedDashboard from '@/app/components/business/IntegratedDashboard'
-import DocumentManagerNew from '@/app/components/documents/DocumentManagerNew'
 import CloudStorage from '@/app/components/business/CloudStorage'
 import {
     FiUsers,
     FiFileText,
-    FiBarChart3,
+    FiBarChart,
     FiSettings,
     FiChevronLeft,
     FiHome,
@@ -47,7 +46,7 @@ export default function CRMSystemPage() {
         {
             id: 'analytics',
             name: 'Analytics',
-            icon: FiBarChart3,
+            icon: FiBarChart,
             description: 'Relatórios e métricas'
         }
     ]
@@ -228,7 +227,7 @@ function AnalyticsView() {
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">Atividades Recentes</h3>
                         <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
                             <div className="text-center">
-                                <FiBarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                                <FiBarChart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                                 <p className="text-gray-500">Gráficos serão implementados com Chart.js</p>
                                 <p className="text-sm text-gray-400 mt-2">
                                     Métricas em tempo real dos leads e documentos

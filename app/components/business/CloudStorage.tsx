@@ -572,7 +572,7 @@ const FolderCard = ({ folder, viewMode, onOpen, onDelete, readonly }: {
     if (viewMode === 'list') {
         return (
             <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 hover:bg-gray-50">
-                <div className="flex items-center space-x-3" onClick={onOpen} className="cursor-pointer flex-1">
+                <div className="flex items-center space-x-3 cursor-pointer flex-1" onClick={onOpen}>
                     <FiFolder className="h-5 w-5 text-blue-600" />
                     <span className="font-medium text-gray-900">{folder.name}</span>
                 </div>
