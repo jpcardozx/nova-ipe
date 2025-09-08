@@ -1,13 +1,14 @@
 import { getPostData } from '../../../lib/blog'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 export default async function Post({ params }: PageProps) {
-  const postData = await getPostData(params.slug) as any
+  const { slug } = await params
+  const postData = await getPostData(slug) as any
 
   return (
     <article>
