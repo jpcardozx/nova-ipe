@@ -10,11 +10,11 @@ import { Contact } from './components/Contact';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'JP Cardozo | Portfolio',
-  description: 'Portfólio de desenvolvimento e design de João Pedro Cardozo.',
+  title: 'Pedro de Mello | Full-Stack Developer & Design UI/UX',
+  description: 'Portfólio de desenvolvimento e design de Pedro de Mello.',
 };
 
-export default function JPCardozoPortfolio() {
+export default function PedroMelloPortfolio() {
   return (
     <div className="bg-white text-gray-800">
       <Hero />

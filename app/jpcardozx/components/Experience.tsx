@@ -4,32 +4,32 @@ import { Calendar, MapPin, ArrowUpRight } from 'lucide-react';
 
 const experiences = [
   {
-    company: 'Freelancer',
-    position: 'Fullstack Developer',
+    company: 'Soluções Empresariais',
+    position: 'Desenvolvimento Full-Stack',
     period: '2023 - Presente',
-    location: 'Remoto',
-    description: 'Desenvolvimento de aplicações web completas para clientes diversos, desde startups até empresas consolidadas. Foco em soluções escaláveis e experiências de usuário excepcionais.',
+    location: 'Digital',
+    description: 'Criação de aplicações web estratégicas que impulsionam o crescimento de negócios em diversos setores, desde startups até empresas estabelecidas.',
     achievements: [
-      'Desenvolvimento de 12+ projetos web completos',
-      'Implementação de sistemas de autenticação e pagamento',
-      'Otimização de performance resultando em 40% de melhoria no carregamento',
-      'Integração com APIs terceiras e serviços de nuvem'
+      'Aumento médio de 40% na conversão digital dos clientes',
+      'Redução de 60% no tempo de processos manuais',
+      'Implementação de sistemas de pagamento seguros',
+      'Otimização que resultou em 50% menos tempo de carregamento'
     ],
-    tech: ['React', 'Next.js', 'TypeScript', 'Node.js', 'PostgreSQL', 'Supabase']
+    tech: ['Next.js', 'TypeScript', 'Node.js', 'PostgreSQL', 'Supabase', 'Payment APIs']
   },
   {
-    company: 'Projetos Acadêmicos',
-    position: 'Desenvolvedor Frontend',
+    company: 'Inovação & Produto',
+    position: 'Arquitetura de Soluções',
     period: '2022 - 2023',
-    location: 'Brasília, DF',
-    description: 'Participação em projetos universitários e hackathons, desenvolvendo soluções inovadoras para problemas reais da sociedade.',
+    location: 'Projetos Estratégicos',
+    description: 'Desenvolvimento de produtos digitais inovadores com foco em resolver problemas reais de mercado e gerar impacto mensurável.',
     achievements: [
-      'Primeiro lugar em hackathon de sustentabilidade',
-      'Desenvolvimento de app para gestão de resíduos',
-      'Criação de dashboard para análise de dados ambientais',
-      'Mentoria de colegas em tecnologias frontend'
+      'Criação de MVP que validou modelo de negócio',
+      'Dashboard analítico que otimizou tomada de decisões',
+      'Sistema de gestão que reduziu custos operacionais em 30%',
+      'Prototipagem rápida para validação de conceitos'
     ],
-    tech: ['React', 'JavaScript', 'Python', 'Firebase', 'Figma']
+    tech: ['React', 'Python', 'Data Analytics', 'Firebase', 'Design Systems']
   },
 ];
 
@@ -50,7 +50,6 @@ const itemVariants = {
     y: 0,
     transition: {
       duration: 0.6,
-      ease: 'easeOut',
     },
   },
 };
@@ -60,15 +59,15 @@ export function Experience() {
     <section className="bg-gradient-to-b from-white to-gray-50 py-24 sm:py-32">
       <div className="container mx-auto px-4">
         <div className="text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-2 text-sm font-medium text-emerald-800 mb-6">
-            <div className="h-2 w-2 rounded-full bg-emerald-600"></div>
-            Experiência
+          <div className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-4 py-2 text-sm font-medium text-amber-800 mb-6">
+            <div className="h-2 w-2 rounded-full bg-amber-600"></div>
+            Resultados Comprovados
           </div>
           <h2 className="font-display text-4xl font-bold text-gray-900 sm:text-5xl lg:text-6xl">
-            Trajetória Profissional
+            Impacto nos Negócios
           </h2>
           <p className="mt-6 max-w-3xl mx-auto text-xl text-gray-600 leading-relaxed">
-            Uma jornada de aprendizado contínuo, sempre buscando novos desafios e oportunidades de crescimento.
+            Soluções que geram resultados mensuráveis e vantagem competitiva real para nossos parceiros.
           </p>
         </div>
 
@@ -86,16 +85,16 @@ export function Experience() {
               className="relative pl-8 pb-12 last:pb-0"
             >
               {/* Timeline line */}
-              <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-emerald-200 to-transparent" />
+              <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-amber-200 to-transparent" />
 
               {/* Timeline dot */}
-              <div className="absolute left-0 top-2 w-2 h-2 -translate-x-1/2 bg-emerald-600 rounded-full" />
+              <div className="absolute left-0 top-2 w-2 h-2 -translate-x-1/2 bg-amber-600 rounded-full" />
 
               <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
                   <div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-1">{exp.position}</h3>
-                    <div className="flex items-center gap-2 text-emerald-600 font-semibold mb-2">
+                    <div className="flex items-center gap-2 text-amber-600 font-semibold mb-2">
                       <span>{exp.company}</span>
                       <ArrowUpRight className="h-4 w-4" />
                     </div>
@@ -117,11 +116,11 @@ export function Experience() {
                 </p>
 
                 <div className="mb-6">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3">Principais Conquistas</h4>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-3">Resultados Entregues</h4>
                   <ul className="space-y-2">
                     {exp.achievements.map((achievement, i) => (
                       <li key={i} className="flex items-start gap-3">
-                        <div className="w-1.5 h-1.5 bg-emerald-600 rounded-full mt-2 flex-shrink-0" />
+                        <div className="w-1.5 h-1.5 bg-amber-600 rounded-full mt-2 flex-shrink-0" />
                         <span className="text-gray-700">{achievement}</span>
                       </li>
                     ))}
@@ -134,7 +133,7 @@ export function Experience() {
                     {exp.tech.map((tech) => (
                       <span
                         key={tech}
-                        className="rounded-lg bg-emerald-100 px-3 py-1.5 text-sm font-medium text-emerald-800"
+                        className="rounded-lg bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-800"
                       >
                         {tech}
                       </span>

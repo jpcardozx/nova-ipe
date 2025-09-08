@@ -32,31 +32,31 @@ export function Hero() {
           </div>
         </div>
         <h1 className="font-display text-4xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl mb-8" style={{ textShadow: '0 2px 30px rgba(0,0,0,0.9)' }}>
-          Transformamos Sua Ideia em
-          <span className="block text-transparent bg-gradient-to-tr from-amber-300 via-amber-400 to-amber-300 bg-clip-text">Aplicação Profissional</span>
+          Acelere seu Negócio com
+          <span className="block text-transparent bg-gradient-to-tr from-amber-300 via-amber-400 to-amber-300 bg-clip-text">Soluções Digitais Eficazes</span>
         </h1>
         <div className="max-w-4xl mx-auto space-y-6">
           <p className="text-2xl sm:text-3xl text-white font-light leading-tight">
-            Desenvolvedor Full-Stack com
-            <span className="text-amber-300 font-semibold"> 3+ anos de experiência</span>
+            Aplicações que geram
+            <span className="text-amber-300 font-semibold"> resultados reais</span> para seu negócio
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-6 text-amber-200">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">💰</span>
-              <span>Projetos entregues: <strong className="text-white">25+</strong></span>
+          <div className="flex flex-wrap items-center justify-center gap-8 text-gray-200">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 bg-amber-400 rounded-full"></div>
+              <span><strong className="text-white">Conversão</strong> otimizada</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">⭐</span>
-              <span>Satisfação: <strong className="text-white">100%</strong></span>
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 bg-amber-400 rounded-full"></div>
+              <span><strong className="text-white">Performance</strong> garantida</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">⏱️</span>
-              <span>Prazo médio: <strong className="text-white">30 dias</strong></span>
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 bg-amber-400 rounded-full"></div>
+              <span><strong className="text-white">Escalabilidade</strong> planejada</span>
             </div>
           </div>
           <p className="text-lg text-gray-300 leading-relaxed max-w-3xl mx-auto">
-            Criador da plataforma <span className="text-amber-300 font-semibold">Ipe Imóveis</span> •
-            Especialista em <span className="text-amber-300 font-semibold">Next.js, React e TypeScript</span>
+            Desenvolvimento estratégico focado em <span className="text-amber-300 font-semibold">ROI</span> •
+            Tecnologias modernas para <span className="text-amber-300 font-semibold">vantagem competitiva</span>
           </p>
         </div>
         <motion.div
@@ -67,20 +67,20 @@ export function Hero() {
           <div className="flex flex-col sm:flex-row gap-6 mt-12 mx-auto justify-center max-w-lg">
             <a
               href="#contact"
-              className="group inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 px-10 py-5 text-lg font-bold text-white shadow-2xl shadow-emerald-500/30 transition-all hover:shadow-3xl hover:shadow-emerald-500/50 hover:scale-105 hover:from-emerald-500 hover:to-emerald-400"
+              className="group inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-amber-600 to-amber-500 px-10 py-5 text-lg font-bold text-white shadow-2xl shadow-amber-500/30 transition-all hover:shadow-3xl hover:shadow-amber-500/50 hover:scale-105 hover:from-amber-500 hover:to-amber-400"
             >
-              <span>🚀 Criar Meu Projeto</span>
+              <span>Iniciar Projeto</span>
             </a>
             <a
               href="#projects"
-              className="inline-flex items-center justify-center gap-3 rounded-full border-2 border-emerald-400/60 bg-emerald-950/40 backdrop-blur-md px-10 py-5 text-lg font-semibold text-emerald-100 transition-all hover:bg-emerald-900/60 hover:border-emerald-300 hover:scale-105 hover:text-white"
+              className="inline-flex items-center justify-center gap-3 rounded-full border-2 border-amber-400/60 bg-amber-950/40 backdrop-blur-md px-10 py-5 text-lg font-semibold text-amber-100 transition-all hover:bg-amber-900/60 hover:border-amber-300 hover:scale-105 hover:text-white"
             >
-              <span>Ver Portfolio</span>
+              <span>Ver Casos</span>
               <ArrowDown className="h-5 w-5" />
             </a>
           </div>
-          <div className="mt-8 flex items-center justify-center gap-2 text-emerald-200">
-            <span className="text-sm">🔒 Consulta gratuita • 💰 Orçamento em 24h • ⚡ Entrega rápida</span>
+          <div className="mt-8 flex items-center justify-center gap-2 text-amber-200">
+            <span className="text-sm">Consulta estratégica gratuita • Proposta em 48h • Acompanhamento completo</span>
           </div>
         </motion.div>
       </motion.div>

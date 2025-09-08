@@ -31,15 +31,23 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-100 flex relative">
+      <div
+        className="absolute inset-0 bg-repeat opacity-30 pointer-events-none"
+        style={{
+          backgroundImage: 'url(/images/dashboard/texture.png)',
+          backgroundSize: '400px 400px'
+        }}
+      />
+
       <DashboardSidebar
         collapsed={sidebarCollapsed}
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
 
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden relative z-10">
         <DashboardHeader />
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto p-2 md:p-6 lg:p-8 rounded-lg">
           {children}
         </main>
         <QuickActions />

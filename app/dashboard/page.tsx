@@ -1,7 +1,7 @@
 'use client'
 
-import DashboardWelcome from './components/DashboardWelcome'
+import ProfessionalDashboard from './components/ProfessionalDashboard'
 
 export default function DashboardPage() {
-    return <DashboardWelcome />
+    return <ProfessionalDashboard />
 }

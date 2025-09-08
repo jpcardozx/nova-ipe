@@ -141,8 +141,8 @@ export default function DocumentsPage() {
 
     const filteredDocuments = documents.filter(doc => {
         const matchesSearch = doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            doc.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            doc.property_address?.toLowerCase().includes(searchTerm.toLowerCase())
+            doc.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            doc.property_address?.toLowerCase().includes(searchTerm.toLowerCase())
         const matchesType = selectedType === 'all' || doc.type === selectedType
         const matchesStatus = selectedStatus === 'all' || doc.status === selectedStatus
         return matchesSearch && matchesType && matchesStatus
@@ -150,7 +150,7 @@ export default function DocumentsPage() {
 
     const filteredTemplates = templates.filter(template => {
         const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            template.description.toLowerCase().includes(searchTerm.toLowerCase())
+            template.description.toLowerCase().includes(searchTerm.toLowerCase())
         const matchesType = selectedType === 'all' || template.type === selectedType
         return matchesSearch && matchesType
     })
@@ -178,7 +178,7 @@ export default function DocumentsPage() {
     }
 
     return (
-        <div className="p-6 max-w-7xl mx-auto">
+        <div className="p-6 max-w-7xl mx-auto rounded-xl">
             {/* Header */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
                 <div>
@@ -193,22 +193,20 @@ export default function DocumentsPage() {
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => setView('documents')}
-                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                            view === 'documents'
+                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${view === 'documents'
                                 ? 'bg-blue-600 text-white'
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
+                            }`}
                     >
                         <FileText className="h-4 w-4 inline mr-2" />
                         Documentos
                     </button>
                     <button
                         onClick={() => setView('templates')}
-                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                            view === 'templates'
+                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${view === 'templates'
                                 ? 'bg-blue-600 text-white'
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
+                            }`}
                     >
                         <Folder className="h-4 w-4 inline mr-2" />
                         Templates

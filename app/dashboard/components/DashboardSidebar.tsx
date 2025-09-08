@@ -35,7 +35,9 @@ import {
     CheckSquare,
     Calculator,
     Folder,
-    Percent
+    Percent,
+    BookOpen,
+    Cloud
 } from 'lucide-react'
 
 interface MenuItem {
@@ -54,36 +56,41 @@ interface MenuCategory {
 
 const menuItems: MenuCategory[] = [
     {
-        category: 'Principal',
+        category: 'Home',
         items: [
             { icon: Home, label: 'Dashboard', href: '/dashboard', color: 'text-blue-600' },
-            { icon: CheckSquare, label: 'Tarefas', href: '/dashboard/tasks', color: 'text-red-600', badge: '8' },
-            { icon: Building2, label: 'Imóveis', href: '/dashboard/properties', color: 'text-green-600', badge: '156' },
-            { icon: Users, label: 'Clientes (CRM)', href: '/dashboard/clients', color: 'text-purple-600', badge: '89' },
-            { icon: Calendar, label: 'Agendamentos', href: '/dashboard/appointments', color: 'text-orange-600', badge: '12' }
         ]
     },
     {
-        category: 'Vendas & Marketing',
+        category: 'Principal',
         items: [
-            { icon: TrendingUp, label: 'Funil de Vendas', href: '/dashboard/funil', color: 'text-emerald-600', badge: '34' },
-            { icon: Target, label: 'Campanhas', href: '/dashboard/campaigns', color: 'text-pink-600' },
-            { icon: Calculator, label: 'Calculadora', href: '/dashboard/calculator', color: 'text-blue-600' }
-        ]
-    },
-    {
-        category: 'Financeiro',
-        items: [
-            { icon: Percent, label: 'Comissões', href: '/dashboard/commissions', color: 'text-green-600' },
-            { icon: BarChart3, label: 'Relatórios', href: '/dashboard/reports', color: 'text-indigo-600' },
-            { icon: Activity, label: 'Performance', href: '/dashboard/analytics', color: 'text-red-600' }
+            { icon: CheckSquare, label: 'Tarefas', href: '/dashboard/tasks', color: 'text-red-600' },
+            { icon: Building2, label: 'Estúdio Sanity', href: '/structure', color: 'text-green-600' },
+            { icon: Users, label: 'Clientes (CRM)', href: '/dashboard/clients', color: 'text-purple-600' },
+            { icon: Calendar, label: 'Agendamentos', href: '/dashboard/appointments', color: 'text-orange-600' }
         ]
     },
     {
         category: 'Documentos',
         items: [
+            { icon: Cloud, label: 'Ipê Cloud', href: '/dashboard/cloud', color: 'text-cyan-600', badge: 'NEW' },
             { icon: Folder, label: 'Contratos', href: '/dashboard/documents', color: 'text-gray-600' },
-            { icon: FileText, label: 'Templates', href: '/dashboard/templates', color: 'text-blue-600' }
+        ]
+    },
+    {
+        category: 'Vendas & Marketing',
+        items: [
+            { icon: Target, label: 'Leads & Funil', href: '/dashboard/leads', color: 'text-emerald-600', badge: 'HOT' },
+            { icon: TrendingUp, label: 'Funil de Vendas', href: '/dashboard/funil', color: 'text-emerald-600' },
+            { icon: Target, label: 'Campanhas', href: '/dashboard/campaigns', color: 'text-pink-600' },
+        ]
+    },
+    {
+        category: 'Financeiro',
+        items: [
+            { icon: BarChart3, label: 'Relatórios', href: '/dashboard/reports', color: 'text-indigo-600' },
+            { icon: Activity, label: 'Performance', href: '/dashboard/analytics', color: 'text-red-600' },
+            { icon: Calculator, label: 'Calculadora', href: '/dashboard/calculator', color: 'text-blue-600' }
         ]
     },
     {
@@ -120,7 +127,8 @@ export default function DashboardSidebar({ collapsed = false, onToggle }: Dashbo
         <motion.div
             initial={false}
             animate={{
-                width: collapsed ? '80px' : '280px'
+                width: collapsed ? '80px' : '280px',
+                height: '100vh',
             }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
             className="bg-white border-r border-gray-200 shadow-lg flex flex-col h-screen relative z-10"
@@ -172,34 +180,6 @@ export default function DashboardSidebar({ collapsed = false, onToggle }: Dashbo
                         <ChevronLeft className="h-5 w-5 text-gray-600" />
                     )}
                 </button>
-            </div>
-
-            {/* User Profile */}
-            <div className="p-4 border-b border-gray-100">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-semibold shadow-lg relative">
-                        {user?.email?.charAt(0)?.toUpperCase() || 'U'}
-                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
-                    </div>
-
-                    {!collapsed && (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.1 }}
-                            className="flex-1 min-w-0"
-                        >
-                            <p className="font-semibold text-gray-900 truncate text-sm">
-                                {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'Usuário'}
-                            </p>
-                            <p className="text-xs text-gray-500 truncate">{user?.email}</p>
-                            <div className="flex items-center gap-1 mt-1">
-                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                <span className="text-xs text-gray-600">Online</span>
-                            </div>
-                        </motion.div>
-                    )}
-                </div>
             </div>
 
             {/* Navigation Menu */}

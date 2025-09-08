@@ -98,7 +98,7 @@ export default function DashboardHeader({ title, subtitle }: DashboardHeaderProp
     }
 
     return (
-        <header className="bg-white border-b border-gray-200 shadow-sm">
+        <header className="bg-white border-b border-gray-200 shadow-sm p-1">
             <div className="flex items-center justify-between h-16 px-6">
                 {/* Page Title */}
                 <div className="flex-1">

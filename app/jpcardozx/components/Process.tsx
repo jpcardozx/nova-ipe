@@ -54,7 +54,7 @@ const stepVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: 'easeOut' }
+    transition: { duration: 0.6 }
   }
 };
 
@@ -69,8 +69,8 @@ export function Process() {
             Metodologia
           </div>
           <h2 className="font-display text-4xl font-bold text-gray-900 sm:text-5xl lg:text-6xl mb-6">
-            Como Trabalho
-            <span className="block text-amber-600">Do Briefing ao Launch</span>
+            Processo Estruturado
+            <span className="block text-amber-500 mt-2">Do Briefing ao Launch</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Um processo transparente e eficiente que garante resultados excepcionais em cada etapa do projeto.

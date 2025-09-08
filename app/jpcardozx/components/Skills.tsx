@@ -4,33 +4,33 @@ import { Code, Database, Palette, Server, Wind } from 'lucide-react';
 
 const skillCategories = [
   {
-    title: 'Frontend & UI',
-    description: 'Criando interfaces modernas e responsivas',
+    title: 'Tecnologias Core',
+    description: 'Stack moderno para aplicações de alta performance',
     skills: [
-      { name: 'TypeScript', level: 'Avançado', icon: <Code className="h-5 w-5 text-emerald-600" /> },
-      { name: 'React & Next.js', level: 'Avançado', icon: <Code className="h-5 w-5 text-emerald-600" /> },
-      { name: 'Tailwind CSS', level: 'Avançado', icon: <Wind className="h-5 w-5 text-emerald-600" /> },
-      { name: 'Framer Motion', level: 'Intermediário', icon: <motion.div className="h-5 w-5 bg-emerald-600 rounded" /> },
+      { name: 'Next.js & React', level: 'Especialista', icon: <Code className="h-5 w-5 text-amber-600" /> },
+      { name: 'TypeScript', level: 'Especialista', icon: <Code className="h-5 w-5 text-amber-600" /> },
+      { name: 'Tailwind CSS', level: 'Especialista', icon: <Wind className="h-5 w-5 text-amber-600" /> },
+      { name: 'Node.js', level: 'Avançado', icon: <Server className="h-5 w-5 text-amber-600" /> },
     ],
   },
   {
-    title: 'Backend & Database',
-    description: 'Arquiteturas escaláveis e performantes',
+    title: 'Backend & Dados',
+    description: 'Infraestrutura robusta e escalável',
     skills: [
-      { name: 'Node.js & Express', level: 'Avançado', icon: <Server className="h-5 w-5 text-emerald-600" /> },
-      { name: 'Python & FastAPI', level: 'Intermediário', icon: <Server className="h-5 w-5 text-emerald-600" /> },
-      { name: 'PostgreSQL', level: 'Avançado', icon: <Database className="h-5 w-5 text-emerald-600" /> },
-      { name: 'Supabase', level: 'Avançado', icon: <Database className="h-5 w-5 text-emerald-600" /> },
+      { name: 'PostgreSQL', level: 'Avançado', icon: <Database className="h-5 w-5 text-amber-600" /> },
+      { name: 'Supabase', level: 'Especialista', icon: <Database className="h-5 w-5 text-amber-600" /> },
+      { name: 'APIs RESTful', level: 'Especialista', icon: <Server className="h-5 w-5 text-amber-600" /> },
+      { name: 'Python', level: 'Intermediário', icon: <Server className="h-5 w-5 text-amber-600" /> },
     ],
   },
   {
-    title: 'Design & UX',
-    description: 'Design centrado no usuário e acessibilidade',
+    title: 'Design & Experiência',
+    description: 'Interfaces que convertem e engajam',
     skills: [
-      { name: 'Figma', level: 'Avançado', icon: <Palette className="h-5 w-5 text-emerald-600" /> },
-      { name: 'Design Systems', level: 'Avançado', icon: <Palette className="h-5 w-5 text-emerald-600" /> },
-      { name: 'Prototipagem', level: 'Avançado', icon: <Palette className="h-5 w-5 text-emerald-600" /> },
-      { name: 'Acessibilidade', level: 'Intermediário', icon: <Palette className="h-5 w-5 text-emerald-600" /> },
+      { name: 'UI/UX Design', level: 'Avançado', icon: <Palette className="h-5 w-5 text-amber-600" /> },
+      { name: 'Figma & Prototipagem', level: 'Avançado', icon: <Palette className="h-5 w-5 text-amber-600" /> },
+      { name: 'Design Systems', level: 'Avançado', icon: <Palette className="h-5 w-5 text-amber-600" /> },
+      { name: 'Responsive Design', level: 'Especialista', icon: <Palette className="h-5 w-5 text-amber-600" /> },
     ],
   },
 ];
@@ -51,7 +51,7 @@ const itemVariants = {
     x: 0,
     opacity: 1,
     transition: {
-      type: 'spring',
+      type: 'spring' as const,
       stiffness: 100,
     },
   },
@@ -92,7 +92,9 @@ export function Skills() {
                         {skill.icon}
                         <span className="font-medium text-gray-800">{skill.name}</span>
                       </div>
-                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${skill.level === 'Avançado' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                        skill.level === 'Especialista' ? 'bg-amber-100 text-amber-800' : 
+                        skill.level === 'Avançado' ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800'
                         }`}>
                         {skill.level}
                       </span>

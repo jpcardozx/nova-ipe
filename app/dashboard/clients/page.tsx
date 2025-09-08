@@ -45,31 +45,40 @@ export default function ClientsPage() {
         setLoading(true)
         try {
             const filters: any = {}
-            
+
             if (statusFilter !== 'all') {
                 filters.status = statusFilter
             }
-            
+
             if (assignedFilter === 'me' && user?.id) {
                 filters.assigned_to = user.id
             } else if (assignedFilter !== 'all') {
                 filters.assigned_to = assignedFilter
             }
-            
+
             if (searchQuery) {
                 filters.search = searchQuery
             }
 
             const { data, error } = await CRMService.getClients(filters)
-            
+
             if (error) {
-                console.error('Error loading clients:', error)
+                console.warn('Error loading clients:', error)
+                // Set empty state instead of breaking
+                setClients([])
+                setStats({
+                    total: 0,
+                    leads: 0,
+                    prospects: 0,
+                    clients: 0,
+                    inactive: 0
+                })
                 return
             }
 
             if (data) {
                 setClients(data)
-                
+
                 // Calculate stats
                 setStats({
                     total: data.length,
@@ -78,9 +87,28 @@ export default function ClientsPage() {
                     clients: data.filter(c => c.status === 'client').length,
                     inactive: data.filter(c => c.status === 'inactive').length
                 })
+            } else {
+                // Fallback to empty state
+                setClients([])
+                setStats({
+                    total: 0,
+                    leads: 0,
+                    prospects: 0,
+                    clients: 0,
+                    inactive: 0
+                })
             }
         } catch (error) {
-            console.error('Error loading clients:', error)
+            console.warn('Error loading clients:', error)
+            // Set empty state on error
+            setClients([])
+            setStats({
+                total: 0,
+                leads: 0,
+                prospects: 0,
+                clients: 0,
+                inactive: 0
+            })
         } finally {
             setLoading(false)
         }
@@ -339,9 +367,8 @@ export default function ClientsPage() {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                 {client.next_follow_up ? (
-                                                    <div className={`flex items-center gap-1 ${
-                                                        isFollowUpOverdue(client.next_follow_up) ? 'text-red-600' : 'text-gray-500'
-                                                    }`}>
+                                                    <div className={`flex items-center gap-1 ${isFollowUpOverdue(client.next_follow_up) ? 'text-red-600' : 'text-gray-500'
+                                                        }`}>
                                                         <Calendar className="h-4 w-4" />
                                                         <span>
                                                             {new Date(client.next_follow_up).toLocaleDateString('pt-BR')}
