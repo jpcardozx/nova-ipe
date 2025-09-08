@@ -360,7 +360,7 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
                 <div
                     className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-[0.25]"
                     style={{
-                        backgroundImage: `url('/images/hero-bg2.png')`,
+                        backgroundImage: `url('/images/hero-drone.jpg')`,
                         backgroundPosition: 'center center',
                         backgroundSize: 'cover',
                         filter: 'contrast(1.1) brightness(0.9)'
