@@ -7,23 +7,21 @@ interface PostData {
   title: string
 }
 
-interface BlogIndexProps {
-  allPostsData: PostData[]
-}
+export default function BlogIndex() {
+  const allPostsData = getSortedPostsData()
 
-export default function BlogIndex({ allPostsData }: BlogIndexProps) {
   return (
     <section>
       <h2>Blog</h2>
       <ul>
-        {allPostsData.map(({ id, publishedAt, title }: PostData) => (
-          <li key={id}>
-            <Link href={`/blog/${id}`}>
-              <a>{title}</a>
+        {allPostsData.map((post: any) => (
+          <li key={post.id}>
+            <Link href={`/blog/${post.id}`}>
+              {post.title}
             </Link>
             <br />
             <small>
-              {publishedAt}
+              {post.publishedAt}
             </small>
           </li>
         ))}

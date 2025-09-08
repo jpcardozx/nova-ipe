@@ -1,47 +1,23 @@
-import { getAllPostIds, getPostData } from '../../../lib/blog'
-import { MDXRemote } from 'next-mdx-remote'
+import { getPostData } from '../../../lib/blog'
 
-interface PostData {
-  title: string
-  publishedAt: string
-  content: any
+interface PageProps {
+  params: {
+    slug: string
+  }
 }
 
-interface PostProps {
-  postData: PostData
-}
+export default async function Post({ params }: PageProps) {
+  const postData = await getPostData(params.slug) as any
 
-export default function Post({ postData }: PostProps) {
   return (
     <article>
-      <h1>{postData.title}</h1>
+      <h1>{postData.title || 'Post'}</h1>
       <div>
-        {postData.publishedAt}
+        {postData.publishedAt || postData.date}
       </div>
-      <MDXRemote {...postData.content} />
+      <div>
+        <pre style={{ whiteSpace: 'pre-wrap' }}>{postData.content}</pre>
+      </div>
     </article>
   )
-}
-
-export async function getStaticPaths() {
-  const paths = getAllPostIds()
-  return {
-    paths,
-    fallback: false
-  }
-}
-
-interface StaticProps {
-  params: {
-    id: string
-  }
-}
-
-export async function getStaticProps({ params }: StaticProps) {
-  const postData = await getPostData(params.id)
-  return {
-    props: {
-      postData
-    }
-  }
 }

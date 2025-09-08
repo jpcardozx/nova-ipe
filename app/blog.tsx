@@ -7,36 +7,25 @@ interface PostData {
   title: string
 }
 
-interface BlogProps {
-  allPostsData: PostData[]
-}
+export default function Blog() {
+  const allPostsData = getSortedPostsData()
 
-export default function Blog({ allPostsData }: BlogProps) {
   return (
     <section>
       <h2>Blog</h2>
       <ul>
-        {allPostsData.map(({ id, publishedAt, title }: PostData) => (
-          <li key={id}>
-            <Link href={`/blog/${id}`}>
-              <a>{title}</a>
+        {allPostsData.map((post: any) => (
+          <li key={post.id}>
+            <Link href={`/blog/${post.id}`}>
+              {post.title}
             </Link>
             <br />
             <small>
-              {publishedAt}
+              {post.publishedAt}
             </small>
           </li>
         ))}
       </ul>
     </section>
   )
-}
-
-export async function getStaticProps() {
-  const allPostsData = getSortedPostsData()
-  return {
-    props: {
-      allPostsData
-    }
-  }
 }
