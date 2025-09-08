@@ -353,19 +353,32 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
             className="relative min-h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 pt-4 sm:pt-8"
             role="banner"
             aria-label="Página inicial da Ipê Imóveis"
+            style={{ minHeight: '100vh', position: 'relative' }}
         >
             {/* Balanced Background System */}
             <div className="absolute inset-0">
-                {/* Base Image Layer - More Visible */}
+                {/* Base Image Layer - Optimized with CSS Grid for aspect ratio preservation */}
                 <div
-                    className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-[0.25]"
+                    className="absolute inset-0 grid place-items-center overflow-hidden"
                     style={{
-                        backgroundImage: `url('/images/hero-drone.jpg')`,
-                        backgroundPosition: 'center center',
-                        backgroundSize: 'cover',
-                        filter: 'contrast(1.1) brightness(0.9)'
+                        background: 'linear-gradient(135deg, rgb(15 23 42 / 0.1), rgb(30 41 59 / 0.1))'
                     }}
-                />
+                >
+                    <div
+                        className="w-full h-full opacity-25"
+                        style={{
+                            backgroundImage: `url('/images/hero-drone.jpg')`,
+                            backgroundPosition: 'center center',
+                            backgroundSize: 'cover',
+                            backgroundRepeat: 'no-repeat',
+                            backgroundAttachment: 'scroll',
+                            filter: 'contrast(1.1) brightness(0.9)',
+                            aspectRatio: 'auto',
+                            minHeight: '100%',
+                            minWidth: '100%'
+                        }}
+                    />
+                </div>
 
                 {/* Single Smart Overlay - 10% mais sutil */}
                 <div className="absolute inset-0 bg-gradient-to-br from-slate-900/65 via-slate-800/55 to-slate-900/70" />
