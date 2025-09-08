@@ -448,7 +448,7 @@ export class DocumentManagementService {
                 `)
                 .eq('assigned_to', userId)
                 .in('status', ['pending', 'in_progress'])
-                .order('due_date', { ascending: true, nullsFirst: false })
+                .order('due_date', { ascending: true, nullsLast: true })
 
             if (error) throw error
             return data || []
@@ -575,7 +575,7 @@ export class DocumentManagementService {
                 .is('deleted_at', null)
 
             const by_type = (typeData || []).reduce((acc, doc) => {
-                const typeName = (doc.document_type as any)?.name || 'Sem tipo'
+                const typeName = doc.document_type?.name || 'Sem tipo'
                 acc[typeName] = (acc[typeName] || 0) + 1
                 return acc
             }, {} as Record<string, number>)

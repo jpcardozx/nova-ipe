@@ -116,40 +116,24 @@ export class CRMService {
         assigned_to?: string
         search?: string
     }): Promise<{ data: Client[] | null, error: any }> {
-        try {
-            // Check if Supabase is properly configured
-            const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-            if (!supabaseUrl || supabaseUrl.includes('dummy')) {
-                return {
-                    data: [],
-                    error: 'Supabase not configured'
-                }
-            }
+        let query = supabase
+            .from('clients')
+            .select('*, assigned_to:profiles!clients_assigned_to_fkey(full_name)')
+            .order('created_at', { ascending: false })
 
-            let query = supabase
-                .from('clients')
-                .select('*, assigned_to:profiles!clients_assigned_to_fkey(full_name)')
-                .order('created_at', { ascending: false })
-
-            if (filters?.status && filters.status !== 'all') {
-                query = query.eq('status', filters.status)
-            }
-
-            if (filters?.assigned_to) {
-                query = query.eq('assigned_to', filters.assigned_to)
-            }
-
-            if (filters?.search) {
-                query = query.or(`name.ilike.%${filters.search}%,email.ilike.%${filters.search}%,phone.ilike.%${filters.search}%`)
-            }
-
-            return await query
-        } catch (error) {
-            return {
-                data: [],
-                error: error
-            }
+        if (filters?.status && filters.status !== 'all') {
+            query = query.eq('status', filters.status)
         }
+
+        if (filters?.assigned_to) {
+            query = query.eq('assigned_to', filters.assigned_to)
+        }
+
+        if (filters?.search) {
+            query = query.or(`name.ilike.%${filters.search}%,email.ilike.%${filters.search}%,phone.ilike.%${filters.search}%`)
+        }
+
+        return await query
     }
 
     static async getClient(id: string): Promise<{ data: Client | null, error: any }> {

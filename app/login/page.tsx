@@ -13,6 +13,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PillSelector } from '@/components/ui/pill-selector'
 import { ArrowRight, Building2, User, AlertTriangle, Eye, EyeOff, UserPlus, ArrowLeft, Sparkles } from 'lucide-react'
+import ConnectionStatus from '@/app/components/debug/ConnectionStatus'
+import SupabaseDebugInfo from '@/app/components/debug/SupabaseDebugInfo'
 import { SimpleAuthManager } from '@/lib/auth-simple'
 import { EnhancedAuthManager, type LoginMode } from '@/lib/auth/enhanced-auth-manager'
 
@@ -104,19 +106,41 @@ function LoginPageContent() {
     try {
       console.log('📡 Tentando autenticação no Supabase...')
 
-      // Authenticate with Supabase
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
-      })
+      // Função de retry para problemas de rede
+      const authenticateWithRetry = async (retries = 3): Promise<any> => {
+        for (let attempt = 1; attempt <= retries; attempt++) {
+          try {
+            console.log(`🔄 Tentativa ${attempt}/${retries}...`)
+
+            const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+              email: data.email,
+              password: data.password,
+            })
+
+            return { data: authData, error: authError }
+          } catch (networkError: any) {
+            console.warn(`⚠️ Erro de rede na tentativa ${attempt}:`, networkError.message)
+
+            if (attempt === retries) {
+              throw networkError
+            }
+
+            // Aguarda antes da próxima tentativa (exponential backoff)
+            await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000))
+          }
+        }
+      }      // Authenticate with Supabase (with retry)
+      const { data: authData, error: authError } = await authenticateWithRetry()
 
       if (authError) {
         console.error('❌ Erro de login:', authError)
         console.error('❌ Código do erro:', authError.status)
-        console.error('❌ Mensagem completa:', authError.message)
+        console.error('❌ Mensagem completa:', authError.message, '=> localmente não dá esse erro, mas na vercel dá, após deploy')
 
         // Handle different error types
-        if (authError.message.includes('Invalid login credentials')) {
+        if (authError.message.includes('Failed to fetch') || authError.message.includes('fetch')) {
+          setErrorMessage('🌐 Erro de conexão. Verifique sua internet e tente novamente.')
+        } else if (authError.message.includes('Invalid login credentials')) {
           setErrorMessage('❌ Credenciais inválidas. Verifique seu email e senha.')
         } else if (authError.message.includes('Email not confirmed')) {
           setErrorMessage('📧 Email não confirmado. Verifique sua caixa de entrada.')
@@ -231,7 +255,13 @@ function LoginPageContent() {
     } catch (error) {
       console.error('❌ Erro crítico no login:', error)
       const errorMessage = error instanceof Error ? error.message : String(error)
-      setErrorMessage(`❌ Erro interno: ${errorMessage}`)
+
+      // Tratamento específico para erros de rede
+      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('fetch') || errorMessage.includes('ERR_NAME_NOT_RESOLVED')) {
+        setErrorMessage('🌐 Erro de conexão com o servidor. Verifique sua internet e tente novamente.')
+      } else {
+        setErrorMessage(`❌ Erro interno: ${errorMessage}`)
+      }
     } finally {
       console.log('🏁 Finalizando processo de login')
       setIsLoading(false)
@@ -313,18 +343,18 @@ function LoginPageContent() {
   // Handle hidden portfolio access - only when form is empty/invalid
   const handlePortfolioAccess = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
-    
+
     // Only allow portfolio access if login form is not filled/valid
-    const isFormEmptyOrInvalid = !loginForm.formState.isValid || 
+    const isFormEmptyOrInvalid = !loginForm.formState.isValid ||
       (!loginForm.getValues('email') && !loginForm.getValues('password'))
-    
+
     if (!isFormEmptyOrInvalid) {
       return // Don't allow portfolio access when form is valid/filled
     }
-    
+
     const newClickCount = portfolioClicks + 1
     setPortfolioClicks(newClickCount)
-    
+
     if (newClickCount >= 5) {
       router.push('/jpcardozx')
       setPortfolioClicks(0)
@@ -350,6 +380,10 @@ function LoginPageContent() {
 
   return (
     <div className="relative min-h-screen w-full font-lexend">
+      {/* Debug Connection Status */}
+      <ConnectionStatus showInProduction={true} />
+      <SupabaseDebugInfo />
+
       {/* Background com overlay - sempre presente */}
       <Image
         src="/images/login.png"
@@ -380,17 +414,17 @@ function LoginPageContent() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.1 }}
               >
-                <h2 
+                <h2
                   onClick={handlePortfolioAccess}
                   className={`mt-6 bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-center text-4xl font-bold tracking-tight text-transparent font-serif transition-all duration-200 select-none ${
                     // Only show as clickable when form is empty/invalid
                     (!loginForm.formState.isValid || (!loginForm.watch('email') && !loginForm.watch('password')))
                       ? `cursor-pointer ${portfolioClicks > 0 ? 'brightness-125 scale-105' : 'hover:brightness-110'}`
                       : 'cursor-default'
-                  }`}
+                    }`}
                   title={
-                    (!loginForm.formState.isValid || (!loginForm.watch('email') && !loginForm.watch('password'))) && portfolioClicks > 0 
-                      ? `${portfolioClicks}/5` 
+                    (!loginForm.formState.isValid || (!loginForm.watch('email') && !loginForm.watch('password'))) && portfolioClicks > 0
+                      ? `${portfolioClicks}/5`
                       : undefined
                   }
                 >

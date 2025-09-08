@@ -91,7 +91,7 @@ export class ImprovedCRMService {
             await this.createInitialTasks(data.id, data.created_by)
 
             // Registra atividade inicial
-            await this.addActivity(data.id, data.created_by, 'task', 'Lead criado no sistema', {
+            await this.addActivity(data.id, data.created_by, 'lead_created', 'Lead criado no sistema', {
                 source: leadData.source,
                 interest: leadData.interest
             })
@@ -285,7 +285,7 @@ export class ImprovedCRMService {
             if (error) throw error
 
             // Registra atividade
-            await this.addActivity(leadId, userId, 'task', `Status alterado para: ${newStatus}`, {
+            await this.addActivity(leadId, userId, 'status_change', `Status alterado para: ${newStatus}`, {
                 previous_status: 'unknown',
                 new_status: newStatus,
                 note
@@ -430,7 +430,7 @@ export class ImprovedCRMService {
                 `)
                 .eq('assigned_to', userId)
                 .in('status', ['pending', 'in_progress'])
-                .order('due_date', { ascending: true, nullsFirst: false })
+                .order('due_date', { ascending: true, nullsLast: true })
 
             if (error) throw error
             return data || []
@@ -520,8 +520,8 @@ export class ImprovedCRMService {
                 lead_id: leadId,
                 title: 'Primeiro contato',
                 description: 'Fazer contato inicial com o lead',
-                task_type: 'call' as const,
-                priority: 'high' as 'high',
+                task_type: 'call',
+                priority: 'high',
                 assigned_to: userId,
                 created_by: userId,
                 due_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24h
@@ -530,8 +530,8 @@ export class ImprovedCRMService {
                 lead_id: leadId,
                 title: 'Qualificar interesse',
                 description: 'Entender necessidades e orçamento do cliente',
-                task_type: 'follow-up' as const,
-                priority: 'medium' as 'medium',
+                task_type: 'follow-up',
+                priority: 'medium',
                 assigned_to: userId,
                 created_by: userId,
                 due_date: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString() // 48h

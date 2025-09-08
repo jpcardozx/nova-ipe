@@ -6,8 +6,6 @@ import { useCurrentUser } from '@/lib/hooks/useCurrentUser'
 import { useRealtimeMetrics } from '@/app/hooks/useRealtimeMetrics'
 import { useDashboardActions } from '@/app/hooks/useDashboardActions'
 import { PerformanceIndicators } from '@/app/components/dashboard/PerformanceIndicators'
-import EducationalView from './EducationalView'
-import CloudStorage from '@/app/components/business/CloudStorage'
 import {
     TrendingUp,
     Users,
@@ -39,14 +37,7 @@ import {
     FileText,
     Calculator,
     Zap,
-    RefreshCw,
-    BookOpen,
-    ArrowLeft,
-    Cloud,
-    Settings,
-    Home,
-    CheckSquare,
-    ChevronLeft
+    RefreshCw
 } from 'lucide-react'
 
 interface ProfessionalDashboardProps {
@@ -167,21 +158,7 @@ export default function ProfessionalDashboard({ className = '' }: ProfessionalDa
     const [leadActivity, setLeadActivity] = useState<LeadActivity[]>([])
     const [propertyPerformance, setPropertyPerformance] = useState<PropertyPerformance[]>([])
     const [upcomingTasks, setUpcomingTasks] = useState<UpcomingTask[]>([])
-    const [activeView, setActiveView] = useState<'overview' | 'leads' | 'properties' | 'tasks' | 'educational' | 'cloud' | 'analytics' | 'settings'>('overview')
-    const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'properties' | 'tasks' | 'educational' | 'cloud'>('overview')
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-
-    // Navigation items for sidebar
-    const navigationItems = [
-        { id: 'overview', name: 'Dashboard', icon: Home, description: 'Visão geral executiva' },
-        { id: 'leads', name: 'Leads', icon: Users, description: 'Gestão de leads e CRM' },
-        { id: 'properties', name: 'Imóveis', icon: Building2, description: 'Portfólio de propriedades' },
-        { id: 'tasks', name: 'Tarefas', icon: CheckSquare, description: 'Centro de tarefas' },
-        { id: 'cloud', name: 'Nuvem', icon: Cloud, description: 'Armazenamento seguro' },
-        { id: 'educational', name: 'Educacional', icon: BookOpen, description: 'Blog sobre tráfego pago' },
-        { id: 'analytics', name: 'Analytics', icon: BarChart3, description: 'Relatórios avançados' },
-        { id: 'settings', name: 'Configurações', icon: Settings, description: 'Configurações do sistema' }
-    ]
+    const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'properties' | 'tasks'>('overview')
 
     useEffect(() => {
         loadDashboardData()
@@ -472,9 +449,7 @@ export default function ProfessionalDashboard({ className = '' }: ProfessionalDa
                         { id: 'overview', label: 'Visão Geral', icon: BarChart3 },
                         { id: 'leads', label: 'Leads Ativos', icon: Users },
                         { id: 'properties', label: 'Performance Imóveis', icon: Building2 },
-                        { id: 'tasks', label: 'Agenda', icon: Calendar },
-                        { id: 'cloud', label: 'Nuvem', icon: Cloud },
-                        { id: 'educational', label: 'Cases & Insights', icon: BookOpen }
+                        { id: 'tasks', label: 'Agenda', icon: Calendar }
                     ].map((tab) => (
                         <button
                             key={tab.id}
@@ -675,28 +650,6 @@ export default function ProfessionalDashboard({ className = '' }: ProfessionalDa
                             exit={{ opacity: 0, y: -20 }}
                         >
                             <TasksAndSchedule tasks={upcomingTasks} />
-                        </motion.div>
-                    )}
-
-                    {activeTab === 'educational' && (
-                        <motion.div
-                            key="educational"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                        >
-                            <EducationalView />
-                        </motion.div>
-                    )}
-
-                    {activeTab === 'cloud' && (
-                        <motion.div
-                            key="cloud"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                        >
-                            <CloudStorage />
                         </motion.div>
                     )}
                 </AnimatePresence>

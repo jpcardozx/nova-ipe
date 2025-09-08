@@ -4,5 +4,44 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://dummy.supabase.co'
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'dummy-key'
 
+// Configurações para produção - tratamento de timeout e retry
+const supabaseOptions = {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  },
+  global: {
+    fetch: (url: RequestInfo | URL, init?: RequestInit) => {
+      // Adiciona timeout e tratamento de erro customizado
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s timeout
+      
+      return fetch(url, {
+        ...init,
+        signal: controller.signal,
+        headers: {
+          ...init?.headers,
+          'User-Agent': 'nova-ipe-client'
+        }
+      }).finally(() => clearTimeout(timeoutId))
+    }
+  }
+}
+
 // Create a single supabase client for interacting with your database
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, supabaseOptions)
+
+// Função para testar conectividade
+export async function testSupabaseConnection() {
+  try {
+    const { data, error } = await supabase.from('health_check').select('*').limit(1)
+    if (error && error.code !== 'PGRST116') { // PGRST116 = table not found (esperado)
+      throw error
+    }
+    return true
+  } catch (error) {
+    console.error('❌ Supabase connection failed:', error)
+    return false
+  }
+}

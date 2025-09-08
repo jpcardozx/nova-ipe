@@ -40,34 +40,12 @@ interface CloudFile {
     created_at: string
     updated_at: string
     folder_path?: string
-    owner_id?: string
-    shared_with?: string[]
-    is_public?: boolean
     metadata?: {
         mimetype?: string
         lastModified?: string
         width?: number
         height?: number
     }
-}
-
-interface UserQuota {
-    user_id: string
-    used_storage: number
-    max_storage: number
-    file_count: number
-    max_files: number
-}
-
-interface SharedFile {
-    id: string
-    file_path: string
-    shared_by: string
-    shared_with: string
-    shared_with_type: 'user' | 'client' | 'public'
-    permissions: ('read' | 'write' | 'delete')[]
-    expires_at?: string
-    created_at: string
 }
 
 interface CloudFolder {
@@ -103,14 +81,6 @@ export default function CloudStorage({
     const [showCreateFolder, setShowCreateFolder] = useState(false)
     const [newFolderName, setNewFolderName] = useState('')
     const [dragActive, setDragActive] = useState(false)
-
-    // Estados para quota e compartilhamento
-    const [userQuota, setUserQuota] = useState<UserQuota | null>(null)
-    const [showShareModal, setShowShareModal] = useState(false)
-    const [selectedFileForShare, setSelectedFileForShare] = useState<CloudFile | null>(null)
-    const [shareEmail, setShareEmail] = useState('')
-    const [sharePermissions, setSharePermissions] = useState<('read' | 'write' | 'delete')[]>(['read'])
-    const [shareExpiration, setShareExpiration] = useState<string>('')
 
     const fileInputRef = useRef<HTMLInputElement>(null)
     const dropZoneRef = useRef<HTMLDivElement>(null)
@@ -167,86 +137,7 @@ export default function CloudStorage({
 
     useEffect(() => {
         loadContent()
-        loadUserQuota()
     }, [loadContent])
-
-    // Carregar quota do usuário
-    const loadUserQuota = async () => {
-        try {
-            // Simular ID do usuário para desenvolvimento
-            const userId = 'user-dev-123'
-
-            // Calcular uso atual de storage
-            const { data: storageList, error } = await supabase.storage
-                .from('documents')
-                .list('', { limit: 1000 })
-
-            if (error) throw error
-
-            const totalSize = storageList?.reduce((acc, file) => acc + (file.metadata?.size || 0), 0) || 0
-            const fileCount = storageList?.length || 0
-
-            setUserQuota({
-                user_id: userId,
-                used_storage: totalSize,
-                max_storage: 1024 * 1024 * 1024, // 1GB padrão
-                file_count: fileCount,
-                max_files: 1000 // 1000 arquivos padrão
-            })
-        } catch (error) {
-            console.error('Erro ao carregar quota:', error)
-        }
-    }
-
-    // Verificar se upload é permitido
-    const canUpload = (fileSize: number): boolean => {
-        if (!userQuota) return true
-
-        const wouldExceedStorage = userQuota.used_storage + fileSize > userQuota.max_storage
-        const wouldExceedFiles = userQuota.file_count + 1 > userQuota.max_files
-
-        return !wouldExceedStorage && !wouldExceedFiles
-    }
-
-    // Compartilhar arquivo
-    const shareFile = async (file: CloudFile) => {
-        setSelectedFileForShare(file)
-        setShowShareModal(true)
-    }
-
-    // Processar compartilhamento
-    const processShare = async () => {
-        if (!selectedFileForShare || !shareEmail.trim()) {
-            toast.error('Preencha o email para compartilhar')
-            return
-        }
-
-        try {
-            // Criar registro de compartilhamento
-            const shareData: Omit<SharedFile, 'id' | 'created_at'> = {
-                file_path: selectedFileForShare.path,
-                shared_by: 'user-dev-123', // ID do usuário atual
-                shared_with: shareEmail,
-                shared_with_type: shareEmail.includes('@cliente.') ? 'client' : 'user',
-                permissions: sharePermissions,
-                expires_at: shareExpiration || undefined
-            }
-
-            // Simular salvamento (implementar tabela shared_files depois)
-            console.log('Compartilhamento criado:', shareData)
-
-            toast.success(`Arquivo compartilhado com ${shareEmail}`)
-            setShowShareModal(false)
-            setShareEmail('')
-            setSharePermissions(['read'])
-            setShareExpiration('')
-            setSelectedFileForShare(null)
-
-        } catch (error) {
-            console.error('Erro ao compartilhar:', error)
-            toast.error('Erro ao compartilhar arquivo')
-        }
-    }
 
     // Criar pasta
     const createFolder = async () => {
@@ -288,12 +179,6 @@ export default function CloudStorage({
         for (let i = 0; i < fileList.length; i++) {
             const file = fileList[i]
 
-            // Validar quota
-            if (!canUpload(file.size)) {
-                toast.error(`Quota excedida! Arquivo ${file.name} não pode ser enviado`)
-                continue
-            }
-
             // Validar tamanho
             if (file.size > maxFileSize * 1024 * 1024) {
                 toast.error(`Arquivo ${file.name} excede o limite de ${maxFileSize}MB`)
@@ -328,7 +213,6 @@ export default function CloudStorage({
             if (successCount > 0) {
                 toast.success(`${successCount} arquivo(s) enviado(s) com sucesso`)
                 loadContent()
-                loadUserQuota() // Atualizar quota após upload
             }
 
             if (errorCount > 0) {
@@ -494,35 +378,6 @@ export default function CloudStorage({
                     </div>
                 </div>
 
-                {/* Barra de Quota */}
-                {userQuota && (
-                    <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
-                        <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">
-                                Armazenamento: {(userQuota.used_storage / (1024 * 1024)).toFixed(1)}MB / {(userQuota.max_storage / (1024 * 1024)).toFixed(0)}MB
-                            </span>
-                            <span className="text-gray-600">
-                                Arquivos: {userQuota.file_count} / {userQuota.max_files}
-                            </span>
-                        </div>
-                        <div className="mt-2">
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                                <div
-                                    className={`h-2 rounded-full transition-all duration-300 ${userQuota.used_storage / userQuota.max_storage > 0.8
-                                        ? 'bg-red-500'
-                                        : userQuota.used_storage / userQuota.max_storage > 0.6
-                                            ? 'bg-yellow-500'
-                                            : 'bg-green-500'
-                                        }`}
-                                    style={{
-                                        width: `${Math.min(100, (userQuota.used_storage / userQuota.max_storage) * 100)}%`
-                                    }}
-                                ></div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
                 {/* Breadcrumb e Busca */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2 text-sm text-gray-600">
@@ -594,7 +449,6 @@ export default function CloudStorage({
                                             file={file}
                                             viewMode={viewMode}
                                             onDownload={() => downloadFile(file)}
-                                            onShare={() => shareFile(file)}
                                             onDelete={() => deleteItem(file, 'file')}
                                             readonly={readonly}
                                         />
@@ -701,121 +555,6 @@ export default function CloudStorage({
                     </motion.div>
                 )}
             </AnimatePresence>
-
-            {/* Share Modal */}
-            <AnimatePresence>
-                {showShareModal && selectedFileForShare && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-                        onClick={() => setShowShareModal(false)}
-                    >
-                        <motion.div
-                            initial={{ scale: 0.95, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.95, opacity: 0 }}
-                            className="bg-white rounded-xl p-6 w-full max-w-md mx-4"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <div className="flex items-center mb-4">
-                                <FiShare2 className="h-5 w-5 text-green-600 mr-2" />
-                                <h3 className="text-lg font-semibold text-gray-900">Compartilhar Arquivo</h3>
-                            </div>
-
-                            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-                                <p className="text-sm font-medium text-gray-700">{selectedFileForShare.name}</p>
-                                <p className="text-xs text-gray-500">{(selectedFileForShare.size / 1024).toFixed(1)} KB</p>
-                            </div>
-
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Email do destinatário
-                                    </label>
-                                    <input
-                                        type="email"
-                                        value={shareEmail}
-                                        onChange={(e) => setShareEmail(e.target.value)}
-                                        placeholder="exemplo@cliente.com ou usuario@empresa.com"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                    />
-                                    <p className="text-xs text-gray-500 mt-1">
-                                        Use @cliente.com para clientes externos
-                                    </p>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Permissões
-                                    </label>
-                                    <div className="space-y-2">
-                                        <label className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={sharePermissions.includes('read')}
-                                                onChange={(e) => {
-                                                    if (e.target.checked) {
-                                                        setSharePermissions(prev => [...prev, 'read'])
-                                                    } else {
-                                                        setSharePermissions(prev => prev.filter(p => p !== 'read'))
-                                                    }
-                                                }}
-                                                className="rounded border-gray-300 text-green-600"
-                                            />
-                                            <span className="ml-2 text-sm text-gray-600">Visualizar</span>
-                                        </label>
-                                        <label className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={sharePermissions.includes('write')}
-                                                onChange={(e) => {
-                                                    if (e.target.checked) {
-                                                        setSharePermissions(prev => [...prev, 'write'])
-                                                    } else {
-                                                        setSharePermissions(prev => prev.filter(p => p !== 'write'))
-                                                    }
-                                                }}
-                                                className="rounded border-gray-300 text-green-600"
-                                            />
-                                            <span className="ml-2 text-sm text-gray-600">Editar</span>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Expiração (opcional)
-                                    </label>
-                                    <input
-                                        type="datetime-local"
-                                        value={shareExpiration}
-                                        onChange={(e) => setShareExpiration(e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="flex justify-end space-x-3 mt-6">
-                                <button
-                                    onClick={() => setShowShareModal(false)}
-                                    className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                                >
-                                    Cancelar
-                                </button>
-                                <button
-                                    onClick={processShare}
-                                    disabled={!shareEmail.trim()}
-                                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-                                >
-                                    Compartilhar
-                                </button>
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
         </div>
     )
 }
@@ -833,7 +572,7 @@ const FolderCard = ({ folder, viewMode, onOpen, onDelete, readonly }: {
     if (viewMode === 'list') {
         return (
             <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 hover:bg-gray-50">
-                <div className="flex items-center space-x-3 cursor-pointer flex-1" onClick={onOpen}>
+                <div className="flex items-center space-x-3" onClick={onOpen} className="cursor-pointer flex-1">
                     <FiFolder className="h-5 w-5 text-blue-600" />
                     <span className="font-medium text-gray-900">{folder.name}</span>
                 </div>
@@ -878,11 +617,10 @@ const FolderCard = ({ folder, viewMode, onOpen, onDelete, readonly }: {
 }
 
 // Componente para Card de Arquivo
-const FileCard = ({ file, viewMode, onDownload, onShare, onDelete, readonly }: {
+const FileCard = ({ file, viewMode, onDownload, onDelete, readonly }: {
     file: CloudFile
     viewMode: 'grid' | 'list'
     onDownload: () => void
-    onShare: () => void
     onDelete: () => void
     readonly: boolean
 }) => {
@@ -914,22 +652,13 @@ const FileCard = ({ file, viewMode, onDownload, onShare, onDelete, readonly }: {
                     <button
                         onClick={onDownload}
                         className="p-2 text-gray-400 hover:text-blue-600"
-                        title="Download"
                     >
                         <FiDownload className="h-4 w-4" />
-                    </button>
-                    <button
-                        onClick={onShare}
-                        className="p-2 text-gray-400 hover:text-green-600"
-                        title="Compartilhar"
-                    >
-                        <FiShare2 className="h-4 w-4" />
                     </button>
                     {!readonly && (
                         <button
                             onClick={onDelete}
                             className="p-2 text-gray-400 hover:text-red-600"
-                            title="Excluir"
                         >
                             <FiTrash2 className="h-4 w-4" />
                         </button>
@@ -962,22 +691,13 @@ const FileCard = ({ file, viewMode, onDownload, onShare, onDelete, readonly }: {
                 <button
                     onClick={onDownload}
                     className="p-1 bg-white shadow-sm rounded text-gray-400 hover:text-blue-600"
-                    title="Download"
                 >
                     <FiDownload className="h-4 w-4" />
-                </button>
-                <button
-                    onClick={onShare}
-                    className="p-1 bg-white shadow-sm rounded text-gray-400 hover:text-green-600"
-                    title="Compartilhar"
-                >
-                    <FiShare2 className="h-4 w-4" />
                 </button>
                 {!readonly && (
                     <button
                         onClick={onDelete}
                         className="p-1 bg-white shadow-sm rounded text-gray-400 hover:text-red-600"
-                        title="Excluir"
                     >
                         <FiTrash2 className="h-4 w-4" />
                     </button>

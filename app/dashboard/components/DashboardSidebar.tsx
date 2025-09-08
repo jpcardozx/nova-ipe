@@ -36,8 +36,7 @@ import {
     Calculator,
     Folder,
     Percent,
-    BookOpen,
-    Cloud
+    BookOpen
 } from 'lucide-react'
 
 interface MenuItem {
@@ -56,41 +55,37 @@ interface MenuCategory {
 
 const menuItems: MenuCategory[] = [
     {
-        category: 'Home',
-        items: [
-            { icon: Home, label: 'Dashboard', href: '/dashboard', color: 'text-blue-600' },
-        ]
-    },
-    {
         category: 'Principal',
         items: [
-            { icon: CheckSquare, label: 'Tarefas', href: '/dashboard/tasks', color: 'text-red-600' },
-            { icon: Building2, label: 'Estúdio Sanity', href: '/structure', color: 'text-green-600' },
-            { icon: Users, label: 'Clientes (CRM)', href: '/dashboard/clients', color: 'text-purple-600' },
-            { icon: Calendar, label: 'Agendamentos', href: '/dashboard/appointments', color: 'text-orange-600' }
-        ]
-    },
-    {
-        category: 'Documentos',
-        items: [
-            { icon: Cloud, label: 'Ipê Cloud', href: '/dashboard/cloud', color: 'text-cyan-600', badge: 'NEW' },
-            { icon: Folder, label: 'Contratos', href: '/dashboard/documents', color: 'text-gray-600' },
+            { icon: Home, label: 'Dashboard', href: '/dashboard', color: 'text-blue-600' },
+            { icon: CheckSquare, label: 'Tarefas', href: '/dashboard/tasks', color: 'text-red-600', badge: '8' },
+            { icon: Building2, label: 'Imóveis', href: '/dashboard/properties', color: 'text-green-600', badge: '156' },
+            { icon: Users, label: 'Clientes (CRM)', href: '/dashboard/clients', color: 'text-purple-600', badge: '89' },
+            { icon: Calendar, label: 'Agendamentos', href: '/dashboard/appointments', color: 'text-orange-600', badge: '12' }
         ]
     },
     {
         category: 'Vendas & Marketing',
         items: [
-            { icon: Target, label: 'Leads & Funil', href: '/dashboard/leads', color: 'text-emerald-600', badge: 'HOT' },
-            { icon: TrendingUp, label: 'Funil de Vendas', href: '/dashboard/funil', color: 'text-emerald-600' },
+            { icon: TrendingUp, label: 'Funil de Vendas', href: '/dashboard/funil', color: 'text-emerald-600', badge: '34' },
             { icon: Target, label: 'Campanhas', href: '/dashboard/campaigns', color: 'text-pink-600' },
+            { icon: BookOpen, label: 'Vender Imóveis', href: '/dashboard/educational', color: 'text-indigo-600', badge: 'HOT' },
+            { icon: Calculator, label: 'Calculadora', href: '/dashboard/calculator', color: 'text-blue-600' }
         ]
     },
     {
         category: 'Financeiro',
         items: [
+            { icon: Percent, label: 'Comissões', href: '/dashboard/commissions', color: 'text-green-600' },
             { icon: BarChart3, label: 'Relatórios', href: '/dashboard/reports', color: 'text-indigo-600' },
-            { icon: Activity, label: 'Performance', href: '/dashboard/analytics', color: 'text-red-600' },
-            { icon: Calculator, label: 'Calculadora', href: '/dashboard/calculator', color: 'text-blue-600' }
+            { icon: Activity, label: 'Performance', href: '/dashboard/analytics', color: 'text-red-600' }
+        ]
+    },
+    {
+        category: 'Documentos',
+        items: [
+            { icon: Folder, label: 'Contratos', href: '/dashboard/documents', color: 'text-gray-600' },
+            { icon: FileText, label: 'Templates', href: '/dashboard/templates', color: 'text-blue-600' }
         ]
     },
     {

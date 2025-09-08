@@ -23,16 +23,7 @@ import {
     FiSearch,
     FiMoreVertical,
     FiMessageCircle,
-    FiFileText,
-    FiCloud,
-    FiBarChart,
-    FiSettings,
-    FiDatabase,
-    FiTarget,
-    FiPieChart,
-    FiFolderPlus,
-    FiChevronLeft,
-    FiHome
+    FiFileText
 } from 'react-icons/fi'
 // import { FaWhatsapp } from 'react-icons/fa'
 // import { toast } from 'react-hot-toast'
@@ -66,87 +57,23 @@ const LeadInfo = ({ lead }: { lead: any }) => (
     </div>
 )
 
-// Tab button component aprimorado
+// Tab button component
 const TabButton = ({ active, onClick, icon: Icon, label }: {
     active: boolean
     onClick: () => void
     icon: any
     label: string
 }) => (
-    <motion.button
+    <button
         onClick={onClick}
-        className={`relative flex flex-col items-center justify-center p-4 rounded-xl font-medium transition-all duration-300 min-w-[100px] group overflow-hidden ${active
-            ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg'
-            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:shadow-md border border-transparent hover:border-gray-200'
+        className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${active
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
             }`}
-        whileHover={{
-            scale: 1.02,
-            y: -2,
-            transition: { duration: 0.2 }
-        }}
-        whileTap={{ scale: 0.98 }}
-        initial={false}
-        animate={{
-            scale: active ? 1.05 : 1,
-            transition: { duration: 0.2 }
-        }}
     >
-        {/* Background Glow Effect */}
-        {active && (
-            <motion.div
-                className="absolute inset-0 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl opacity-20 blur-sm"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1.1, opacity: 0.3 }}
-                transition={{ duration: 0.3 }}
-            />
-        )}
-
-        {/* Hover Background */}
-        {!active && (
-            <motion.div
-                className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl opacity-0 group-hover:opacity-100"
-                transition={{ duration: 0.3 }}
-            />
-        )}
-
-        {/* Content */}
-        <div className="relative z-10 flex flex-col items-center">
-            <motion.div
-                className="relative mb-2"
-                whileHover={{ rotate: active ? 0 : 5 }}
-                transition={{ duration: 0.2 }}
-            >
-                <Icon className={`h-5 w-5 ${active ? 'text-white' : 'text-gray-500 group-hover:text-blue-500'} transition-colors duration-200`} />
-
-                {/* Active Indicator Ring */}
-                {active && (
-                    <motion.div
-                        className="absolute -inset-2 border-2 border-white/30 rounded-full"
-                        initial={{ scale: 0, rotate: 0 }}
-                        animate={{ scale: 1, rotate: 360 }}
-                        transition={{ duration: 0.5, delay: 0.1 }}
-                    />
-                )}
-            </motion.div>
-
-            <motion.span
-                className={`text-xs font-semibold text-center leading-tight ${active ? 'text-white' : 'text-gray-700 group-hover:text-gray-900'} transition-colors duration-200`}
-                layout
-            >
-                {label}
-            </motion.span>
-        </div>
-
-        {/* Active Indicator Dot */}
-        {active && (
-            <motion.div
-                className="absolute bottom-1 w-1.5 h-1.5 bg-white rounded-full shadow-lg"
-                initial={{ scale: 0, y: 10 }}
-                animate={{ scale: 1, y: 0 }}
-                transition={{ type: "spring", stiffness: 500, damping: 25 }}
-            />
-        )}
-    </motion.button>
+        <Icon className="h-4 w-4" />
+        <span>{label}</span>
+    </button>
 )
 
 // Simple views for documents and tasks
@@ -164,78 +91,9 @@ const TasksView = () => (
     </div>
 )
 
-const AnalyticsView = () => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold mb-4 flex items-center">
-            <FiBarChart className="h-5 w-5 mr-2 text-blue-600" />
-            Analytics & Relatórios
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="p-4 border rounded-lg">
-                <h3 className="font-medium text-gray-900">Conversões</h3>
-                <p className="text-2xl font-bold text-blue-600">24%</p>
-            </div>
-            <div className="p-4 border rounded-lg">
-                <h3 className="font-medium text-gray-900">Leads Ativos</h3>
-                <p className="text-2xl font-bold text-green-600">156</p>
-            </div>
-            <div className="p-4 border rounded-lg">
-                <h3 className="font-medium text-gray-900">Ticket Médio</h3>
-                <p className="text-2xl font-bold text-purple-600">R$ 85k</p>
-            </div>
-        </div>
-    </div>
-)
-
-const LeadsView = () => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold mb-4 flex items-center">
-            <FiUsers className="h-5 w-5 mr-2 text-green-600" />
-            Gerenciar Leads
-        </h2>
-        <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div>
-                    <h3 className="font-medium">João Silva</h3>
-                    <p className="text-sm text-gray-600">joao@email.com</p>
-                </div>
-                <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Ativo</span>
-            </div>
-            <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div>
-                    <h3 className="font-medium">Maria Santos</h3>
-                    <p className="text-sm text-gray-600">maria@email.com</p>
-                </div>
-                <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">Follow-up</span>
-            </div>
-        </div>
-    </div>
-)
-
-const ConfigView = () => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold mb-4 flex items-center">
-            <FiSettings className="h-5 w-5 mr-2 text-gray-600" />
-            Configurações
-        </h2>
-        <div className="space-y-4">
-            <div className="p-4 border rounded-lg">
-                <h3 className="font-medium mb-2">Integração Supabase</h3>
-                <p className="text-sm text-gray-600 mb-2">Status da conexão com banco de dados</p>
-                <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Conectado</span>
-            </div>
-            <div className="p-4 border rounded-lg">
-                <h3 className="font-medium mb-2">Storage de Documentos</h3>
-                <p className="text-sm text-gray-600 mb-2">Armazenamento na nuvem</p>
-                <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Ativo</span>
-            </div>
-        </div>
-    </div>
-)
-
 interface IntegratedDashboardProps {
     leadId?: string
-    view?: 'overview' | 'lead-detail' | 'documents' | 'tasks' | 'activities' | 'cloud' | 'analytics' | 'leads' | 'config'
+    view?: 'overview' | 'lead-detail' | 'documents' | 'tasks' | 'activities' | 'cloud'
 }
 
 export default function IntegratedDashboard({
@@ -246,20 +104,6 @@ export default function IntegratedDashboard({
     const [selectedItems, setSelectedItems] = useState<string[]>([])
     const [filterStatus, setFilterStatus] = useState<string>('all')
     const [searchTerm, setSearchTerm] = useState('')
-
-    // Helper function for breadcrumb labels
-    const getActiveViewLabel = (view: string) => {
-        const labels = {
-            'overview': 'Visão Geral',
-            'leads': 'Gerenciar Leads',
-            'documents': 'Documentos',
-            'cloud': 'Armazenamento em Nuvem',
-            'tasks': 'Tarefas',
-            'analytics': 'Analytics & Relatórios',
-            'config': 'Configurações'
-        }
-        return labels[view as keyof typeof labels] || view
-    }
 
     const {
         data,
@@ -658,142 +502,29 @@ export default function IntegratedDashboard({
 
     // ==================== MAIN RENDER ====================
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 relative overflow-hidden">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-3">
-                <div
-                    className="w-full h-full"
-                    style={{
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239CA3AF' fill-opacity='0.03'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")`
-                    }}
-                />
-            </div>
-
-            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Header Aprimorado */}
-                <motion.div
-                    className="mb-8"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                >
+        <div className="min-h-screen bg-gray-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {/* Header */}
+                <div className="mb-8">
                     <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                            <motion.div
-                                className="flex items-center space-x-4 mb-4"
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.2, duration: 0.5 }}
-                            >
-                                {leadId && (
-                                    <motion.button
-                                        className="flex items-center text-gray-500 hover:text-gray-700 transition-colors"
-                                        onClick={() => window.history.back()}
-                                        whileHover={{ x: -2 }}
-                                        whileTap={{ scale: 0.95 }}
-                                    >
-                                        <FiChevronLeft className="h-5 w-5 mr-1" />
-                                        <span className="text-sm">Voltar</span>
-                                    </motion.button>
-                                )}
-
-                                <div className="h-12 w-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                                    <FiTrendingUp className="h-6 w-6 text-white" />
-                                </div>
-
-                                <div>
-                                    <motion.h1
-                                        className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ delay: 0.3 }}
-                                    >
-                                        {leadId ? 'Detalhes do Lead' : 'Dashboard CRM'}
-                                    </motion.h1>
-                                    <motion.p
-                                        className="text-gray-600 mt-1"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ delay: 0.4 }}
-                                    >
-                                        {leadId ? `Gerenciando ${lead?.name || 'lead'}` : 'Gestão integrada de leads e documentos'}
-                                    </motion.p>
-                                </div>
-                            </motion.div>
-
-                            {/* Breadcrumb Melhorado */}
-                            {!leadId && (
-                                <motion.nav
-                                    className="flex items-center space-x-2 text-sm"
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.5, duration: 0.3 }}
-                                >
-                                    <motion.button
-                                        className="flex items-center text-gray-500 hover:text-blue-600 transition-colors"
-                                        onClick={() => window.location.href = '/crm-system'}
-                                        whileHover={{ scale: 1.02 }}
-                                    >
-                                        <FiHome className="h-4 w-4 mr-1" />
-                                        <span>CRM System</span>
-                                    </motion.button>
-
-                                    <FiChevronLeft className="h-4 w-4 text-gray-400 rotate-180" />
-
-                                    <span className="text-gray-500">Dashboard</span>
-
-                                    <FiChevronLeft className="h-4 w-4 text-gray-400 rotate-180" />
-
-                                    <motion.span
-                                        className="text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded-md"
-                                        whileHover={{ scale: 1.05 }}
-                                    >
-                                        {getActiveViewLabel(activeView)}
-                                    </motion.span>
-                                </motion.nav>
-                            )}
+                        <div>
+                            <h1 className="text-3xl font-bold text-gray-900">
+                                {leadId ? 'Detalhes do Lead' : 'Dashboard CRM'}
+                            </h1>
+                            <p className="text-gray-600 mt-1">
+                                {leadId ? `Gerenciando ${lead?.name || 'lead'}` : 'Gestão integrada de leads e documentos'}
+                            </p>
                         </div>
-
-                        {/* Action Buttons */}
-                        <motion.div
-                            className="flex items-center space-x-3"
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.6, duration: 0.5 }}
-                        >
-                            <motion.button
+                        <div className="flex items-center space-x-3">
+                            <button
                                 onClick={refresh}
-                                className="flex items-center p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
-                                title="Atualizar dados"
-                                whileHover={{ scale: 1.05, rotate: 180 }}
-                                whileTap={{ scale: 0.95 }}
+                                className="p-2 text-gray-400 hover:text-gray-600"
                             >
                                 <FiActivity className="h-5 w-5" />
-                            </motion.button>
-
-                            {!leadId && (
-                                <motion.button
-                                    onClick={() => setActiveView('config')}
-                                    className="flex items-center p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
-                                    title="Configurações"
-                                    whileHover={{ scale: 1.05, rotate: 90 }}
-                                    whileTap={{ scale: 0.95 }}
-                                >
-                                    <FiSettings className="h-5 w-5" />
-                                </motion.button>
-                            )}
-
-                            <motion.button
-                                className="flex items-center px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-200"
-                                whileHover={{ scale: 1.02, y: -1 }}
-                                whileTap={{ scale: 0.98 }}
-                            >
-                                <FiPlus className="h-4 w-4 mr-2" />
-                                Novo Lead
-                            </motion.button>
-                        </motion.div>
+                            </button>
+                        </div>
                     </div>
-                </motion.div>
+                </div>
 
                 {/* Content */}
                 <AnimatePresence mode="wait">
@@ -801,170 +532,43 @@ export default function IntegratedDashboard({
                         <LeadDetailView key="lead-detail" />
                     ) : (
                         <div className="space-y-6">
-                            {/* Navigation Tabs Aprimorada */}
-                            <motion.div
-                                className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-2"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5 }}
-                            >
-                                <div className="flex items-center justify-between mb-3 px-3">
-                                    <motion.h3
-                                        className="text-sm font-semibold text-gray-700 flex items-center"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ delay: 0.2 }}
-                                    >
-                                        <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mr-2"></div>
-                                        Navegação Principal
-                                    </motion.h3>
-                                    <motion.div
-                                        className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full"
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1 }}
-                                        transition={{ delay: 0.4, type: "spring" }}
-                                    >
-                                        6 módulos disponíveis
-                                    </motion.div>
+                            {/* Navigation Tabs */}
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-1">
+                                <div className="flex space-x-1">
+                                    <TabButton
+                                        active={activeView === 'overview'}
+                                        onClick={() => setActiveView('overview')}
+                                        icon={FiTrendingUp}
+                                        label="Visão Geral"
+                                    />
+                                    <TabButton
+                                        active={activeView === 'documents'}
+                                        onClick={() => setActiveView('documents')}
+                                        icon={FiFileText}
+                                        label="Documentos"
+                                    />
+                                    <TabButton
+                                        active={activeView === 'tasks'}
+                                        onClick={() => setActiveView('tasks')}
+                                        icon={FiCheckCircle}
+                                        label="Tarefas"
+                                    />
+                                    <TabButton
+                                        active={activeView === 'cloud'}
+                                        onClick={() => setActiveView('cloud')}
+                                        icon={FiFile}
+                                        label="Nuvem"
+                                    />
                                 </div>
+                            </div>
 
-                                <div className="grid grid-cols-3 lg:grid-cols-6 gap-2">
-                                    {[
-                                        { id: 'overview', icon: FiTrendingUp, label: 'Dashboard', active: activeView === 'overview' },
-                                        { id: 'leads', icon: FiUsers, label: 'Leads', active: activeView === 'leads' },
-                                        { id: 'documents', icon: FiFileText, label: 'Documentos', active: activeView === 'documents' },
-                                        { id: 'cloud', icon: FiCloud, label: 'Nuvem', active: activeView === 'cloud' },
-                                        { id: 'tasks', icon: FiCheckCircle, label: 'Tarefas', active: activeView === 'tasks' },
-                                        { id: 'analytics', icon: FiBarChart, label: 'Analytics', active: activeView === 'analytics' }
-                                    ].map((item, index) => (
-                                        <motion.div
-                                            key={item.id}
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: index * 0.1 + 0.3 }}
-                                        >
-                                            <TabButton
-                                                active={item.active}
-                                                onClick={() => setActiveView(item.id as any)}
-                                                icon={item.icon}
-                                                label={item.label}
-                                            />
-                                        </motion.div>
-                                    ))}
-                                </div>
-                            </motion.div>
-
-                            {/* Secondary Navigation - Configurações */}
-                            <motion.div
-                                className="bg-gradient-to-r from-gray-50 to-white rounded-2xl shadow-sm border border-gray-200/50 p-4"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.8, duration: 0.5 }}
-                            >
-                                <div className="flex items-center justify-center">
-                                    <motion.div
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                    >
-                                        <TabButton
-                                            active={activeView === 'config'}
-                                            onClick={() => setActiveView('config')}
-                                            icon={FiSettings}
-                                            label="Configurações"
-                                        />
-                                    </motion.div>
-                                </div>
-                            </motion.div>
-
-                            {/* Tab Content com Transições Elegantes */}
-                            <motion.div
-                                className="relative min-h-[600px]"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: 1 }}
-                            >
-                                <AnimatePresence mode="wait">
-                                    <motion.div
-                                        key={activeView}
-                                        initial={{
-                                            opacity: 0,
-                                            y: 20,
-                                            scale: 0.95
-                                        }}
-                                        animate={{
-                                            opacity: 1,
-                                            y: 0,
-                                            scale: 1
-                                        }}
-                                        exit={{
-                                            opacity: 0,
-                                            y: -20,
-                                            scale: 0.95
-                                        }}
-                                        transition={{
-                                            duration: 0.4,
-                                            type: "spring",
-                                            stiffness: 300,
-                                            damping: 30
-                                        }}
-                                        className="relative"
-                                    >
-                                        {/* Background Pattern for Content */}
-                                        <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
-                                            <div
-                                                className="w-full h-full"
-                                                style={{
-                                                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233B82F6' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                                                    backgroundRepeat: 'repeat'
-                                                }}
-                                            />
-                                        </div>
-
-                                        {/* Content */}
-                                        <div className="relative z-10">
-                                            {activeView === 'overview' && <OverviewDashboard key="overview" />}
-                                            {activeView === 'leads' && <LeadsView key="leads" />}
-                                            {activeView === 'documents' && <DocumentsView key="documents" />}
-                                            {activeView === 'cloud' && <CloudStorage key="cloud" />}
-                                            {activeView === 'tasks' && <TasksView key="tasks" />}
-                                            {activeView === 'analytics' && <AnalyticsView key="analytics" />}
-                                            {activeView === 'config' && <ConfigView key="config" />}
-                                        </div>
-
-                                        {/* Loading Overlay */}
-                                        <motion.div
-                                            className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center pointer-events-none"
-                                            initial={{ opacity: 1 }}
-                                            animate={{ opacity: 0 }}
-                                            transition={{ delay: 0.1, duration: 0.3 }}
-                                        >
-                                            <motion.div
-                                                className="flex space-x-1"
-                                                initial={{ scale: 0 }}
-                                                animate={{ scale: 1 }}
-                                                exit={{ scale: 0 }}
-                                            >
-                                                {[0, 1, 2].map((i) => (
-                                                    <motion.div
-                                                        key={i}
-                                                        className="w-2 h-2 bg-blue-500 rounded-full"
-                                                        animate={{
-                                                            y: [-4, 4, -4],
-                                                            opacity: [0.4, 1, 0.4]
-                                                        }}
-                                                        transition={{
-                                                            duration: 0.6,
-                                                            repeat: Infinity,
-                                                            delay: i * 0.1,
-                                                            ease: "easeInOut"
-                                                        }}
-                                                    />
-                                                ))}
-                                            </motion.div>
-                                        </motion.div>
-                                    </motion.div>
-                                </AnimatePresence>
-                            </motion.div>
+                            {/* Tab Content */}
+                            <AnimatePresence mode="wait">
+                                {activeView === 'overview' && <OverviewDashboard key="overview" />}
+                                {activeView === 'documents' && <DocumentsView key="documents" />}
+                                {activeView === 'tasks' && <TasksView key="tasks" />}
+                                {activeView === 'cloud' && <CloudStorage key="cloud" />}
+                            </AnimatePresence>
                         </div>
                     )}
                 </AnimatePresence>

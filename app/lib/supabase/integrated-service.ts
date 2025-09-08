@@ -494,7 +494,7 @@ export class CRMService {
                     ).length
                 },
                 activities: {
-                    this_week: activitiesResult.data?.count || 0
+                    this_week: activitiesResult.data?.[0]?.count || 0
                 }
             }
 

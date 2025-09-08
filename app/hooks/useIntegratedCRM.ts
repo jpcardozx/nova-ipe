@@ -144,7 +144,7 @@ export function useIntegratedCRM({
 
     const addActivity = useCallback(async (activityData: {
         lead_id?: string
-        activity_type: 'document' | 'email' | 'whatsapp' | 'call' | 'viewing' | 'meeting' | 'task'
+        activity_type: string
         subject: string
         description?: string
         outcome?: string
@@ -209,9 +209,9 @@ export function useIntegratedCRM({
         document_id?: string
         title: string
         description?: string
-        task_type: 'sign' | 'send' | 'review' | 'approve' | 'collect' | 'update'
+        task_type: string
         assigned_to?: string
-        priority?: 'low' | 'medium' | 'high' | 'urgent'
+        priority?: string
         due_date?: string
     }) => {
         try {
@@ -273,9 +273,10 @@ export function useIntegratedCRM({
                 title: metadata.title || file.name.replace(/\.[^/.]+$/, ''),
                 description: metadata.description,
                 file_name: file.name,
+                original_file_name: file.name,
                 file_size: file.size,
                 file_type: file.type,
-                file_path: path || undefined,
+                file_path: path,
                 lead_id: metadata.lead_id || leadId,
                 property_id: metadata.property_id,
                 contract_id: metadata.contract_id,
@@ -323,7 +324,7 @@ export function useIntegratedCRM({
 
             const { data, error } = await CRMService.downloadFile(document.file_path)
             
-            if (error || !data) throw error || new Error('Dados não encontrados')
+            if (error) throw error
 
             const url = URL.createObjectURL(data)
             const a = window.document.createElement('a')
@@ -362,7 +363,7 @@ export function useIntegratedCRM({
                 lead_id: leadId,
                 title: 'Follow-up agendado',
                 description: notes,
-                task_type: 'review',
+                task_type: 'follow-up',
                 due_date: date.toISOString(),
                 priority: 'medium'
             })
@@ -374,7 +375,7 @@ export function useIntegratedCRM({
         }
     }, [updateLead, createTask])
 
-    const createDocumentTask = useCallback(async (documentId: string, taskType: 'sign' | 'send' | 'review' | 'approve' | 'collect' | 'update', assignedTo?: string) => {
+    const createDocumentTask = useCallback(async (documentId: string, taskType: string, assignedTo?: string) => {
         const taskTitles = {
             'review': 'Revisar documento',
             'approve': 'Aprovar documento',
