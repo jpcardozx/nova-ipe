@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useCurrentUser } from '@/lib/hooks/useCurrentUser'
+import { isAdmin } from '@/lib/auth/role-utils'
 import {
     Home,
     Building2,
@@ -36,7 +37,10 @@ import {
     Calculator,
     Folder,
     Percent,
-    BookOpen
+    BookOpen,
+    Cloud,
+    StarOff,
+    BarChart2
 } from 'lucide-react'
 
 interface MenuItem {
@@ -55,43 +59,39 @@ interface MenuCategory {
 
 const menuItems: MenuCategory[] = [
     {
+        category: 'Início',
+        items: [
+            { icon: Home, label: 'Início', href: '/dashboard', color: 'text-blue-600' }
+        ]
+    },
+    {
+        category: 'Documentos & Armazenamento',
+        items: [
+            { icon: Cloud, label: 'Nuvem Ipé', href: '/dashboard/cloud', color: 'text-blue-600' },
+        ]
+    },
+    {
         category: 'Principal',
         items: [
-            { icon: Home, label: 'Dashboard', href: '/dashboard', color: 'text-blue-600' },
-            { icon: CheckSquare, label: 'Tarefas', href: '/dashboard/tasks', color: 'text-red-600', badge: '8' },
-            { icon: Building2, label: 'Imóveis', href: '/dashboard/properties', color: 'text-green-600', badge: '156' },
-            { icon: Users, label: 'Clientes (CRM)', href: '/dashboard/clients', color: 'text-purple-600', badge: '89' },
-            { icon: Calendar, label: 'Agendamentos', href: '/dashboard/appointments', color: 'text-orange-600', badge: '12' }
+            { icon: CheckSquare, label: 'Tarefas', href: '/dashboard/tasks', color: 'text-red-600' },
+            { icon: Building2, label: 'Estúdio', href: '/studio', color: 'text-green-600' },
+            { icon: Users, label: 'Clientes (CRM)', href: '/dashboard/clients', color: 'text-purple-600' },
+            { icon: Calendar, label: 'Agendamentos', href: '/dashboard/appointments', color: 'text-orange-600' }
         ]
     },
     {
-        category: 'Vendas & Marketing',
+        category: 'Vendas',
         items: [
-            { icon: TrendingUp, label: 'Funil de Vendas', href: '/dashboard/funil', color: 'text-emerald-600', badge: '34' },
+            { icon: TrendingUp, label: 'Funil de Vendas', href: '/dashboard/funil', color: 'text-emerald-600' },
+            { icon: BarChart2, label: 'Leads', href: '/dashboard/leads', color: 'text-blue-600' },
             { icon: Target, label: 'Campanhas', href: '/dashboard/campaigns', color: 'text-pink-600' },
-            { icon: BookOpen, label: 'Vender Imóveis', href: '/dashboard/educational', color: 'text-indigo-600', badge: 'HOT' },
             { icon: Calculator, label: 'Calculadora', href: '/dashboard/calculator', color: 'text-blue-600' }
-        ]
-    },
-    {
-        category: 'Financeiro',
-        items: [
-            { icon: Percent, label: 'Comissões', href: '/dashboard/commissions', color: 'text-green-600' },
-            { icon: BarChart3, label: 'Relatórios', href: '/dashboard/reports', color: 'text-indigo-600' },
-            { icon: Activity, label: 'Performance', href: '/dashboard/analytics', color: 'text-red-600' }
-        ]
-    },
-    {
-        category: 'Documentos',
-        items: [
-            { icon: Folder, label: 'Contratos', href: '/dashboard/documents', color: 'text-gray-600' },
-            { icon: FileText, label: 'Templates', href: '/dashboard/templates', color: 'text-blue-600' }
         ]
     },
     {
         category: 'Administração',
         items: [
-            { icon: Users, label: 'Usuários', href: '/admin/access-requests', color: 'text-amber-600', adminOnly: true },
+            { icon: UserCircle, label: 'Meu Perfil', href: '/dashboard/profile', color: 'text-blue-600' },
             { icon: Settings, label: 'Configurações', href: '/dashboard/settings', color: 'text-gray-500' }
         ]
     }
@@ -116,17 +116,16 @@ export default function DashboardSidebar({ collapsed = false, onToggle }: Dashbo
         }
     }
 
-    const isAdmin = false // TODO: Implement role checking when needed
+    const isAdminUser = isAdmin(user) || user?.email === 'admin@ipeimoveis.com.br' // Verificação melhorada de admin
 
     return (
         <motion.div
             initial={false}
             animate={{
                 width: collapsed ? '80px' : '280px',
-                height: '100vh',
             }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="bg-white border-r border-gray-200 shadow-lg flex flex-col h-screen relative z-10"
+            className="bg-white border-r border-grey-300 shadow-lg flex flex-col relative z-10 rounded-md"
         >
             {/* Header */}
             <div className="p-4 border-b border-gray-100 flex items-center justify-between">
@@ -189,7 +188,7 @@ export default function DashboardSidebar({ collapsed = false, onToggle }: Dashbo
 
                         <div className="space-y-1">
                             {category.items
-                                .filter(item => !item.adminOnly || isAdmin)
+                                .filter(item => !item.adminOnly || isAdminUser)
                                 .map((item) => {
                                     const IconComponent = item.icon
                                     const isActive = pathname === item.href || pathname.startsWith(item.href + '/')

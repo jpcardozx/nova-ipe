@@ -13,8 +13,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PillSelector } from '@/components/ui/pill-selector'
 import { ArrowRight, Building2, User, AlertTriangle, Eye, EyeOff, UserPlus, ArrowLeft, Sparkles } from 'lucide-react'
-import ConnectionStatus from '@/app/components/debug/ConnectionStatus'
-import SupabaseDebugInfo from '@/app/components/debug/SupabaseDebugInfo'
 import { SimpleAuthManager } from '@/lib/auth-simple'
 import { EnhancedAuthManager, type LoginMode } from '@/lib/auth/enhanced-auth-manager'
 
@@ -380,10 +378,6 @@ function LoginPageContent() {
 
   return (
     <div className="relative min-h-screen w-full font-lexend">
-      {/* Debug Connection Status */}
-      <ConnectionStatus showInProduction={true} />
-      <SupabaseDebugInfo />
-
       {/* Background com overlay - sempre presente */}
       <Image
         src="/images/login.png"

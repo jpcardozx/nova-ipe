@@ -117,7 +117,7 @@ export default function DashboardWelcome() {
     }
 
     const getUserName = () => {
-        return user?.user_metadata?.full_name?.split(' ')[0] ||
+        return user?.full_name?.split(' ')[0] ||
             user?.email?.split('@')[0] ||
             'Corretor'
     }

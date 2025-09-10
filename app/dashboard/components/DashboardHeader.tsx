@@ -145,7 +145,7 @@ export default function DashboardHeader({ title, subtitle }: DashboardHeaderProp
                             </div>
                             <div className="hidden md:block text-left">
                                 <p className="text-sm font-medium text-gray-900">
-                                    {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'Usuário'}
+                                    {user?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'Usuário'}
                                 </p>
                                 <p className="text-xs text-gray-500">
                                     {user?.email}
