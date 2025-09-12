@@ -83,7 +83,9 @@ export default function LeadsPage() {
     const loadLeads = async () => {
         setLoading(true)
         try {
-            // Demo data - replace with actual API call
+            // TODO: Implement actual API call to fetch leads
+            // const response = await fetch('/api/leads')
+            // const demoLeads = await response.json()
             const demoLeads = getDemoLeads()
 
             let filteredLeads = demoLeads
@@ -142,94 +144,9 @@ export default function LeadsPage() {
         })
     }
 
-    const getDemoLeads = (): Lead[] => [
-        {
-            id: '1',
-            name: 'Maria Silva',
-            email: 'maria.silva@email.com',
-            phone: '(11) 99999-1234',
-            source: 'website',
-            status: 'new',
-            priority: 'high',
-            property_interest: 'Apartamento 2 quartos',
-            budget_min: 300000,
-            budget_max: 500000,
-            location_interest: 'Vila Madalena',
-            message: 'Interesse em apartamento com sacada',
-            score: 85,
-            conversion_probability: 75,
-            created_at: new Date().toISOString(),
-            next_follow_up: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-            id: '2',
-            name: 'João Santos',
-            email: 'joao.santos@email.com',
-            phone: '(11) 88888-2222',
-            source: 'facebook',
-            status: 'contacted',
-            priority: 'medium',
-            property_interest: 'Casa 3 quartos',
-            budget_min: 400000,
-            budget_max: 600000,
-            location_interest: 'Moema',
-            score: 70,
-            conversion_probability: 60,
-            created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-            last_contact: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-            id: '3',
-            name: 'Ana Costa',
-            email: 'ana.costa@email.com',
-            phone: '(11) 77777-3333',
-            source: 'google',
-            status: 'qualified',
-            priority: 'high',
-            property_interest: 'Cobertura',
-            budget_min: 800000,
-            budget_max: 1200000,
-            location_interest: 'Jardins',
-            score: 92,
-            conversion_probability: 85,
-            created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-            last_contact: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString()
-        },
-        {
-            id: '4',
-            name: 'Carlos Oliveira',
-            email: 'carlos.oliveira@email.com',
-            phone: '(11) 66666-4444',
-            source: 'referral',
-            status: 'proposal',
-            priority: 'high',
-            property_interest: 'Apartamento Studio',
-            budget_min: 250000,
-            budget_max: 350000,
-            location_interest: 'Centro',
-            score: 88,
-            conversion_probability: 90,
-            created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-            last_contact: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString()
-        },
-        {
-            id: '5',
-            name: 'Fernanda Lima',
-            email: 'fernanda.lima@email.com',
-            phone: '(11) 55555-5555',
-            source: 'phone',
-            status: 'won',
-            priority: 'medium',
-            property_interest: 'Casa com quintal',
-            budget_min: 500000,
-            budget_max: 700000,
-            location_interest: 'Vila Olimpia',
-            score: 95,
-            conversion_probability: 100,
-            created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-            last_contact: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-        }
-    ]
+    // TODO: Replace with actual API call to fetch leads from backend
+    // Mock data removed for production - connect to real leads management API
+    const getDemoLeads = (): Lead[] => []
 
     const getStatusConfig = (status: Lead['status']) => {
         const configs = {

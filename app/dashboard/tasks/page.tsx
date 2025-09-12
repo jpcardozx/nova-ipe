@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
+import {
     Calendar,
     Clock,
     Plus,
@@ -53,6 +53,7 @@ interface TaskStats {
 }
 
 export default function TasksPage() {
+    const [currentTime, setCurrentTime] = useState(new Date())
     const [tasks, setTasks] = useState<Task[]>([])
     const [categories, setCategories] = useState<TaskCategory[]>([])
     const [loading, setLoading] = useState(true)
@@ -63,6 +64,15 @@ export default function TasksPage() {
     const [viewMode, setViewMode] = useState<'list' | 'board' | 'calendar'>('list')
     const [selectedTask, setSelectedTask] = useState<Task | null>(null)
     const [showTaskModal, setShowTaskModal] = useState(false)
+
+    // Real-time clock update
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(new Date())
+        }, 1000)
+
+        return () => clearInterval(timer)
+    }, [])
 
     // Notifications
     const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications('current-user')
@@ -77,6 +87,14 @@ export default function TasksPage() {
         today: 0,
         urgent: 0
     })
+
+    const formatTime = (date: Date) => {
+        return date.toLocaleTimeString('pt-BR', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        })
+    }
 
     useEffect(() => {
         loadTasks()
@@ -215,7 +233,7 @@ export default function TasksPage() {
         return `${Math.abs(diffDays)} dias atrás`
     }
 
-    const formatTime = (dateString?: string) => {
+    const formatTimeString = (dateString?: string) => {
         if (!dateString) return ''
         return new Date(dateString).toLocaleTimeString('pt-BR', {
             hour: '2-digit',
@@ -342,118 +360,148 @@ export default function TasksPage() {
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-6"
+            className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50 space-y-6 p-8 rounded-md shadow-lg"
         >
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Tarefas e Follow-ups</h1>
-                    <p className="text-gray-600">Gerencie suas atividades diárias</p>
+            {/* Header with Real-time Clock */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-2 sm:px-0">
+                <div className="min-w-0 flex-1">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
+                        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-900 via-blue-800 to-purple-600 bg-clip-text text-transparent">
+                            Gestão de Tarefas
+                        </h1>
+                        <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-3 sm:px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg w-fit">
+                            <Clock className="h-4 sm:h-5 w-4 sm:w-5" />
+                            <span className="font-mono font-bold text-base sm:text-lg">
+                                {formatTime(currentTime)}
+                            </span>
+                        </div>
+                    </div>
+                    <p className="text-gray-600 flex items-center gap-2 text-sm sm:text-base">
+                        <CheckSquare className="h-4 sm:h-5 w-4 sm:w-5" />
+                        Organize suas tarefas e compromissos imobiliários em tempo real
+                    </p>
+                    <div className="mt-2 text-xs sm:text-sm text-gray-500">
+                        {currentTime.toLocaleDateString('pt-BR', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        })}
+                    </div>
                 </div>
 
                 <button
                     onClick={() => setShowTaskModal(true)}
-                    className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-2 rounded-lg font-medium shadow-sm hover:from-amber-600 hover:to-amber-700 transition-all"
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-medium flex items-center gap-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 w-full sm:w-auto justify-center"
                 >
-                    <Plus className="h-4 w-4" />
+                    <Plus className="h-4 sm:h-5 w-4 sm:w-5" />
                     Nova Tarefa
                 </button>
             </div>
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-red-100 rounded-lg">
-                            <AlertTriangle className="h-5 w-5 text-red-600" />
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-gray-600">Em Atraso</p>
-                            <p className="text-2xl font-bold text-red-600">{stats.overdue}</p>
-                        </div>
+            {/* Enhanced Stats Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4 px-2 sm:px-0">
+                <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-2xl p-3 sm:p-6 shadow-sm border border-red-100 hover:shadow-lg transition-all">
+                    <div className="flex items-center justify-between mb-2 sm:mb-4">
+                        <AlertTriangle className="h-6 sm:h-8 w-6 sm:w-8 text-red-600" />
+                        <span className="text-xl sm:text-3xl font-bold text-red-700">{stats.overdue}</span>
                     </div>
+                    <div className="text-xs sm:text-sm text-red-600">Em Atraso</div>
+                    <div className="text-xs text-red-500 mt-1 sm:mt-2 hidden sm:block">Prazo vencido</div>
                 </div>
 
-                <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-amber-100 rounded-lg">
-                            <Clock className="h-5 w-5 text-amber-600" />
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-gray-600">Hoje</p>
-                            <p className="text-2xl font-bold text-amber-600">{stats.today}</p>
-                        </div>
+                <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-3 sm:p-6 shadow-sm border border-amber-100 hover:shadow-lg transition-all">
+                    <div className="flex items-center justify-between mb-2 sm:mb-4">
+                        <Clock className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
+                        <span className="text-xl sm:text-3xl font-bold text-amber-700">{stats.today}</span>
                     </div>
+                    <div className="text-xs sm:text-sm text-amber-600">Para Hoje</div>
+                    <div className="text-xs text-amber-500 mt-1 sm:mt-2 hidden sm:block">Programadas hoje</div>
                 </div>
 
-                <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-blue-100 rounded-lg">
-                            <CheckSquare className="h-5 w-5 text-blue-600" />
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-gray-600">Pendentes</p>
-                            <p className="text-2xl font-bold text-blue-600">
-                                {stats.pending}
-                            </p>
-                        </div>
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-3 sm:p-6 shadow-sm border border-blue-100 hover:shadow-lg transition-all">
+                    <div className="flex items-center justify-between mb-2 sm:mb-4">
+                        <CheckSquare className="h-6 sm:h-8 w-6 sm:w-8 text-blue-600" />
+                        <span className="text-xl sm:text-3xl font-bold text-blue-700">{stats.pending}</span>
                     </div>
+                    <div className="text-xs sm:text-sm text-blue-600">Pendentes</div>
+                    <div className="text-xs text-blue-500 mt-1 sm:mt-2 hidden sm:block">Aguardando início</div>
                 </div>
 
-                <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-green-100 rounded-lg">
-                            <CheckCircle2 className="h-5 w-5 text-green-600" />
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-gray-600">Concluídas</p>
-                            <p className="text-2xl font-bold text-green-600">
-                                {stats.completed}
-                            </p>
-                        </div>
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-3 sm:p-6 shadow-sm border border-green-100 hover:shadow-lg transition-all">
+                    <div className="flex items-center justify-between mb-2 sm:mb-4">
+                        <CheckCircle2 className="h-6 sm:h-8 w-6 sm:w-8 text-green-600" />
+                        <span className="text-xl sm:text-3xl font-bold text-green-700">{stats.completed}</span>
                     </div>
+                    <div className="text-xs sm:text-sm text-green-600">Concluídas</div>
+                    <div className="text-xs text-green-500 mt-1 sm:mt-2 hidden sm:block">Finalizadas</div>
+                </div>
+
+                <div className="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-2xl p-3 sm:p-6 shadow-sm border border-yellow-100 hover:shadow-lg transition-all">
+                    <div className="flex items-center justify-between mb-2 sm:mb-4">
+                        <Play className="h-6 sm:h-8 w-6 sm:w-8 text-yellow-600" />
+                        <span className="text-xl sm:text-3xl font-bold text-yellow-700">{stats.in_progress}</span>
+                    </div>
+                    <div className="text-xs sm:text-sm text-yellow-600">Em Andamento</div>
+                    <div className="text-xs text-yellow-500 mt-1 sm:mt-2 hidden sm:block">Sendo executadas</div>
+                </div>
+
+                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl p-3 sm:p-6 shadow-sm border border-purple-100 hover:shadow-lg transition-all">
+                    <div className="flex items-center justify-between mb-2 sm:mb-4">
+                        <Zap className="h-8 w-8 text-purple-600" />
+                        <span className="text-3xl font-bold text-purple-700">{stats.urgent}</span>
+                    </div>
+                    <div className="text-sm text-purple-600">Urgentes</div>
+                    <div className="text-xs text-purple-500 mt-2">Alta prioridade</div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg transition-all">
+                    <div className="flex items-center justify-between mb-4">
+                        <Target className="h-8 w-8 text-gray-600" />
+                        <span className="text-3xl font-bold text-gray-900">{stats.total}</span>
+                    </div>
+                    <div className="text-sm text-gray-600">Total</div>
+                    <div className="text-xs text-gray-500 mt-2">Todas as tarefas</div>
                 </div>
             </div>
 
-            {/* Filters */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            {/* Enhanced Filters */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
                 <div className="flex flex-col lg:flex-row gap-4">
-                    <div className="flex-1">
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                            <input
-                                type="text"
-                                placeholder="Buscar tarefas, clientes ou imóveis..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                            />
-                        </div>
+                    <div className="flex-1 relative group">
+                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-purple-500 transition-colors" />
+                        <input
+                            type="text"
+                            placeholder="Buscar tarefas, clientes ou imóveis..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                        />
                     </div>
 
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value as any)}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                        className="border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white min-w-[160px]"
                     >
                         <option value="all">Todos os status</option>
-                        <option value="pending">Pendente</option>
-                        <option value="in_progress">Em Andamento</option>
-                        <option value="completed">Concluída</option>
-                        <option value="cancelled">Cancelada</option>
-                        <option value="overdue">Atrasada</option>
+                        <option value="pending">⏳ Pendente</option>
+                        <option value="in_progress">⚡ Em Andamento</option>
+                        <option value="completed">✅ Concluída</option>
+                        <option value="cancelled">❌ Cancelada</option>
+                        <option value="overdue">🚨 Atrasada</option>
                     </select>
 
                     <select
                         value={priorityFilter}
                         onChange={(e) => setPriorityFilter(e.target.value as any)}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                        className="border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white min-w-[160px]"
                     >
                         <option value="all">Todas as prioridades</option>
-                        <option value="urgent">Urgente</option>
-                        <option value="high">Alta</option>
-                        <option value="medium">Média</option>
-                        <option value="low">Baixa</option>
+                        <option value="urgent">🚨 Urgente</option>
+                        <option value="high">🔥 Alta</option>
+                        <option value="medium">⚡ Média</option>
+                        <option value="low">🌱 Baixa</option>
                     </select>
                 </div>
             </div>
@@ -465,7 +513,7 @@ export default function TasksPage() {
                         <CheckSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                         <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhuma tarefa encontrada</h3>
                         <p className="text-gray-500 mb-4">Não há tarefas que correspondam aos filtros selecionados.</p>
-                        <button 
+                        <button
                             onClick={() => setShowTaskModal(true)}
                             className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-2 rounded-lg font-medium">
                             Criar Primeira Tarefa
@@ -474,8 +522,19 @@ export default function TasksPage() {
                 ) : (
                     <div className="divide-y divide-gray-200">
                         {filteredTasks.map((task) => {
-                            const TypeIcon = getTypeIcon(task.type)
                             const overdue = task.status !== 'completed' && isOverdue(task.due_date, task.due_time)
+
+                            // Renderizar ícone baseado no tipo
+                            const renderTypeIcon = () => {
+                                switch (task.type) {
+                                    case 'call': return <Phone className={`h-4 w-4 ${task.status === 'completed' ? 'text-green-600' : 'text-gray-600'}`} />
+                                    case 'meeting': return <Calendar className={`h-4 w-4 ${task.status === 'completed' ? 'text-green-600' : 'text-gray-600'}`} />
+                                    case 'document': return <Building2 className={`h-4 w-4 ${task.status === 'completed' ? 'text-green-600' : 'text-gray-600'}`} />
+                                    case 'follow_up': return <MessageCircle className={`h-4 w-4 ${task.status === 'completed' ? 'text-green-600' : 'text-gray-600'}`} />
+                                    case 'visit': return <Building2 className={`h-4 w-4 ${task.status === 'completed' ? 'text-green-600' : 'text-gray-600'}`} />
+                                    default: return <CheckSquare className={`h-4 w-4 ${task.status === 'completed' ? 'text-green-600' : 'text-gray-600'}`} />
+                                }
+                            }
 
                             return (
                                 <motion.div
@@ -488,7 +547,7 @@ export default function TasksPage() {
                                             <div className="flex items-start gap-4">
                                                 <div className="flex-shrink-0 mt-1">
                                                     <div className={`p-2 rounded-lg ${task.status === 'completed' ? 'bg-green-100' : 'bg-gray-100'}`}>
-                                                        <TypeIcon className={`h-4 w-4 ${task.status === 'completed' ? 'text-green-600' : 'text-gray-600'}`} />
+                                                        {renderTypeIcon()}
                                                     </div>
                                                 </div>
 
@@ -514,7 +573,7 @@ export default function TasksPage() {
                                                             <Calendar className="h-4 w-4 text-gray-400" />
                                                             <span className={overdue ? 'text-red-600 font-medium' : ''}>
                                                                 {formatDate(task.due_date)}
-                                                                {task.due_time && ` às ${task.due_time}`}
+                                                                {task.due_time && ` às ${formatTimeString(task.due_time)}`}
                                                                 {overdue && ' (Atrasada)'}
                                                             </span>
                                                         </div>
@@ -566,12 +625,12 @@ export default function TasksPage() {
                                                     <CheckCircle2 className="h-4 w-4" />
                                                 </button>
                                             )}
-                                            <button 
-                                                onClick={() => {setSelectedTask(task); setShowTaskModal(true);}}
+                                            <button
+                                                onClick={() => { setSelectedTask(task); setShowTaskModal(true); }}
                                                 className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                                                 <Edit className="h-4 w-4" />
                                             </button>
-                                            <button 
+                                            <button
                                                 onClick={() => deleteTask(task.id)}
                                                 className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
                                                 <Trash2 className="h-4 w-4" />
@@ -584,12 +643,12 @@ export default function TasksPage() {
                     </div>
                 )}
             </div>
-            <TaskModal 
-                isOpen={showTaskModal} 
-                onClose={() => {setShowTaskModal(false); setSelectedTask(null);}} 
-                onSave={() => {setShowTaskModal(false); setSelectedTask(null); loadTasks();}} 
-                categories={categories} 
-                task={selectedTask || undefined} 
+            <TaskModal
+                isOpen={showTaskModal}
+                onClose={() => { setShowTaskModal(false); setSelectedTask(null); }}
+                onSave={() => { setShowTaskModal(false); setSelectedTask(null); loadTasks(); }}
+                categories={categories}
+                task={selectedTask || undefined}
             />
         </motion.div>
     )

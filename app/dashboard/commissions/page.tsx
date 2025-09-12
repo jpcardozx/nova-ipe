@@ -46,80 +46,33 @@ interface Goal {
     type: 'monthly' | 'quarterly' | 'yearly'
 }
 
-const mockCommissions: Commission[] = [
-    {
-        id: '1',
-        property_title: 'Apartamento 3 Quartos - Centro',
-        property_address: 'Rua das Flores, 123 - Centro',
-        client_name: 'Maria Silva',
-        sale_value: 450000,
-        commission_percentage: 6,
-        commission_amount: 27000,
-        status: 'paid',
-        sale_date: '2024-01-15',
-        payment_date: '2024-01-30',
-        type: 'sale'
-    },
-    {
-        id: '2',
-        property_title: 'Casa 4 Quartos - Jardins',
-        property_address: 'Av. Paulista, 456 - Jardins',
-        client_name: 'João Santos',
-        sale_value: 850000,
-        commission_percentage: 5,
-        commission_amount: 42500,
-        status: 'pending',
-        sale_date: '2024-01-20',
-        type: 'sale'
-    },
-    {
-        id: '3',
-        property_title: 'Apartamento 2 Quartos - Vila Madalena',
-        property_address: 'Rua Harmonia, 789 - Vila Madalena',
-        client_name: 'Carlos Oliveira',
-        sale_value: 3200,
-        commission_percentage: 8,
-        commission_amount: 256,
-        status: 'paid',
-        sale_date: '2024-01-10',
-        payment_date: '2024-01-25',
-        type: 'rental'
-    }
-]
+// TODO: Replace with actual API calls to fetch commissions and goals from backend
+// Mock data removed for production - connect to real commissions and goals APIs
+const mockCommissions: Commission[] = []
 
-const mockGoals: Goal[] = [
-    {
-        id: '1',
-        title: 'Meta Mensal - Janeiro',
-        target_amount: 50000,
-        current_amount: 69756,
-        target_date: '2024-01-31',
-        type: 'monthly'
-    },
-    {
-        id: '2',
-        title: 'Meta Trimestral - Q1 2024',
-        target_amount: 150000,
-        current_amount: 69756,
-        target_date: '2024-03-31',
-        type: 'quarterly'
-    },
-    {
-        id: '3',
-        title: 'Meta Anual - 2024',
-        target_amount: 600000,
-        current_amount: 69756,
-        target_date: '2024-12-31',
-        type: 'yearly'
-    }
-]
+const mockGoals: Goal[] = []
 
 export default function CommissionsPage() {
     const [searchTerm, setSearchTerm] = useState('')
     const [statusFilter, setStatusFilter] = useState('all')
     const [typeFilter, setTypeFilter] = useState('all')
-    const [commissions] = useState<Commission[]>(mockCommissions)
-    const [goals] = useState<Goal[]>(mockGoals)
+    const [commissions, setCommissions] = useState<Commission[]>([])
+    const [goals, setGoals] = useState<Goal[]>([])
+    
+    // TODO: Implement useEffect to load commissions and goals from API
+    // useEffect(() => {
+    //     const loadData = async () => {
+    //         const [commissionsResponse, goalsResponse] = await Promise.all([
+    //             fetch('/api/commissions'),
+    //             fetch('/api/goals')
+    //         ])
+    //         const commissionsData = await commissionsResponse.json()
+    //         const goalsData = await goalsResponse.json()
+    //         setCommissions(commissionsData)
+    //         setGoals(goalsData)
+    //     }
+    //     loadData()
+    // }, [])
 
     const filteredCommissions = commissions.filter(commission => {
         const matchesSearch = commission.property_title.toLowerCase().includes(searchTerm.toLowerCase()) ||

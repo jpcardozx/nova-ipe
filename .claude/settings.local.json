@@ -27,7 +27,9 @@
       "Bash(git config:*)",
       "Bash(true)",
       "Bash(npm uninstall:*)",
-      "Bash(npm run analyze:*)"
+      "Bash(npm run analyze:*)",
+      "Bash(del:*)",
+      "Bash(npm run type-check:*)"
     ],
     "deny": []
   },

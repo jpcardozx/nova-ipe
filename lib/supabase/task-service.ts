@@ -184,6 +184,11 @@ export class TaskService {
         limit?: number
     }): Promise<{ data: Notification[] | null, error: any }> {
         try {
+            // Verificar se userId é válido
+            if (!userId) {
+                return { data: [], error: null }
+            }
+
             let query = supabase
                 .from('notifications')
                 .select('*')
@@ -204,13 +209,15 @@ export class TaskService {
             const { data, error } = await query.order('created_at', { ascending: false })
             
             if (error) {
-                console.error('❌ Database error in getNotifications:', error)
+                // Log interno apenas, não mostrar erro para o usuário
+                console.warn('Database query failed for notifications, returning empty array')
                 return { data: [], error: null }
             }
             
-            return { data, error: null }
+            return { data: data || [], error: null }
         } catch (error) {
-            console.error('❌ Error in getNotifications:', error)
+            // Log interno apenas, retornar array vazio para não quebrar a UI
+            console.warn('Notifications service temporarily unavailable')
             return { data: [], error: null }
         }
     }

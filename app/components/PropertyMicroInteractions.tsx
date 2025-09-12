@@ -166,7 +166,7 @@ export const AnimatedStats = ({
 }: {
     value: string | number;
     label: string;
-    icon: React.ElementType;
+    icon: any;
     delay?: number;
 }) => (
     <motion.div

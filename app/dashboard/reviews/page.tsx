@@ -81,88 +81,12 @@ export default function ReviewsPage() {
 
     const loadReviews = async () => {
         try {
-            // Simulando dados de avaliações
-            const mockReviews: Review[] = [
-                {
-                    id: '1',
-                    client_name: 'Maria Santos',
-                    client_email: 'maria.santos@email.com',
-                    client_avatar: '/avatars/maria.jpg',
-                    property_id: 'prop-123',
-                    property_title: 'Apartamento 3 quartos - Itaim Bibi',
-                    rating: 5,
-                    title: 'Excelente atendimento e imóvel perfeito!',
-                    content: 'Fui muito bem atendida desde o primeiro contato. O corretor foi muito profissional e me ajudou a encontrar exatamente o que eu procurava. O apartamento superou minhas expectativas!',
-                    pros: ['Localização excelente', 'Atendimento profissional', 'Processo rápido'],
-                    cons: [],
-                    status: 'approved',
-                    is_verified: true,
-                    helpful_votes: 8,
-                    unhelpful_votes: 0,
-                    admin_response: 'Muito obrigado pela avaliação, Maria! Ficamos felizes em ter ajudado você a encontrar seu novo lar.',
-                    admin_response_date: '2025-01-14T10:30:00.000Z',
-                    created_at: '2025-01-13T14:22:00.000Z',
-                    updated_at: '2025-01-14T10:30:00.000Z',
-                    source: 'website'
-                },
-                {
-                    id: '2',
-                    client_name: 'João Silva',
-                    client_email: 'joao.silva@email.com',
-                    property_id: 'prop-456',
-                    property_title: 'Casa 4 quartos - Vila Madalena',
-                    rating: 4,
-                    title: 'Boa experiência, mas pode melhorar',
-                    content: 'No geral foi uma boa experiência. O corretor foi atencioso e a casa estava em ótimo estado. Só achei que o processo de documentação demorou um pouco mais do que esperado.',
-                    pros: ['Corretor atencioso', 'Casa em ótimo estado', 'Preço justo'],
-                    cons: ['Documentação demorada'],
-                    status: 'approved',
-                    is_verified: true,
-                    helpful_votes: 5,
-                    unhelpful_votes: 1,
-                    created_at: '2025-01-12T09:15:00.000Z',
-                    updated_at: '2025-01-12T09:15:00.000Z',
-                    source: 'google'
-                },
-                {
-                    id: '3',
-                    client_name: 'Ana Costa',
-                    client_email: 'ana.costa@email.com',
-                    rating: 3,
-                    title: 'Experiência mediana',
-                    content: 'O atendimento foi ok, mas senti que poderia ter sido mais personalizado. O imóvel visitado não estava nas melhores condições de limpeza.',
-                    pros: ['Localização boa'],
-                    cons: ['Falta de personalização', 'Limpeza do imóvel'],
-                    status: 'pending',
-                    is_verified: false,
-                    helpful_votes: 0,
-                    unhelpful_votes: 0,
-                    created_at: '2025-01-15T16:45:00.000Z',
-                    updated_at: '2025-01-15T16:45:00.000Z',
-                    source: 'email'
-                },
-                {
-                    id: '4',
-                    client_name: 'Carlos Mendes',
-                    client_email: 'carlos.mendes@email.com',
-                    property_id: 'prop-789',
-                    property_title: 'Cobertura - Moema',
-                    rating: 5,
-                    title: 'Superou todas as expectativas!',
-                    content: 'Desde o primeiro contato até a entrega das chaves, tudo foi perfeito. Equipe muito profissional e atenciosa. Recomendo para todos!',
-                    pros: ['Equipe profissional', 'Processo transparente', 'Imóvel excepcional'],
-                    cons: [],
-                    status: 'approved',
-                    is_verified: true,
-                    helpful_votes: 12,
-                    unhelpful_votes: 0,
-                    admin_response: 'Obrigado Carlos! Sua satisfação é nossa maior recompensa.',
-                    admin_response_date: '2025-01-11T11:20:00.000Z',
-                    created_at: '2025-01-10T13:30:00.000Z',
-                    updated_at: '2025-01-11T11:20:00.000Z',
-                    source: 'website'
-                }
-            ]
+            // TODO: Replace with actual API call to fetch reviews from backend
+            // const response = await fetch('/api/reviews')
+            // const mockReviews = await response.json()
+            
+            // Mock data removed for production - connect to real reviews API
+            const mockReviews: Review[] = []
 
             setReviews(mockReviews)
         } catch (error) {
@@ -174,17 +98,22 @@ export default function ReviewsPage() {
 
     const loadStats = async () => {
         try {
+            // TODO: Replace with actual API call to fetch review stats from backend
+            // const response = await fetch('/api/reviews/stats')
+            // const mockStats = await response.json()
+            
+            // Mock stats removed for production - connect to real review stats API
             const mockStats: ReviewStats = {
-                total: 127,
-                average_rating: 4.3,
-                pending_approval: 8,
-                verified_reviews: 89,
+                total: 0,
+                average_rating: 0,
+                pending_approval: 0,
+                verified_reviews: 0,
                 rating_distribution: {
-                    1: 3,
-                    2: 5,
-                    3: 18,
-                    4: 42,
-                    5: 59
+                    1: 0,
+                    2: 0,
+                    3: 0,
+                    4: 0,
+                    5: 0
                 }
             }
             setStats(mockStats)

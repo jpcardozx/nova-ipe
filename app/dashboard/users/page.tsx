@@ -48,71 +48,31 @@ export default function UsersPage() {
 
     const rbacManager = RBACManager.getInstance()
 
-    // Mock data - em produção viria do banco
-    const mockUsers: UserProfile[] = [
-        {
-            id: '1',
-            email: 'admin@ipeimoveis.com',
-            full_name: 'João Pedro Cardozo',
-            role: {
-                id: 'admin',
-                name: 'Administrador',
-                permissions: [],
-                hierarchy_level: 90
-            },
-            department: 'TI',
-            phone: '(11) 99999-9999',
-            status: 'active',
-            created_at: '2024-01-15',
-            last_login: '2024-09-08',
-            permissions: []
-        },
-        {
-            id: '2',
-            email: 'corretor@ipeimoveis.com',
-            full_name: 'Maria Silva',
-            role: {
-                id: 'corretor',
-                name: 'Corretor',
-                permissions: [],
-                hierarchy_level: 50
-            },
-            department: 'Vendas',
-            phone: '(11) 88888-8888',
-            status: 'active',
-            created_at: '2024-02-20',
-            last_login: '2024-09-07',
-            permissions: []
-        },
-        {
-            id: '3',
-            email: 'assistente@ipeimoveis.com',
-            full_name: 'Pedro Santos',
-            role: {
-                id: 'assistente',
-                name: 'Assistente',
-                permissions: [],
-                hierarchy_level: 30
-            },
-            department: 'Atendimento',
-            phone: '(11) 77777-7777',
-            status: 'inactive',
-            created_at: '2024-03-10',
-            last_login: '2024-08-30',
-            permissions: []
-        }
-    ]
+    // TODO: Replace with actual API call to fetch users from backend
+    // Mock data removed for production - connect to real user management API
+    const mockUsers: UserProfile[] = []
 
     useEffect(() => {
-        // Simular carregamento dos usuários
-        setTimeout(() => {
-            setState(prev => ({
-                ...prev,
-                users: mockUsers,
-                filteredUsers: mockUsers,
-                loading: false
-            }))
-        }, 1000)
+        // Carregar usuários do backend
+        const loadUsers = async () => {
+            try {
+                // TODO: Implement actual API call to fetch users
+                // const response = await fetch('/api/users')
+                // const users = await response.json()
+
+                setState(prev => ({
+                    ...prev,
+                    users: mockUsers, // Will be empty until real API is connected
+                    filteredUsers: mockUsers,
+                    loading: false
+                }))
+            } catch (error) {
+                console.error('Erro ao carregar usuários:', error)
+                setState(prev => ({ ...prev, loading: false }))
+            }
+        }
+
+        loadUsers()
     }, [])
 
     // Filtrar usuários baseado na pesquisa e status

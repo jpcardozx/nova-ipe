@@ -66,140 +66,9 @@ interface FunnelStats {
     avg_time_in_stage: number
 }
 
-const mockLeads: Lead[] = [
-    {
-        id: '1',
-        name: 'Maria Silva',
-        email: 'maria.silva@email.com',
-        phone: '(11) 99999-9999',
-        source: 'website',
-        stage: 'captacao',
-        score: 75,
-        budget_min: 250000,
-        budget_max: 350000,
-        property_type: 'apartment',
-        location_preference: 'Centro',
-        last_contact: '2024-01-20',
-        created_at: '2024-01-18',
-        notes: 'Primeira compra, busca apartamento 2 quartos',
-        priority: 'medium',
-        probability: 60,
-        expected_close_date: '2024-03-15',
-        assigned_to: 'Você',
-        activities_count: 3,
-        value_potential: 300000
-    },
-    {
-        id: '2',
-        name: 'João Santos',
-        email: 'joao.santos@email.com',
-        phone: '(11) 88888-8888',
-        source: 'referral',
-        stage: 'qualificacao',
-        score: 85,
-        budget_min: 180000,
-        budget_max: 250000,
-        property_type: 'house',
-        location_preference: 'Periferia',
-        last_contact: '2024-01-19',
-        created_at: '2024-01-10',
-        notes: 'Indicação de cliente, procura casa térrea',
-        priority: 'high',
-        probability: 70,
-        expected_close_date: '2024-02-28',
-        assigned_to: 'Você',
-        activities_count: 5,
-        value_potential: 220000
-    },
-    {
-        id: '3',
-        name: 'Carlos Oliveira',
-        email: 'carlos.oliveira@email.com',
-        phone: '(11) 77777-7777',
-        source: 'whatsapp',
-        stage: 'negociacao',
-        score: 80,
-        budget_min: 150000,
-        budget_max: 200000,
-        property_type: 'apartment',
-        location_preference: 'Centro',
-        last_contact: '2024-01-21',
-        created_at: '2024-01-05',
-        notes: 'Negociando preço, tem flexibilidade nas condições',
-        priority: 'medium',
-        probability: 75,
-        expected_close_date: '2024-02-20',
-        assigned_to: 'Você',
-        activities_count: 8,
-        value_potential: 175000
-    },
-    {
-        id: '4',
-        name: 'Ana Costa',
-        email: 'ana.costa@email.com',
-        phone: '(11) 66666-6666',
-        source: 'facebook',
-        stage: 'fechamento',
-        score: 90,
-        budget_min: 280000,
-        budget_max: 320000,
-        property_type: 'apartment',
-        location_preference: 'Vila Nova',
-        last_contact: '2024-01-22',
-        created_at: '2023-12-20',
-        notes: 'Documentos em análise no banco, aguardando aprovação',
-        priority: 'urgent',
-        probability: 90,
-        expected_close_date: '2024-02-10',
-        assigned_to: 'Você',
-        activities_count: 12,
-        value_potential: 300000
-    },
-    {
-        id: '5',
-        name: 'Pedro Lima',
-        email: 'pedro.lima@email.com',
-        phone: '(11) 55555-5555',
-        source: 'cold_call',
-        stage: 'captacao',
-        score: 45,
-        budget_min: 120000,
-        budget_max: 180000,
-        property_type: 'apartment',
-        location_preference: 'Qualquer bairro',
-        last_contact: '2024-01-23',
-        created_at: '2024-01-23',
-        notes: 'Primeiro contato, ainda explorando opções',
-        priority: 'low',
-        probability: 30,
-        expected_close_date: '2024-04-15',
-        assigned_to: 'Você',
-        activities_count: 1,
-        value_potential: 150000
-    },
-    {
-        id: '6',
-        name: 'Lucia Mendes',
-        email: 'lucia.mendes@email.com',
-        phone: '(11) 44444-4444',
-        source: 'instagram',
-        stage: 'qualificacao',
-        score: 70,
-        budget_min: 200000,
-        budget_max: 280000,
-        property_type: 'house',
-        location_preference: 'Jardim América',
-        last_contact: '2024-01-21',
-        created_at: '2024-01-15',
-        notes: 'Jovem casal, primeira casa própria',
-        priority: 'medium',
-        probability: 65,
-        expected_close_date: '2024-03-30',
-        assigned_to: 'Você',
-        activities_count: 4,
-        value_potential: 240000
-    }
-]
+// TODO: Replace with actual API call to fetch leads from backend
+// Mock data removed for production - connect to real funnel leads API
+const mockLeads: Lead[] = []
 
 const stages = [
     {
@@ -261,7 +130,17 @@ export default function FunnelPage() {
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
     const [draggedLead, setDraggedLead] = useState<string | null>(null)
-    const [leads, setLeads] = useState<Lead[]>(mockLeads)
+    const [leads, setLeads] = useState<Lead[]>([])
+    
+    // TODO: Implement useEffect to load leads from API
+    // useEffect(() => {
+    //     const loadLeads = async () => {
+    //         const response = await fetch('/api/leads/funnel')
+    //         const data = await response.json()
+    //         setLeads(data)
+    //     }
+    //     loadLeads()
+    // }, [])
     const dragOverStage = useRef<string | null>(null)
 
     const filteredLeads = leads.filter(lead => {

@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useCurrentUser } from '@/lib/hooks/useCurrentUser'
-import { useRealtimeMetrics } from '@/app/hooks/useRealtimeMetrics'
-import { useDashboardActions } from '@/app/hooks/useDashboardActions'
-import { PerformanceIndicators } from '@/app/components/dashboard/PerformanceIndicators'
+import { useCurrentUser } from '@/lib/hooks/useCurrentUser-simple'
+import { useRealtimeMetrics } from '@/lib/hooks/useRealtimeMetrics-simple'
+// import { logger, withDebug, debugUserAction } from '@/lib/utils/debug'
 import {
     TrendingUp,
     Users,
@@ -64,243 +63,79 @@ const getPriorityColor = (priority: string) => {
     }
 }
 
-interface DashboardMetrics {
-    // Vendas e Receita
-    totalRevenue: number
-    monthlyRevenue: number
-    quarterlyRevenue: number
-    averageTicket: number
-    salesGoal: number
-    salesGoalProgress: number
-
-    // Propriedades e Inventário
-    totalProperties: number
-    activeListings: number
-    soldThisMonth: number
-    avgDaysOnMarket: number
-    priceReductions: number
-    exclusiveListings: number
-
-    // Leads e Clientes
-    totalLeads: number
-    qualifiedLeads: number
-    hotLeads: number
-    conversionRate: number
-    responseTime: number
-    totalClients: number
-
-    // Agendamentos e Visitas
-    appointmentsToday: number
-    appointmentsWeek: number
-    visitConversionRate: number
-    showingsCompleted: number
-
-    // Performance e Avaliações
-    avgRating: number
-    totalReviews: number
-    marketShare: number
-    clientSatisfaction: number
-
-    // Atividade e Produtividade
-    callsMade: number
-    emailsSent: number
-    proposalsSent: number
-    contractsSigned: number
-
-    // Campanhas e Marketing
-    activeCampaigns: number
-    campaignROI: number
-    leadCost: number
-    digitalEngagement: number
-}
-
-interface LeadActivity {
-    id: string
-    name: string
-    type: 'hot' | 'warm' | 'cold'
-    property: string
-    value: number
-    lastContact: string
-    source: string
-    priority: 'high' | 'medium' | 'low'
-    status: 'new' | 'contacted' | 'qualified' | 'proposal' | 'negotiation'
-}
-
-interface PropertyPerformance {
-    id: string
-    address: string
-    price: number
-    views: number
-    favorites: number
-    shares: number
-    inquiries: number
-    visits: number
-    daysOnMarket: number
-    priceChange: number
-    trend: 'up' | 'down' | 'stable'
-}
-
-interface UpcomingTask {
-    id: string
-    title: string
-    type: 'call' | 'meeting' | 'document' | 'follow-up' | 'showing'
-    time: string
-    priority: 'high' | 'medium' | 'low'
-    client?: string
-    property?: string
-    description: string
-}
+// Importar tipos da versão temporária
+import { DashboardMetrics, LeadActivity, PropertyPerformance, UpcomingTask } from '@/lib/hooks/useRealtimeMetrics-simple'
 
 export default function ProfessionalDashboard({ className = '' }: ProfessionalDashboardProps) {
-    const { user } = useCurrentUser()
-    const { metrics, loading, lastUpdated, refreshMetrics } = useRealtimeMetrics()
-    const { quickCall, quickWhatsApp, quickEmail } = useDashboardActions()
-    const [leadActivity, setLeadActivity] = useState<LeadActivity[]>([])
-    const [propertyPerformance, setPropertyPerformance] = useState<PropertyPerformance[]>([])
-    const [upcomingTasks, setUpcomingTasks] = useState<UpcomingTask[]>([])
+    const { user, loading: userLoading } = useCurrentUser()
+    const {
+        metrics,
+        leads,
+        properties,
+        tasks,
+        loading: metricsLoading,
+        error,
+        lastUpdated,
+        refreshAll
+    } = useRealtimeMetrics()
+
     const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'properties' | 'tasks'>('overview')
 
-    useEffect(() => {
-        loadDashboardData()
-    }, [])
+    // Debug setup - temporarily disabled
+    // const { logger: componentLogger } = withDebug('ProfessionalDashboard', { 
+    //     userId: user?.id, 
+    //     activeTab,
+    //     hasMetrics: !!metrics,
+    //     leadsCount: leads.length,
+    //     propertiesCount: properties.length,
+    //     tasksCount: tasks.length
+    // })
 
-    const loadDashboardData = async () => {
-        try {
-            // Simulate API calls with realistic data
-            await new Promise(resolve => setTimeout(resolve, 1200))
+    const loading = userLoading || metricsLoading
 
-            setLeadActivity([
-                {
-                    id: '1',
-                    name: 'Maria Silva Santos',
-                    type: 'hot',
-                    property: 'Cobertura Itaim Bibi',
-                    value: 850000,
-                    lastContact: '15 min',
-                    source: 'WhatsApp',
-                    priority: 'high',
-                    status: 'negotiation'
-                },
-                {
-                    id: '2',
-                    name: 'João Carlos Oliveira',
-                    type: 'warm',
-                    property: 'Apartamento Vila Madalena',
-                    value: 650000,
-                    lastContact: '2h',
-                    source: 'Site',
-                    priority: 'high',
-                    status: 'proposal'
-                },
-                {
-                    id: '3',
-                    name: 'Ana Paula Costa',
-                    type: 'hot',
-                    property: 'Casa Morumbi',
-                    value: 1200000,
-                    lastContact: '4h',
-                    source: 'Indicação',
-                    priority: 'high',
-                    status: 'qualified'
-                },
-                {
-                    id: '4',
-                    name: 'Carlos Eduardo Lima',
-                    type: 'warm',
-                    property: 'Loft Pinheiros',
-                    value: 450000,
-                    lastContact: '1 dia',
-                    source: 'Facebook',
-                    priority: 'medium',
-                    status: 'contacted'
-                }
-            ])
+    // Handlers para ações rápidas
+    const handleQuickAction = (action: string) => {
+        console.log(`Quick action: ${action}`, user?.id)
 
-            setPropertyPerformance([
-                {
-                    id: '1',
-                    address: 'Rua Augusta, 1200 - Consolação',
-                    price: 850000,
-                    views: 1250,
-                    favorites: 45,
-                    shares: 12,
-                    inquiries: 23,
-                    visits: 8,
-                    daysOnMarket: 15,
-                    priceChange: 0,
-                    trend: 'up'
-                },
-                {
-                    id: '2',
-                    address: 'Av. Paulista, 2500 - Bela Vista',
-                    price: 1200000,
-                    views: 890,
-                    favorites: 32,
-                    shares: 8,
-                    inquiries: 18,
-                    visits: 12,
-                    daysOnMarket: 8,
-                    priceChange: -5,
-                    trend: 'down'
-                },
-                {
-                    id: '3',
-                    address: 'Rua Oscar Freire, 800 - Jardins',
-                    price: 2100000,
-                    views: 2100,
-                    favorites: 67,
-                    shares: 25,
-                    inquiries: 34,
-                    visits: 15,
-                    daysOnMarket: 22,
-                    priceChange: 0,
-                    trend: 'stable'
-                }
-            ])
-
-            setUpcomingTasks([
-                {
-                    id: '1',
-                    title: 'Ligação de follow-up',
-                    type: 'call',
-                    time: '14:30',
-                    priority: 'high',
-                    client: 'Maria Silva',
-                    description: 'Retornar ligação sobre proposta da cobertura'
-                },
-                {
-                    id: '2',
-                    title: 'Visita técnica',
-                    type: 'showing',
-                    time: '16:00',
-                    priority: 'high',
-                    client: 'João Carlos',
-                    property: 'Apt Vila Madalena',
-                    description: 'Segunda visita com arquiteto'
-                },
-                {
-                    id: '3',
-                    title: 'Assinatura de contrato',
-                    type: 'document',
-                    time: '18:00',
-                    priority: 'high',
-                    client: 'Ana Paula',
-                    description: 'Finalizar documentação da casa Morumbi'
-                },
-                {
-                    id: '4',
-                    title: 'Reunião com investidor',
-                    type: 'meeting',
-                    time: 'Amanhã 10:00',
-                    priority: 'medium',
-                    description: 'Apresentar portfólio de imóveis comerciais'
-                }
-            ])
-
-        } catch (error) {
-            console.error('Error loading dashboard data:', error)
+        switch (action) {
+            case 'new_lead':
+                window.location.href = '/dashboard/clients?action=create'
+                break
+            case 'call':
+                // Implementar integração com sistema de telefonia
+                console.log('Quick call action triggered')
+                break
+            case 'schedule':
+                window.location.href = '/dashboard/tasks?action=create'
+                break
+            case 'property':
+                window.location.href = '/dashboard/properties?action=create'
+                break
+            case 'simulate':
+                // Implementar simulador financeiro
+                console.log('Simulator action triggered')
+                break
+            case 'whatsapp':
+                // Implementar integração WhatsApp
+                console.log('WhatsApp action triggered')
+                break
+            default:
+                console.warn('Unknown quick action', { action })
         }
     }
+
+    // Handler para mudança de tab
+    const handleTabChange = (tab: typeof activeTab) => {
+        console.log(`Dashboard tab change: ${tab}`, user?.id)
+        setActiveTab(tab)
+    }
+
+    // Handler para refresh manual
+    const handleRefresh = async () => {
+        console.log('Manual dashboard refresh', user?.id)
+        await refreshAll()
+    }
+
 
     const getGreeting = () => {
         const hour = new Date().getHours()
@@ -347,19 +182,51 @@ export default function ProfessionalDashboard({ className = '' }: ProfessionalDa
         }
     }
 
+    // Mostrar erro se houver
+    if (error && !loading) {
+        return (
+            <div className="p-6">
+                <div className="max-w-7xl mx-auto">
+                    <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+                        <AlertTriangle className="h-12 w-12 text-red-600 mx-auto mb-4" />
+                        <h3 className="text-lg font-semibold text-red-900 mb-2">Erro ao carregar dashboard</h3>
+                        <p className="text-red-700 mb-4">{error}</p>
+                        <button
+                            onClick={handleRefresh}
+                            className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 mx-auto"
+                        >
+                            <RefreshCw className="h-4 w-4" />
+                            Tentar Novamente
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     if (loading) {
         return (
             <div className="p-6">
-                <div className="animate-pulse">
-                    <div className="h-40 bg-gray-200 rounded-xl mb-8"></div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        {[...Array(8)].map((_, i) => (
-                            <div key={i} className="h-32 bg-gray-200 rounded-xl"></div>
-                        ))}
+                <div className="max-w-7xl mx-auto">
+                    <div className="animate-pulse">
+                        <div className="h-40 bg-gray-200 rounded-xl mb-8"></div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                            {[...Array(8)].map((_, i) => (
+                                <div key={i} className="h-32 bg-gray-200 rounded-xl"></div>
+                            ))}
+                        </div>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div className="h-96 bg-gray-200 rounded-xl"></div>
+                            <div className="h-96 bg-gray-200 rounded-xl"></div>
+                        </div>
                     </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="h-96 bg-gray-200 rounded-xl"></div>
-                        <div className="h-96 bg-gray-200 rounded-xl"></div>
+                    <div className="text-center mt-6">
+                        <p className="text-gray-600">Carregando dados do dashboard...</p>
+                        {lastUpdated && (
+                            <p className="text-sm text-gray-500 mt-2">
+                                Última atualização: {lastUpdated.toLocaleTimeString('pt-BR')}
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>
@@ -399,42 +266,60 @@ export default function ProfessionalDashboard({ className = '' }: ProfessionalDa
                 >
                     <h2 className="text-lg font-semibold text-gray-900 mb-4">Ações Rápidas</h2>
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                        <button className="flex flex-col items-center gap-2 p-4 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-300 transition-all group">
+                        <button
+                            onClick={() => handleQuickAction('new_lead')}
+                            className="flex flex-col items-center gap-2 p-4 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-300 transition-all group"
+                        >
                             <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
                                 <Plus className="h-5 w-5 text-blue-600" />
                             </div>
                             <span className="text-sm font-medium text-gray-700">Novo Lead</span>
                         </button>
 
-                        <button className="flex flex-col items-center gap-2 p-4 rounded-lg border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all group">
+                        <button
+                            onClick={() => handleQuickAction('call')}
+                            className="flex flex-col items-center gap-2 p-4 rounded-lg border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all group"
+                        >
                             <div className="p-2 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
                                 <Phone className="h-5 w-5 text-green-600" />
                             </div>
                             <span className="text-sm font-medium text-gray-700">Ligar</span>
                         </button>
 
-                        <button className="flex flex-col items-center gap-2 p-4 rounded-lg border border-gray-200 hover:bg-purple-50 hover:border-purple-300 transition-all group">
+                        <button
+                            onClick={() => handleQuickAction('schedule')}
+                            className="flex flex-col items-center gap-2 p-4 rounded-lg border border-gray-200 hover:bg-purple-50 hover:border-purple-300 transition-all group"
+                        >
                             <div className="p-2 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
                                 <Calendar className="h-5 w-5 text-purple-600" />
                             </div>
                             <span className="text-sm font-medium text-gray-700">Agendar</span>
                         </button>
 
-                        <button className="flex flex-col items-center gap-2 p-4 rounded-lg border border-gray-200 hover:bg-orange-50 hover:border-orange-300 transition-all group">
+                        <button
+                            onClick={() => handleQuickAction('property')}
+                            className="flex flex-col items-center gap-2 p-4 rounded-lg border border-gray-200 hover:bg-orange-50 hover:border-orange-300 transition-all group"
+                        >
                             <div className="p-2 bg-orange-100 rounded-lg group-hover:bg-orange-200 transition-colors">
                                 <Building2 className="h-5 w-5 text-orange-600" />
                             </div>
                             <span className="text-sm font-medium text-gray-700">Imóvel</span>
                         </button>
 
-                        <button className="flex flex-col items-center gap-2 p-4 rounded-lg border border-gray-200 hover:bg-indigo-50 hover:border-indigo-300 transition-all group">
+                        <button
+                            onClick={() => handleQuickAction('simulate')}
+                            className="flex flex-col items-center gap-2 p-4 rounded-lg border border-gray-200 hover:bg-indigo-50 hover:border-indigo-300 transition-all group"
+                        >
                             <div className="p-2 bg-indigo-100 rounded-lg group-hover:bg-indigo-200 transition-colors">
                                 <Calculator className="h-5 w-5 text-indigo-600" />
                             </div>
                             <span className="text-sm font-medium text-gray-700">Simular</span>
                         </button>
 
-                        <button className="flex flex-col items-center gap-2 p-4 rounded-lg border border-gray-200 hover:bg-pink-50 hover:border-pink-300 transition-all group">
+                        <button
+                            onClick={() => handleQuickAction('whatsapp')}
+                            className="flex flex-col items-center gap-2 p-4 rounded-lg border border-gray-200 hover:bg-pink-50 hover:border-pink-300 transition-all group"
+                        >
                             <div className="p-2 bg-pink-100 rounded-lg group-hover:bg-pink-200 transition-colors">
                                 <MessageSquare className="h-5 w-5 text-pink-600" />
                             </div>
@@ -453,7 +338,7 @@ export default function ProfessionalDashboard({ className = '' }: ProfessionalDa
                     ].map((tab) => (
                         <button
                             key={tab.id}
-                            onClick={() => setActiveTab(tab.id as any)}
+                            onClick={() => handleTabChange(tab.id as any)}
                             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${activeTab === tab.id
                                 ? 'bg-white text-blue-600 shadow-sm'
                                 : 'text-gray-600 hover:text-gray-900'
@@ -627,7 +512,7 @@ export default function ProfessionalDashboard({ className = '' }: ProfessionalDa
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                         >
-                            <LeadsManagement leads={leadActivity} />
+                            <LeadsManagement leads={leads} />
                         </motion.div>
                     )}
 
@@ -638,7 +523,7 @@ export default function ProfessionalDashboard({ className = '' }: ProfessionalDa
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                         >
-                            <PropertyPerformanceView properties={propertyPerformance} />
+                            <PropertyPerformanceView properties={properties} />
                         </motion.div>
                     )}
 
@@ -649,7 +534,7 @@ export default function ProfessionalDashboard({ className = '' }: ProfessionalDa
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                         >
-                            <TasksAndSchedule tasks={upcomingTasks} />
+                            <TasksAndSchedule tasks={tasks} />
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -762,7 +647,7 @@ function LeadsManagement({ leads }: { leads: LeadActivity[] }) {
                             </div>
                             <div className="text-right">
                                 <div className="text-xl font-bold text-green-600">
-                                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(lead.value)}
+                                    {lead.value ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(lead.value) : 'Valor não informado'}
                                 </div>
                                 <div className="text-sm text-gray-500">Valor potencial</div>
                             </div>
@@ -771,15 +656,15 @@ function LeadsManagement({ leads }: { leads: LeadActivity[] }) {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                             <div>
                                 <div className="text-sm text-gray-500 mb-1">Imóvel de Interesse</div>
-                                <div className="font-medium text-gray-900">{lead.property}</div>
+                                <div className="font-medium text-gray-900">{lead.property || 'Imóvel não especificado'}</div>
                             </div>
                             <div>
                                 <div className="text-sm text-gray-500 mb-1">Último Contato</div>
-                                <div className="font-medium text-gray-900">{lead.lastContact}</div>
+                                <div className="font-medium text-gray-900">{lead.lastContact || 'Nunca contatado'}</div>
                             </div>
                             <div>
                                 <div className="text-sm text-gray-500 mb-1">Origem</div>
-                                <div className="font-medium text-gray-900">{lead.source}</div>
+                                <div className="font-medium text-gray-900">{lead.source || 'Origem não informada'}</div>
                             </div>
                         </div>
 
@@ -832,7 +717,7 @@ function LeadsManagement({ leads }: { leads: LeadActivity[] }) {
                             currency: 'BRL',
                             minimumFractionDigits: 0,
                             maximumFractionDigits: 0
-                        }).format(leads.reduce((sum, lead) => sum + lead.value, 0))}
+                        }).format(leads.reduce((sum, lead) => sum + (lead.value || 0), 0))}
                     </div>
                     <div className="text-sm text-green-700">Valor Total</div>
                 </div>
@@ -843,7 +728,7 @@ function LeadsManagement({ leads }: { leads: LeadActivity[] }) {
                             currency: 'BRL',
                             minimumFractionDigits: 0,
                             maximumFractionDigits: 0
-                        }).format(Math.round(leads.reduce((sum, lead) => sum + lead.value, 0) / leads.length))}
+                        }).format(leads.length > 0 ? Math.round(leads.reduce((sum, lead) => sum + (lead.value || 0), 0) / leads.length) : 0)}
                     </div>
                     <div className="text-sm text-blue-700">Ticket Médio</div>
                 </div>
@@ -977,7 +862,7 @@ function TasksAndSchedule({ tasks }: { tasks: UpcomingTask[] }) {
                                 {task.type === 'meeting' && <Users className="h-5 w-5" />}
                                 {task.type === 'document' && <FileText className="h-5 w-5" />}
                                 {task.type === 'showing' && <Building2 className="h-5 w-5" />}
-                                {task.type === 'follow-up' && <ArrowRight className="h-5 w-5" />}
+                                {task.type === 'follow_up' && <ArrowRight className="h-5 w-5" />}
                             </div>
 
                             <div className="flex-1">
@@ -989,18 +874,23 @@ function TasksAndSchedule({ tasks }: { tasks: UpcomingTask[] }) {
                                 <div className="flex items-center gap-4 text-sm text-gray-500">
                                     <span className="flex items-center gap-1">
                                         <Clock className="h-3 w-3" />
-                                        {task.time}
+                                        {task.due_date && task.due_time
+                                            ? `${new Date(task.due_date).toLocaleDateString('pt-BR')} às ${task.due_time}`
+                                            : task.due_date
+                                                ? new Date(task.due_date).toLocaleDateString('pt-BR')
+                                                : 'Sem prazo definido'
+                                        }
                                     </span>
-                                    {task.client && (
+                                    {task.client_name && (
                                         <span className="flex items-center gap-1">
                                             <Users className="h-3 w-3" />
-                                            {task.client}
+                                            {task.client_name}
                                         </span>
                                     )}
-                                    {task.property && (
+                                    {task.property_title && (
                                         <span className="flex items-center gap-1">
                                             <MapPin className="h-3 w-3" />
-                                            {task.property}
+                                            {task.property_title}
                                         </span>
                                     )}
                                 </div>

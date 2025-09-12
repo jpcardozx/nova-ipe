@@ -34,52 +34,15 @@ export function NotificationCenter() {
     const [unreadCount, setUnreadCount] = useState(0)
 
     useEffect(() => {
-        // Simular notificações em tempo real
-        const mockNotifications: Notification[] = [
-            {
-                id: '1',
-                type: 'lead',
-                title: 'Novo Lead Quente!',
-                message: 'Maria Silva demonstrou interesse na cobertura do Itaim Bibi',
-                timestamp: new Date(Date.now() - 5 * 60 * 1000), // 5 min ago
-                read: false,
-                priority: 'high',
-                actionLabel: 'Entrar em contato'
-            },
-            {
-                id: '2',
-                type: 'appointment',
-                title: 'Visita em 30 minutos',
-                message: 'João Carlos - Apartamento Vila Madalena às 16:00',
-                timestamp: new Date(Date.now() - 15 * 60 * 1000), // 15 min ago
-                read: false,
-                priority: 'high',
-                actionLabel: 'Ver detalhes'
-            },
-            {
-                id: '3',
-                type: 'review',
-                title: 'Nova avaliação 5 estrelas!',
-                message: 'Cliente Ana Paula deixou uma excelente avaliação',
-                timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2h ago
-                read: false,
-                priority: 'medium',
-                actionLabel: 'Ver avaliação'
-            },
-            {
-                id: '4',
-                type: 'reminder',
-                title: 'Follow-up pendente',
-                message: 'Retornar ligação para Carlos Eduardo sobre proposta',
-                timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4h ago
-                read: true,
-                priority: 'medium',
-                actionLabel: 'Marcar como feito'
-            }
-        ]
+        // TODO: Carregar notificações reais da API
+        // const response = await fetch('/api/notifications')
+        // const notifications = await response.json()
+        
+        // Array vazio até conectar com backend
+        const emptyNotifications: Notification[] = []
 
-        setNotifications(mockNotifications)
-        setUnreadCount(mockNotifications.filter(n => !n.read).length)
+        setNotifications(emptyNotifications)
+        setUnreadCount(0)
 
         // Simular novas notificações a cada 30 segundos (para demo)
         const interval = setInterval(() => {

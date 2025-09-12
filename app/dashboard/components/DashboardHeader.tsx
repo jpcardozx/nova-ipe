@@ -1,23 +1,31 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { useCurrentUser } from '@/lib/hooks/useCurrentUser'
+import { useCurrentUser } from '@/lib/hooks/useCurrentUser-simple'
 import NotificationBell from './NotificationBell'
 import {
     Search,
     Settings,
     User,
     LogOut,
-    ChevronDown
+    ChevronDown,
+    Menu
 } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 
 interface DashboardHeaderProps {
     title?: string
     subtitle?: string
+    sidebarCollapsed?: boolean
+    onToggleSidebar?: () => void
 }
 
-export default function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
+export default function DashboardHeader({
+    title,
+    subtitle,
+    sidebarCollapsed,
+    onToggleSidebar
+}: DashboardHeaderProps) {
     const pathname = usePathname()
     const { user, signOut } = useCurrentUser()
     const [showUserMenu, setShowUserMenu] = useState(false)
@@ -98,18 +106,30 @@ export default function DashboardHeader({ title, subtitle }: DashboardHeaderProp
     }
 
     return (
-        <header className="bg-white border-b border-gray-200 shadow-sm p-1">
-            <div className="flex items-center justify-between h-16 px-6">
-                {/* Page Title */}
-                <div className="flex-1">
-                    <h1 className="text-xl font-semibold text-gray-900">
-                        {getPageTitle()}
-                    </h1>
-                    {getPageSubtitle() && (
-                        <p className="text-sm text-gray-600 mt-0.5">
-                            {getPageSubtitle()}
-                        </p>
+        <header className="bg-white border-b border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between h-16 px-3 md:px-6">
+                {/* Mobile Menu Button + Page Title */}
+                <div className="flex items-center flex-1 min-w-0">
+                    {onToggleSidebar && (
+                        <button
+                            onClick={onToggleSidebar}
+                            className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors mr-3"
+                            aria-label="Toggle sidebar"
+                        >
+                            <Menu className="h-5 w-5" />
+                        </button>
                     )}
+
+                    <div className="min-w-0 flex-1">
+                        <h1 className="text-lg md:text-xl font-semibold text-gray-900 truncate">
+                            {getPageTitle()}
+                        </h1>
+                        {getPageSubtitle() && (
+                            <p className="text-xs md:text-sm text-gray-600 mt-0.5 truncate">
+                                {getPageSubtitle()}
+                            </p>
+                        )}
+                    </div>
                 </div>
 
                 {/* Actions */}
@@ -121,7 +141,7 @@ export default function DashboardHeader({ title, subtitle }: DashboardHeaderProp
                             <input
                                 type="text"
                                 placeholder="Buscar..."
-                                className="pl-10 pr-4 py-2 w-64 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-gray-50"
+                                className="pl-10 pr-4 py-2 w-64 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-400"
                             />
                         </div>
                     </div>
@@ -131,7 +151,7 @@ export default function DashboardHeader({ title, subtitle }: DashboardHeaderProp
 
                     {/* Settings */}
                     <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                        <Settings className="h-5 w-5 text-gray-600" />
+                        <Settings className="h-5 w-5 text-gray-600 hover:text-gray-900" />
                     </button>
 
                     {/* User Menu */}
@@ -147,23 +167,23 @@ export default function DashboardHeader({ title, subtitle }: DashboardHeaderProp
                                 <p className="text-sm font-medium text-gray-900">
                                     {user?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'Usuário'}
                                 </p>
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-gray-600">
                                     {user?.email}
                                 </p>
                             </div>
-                            <ChevronDown className="h-4 w-4 text-gray-400" />
+                            <ChevronDown className="h-4 w-4 text-gray-500" />
                         </button>
 
                         {/* User Dropdown */}
                         {showUserMenu && (
-                            <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                            <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-50">
                                 <div className="py-1">
                                     <button
                                         onClick={() => {
                                             window.location.href = '/dashboard/settings'
                                             setShowUserMenu(false)
                                         }}
-                                        className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                                     >
                                         <User className="h-4 w-4" />
                                         Meu Perfil
@@ -173,15 +193,15 @@ export default function DashboardHeader({ title, subtitle }: DashboardHeaderProp
                                             window.location.href = '/dashboard/settings'
                                             setShowUserMenu(false)
                                         }}
-                                        className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                                     >
                                         <Settings className="h-4 w-4" />
                                         Configurações
                                     </button>
-                                    <hr className="my-1 border-gray-100" />
+                                    <hr className="my-1 border-gray-200" />
                                     <button
                                         onClick={handleSignOut}
-                                        className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                        className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700"
                                     >
                                         <LogOut className="h-4 w-4" />
                                         Sair

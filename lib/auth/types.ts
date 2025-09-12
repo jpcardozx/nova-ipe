@@ -22,7 +22,9 @@ export interface UserProfile {
   phone?: string
   status: 'active' | 'inactive' | 'suspended'
   created_at: string
+  updated_at?: string
   last_login?: string
+  avatar_url?: string
   permissions: Permission[]
 }
 

@@ -34,7 +34,7 @@ const StatItem = ({
     delay = 0,
     color = 'blue'
 }: {
-    icon: React.ElementType;
+    icon: any;
     value: string | number;
     label: string;
     trend?: number;

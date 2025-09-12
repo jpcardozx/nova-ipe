@@ -213,20 +213,9 @@ export function processProperty(
 
         // Processamento avançado para imagens responsivas baseado no nível de otimização
         const config = PERFORMANCE_CONFIG.OPTIMIZATION_LEVELS[optimizationLevel];
-        const responsiveImages = generateResponsiveImageSet(imageObject,
-            config.sizes.reduce((acc, size) => {
-                const sizeMap = {
-                    'xs': { width: 320, quality: config.quality - 15 },
-                    'sm': { width: 480, quality: config.quality - 10 },
-                    'md': { width: 768, quality: config.quality - 5 },
-                    'lg': { width: 1024, quality: config.quality },
-                    'xl': { width: 1280, quality: config.quality },
-                    '2xl': { width: 1920, quality: config.quality }
-                };
-                acc[size] = sizeMap[size as keyof typeof sizeMap];
-                return acc;
-            }, {} as Record<string, { width: number; quality: number }>)
-        );
+
+        // TODO: Implementar generateResponsiveImageSet corretamente
+        // const responsiveImages = generateResponsiveImageSet(imageObject, responsiveSizes);
 
         // Normalização premium de tipos de dados
         const price = Number(imovel.preco) || 0;
@@ -315,7 +304,7 @@ export function processProperty(
             mainImage: {
                 url: processedImageData.url || '/images/property-placeholder.jpg',
                 alt: processedImageData.alt || imovel.titulo || 'Imóvel',
-                responsive: responsiveImages,
+                // responsive: responsiveImages,
                 hotspot,
                 blurDataUrl,
                 dominantColor

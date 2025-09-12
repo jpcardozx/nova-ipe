@@ -27,73 +27,8 @@ interface FilterState {
     bedrooms: string
 }
 
-// Mock data para fallback
-const mockImovelClient: ImovelClient[] = [
-    {
-        _id: '1',
-        titulo: 'Casa Moderna em Guararema',
-        slug: 'casa-moderna-guararema',
-        preco: 450000,
-        finalidade: 'Venda',
-        bairro: 'Centro',
-        cidade: 'Guararema',
-        dormitorios: 3,
-        banheiros: 2,
-        areaUtil: 150,
-        vagas: 2,
-        tipoImovel: 'Casa',
-        descricao: 'Linda casa moderna com acabamento de primeira qualidade',
-        destaque: true,
-        imagem: {
-            imagemUrl: '/placeholder-house.jpg',
-            alt: 'Casa moderna em Guararema',
-            asset: { _type: 'sanity.imageAsset' }
-        },
-        dataPublicacao: new Date().toISOString()
-    },
-    {
-        _id: '2',
-        titulo: 'Apartamento Confortável',
-        slug: 'apartamento-confortavel',
-        preco: 1800,
-        finalidade: 'Aluguel',
-        bairro: 'Bairro do Tanque',
-        cidade: 'Guararema',
-        dormitorios: 2,
-        banheiros: 1,
-        areaUtil: 80,
-        vagas: 1,
-        tipoImovel: 'Apartamento',
-        descricao: 'Apartamento bem localizado, ideal para casais',
-        imagem: {
-            imagemUrl: '/placeholder-apt.jpg',
-            alt: 'Apartamento confortável',
-            asset: { _type: 'sanity.imageAsset' }
-        }
-    },
-    {
-        _id: '3',
-        titulo: 'Casa com Piscina',
-        slug: 'casa-com-piscina',
-        preco: 650000,
-        finalidade: 'Venda',
-        bairro: 'Ponte Alta',
-        cidade: 'Guararema',
-        dormitorios: 4,
-        banheiros: 3,
-        areaUtil: 200,
-        vagas: 3,
-        tipoImovel: 'Casa',
-        descricao: 'Casa espaçosa com piscina e área de lazer completa',
-        possuiPiscina: true,
-        possuiJardim: true,
-        imagem: {
-            imagemUrl: '/placeholder-house-pool.jpg',
-            alt: 'Casa com piscina',
-            asset: { _type: 'sanity.imageAsset' }
-        }
-    }
-]
+// TODO: Remover mock data quando conectar com API real
+const mockImovelClient: ImovelClient[] = []
 
 export default function PropertyCatalogClean({
     searchParams = {},

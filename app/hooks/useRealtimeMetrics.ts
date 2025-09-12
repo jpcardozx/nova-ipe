@@ -53,70 +53,62 @@ export function useRealtimeMetrics() {
 
   const fetchMetrics = async () => {
     try {
-      // Em uma aplicação real, isso seria uma chamada para sua API
-      // Simulando dados realistas para uma pequena imobiliária
-      const mockMetrics: DashboardMetrics = {
-        // Vendas e Receita (valores realistas para pequena imobiliária)
-        totalRevenue: 2450000, // Receita anual acumulada
-        monthlyRevenue: 185000, // Receita do mês atual
-        quarterlyRevenue: 520000, // Receita do trimestre
-        averageTicket: 380000, // Ticket médio
-        salesGoal: 200000, // Meta mensal
-        salesGoalProgress: 92.5, // 185k/200k = 92.5%
+      // TODO: Implementar chamada para API real
+      // const response = await fetch('/api/dashboard/metrics')
+      // const data = await response.json()
+      
+      // Estrutura vazia até conectar com backend real
+      const emptyMetrics: DashboardMetrics = {
+        // Vendas e Receita
+        totalRevenue: 0,
+        monthlyRevenue: 0,
+        quarterlyRevenue: 0,
+        averageTicket: 0,
+        salesGoal: 0,
+        salesGoalProgress: 0,
         
-        // Propriedades (números realistas)
-        totalProperties: 45, // Total no portfólio
-        activeListings: 28, // Anúncios ativos
-        soldThisMonth: 3, // Vendidos no mês
-        avgDaysOnMarket: 45, // Dias médios no mercado
-        priceReductions: 2, // Reduções de preço
-        exclusiveListings: 18, // Exclusividades
+        // Propriedades
+        totalProperties: 0,
+        activeListings: 0,
+        soldThisMonth: 0,
+        avgDaysOnMarket: 0,
+        priceReductions: 0,
+        exclusiveListings: 0,
         
-        // Leads (números gerenciáveis)
-        totalLeads: 67, // Total de leads ativos
-        qualifiedLeads: 23, // Leads qualificados
-        hotLeads: 8, // Leads quentes
-        conversionRate: 12.5, // Taxa de conversão
-        responseTime: 15, // Tempo de resposta em minutos
-        totalClients: 156, // Base total de clientes
+        // Leads
+        totalLeads: 0,
+        qualifiedLeads: 0,
+        hotLeads: 0,
+        conversionRate: 0,
+        responseTime: 0,
+        totalClients: 0,
         
         // Agendamentos
-        appointmentsToday: 4,
-        appointmentsWeek: 12,
-        visitConversionRate: 35.0,
-        showingsCompleted: 15,
+        appointmentsToday: 0,
+        appointmentsWeek: 0,
+        visitConversionRate: 0,
+        showingsCompleted: 0,
         
         // Performance
-        avgRating: 4.7,
-        totalReviews: 89,
-        marketShare: 8.5, // Participação local
-        clientSatisfaction: 92.0,
+        avgRating: 0,
+        totalReviews: 0,
+        marketShare: 0,
+        clientSatisfaction: 0,
         
         // Atividade
-        callsMade: 34,
-        emailsSent: 78,
-        proposalsSent: 6,
-        contractsSigned: 3,
+        callsMade: 0,
+        emailsSent: 0,
+        proposalsSent: 0,
+        contractsSigned: 0,
         
-        // Marketing (números modestos)
-        activeCampaigns: 2,
-        campaignROI: 280,
-        leadCost: 125,
-        digitalEngagement: 1250
+        // Marketing
+        activeCampaigns: 0,
+        campaignROI: 0,
+        leadCost: 0,
+        digitalEngagement: 0
       }
 
-      // Simular pequenas variações nos dados para parecer tempo real
-      const variation = () => Math.random() * 0.1 - 0.05 // ±5%
-      
-      if (metrics) {
-        // Atualizar apenas alguns campos que mudam frequentemente
-        mockMetrics.hotLeads = Math.max(1, Math.round(mockMetrics.hotLeads * (1 + variation())))
-        mockMetrics.totalLeads = Math.max(mockMetrics.hotLeads, Math.round(mockMetrics.totalLeads * (1 + variation() * 0.2)))
-        mockMetrics.digitalEngagement = Math.round(mockMetrics.digitalEngagement * (1 + variation() * 0.3))
-        mockMetrics.callsMade = Math.round(mockMetrics.callsMade * (1 + variation() * 0.2))
-      }
-
-      setMetrics(mockMetrics)
+      setMetrics(emptyMetrics)
       setLastUpdated(new Date())
     } catch (error) {
       console.error('Erro ao buscar métricas:', error)

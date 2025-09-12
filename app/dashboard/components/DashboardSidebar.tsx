@@ -40,7 +40,8 @@ import {
     BookOpen,
     Cloud,
     StarOff,
-    BarChart2
+    BarChart2,
+    Network
 } from 'lucide-react'
 
 interface MenuItem {
@@ -62,6 +63,12 @@ const menuItems: MenuCategory[] = [
         category: 'Início',
         items: [
             { icon: Home, label: 'Início', href: '/dashboard', color: 'text-blue-600' }
+        ]
+    },
+    {
+        category: 'Integração Jetimob',
+        items: [
+            { icon: Network, label: 'Jetimob API', href: '/dashboard/jetimob', color: 'text-emerald-600' }
         ]
     },
     {

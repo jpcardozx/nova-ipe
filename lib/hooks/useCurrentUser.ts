@@ -4,111 +4,198 @@ import { useState, useEffect } from 'react'
 import { User } from '@supabase/supabase-js'
 import { UserProfile } from '@/lib/auth/types'
 import { supabase } from '@/lib/supabase'
-
-// Mock user profile - em produção viria do banco
-const mockUserProfile: UserProfile = {
-  id: '1',
-  email: 'admin@ipeimoveis.com',
-  full_name: 'João Pedro Cardozo',
-  role: {
-    id: 'admin',
-    name: 'Administrador',
-    permissions: [
-      { id: '1', resource: 'users', action: 'update_password' },
-      { id: '2', resource: 'users', action: 'manage' },
-      { id: '3', resource: '*', action: '*' }
-    ],
-    hierarchy_level: 90
-  },
-  department: 'TI',
-  phone: '(11) 99999-9999',
-  status: 'active',
-  created_at: '2024-01-15',
-  last_login: '2024-09-08',
-  permissions: [
-    { id: '1', resource: 'users', action: 'update_password' },
-    { id: '2', resource: 'users', action: 'manage' },
-    { id: '3', resource: '*', action: '*' }
-  ]
-}
+import { logger, debugError, createTimer } from '@/lib/utils/debug'
 
 export function useCurrentUser() {
   const [authUser, setAuthUser] = useState<User | null>(null)
   const [user, setUser] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    // Get current user
-    supabase.auth.getUser().then(({ data: { user }, error }) => {
-      if (error) {
-        console.warn('Error getting user:', error.message)
-      }
-      setAuthUser(user)
-      
-      // Se há usuário autenticado, carregar perfil completo
-      if (user) {
-        setUser(mockUserProfile) // Em produção: buscar do banco baseado no user.id
-      }
-      
-      setLoading(false)
-    })
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('Auth state changed:', event)
-      setAuthUser(session?.user ?? null)
-      
-      if (session?.user) {
-        setUser(mockUserProfile) // Em produção: buscar do banco
-      } else {
-        setUser(null)
-      }
-      
-      setLoading(false)
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
-
-  const hasPermission = (resource: string, action: string): boolean => {
-    if (!user) return false
+  // Função para buscar perfil do usuário no banco
+  const fetchUserProfile = async (authUser: User): Promise<UserProfile | null> => {
+    const timer = createTimer('fetchUserProfile')
     
-    return user.permissions.some(permission => 
-      (permission.resource === '*' && permission.action === '*') ||
-      (permission.resource === resource && permission.action === action) ||
-      (permission.resource === resource && permission.action === '*') ||
-      (permission.resource === '*' && permission.action === action)
-    )
-  }
+    try {
+      // Criar um perfil básico a partir dos dados de auth se não existir no banco
+      const basicProfile: UserProfile = {
+        id: authUser.id,
+        email: authUser.email || '',
+        full_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'Usuário',
+        phone: authUser.user_metadata?.phone || undefined,
+        department: 'Vendas',
+        status: 'active',
+        role: {
+          id: 'default',
+          name: 'Corretor',
+          hierarchy_level: 2,
+          permissions: []
+        },
+        permissions: [],
+        created_at: authUser.created_at,
+        updated_at: new Date().toISOString(),
+        last_login: new Date().toISOString(),
+        avatar_url: authUser.user_metadata?.avatar_url || undefined
+      }
 
-  const canManageUser = (targetUser: UserProfile): boolean => {
-    if (!user) return false
-    
-    // Pode gerenciar se for o próprio usuário
-    if (user.id === targetUser.id) return true
-    
-    // Pode gerenciar se tiver permissão e hierarquia superior
-    return hasPermission('users', 'manage') && 
-           user.role.hierarchy_level > targetUser.role.hierarchy_level
-  }
-
-  const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    if (error) {
-      console.error('Error signing out:', error)
-      throw error
+      timer.end()
+      return basicProfile
+    } catch (error: any) {
+      timer.end()
+      debugError('Error fetching user profile', { error, userId: authUser.id })
+      
+      // Retornar perfil básico em caso de erro
+      return {
+        id: authUser.id,
+        email: authUser.email || '',
+        full_name: authUser.email?.split('@')[0] || 'Usuário',
+        phone: undefined,
+        department: 'Vendas',
+        status: 'active',
+        role: {
+          id: 'default',
+          name: 'Corretor',
+          hierarchy_level: 2,
+          permissions: []
+        },
+        permissions: [],
+        created_at: authUser.created_at,
+        updated_at: new Date().toISOString(),
+        last_login: new Date().toISOString(),
+        avatar_url: undefined
+      }
     }
   }
 
-  return { 
+  // Função para inicializar o usuário
+  const initializeUser = async (authUser: User | null) => {
+    if (!authUser) {
+      setUser(null)
+      setLoading(false)
+      return
+    }
+
+    try {
+      setError(null)
+      const profile = await fetchUserProfile(authUser)
+      setUser(profile)
+    } catch (error: any) {
+      debugError('Error initializing user', { error, userId: authUser.id })
+      setError(error.message || 'Erro ao carregar perfil do usuário')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Effect para monitorar mudanças de auth
+  useEffect(() => {
+    let mounted = true
+
+    // Obter sessão atual
+    const getSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        if (error) {
+          debugError('Error getting session', { error })
+          return
+        }
+        
+        if (mounted) {
+          setAuthUser(session?.user || null)
+          await initializeUser(session?.user || null)
+        }
+      } catch (error: any) {
+        debugError('Error in getSession', { error })
+        if (mounted) {
+          setError(error.message)
+          setLoading(false)
+        }
+      }
+    }
+
+    getSession()
+
+    // Listener para mudanças de auth
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (!mounted) return
+        
+        logger.info(`Auth state changed: ${event}`, { hasSession: !!session })
+        
+        const newUser = session?.user || null
+        setAuthUser(newUser)
+        await initializeUser(newUser)
+      }
+    )
+
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
+  }, [])
+
+  // Função para fazer login
+  const signIn = async (email: string, password: string) => {
+    try {
+      setError(null)
+      setLoading(true)
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
+
+      if (error) {
+        throw error
+      }
+
+      return { user: data.user, session: data.session }
+    } catch (error: any) {
+      debugError('Error signing in', { error, email })
+      setError(error.message || 'Erro ao fazer login')
+      throw error
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Função para fazer logout
+  const signOut = async () => {
+    try {
+      setError(null)
+      setLoading(true)
+      
+      const { error } = await supabase.auth.signOut()
+      
+      if (error) {
+        throw error
+      }
+
+      setAuthUser(null)
+      setUser(null)
+    } catch (error: any) {
+      debugError('Error signing out', { error })
+      setError(error.message || 'Erro ao fazer logout')
+      throw error
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return {
     authUser,
-    user, 
+    user,
     loading,
+    error,
+    signIn,
     signOut,
     isAuthenticated: !!authUser,
-    hasPermission,
-    canManageUser,
-    isAdmin: (user?.role?.hierarchy_level || 0) >= 90,
-    isSuperAdmin: (user?.role?.hierarchy_level || 0) >= 100
+    isAdmin: user?.role?.name === 'Admin' || user?.role?.hierarchy_level === 1,
+    canAccess: (permission: string) => {
+      if (!user?.role?.permissions) return false
+      return user.role.permissions.some(p => 
+        typeof p === 'string' ? p === permission : p.action === permission
+      )
+    }
   }
 }

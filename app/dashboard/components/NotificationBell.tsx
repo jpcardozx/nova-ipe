@@ -33,9 +33,10 @@ export default function NotificationBell({ className = '' }: NotificationBellPro
 
     const loadUnreadCount = async () => {
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 500))
-            setUnreadCount(3) // Mock unread count
+            // Em produção: const response = await fetch('/api/notifications/unread-count')
+            // Em produção: const count = await response.json()
+
+            setUnreadCount(0) // Sem notificações até conectar com backend
         } catch (error) {
             console.error('Error loading unread count:', error)
         }

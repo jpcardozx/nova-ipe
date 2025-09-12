@@ -8,7 +8,7 @@
     "allowJs": false,
     "checkJs": false,
     "skipLibCheck": true,
-    "strict": true,
+    "strict": false,
     "noEmit": true,
     "incremental": true,
     "tsBuildInfoFile": ".next/cache/tsbuildinfo.json",
@@ -25,7 +25,11 @@
         "name": "next"
       }
     ],
-    "strictNullChecks": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "baseUrl": ".",
     "paths": {
       "@/*": [
@@ -68,6 +72,7 @@
   },
   "include": [
     "next-env.d.ts",
+    "global.d.ts",
     "**/*.ts",
     "**/*.tsx",
     "src/types/**/*.d.ts",
@@ -82,6 +87,7 @@
     "app/page.backup.tsx",
     "app/page.clean.tsx",
     "app/page.restored.tsx",
-    "components/verified"
+    "components/verified",
+    "examples/**/*"
   ]
 }

@@ -27,24 +27,9 @@ export function PropertySearch({
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Mock suggestions based on search value
-  const mockSuggestions = [
-    'Centro, Guararema',
-    'Bairro do Tanque',
-    'Ponte Alta',
-    'Itapema',
-    'Casa com piscina',
-    'Apartamento 2 dormitórios',
-    'Terreno comercial'
-  ].filter(suggestion => 
-    value && suggestion.toLowerCase().includes(value.toLowerCase())
-  )
-
-  const mockRecentSearches = [
-    'Casa no centro',
-    'Apartamento 3 quartos',
-    'Terreno Ponte Alta'
-  ]
+  // TODO: Conectar com API real para sugestões
+  const mockSuggestions: string[] = []
+  const mockRecentSearches: string[] = []
 
   // Handle click outside to close suggestions
   useEffect(() => {
