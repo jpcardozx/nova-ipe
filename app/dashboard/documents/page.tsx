@@ -1,7 +1,9 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { DocumentsService } from '@/lib/supabase/documents-service'
+import type { Document as DocumentType, DocumentTemplate as DocumentTemplateType } from '@/lib/supabase/documents-service'
 import {
     FileText,
     Plus,
@@ -25,93 +27,7 @@ import {
     File
 } from 'lucide-react'
 
-interface Document {
-    id: string
-    title: string
-    type: 'contract' | 'proposal' | 'deed' | 'certificate' | 'report' | 'other'
-    status: 'draft' | 'pending' | 'signed' | 'completed' | 'expired'
-    client_name?: string
-    property_address?: string
-    created_date: string
-    updated_date: string
-    file_size?: string
-    is_template: boolean
-    is_favorite: boolean
-}
-
-interface DocumentTemplate {
-    id: string
-    name: string
-    description: string
-    type: 'contract' | 'proposal' | 'deed' | 'certificate' | 'report'
-    usage_count: number
-}
-
-const mockDocuments: Document[] = [
-    {
-        id: '1',
-        title: 'Contrato de Compra e Venda - Apartamento Centro',
-        type: 'contract',
-        status: 'signed',
-        client_name: 'Maria Silva',
-        property_address: 'Rua das Flores, 123 - Centro',
-        created_date: '2024-01-15',
-        updated_date: '2024-01-20',
-        file_size: '2.3 MB',
-        is_template: false,
-        is_favorite: true
-    },
-    {
-        id: '2',
-        title: 'Proposta de Locação - Casa Jardins',
-        type: 'proposal',
-        status: 'pending',
-        client_name: 'João Santos',
-        property_address: 'Av. Paulista, 456 - Jardins',
-        created_date: '2024-01-18',
-        updated_date: '2024-01-18',
-        file_size: '1.8 MB',
-        is_template: false,
-        is_favorite: false
-    },
-    {
-        id: '3',
-        title: 'Laudo de Avaliação - Cobertura Vila Madalena',
-        type: 'report',
-        status: 'completed',
-        client_name: 'Carlos Oliveira',
-        property_address: 'Rua Harmonia, 789 - Vila Madalena',
-        created_date: '2024-01-10',
-        updated_date: '2024-01-12',
-        file_size: '5.2 MB',
-        is_template: false,
-        is_favorite: false
-    }
-]
-
-const mockTemplates: DocumentTemplate[] = [
-    {
-        id: 'template-1',
-        name: 'Contrato de Compra e Venda',
-        description: 'Modelo padrão para contratos de venda de imóveis residenciais',
-        type: 'contract',
-        usage_count: 45
-    },
-    {
-        id: 'template-2',
-        name: 'Proposta de Locação',
-        description: 'Template para propostas de aluguel com cláusulas padronizadas',
-        type: 'proposal',
-        usage_count: 32
-    },
-    {
-        id: 'template-3',
-        name: 'Escritura de Imóvel',
-        description: 'Modelo para escrituras de transferência de propriedade',
-        type: 'deed',
-        usage_count: 18
-    }
-]
+// Mock data removed - using Supabase integration
 
 const documentTypes = [
     { value: 'all', label: 'Todos os tipos', color: 'text-gray-600' },
@@ -136,8 +52,61 @@ export default function DocumentsPage() {
     const [selectedType, setSelectedType] = useState('all')
     const [selectedStatus, setSelectedStatus] = useState('all')
     const [view, setView] = useState<'documents' | 'templates'>('documents')
-    const [documents] = useState<Document[]>(mockDocuments)
-    const [templates] = useState<DocumentTemplate[]>(mockTemplates)
+    const [documents, setDocuments] = useState<DocumentType[]>([])
+    const [templates, setTemplates] = useState<DocumentTemplateType[]>([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        loadDocuments()
+        loadTemplates()
+    }, [])
+
+    const loadDocuments = async () => {
+        setLoading(true)
+        try {
+            const { documents: docsData, error } = await DocumentsService.getDocuments()
+            if (error) {
+                console.error('Error loading documents:', error)
+                setDocuments([])
+            } else {
+                setDocuments(docsData)
+            }
+        } catch (error) {
+            console.error('Error loading documents:', error)
+            setDocuments([])
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const loadTemplates = async () => {
+        try {
+            const { templates: templatesData, error } = await DocumentsService.getDocumentTemplates()
+            if (error) {
+                console.error('Error loading templates:', error)
+                setTemplates([])
+            } else {
+                setTemplates(templatesData)
+            }
+        } catch (error) {
+            console.error('Error loading templates:', error)
+            setTemplates([])
+        }
+    }
+
+    const handleToggleFavorite = async (documentId: string, currentFavorite: boolean) => {
+        try {
+            const { error } = await DocumentsService.toggleFavorite(documentId, !currentFavorite)
+            if (error) {
+                console.error('Error toggling favorite:', error)
+            } else {
+                // Recarregar documentos para atualizar o estado
+                loadDocuments()
+            }
+        } catch (error) {
+            console.error('Error toggling favorite:', error)
+        }
+    }
 
     const filteredDocuments = documents.filter(doc => {
         const matchesSearch = doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -194,8 +163,8 @@ export default function DocumentsPage() {
                     <button
                         onClick={() => setView('documents')}
                         className={`px-4 py-2 rounded-lg font-medium transition-colors ${view === 'documents'
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
                     >
                         <FileText className="h-4 w-4 inline mr-2" />
@@ -204,8 +173,8 @@ export default function DocumentsPage() {
                     <button
                         onClick={() => setView('templates')}
                         className={`px-4 py-2 rounded-lg font-medium transition-colors ${view === 'templates'
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
                     >
                         <Folder className="h-4 w-4 inline mr-2" />
@@ -224,7 +193,9 @@ export default function DocumentsPage() {
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-gray-600">Total de Documentos</p>
-                            <p className="text-3xl font-bold text-gray-900">127</p>
+                            <p className="text-3xl font-bold text-gray-900">
+                                {loading ? '...' : documents.length}
+                            </p>
                         </div>
                         <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
                             <FileText className="h-6 w-6 text-blue-600" />
@@ -388,20 +359,42 @@ export default function DocumentsPage() {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-500">
-                                                {new Date(document.created_date).toLocaleDateString('pt-BR')}
+                                                {new Date(document.created_at).toLocaleDateString('pt-BR')}
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-2">
-                                                    <button className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                                                    <button
+                                                        className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                        title="Visualizar"
+                                                    >
                                                         <Eye className="h-4 w-4" />
                                                     </button>
-                                                    <button className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
+                                                    <button
+                                                        className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                                        title="Download"
+                                                    >
                                                         <Download className="h-4 w-4" />
                                                     </button>
-                                                    <button className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+                                                    <button
+                                                        className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                                                        title="Editar"
+                                                    >
                                                         <Edit3 className="h-4 w-4" />
                                                     </button>
-                                                    <button className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                                    <button
+                                                        className={`p-1.5 transition-colors rounded-lg ${document.is_favorite
+                                                                ? 'text-yellow-500 hover:text-yellow-600 hover:bg-yellow-50'
+                                                                : 'text-gray-400 hover:text-yellow-500 hover:bg-yellow-50'
+                                                            }`}
+                                                        title={document.is_favorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+                                                        onClick={() => handleToggleFavorite(document.id, document.is_favorite)}
+                                                    >
+                                                        <Star className={`h-4 w-4 ${document.is_favorite ? 'fill-current' : ''}`} />
+                                                    </button>
+                                                    <button
+                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                        title="Excluir"
+                                                    >
                                                         <Trash2 className="h-4 w-4" />
                                                     </button>
                                                 </div>

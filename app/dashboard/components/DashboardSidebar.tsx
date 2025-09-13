@@ -143,7 +143,7 @@ export default function DashboardSidebar({ collapsed = false, onToggle }: Dashbo
                         transition={{ delay: 0.1 }}
                         className="flex items-center gap-3"
                     >
-                        <Link href="/" className="flex items-center gap-3 group">
+                        <Link href="/" className="flex flex-1 items-center justify-center group">
                             <Image
                                 src="/images/ipeLogoWritten.png"
                                 alt="Ipê Imóveis"

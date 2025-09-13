@@ -148,7 +148,7 @@ function MainDashboardContent() {
       href: '/dashboard/jetimob',
       icon: Globe,
       progress: 0,
-      benefit: 'Até 300% mais visualizações'
+      benefit: 'Até 80% mais visualizações'
     },
     {
       title: 'Organize seu CRM',
@@ -206,7 +206,7 @@ function MainDashboardContent() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-neutral-50 rounded-lg shadow-xl">
       {/* Header com Design System */}
       <PageHeader
         title={`${getGreeting()}, ${getUserName()}!`}
@@ -404,7 +404,7 @@ function MainDashboardContent() {
               <div className="space-y-3">
                 <p className="text-sm text-neutral-700">
                   <strong>Publique em múltiplos portais:</strong> Imóveis com presença em 3+ portais recebem
-                  até 300% mais visualizações.
+                  até 80% mais visualizações.
                 </p>
                 <Button
                   variant="outline"

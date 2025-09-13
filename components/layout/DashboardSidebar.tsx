@@ -99,6 +99,13 @@ const menuCategories: MenuCategory[] = [
                 description: 'Captação de leads'
             },
             {
+                icon: BarChart3,
+                label: 'Funil',
+                href: '/dashboard/funil',
+                color: 'text-indigo-600',
+                description: 'Pipeline de conversão'
+            },
+            {
                 icon: Calendar,
                 label: 'Agendamentos',
                 href: '/dashboard/appointments',

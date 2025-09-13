@@ -12,7 +12,7 @@ const ConditionalLayout = ({ children }: ConditionalLayoutProps) => {
   const pathname = usePathname();
 
   // Páginas que devem renderizar sem navbar/footer
-  const noLayoutPages = ['/julia', '/dashboard', '/admin', '/studio', '/structure'];
+  const noLayoutPages = ['/julia', '/carla', '/dashboard', '/admin', '/studio', '/structure'];
 
   const showNavFooter = !noLayoutPages.some(page => pathname.startsWith(page));
 

@@ -338,6 +338,55 @@ export class TasksService {
     }
 
     static getDemoCategories(): TaskCategory[] {
-        return []
+        return [
+            {
+                id: 'leads',
+                name: 'Leads & Prospects',
+                description: 'Gestão de leads e potenciais clientes',
+                color: '#10B981',
+                icon: 'users',
+                created_at: new Date().toISOString()
+            },
+            {
+                id: 'properties',
+                name: 'Imóveis',
+                description: 'Cadastro e gestão de propriedades',
+                color: '#6366F1',
+                icon: 'building-2',
+                created_at: new Date().toISOString()
+            },
+            {
+                id: 'appointments',
+                name: 'Visitas & Reuniões',
+                description: 'Agendamentos e compromissos',
+                color: '#F59E0B',
+                icon: 'calendar',
+                created_at: new Date().toISOString()
+            },
+            {
+                id: 'documentation',
+                name: 'Documentação',
+                description: 'Contratos, documentos e processos legais',
+                color: '#8B5CF6',
+                icon: 'file-text',
+                created_at: new Date().toISOString()
+            },
+            {
+                id: 'marketing',
+                name: 'Marketing',
+                description: 'Campanhas, anúncios e divulgação',
+                color: '#EF4444',
+                icon: 'megaphone',
+                created_at: new Date().toISOString()
+            },
+            {
+                id: 'follow-up',
+                name: 'Follow-up',
+                description: 'Acompanhamento e manutenção de relacionamento',
+                color: '#06B6D4',
+                icon: 'phone',
+                created_at: new Date().toISOString()
+            }
+        ]
     }
 }

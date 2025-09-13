@@ -1,0 +1,683 @@
+"use client";
+
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+    MessageCircle, Globe, Home, Star, Phone,
+    MapPin, Calendar, Instagram, Linkedin,
+    ArrowUpRight, Building2, Award, Shield, Heart
+} from 'lucide-react';
+
+interface LinkItem {
+    id: string;
+    title: string;
+    subtitle: string;
+    icon: React.ComponentType<any>;
+    action: () => void;
+    gradient: string;
+    primary: boolean;
+}
+
+interface SocialItem {
+    id: string;
+    icon: React.ComponentType<any>;
+    url: string;
+    gradient: string;
+}
+
+const CarlaLinktreeEnhanced: React.FC = () => {
+
+    const handleWhatsApp = () => {
+        const message = encodeURIComponent('Olá Carla! Vi seu perfil e gostaria de conversar sobre imóveis em Guararema. Poderia me auxiliar?');
+        window.open(`https://wa.me/5511940042618?text=${message}`, '_blank');
+    };
+
+    const handleWebsite = () => {
+        window.open('https://imobiliariaipe.com.br', '_blank');
+    };
+
+    const handleCatalogo = () => {
+        window.open('https://imobiliariaipe.com.br/catalogo', '_blank');
+    };
+
+    const primaryLinks: LinkItem[] = [
+        {
+            id: 'whatsapp',
+            title: 'Contato Direto',
+            subtitle: 'Atendimento especializado',
+            icon: MessageCircle,
+            action: handleWhatsApp,
+            gradient: 'from-green-500 to-green-600',
+            primary: true
+        },
+        {
+            id: 'website',
+            title: 'Catálogo de Imóveis',
+            subtitle: 'Portfólio completo disponível',
+            icon: Globe,
+            action: handleWebsite,
+            gradient: 'from-slate-600 to-slate-700',
+            primary: false
+        },
+        {
+            id: 'catalogo',
+            title: 'Busca Avançada',
+            subtitle: 'Encontre seu imóvel ideal',
+            icon: Home,
+            action: handleCatalogo,
+            gradient: 'from-amber-600 to-orange-600',
+            primary: false
+        }
+    ];
+
+    const socialLinks: SocialItem[] = [
+        {
+            id: 'instagram',
+            icon: Instagram,
+            url: 'https://instagram.com/carla_paglia_corretora',
+            gradient: 'from-pink-500 to-purple-600'
+        }
+    ];
+
+    const stats = [
+        { number: 'CRECI', label: 'Habilitação profissional', icon: Shield },
+        { number: 'Ipê', label: 'Parceria estabelecida', icon: Building2 },
+        { number: 'Digital', label: 'Presença online', icon: Star },
+        { number: 'Região', label: 'Atuação especializada', icon: MapPin }
+    ];
+
+
+    return (
+        <motion.div
+            className="min-h-screen relative overflow-hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            style={{
+                minHeight: '100dvh',
+                background: `
+                    radial-gradient(ellipse 130% 90% at 50% -15%, rgba(157,23,77,0.05), transparent 45%),
+                    radial-gradient(ellipse 110% 70% at 100% 45%, rgba(219,39,119,0.03), transparent 55%),
+                    radial-gradient(ellipse 90% 110% at 0% 85%, rgba(236,72,153,0.025), transparent 65%),
+                    linear-gradient(135deg, #0a0f1c 0%, #111827 20%, #1f2937 40%, #374151 65%, #1f2937 85%, #111827 100%)
+                `
+            }}
+        >
+            {/* Subtle Texture Overlay */}
+            <div
+                className="absolute inset-0 opacity-[0.02]"
+                style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.5'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3Ccircle cx='27' cy='7' r='1'/%3E%3Ccircle cx='47' cy='7' r='1'/%3E%3Ccircle cx='7' cy='27' r='1'/%3E%3Ccircle cx='27' cy='27' r='1'/%3E%3Ccircle cx='47' cy='27' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+                }}
+            />
+
+            {/* Refined Atmospheric Effects */}
+            <motion.div
+                className="absolute top-0 left-1/4 w-96 h-96 blur-3xl opacity-20"
+                style={{
+                    background: `radial-gradient(circle, rgba(219,39,119,0.15) 0%, transparent 70%)`
+                }}
+                animate={{
+                    scale: [1, 1.1, 1],
+                    opacity: [0.15, 0.25, 0.15]
+                }}
+                transition={{
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                }}
+            />
+            <motion.div
+                className="absolute bottom-0 right-1/4 w-80 h-80 blur-3xl opacity-15"
+                style={{
+                    background: `radial-gradient(circle, rgba(236,72,153,0.12) 0%, transparent 70%)`
+                }}
+                animate={{
+                    scale: [1.1, 0.9, 1.1],
+                    opacity: [0.12, 0.20, 0.12]
+                }}
+                transition={{
+                    duration: 6,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                }}
+            />
+            <motion.div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 blur-2xl opacity-10"
+                style={{
+                    background: `radial-gradient(circle, rgba(157,23,77,0.08) 0%, transparent 80%)`
+                }}
+                animate={{
+                    scale: [0.8, 1.2, 0.8],
+                    rotate: [0, 180, 360]
+                }}
+                transition={{
+                    duration: 10,
+                    repeat: Infinity,
+                    ease: "linear"
+                }}
+            />
+
+            {/* Main Content */}
+            <div className="relative z-10 max-w-md mx-auto px-4 sm:px-6 py-8 sm:py-12 flex flex-col justify-center" style={{ minHeight: '100dvh' }}>
+
+                {/* Profile Header */}
+                <motion.div
+                    className="text-center mb-8"
+                    initial={{ y: 30, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                >
+                    {/* Logo em Destaque */}
+                    <motion.div
+                        className="mb-6"
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 0.8, delay: 0.1 }}
+                    >
+                        <div className="flex justify-center mb-4">
+                            <motion.div
+                                className="relative p-4 rounded-2xl backdrop-blur-xl border"
+                                style={{
+                                    background: `
+                                        linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9)),
+                                        linear-gradient(45deg, transparent 30%, rgba(219, 39, 119, 0.05) 50%, transparent 70%)
+                                    `,
+                                    borderColor: 'rgba(219, 39, 119, 0.2)',
+                                    boxShadow: `
+                                        0 8px 32px -8px rgba(219, 39, 119, 0.2),
+                                        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+                                        0 2px 16px -4px rgba(0, 0, 0, 0.1)
+                                    `
+                                }}
+                                whileHover={{ scale: 1.05, y: -2 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                            >
+                                <img
+                                    src="/images/carla/logoCarla.png"
+                                    alt="Carla Santos - Logo"
+                                    className="w-16 h-16 object-contain"
+                                />
+                            </motion.div>
+                        </div>
+                    </motion.div>
+
+                    {/* Profile Image */}
+                    <motion.div
+                        className="relative mb-6"
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    >
+                        <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto">
+                            <div
+                                className="absolute inset-0 rounded-full p-1 shadow-2xl"
+                                style={{
+                                    background: `
+                                        linear-gradient(45deg, #db2777, #ec4899, #f472b6, #db2777),
+                                        linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%)
+                                    `,
+                                    boxShadow: `
+                                        0 0 0 1px rgba(219, 39, 119, 0.3),
+                                        0 8px 32px -4px rgba(219, 39, 119, 0.4),
+                                        inset 0 1px 0 rgba(255, 255, 255, 0.2)
+                                    `
+                                }}
+                            >
+                                <div
+                                    className="w-full h-full rounded-full p-1"
+                                    style={{
+                                        background: `linear-gradient(145deg, #111827, #1f2937)`,
+                                        boxShadow: `inset 0 2px 4px rgba(0, 0, 0, 0.3)`
+                                    }}
+                                >
+                                    <div className="w-full h-full rounded-full overflow-hidden">
+                                        <img
+                                            src="/images/carla/perfilCarla.png"
+                                            alt="Carla Santos"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Status Profissional */}
+                            <motion.div
+                                className="absolute bottom-2 right-2 w-6 h-6 rounded-full border-4"
+                                style={{
+                                    background: `linear-gradient(135deg, #059669, #047857)`,
+                                    borderColor: `#111827`,
+                                    boxShadow: `
+                                        0 0 0 2px rgba(5, 150, 105, 0.3),
+                                        0 4px 12px rgba(5, 150, 105, 0.4)
+                                    `
+                                }}
+                                animate={{
+                                    scale: [1, 1.1, 1],
+                                    boxShadow: [
+                                        '0 0 0 2px rgba(5, 150, 105, 0.3), 0 4px 12px rgba(5, 150, 105, 0.4)',
+                                        '0 0 0 6px rgba(5, 150, 105, 0.2), 0 4px 12px rgba(5, 150, 105, 0.4)',
+                                        '0 0 0 2px rgba(5, 150, 105, 0.3), 0 4px 12px rgba(5, 150, 105, 0.4)'
+                                    ]
+                                }}
+                                transition={{
+                                    duration: 2,
+                                    repeat: Infinity,
+                                    ease: "easeInOut"
+                                }}
+                            >
+                                <div className="w-2 h-2 bg-white rounded-full mx-auto mt-1 shadow-sm" />
+                            </motion.div>
+                        </div>
+                    </motion.div>
+
+                    {/* Name and Title */}
+                    <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+                        Carla Salim
+                    </h1>
+
+                    <p className="text-slate-400 text-base sm:text-lg mb-6">
+                        Corretora Imobiliária CRECI-SP 283.463-F
+                        <span className="block text-rose-400 text-sm mt-1 font-medium">
+                            Especialista em Guararema & Região
+                        </span>
+                    </p>
+
+                    {/* Company Badge */}
+                    <motion.div
+                        className="inline-flex items-center gap-2 sm:gap-3 rounded-full px-4 sm:px-6 py-3 sm:py-4 mb-6 sm:mb-8 backdrop-blur-xl"
+                        style={{
+                            background: `
+                                linear-gradient(135deg, rgba(254, 243, 199, 0.95), rgba(255, 237, 213, 0.95)),
+                                linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%)
+                            `,
+                            border: `1px solid rgba(245, 158, 11, 0.4)`,
+                            boxShadow: `
+                                0 8px 32px -8px rgba(245, 158, 11, 0.4),
+                                inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                                0 1px 3px rgba(0, 0, 0, 0.1)
+                            `
+                        }}
+                        whileHover={{ scale: 1.03, y: -1.5 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                    >
+                        <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center p-1">
+                            <img
+                                src="/images/ipeLogo.png"
+                                alt="Ipê Imóveis"
+                                className="w-full h-full object-contain"
+                            />
+                        </div>
+                        <span className="text-amber-800 font-semibold text-sm sm:text-base">
+                            Corretora Parceira Ipê Imóveis
+                        </span>
+                        <Star className="w-5 h-5 text-amber-500" />
+                    </motion.div>
+                </motion.div>
+
+                {/* Stats Grid */}
+                <motion.div
+                    className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8"
+                    initial={{ y: 30, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.4 }}
+                >
+                    {stats.map((stat, index) => {
+                        const IconComponent = stat.icon;
+                        return (
+                            <motion.div
+                                key={index}
+                                className="text-center backdrop-blur-xl rounded-xl sm:rounded-2xl p-3 sm:p-4 group cursor-default border"
+                                style={{
+                                    background: `
+                                        linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(51, 65, 85, 0.6)),
+                                        linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.08) 50%, transparent 70%)
+                                    `,
+                                    borderColor: `rgba(219, 39, 119, 0.4)`,
+                                    boxShadow: `
+                                        0 2px 16px -4px rgba(219, 39, 119, 0.4),
+                                        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                                        inset 0 -1px 0 rgba(0, 0, 0, 0.2)
+                                    `
+                                }}
+                                whileHover={{
+                                    scale: 1.03,
+                                    y: -3,
+                                    boxShadow: `
+                                        0 4px 24px -4px rgba(219, 39, 119, 0.5),
+                                        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                                        inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+                                        0 0 0 1px rgba(219, 39, 119, 0.4)
+                                    `
+                                }}
+                                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                            >
+                                <div
+                                    className="w-8 h-8 rounded-lg flex items-center justify-center mx-auto mb-2 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300"
+                                    style={{
+                                        background: `
+                                            linear-gradient(135deg, rgba(219, 39, 119, 0.3), rgba(236, 72, 153, 0.4)),
+                                            linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.2) 50%, transparent 70%)
+                                        `,
+                                        boxShadow: `
+                                            inset 0 1px 2px rgba(219, 39, 119, 0.4),
+                                            0 2px 8px rgba(219, 39, 119, 0.2)
+                                        `
+                                    }}
+                                >
+                                    <IconComponent className="w-4 h-4 text-rose-300 drop-shadow-sm" />
+                                </div>
+                                <div className="text-base sm:text-lg font-bold text-white mb-1 drop-shadow-sm">{stat.number}</div>
+                                <div className="text-xs text-slate-300 leading-tight">{stat.label}</div>
+                            </motion.div>
+                        );
+                    })}
+                </motion.div>
+
+                {/* Primary Links */}
+                <motion.div
+                    className="space-y-3 sm:space-y-4 mb-6 sm:mb-8"
+                    initial={{ y: 30, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.6 }}
+                >
+                    {primaryLinks.map((link, index) => {
+                        const IconComponent = link.icon;
+
+                        return (
+                            <motion.button
+                                key={link.id}
+                                onClick={link.action}
+                                className="w-full group relative overflow-hidden rounded-2xl backdrop-blur-md border transition-all duration-300"
+                                style={{
+                                    background: link.id === 'whatsapp'
+                                        ? `linear-gradient(135deg, rgba(16,185,129,0.9) 0%, rgba(5,150,105,0.95) 100%),
+                                           linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%)`
+                                        : link.id === 'website'
+                                            ? `linear-gradient(135deg, rgba(71,85,105,0.9) 0%, rgba(51,65,85,0.95) 100%),
+                                           linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%)`
+                                            : `linear-gradient(135deg, rgba(217,119,6,0.9) 0%, rgba(180,83,9,0.95) 100%),
+                                           linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%)`,
+                                    borderColor: link.id === 'whatsapp'
+                                        ? 'rgba(16, 185, 129, 0.3)'
+                                        : link.id === 'website'
+                                            ? 'rgba(71, 85, 105, 0.3)'
+                                            : 'rgba(217, 119, 6, 0.3)',
+                                    boxShadow: `
+                                        0 4px 20px -4px ${link.id === 'whatsapp' ? 'rgba(16, 185, 129, 0.3)'
+                                            : link.id === 'website' ? 'rgba(71, 85, 105, 0.3)'
+                                                : 'rgba(217, 119, 6, 0.3)'
+                                        },
+                                        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                                        inset 0 -1px 0 rgba(0, 0, 0, 0.1)
+                                    `
+                                }}
+                                whileHover={{
+                                    scale: 1.02,
+                                    y: -2,
+                                    boxShadow: `
+                                        0 8px 32px -4px ${link.id === 'whatsapp' ? 'rgba(16, 185, 129, 0.4)'
+                                            : link.id === 'website' ? 'rgba(71, 85, 105, 0.4)'
+                                                : 'rgba(217, 119, 6, 0.4)'
+                                        },
+                                        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                                        inset 0 -1px 0 rgba(0, 0, 0, 0.1)
+                                    `
+                                }}
+                                whileTap={{ scale: 0.98 }}
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{
+                                    duration: 0.5,
+                                    delay: 0.7 + index * 0.1,
+                                    type: "spring",
+                                    stiffness: 400,
+                                    damping: 30
+                                }}
+                            >
+                                {/* Content */}
+                                <div className="relative p-4 sm:p-6 flex items-center gap-3 sm:gap-4">
+                                    <div
+                                        className="p-3 rounded-xl backdrop-blur-sm group-hover:scale-110 transition-all duration-300 group-hover:rotate-3"
+                                        style={{
+                                            background: `
+                                                linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15)),
+                                                linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.1) 50%, transparent 60%)
+                                            `,
+                                            boxShadow: `
+                                                inset 0 1px 2px rgba(255, 255, 255, 0.4),
+                                                0 2px 8px rgba(0, 0, 0, 0.1)
+                                            `
+                                        }}
+                                    >
+                                        <IconComponent className="w-6 h-6 text-white drop-shadow-sm" />
+                                    </div>
+
+                                    <div className="flex-1 text-left">
+                                        <h3 className="font-bold text-base sm:text-lg text-white mb-1">
+                                            {link.title}
+                                        </h3>
+                                        <p className="text-xs sm:text-sm text-white/80">
+                                            {link.subtitle}
+                                        </p>
+                                    </div>
+
+                                    <ArrowUpRight className="w-5 h-5 text-white/90 group-hover:rotate-45 group-hover:scale-110 transition-all duration-300 drop-shadow-sm" />
+                                </div>
+                            </motion.button>
+                        );
+                    })}
+                </motion.div>
+
+                {/* Social Links */}
+                <motion.div
+                    className="flex justify-center gap-4 mb-6 sm:mb-8"
+                    initial={{ y: 30, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 1.0 }}
+                >
+                    {socialLinks.map((social) => {
+                        const IconComponent = social.icon;
+                        return (
+                            <motion.a
+                                key={social.id}
+                                href={social.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-3 rounded-xl shadow-lg backdrop-blur-md border transition-all duration-300"
+                                style={{
+                                    background: social.id === 'instagram'
+                                        ? `linear-gradient(135deg, rgba(219, 39, 119, 0.9), rgba(236, 72, 153, 0.9)),
+                                           linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.15) 50%, transparent 70%)`
+                                        : `linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(29, 78, 216, 0.9)),
+                                           linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.15) 50%, transparent 70%)`,
+                                    borderColor: social.id === 'instagram' ? 'rgba(219, 39, 119, 0.3)' : 'rgba(59, 130, 246, 0.3)',
+                                    boxShadow: `
+                                        0 4px 20px -4px ${social.id === 'instagram' ? 'rgba(219, 39, 119, 0.4)' : 'rgba(59, 130, 246, 0.4)'},
+                                        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                                        inset 0 -1px 0 rgba(0, 0, 0, 0.1)
+                                    `
+                                }}
+                                whileHover={{
+                                    scale: 1.1,
+                                    y: -2,
+                                    rotate: 5,
+                                    boxShadow: `
+                                        0 8px 32px -4px ${social.id === 'instagram' ? 'rgba(219, 39, 119, 0.5)' : 'rgba(59, 130, 246, 0.5)'},
+                                        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                                        inset 0 -1px 0 rgba(0, 0, 0, 0.1)
+                                    `
+                                }}
+                                whileTap={{ scale: 0.95 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                            >
+                                <IconComponent className="w-5 h-5 text-white drop-shadow-sm" />
+                            </motion.a>
+                        );
+                    })}
+                </motion.div>
+
+                {/* Contact Info */}
+                <motion.div
+                    className="backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center border"
+                    style={{
+                        background: `
+                            linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(51, 65, 85, 0.4)),
+                            linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%)
+                        `,
+                        borderColor: `rgba(71, 85, 105, 0.4)`,
+                        boxShadow: `
+                            0 4px 24px -4px rgba(0, 0, 0, 0.4),
+                            inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                            inset 0 -1px 0 rgba(0, 0, 0, 0.2)
+                        `
+                    }}
+                    initial={{ y: 30, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.6, delay: 1.0 }}
+                >
+                    <div className="space-y-3 text-slate-400 text-sm">
+                        <div className="flex items-center justify-center gap-2">
+                            <Phone className="w-4 h-4" />
+                            <span>+55 11 94004-2618</span>
+                        </div>
+                        <div className="flex items-center justify-center gap-2">
+                            <MapPin className="w-4 h-4" />
+                            <span>Guararema, Mogi das Cruzes e região</span>
+                        </div>
+                        <div className="flex items-center justify-center gap-2">
+                            <Calendar className="w-4 h-4" />
+                            <span>Segunda a Sexta: 8h às 19h | Sábado: 8h às 17h</span>
+                        </div>
+                        <div className="flex items-center justify-center gap-2">
+                            <Shield className="w-4 h-4" />
+                            <span>Atendimento especializado e consultoria gratuita</span>
+                        </div>
+                    </div>
+                </motion.div>
+
+                {/* Developer Credit */}
+                <motion.a
+                    href="https://github.com/jpcardozx"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-8 text-center group cursor-pointer block"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 0.9, y: 0 }}
+                    transition={{ duration: 1, delay: 1.5 }}
+                    whileHover={{
+                        opacity: 1,
+                        scale: 1.05,
+                        y: -3
+                    }}
+                >
+                    <motion.div
+                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-md transition-all duration-500"
+                        style={{
+                            background: `
+                                linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(30, 41, 59, 0.75)),
+                                linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.12) 50%, transparent 60%)
+                            `,
+                            border: `1px solid rgba(99, 102, 241, 0.3)`,
+                            boxShadow: `
+                                0 4px 16px -4px rgba(0, 0, 0, 0.3),
+                                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                                0 0 0 1px rgba(99, 102, 241, 0.1)
+                            `
+                        }}
+                        whileHover={{
+                            scale: 1.08,
+                            rotate: [0, -1, 1, 0],
+                            boxShadow: `
+                                0 8px 32px -8px rgba(99, 102, 241, 0.4),
+                                inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                                0 0 0 2px rgba(99, 102, 241, 0.3),
+                                0 0 20px rgba(99, 102, 241, 0.2)
+                            `,
+                            background: `
+                                linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.8)),
+                                linear-gradient(45deg, transparent 30%, rgba(99, 102, 241, 0.1) 50%, transparent 70%)
+                            `
+                        }}
+                        transition={{
+                            type: "spring",
+                            stiffness: 300,
+                            damping: 20,
+                            rotate: { duration: 0.4, ease: "easeInOut" }
+                        }}
+                    >
+                        {/* Code Icon */}
+                        <motion.div
+                            className="w-3.5 h-3.5 rounded flex items-center justify-center"
+                            style={{
+                                background: `linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(139, 92, 246, 0.5))`,
+                                color: '#e0e7ff'
+                            }}
+                            whileHover={{
+                                rotate: 360,
+                                scale: 1.2,
+                                background: `linear-gradient(135deg, rgba(99, 102, 241, 0.6), rgba(139, 92, 246, 0.7))`
+                            }}
+                            transition={{ duration: 0.6, ease: "easeInOut" }}
+                        >
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0L19.2 12l-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
+                            </svg>
+                        </motion.div>
+
+                        {/* Text */}
+                        <motion.div className="flex items-center gap-1 text-xs">
+                            <motion.span
+                                className="text-slate-300 transition-colors duration-300"
+                                whileHover={{
+                                    color: "#f1f5f9",
+                                    scale: 1.1
+                                }}
+                            >
+                                dev
+                            </motion.span>
+                            <motion.span
+                                className="font-medium bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent"
+                                whileHover={{
+                                    backgroundSize: "200% 100%",
+                                    backgroundPosition: "100% 0",
+                                    scale: 1.05,
+                                    filter: "brightness(1.2)"
+                                }}
+                                transition={{ duration: 0.5 }}
+                                style={{ backgroundSize: "200% 100%" }}
+                            >
+                                @jpcardozx
+                            </motion.span>
+                        </motion.div>
+
+                        {/* Decorative Dots */}
+                        <motion.div className="flex gap-0.5 opacity-60 group-hover:opacity-100 transition-opacity duration-300">
+                            {[0, 1, 2].map((i) => (
+                                <motion.div
+                                    key={i}
+                                    className="w-1 h-1 rounded-full bg-gradient-to-r from-indigo-400 to-purple-400"
+                                    animate={{
+                                        scale: [1, 1.4, 1],
+                                        opacity: [0.6, 1, 0.6]
+                                    }}
+                                    whileHover={{
+                                        scale: 2,
+                                        background: "linear-gradient(to right, #8b5cf6, #3b82f6)"
+                                    }}
+                                    transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        delay: i * 0.2,
+                                        ease: "easeInOut"
+                                    }}
+                                />
+                            ))}
+                        </motion.div>
+                    </motion.div>
+                </motion.a>
+            </div>
+        </motion.div>
+    );
+};
+
+export default CarlaLinktreeEnhanced;

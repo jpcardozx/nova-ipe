@@ -1,7 +1,9 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { LeadsService } from '@/lib/supabase/leads-service'
+import type { Lead } from '@/app/types/database'
 import {
     Users,
     Target,
@@ -35,29 +37,6 @@ import {
     X
 } from 'lucide-react'
 
-interface Lead {
-    id: string
-    name: string
-    email: string
-    phone: string
-    source: 'website' | 'facebook' | 'instagram' | 'whatsapp' | 'referral' | 'cold_call'
-    stage: 'captacao' | 'qualificacao' | 'negociacao' | 'fechamento'
-    score: number
-    budget_min: number
-    budget_max: number
-    property_type: 'apartment' | 'house' | 'commercial' | 'land'
-    location_preference: string
-    last_contact: string
-    created_at: string
-    notes: string
-    priority: 'low' | 'medium' | 'high' | 'urgent'
-    probability: number
-    expected_close_date: string
-    assigned_to: string
-    activities_count: number
-    value_potential: number
-}
-
 interface FunnelStats {
     stage: string
     count: number
@@ -69,6 +48,30 @@ interface FunnelStats {
 // TODO: Replace with actual API call to fetch leads from backend
 // Mock data removed for production - connect to real funnel leads API
 const mockLeads: Lead[] = []
+
+// Mapear status dos leads para estágios do funil
+const mapLeadToFunnelStage = (status: Lead['status']) => {
+    switch (status) {
+        case 'new': return 'captacao'
+        case 'contacted': return 'qualificacao'
+        case 'qualified': return 'negociacao'
+        case 'proposal': return 'negociacao'
+        case 'negotiation': return 'negociacao'
+        case 'won': return 'fechamento'
+        default: return 'captacao'
+    }
+}
+
+// Extender Lead com campos do funil
+const enrichLeadForFunnel = (lead: Lead) => ({
+    ...lead,
+    stage: mapLeadToFunnelStage(lead.status),
+    probability: lead.conversion_probability || (lead.score || 50),
+    value_potential: (lead.budget_max || lead.budget_min || 500000),
+    activities_count: 0, // TODO: integrar com atividades reais
+    property_type: 'apartment', // TODO: mapear do property_interest
+    location_preference: lead.location_interest || 'Não especificado'
+})
 
 const stages = [
     {
@@ -128,13 +131,35 @@ const priorityConfig = {
 export default function FunnelPage() {
     const [selectedStage, setSelectedStage] = useState<string>('all')
     const [searchTerm, setSearchTerm] = useState('')
-    const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
+    const [selectedLead, setSelectedLead] = useState<any | null>(null)
     const [draggedLead, setDraggedLead] = useState<string | null>(null)
-    const [leads, setLeads] = useState<Lead[]>([])
-    
-    // TODO: Implement useEffect to load leads from API
-    // useEffect(() => {
-    //     const loadLeads = async () => {
+    const [leads, setLeads] = useState<any[]>([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        loadLeads()
+    }, [])
+
+    const loadLeads = async () => {
+        setLoading(true)
+        try {
+            const { leads: realLeads, error } = await LeadsService.getLeads()
+
+            if (error) {
+                console.error('Erro ao carregar leads:', error)
+                setLeads([])
+            } else {
+                // Enriquecer leads com dados do funil
+                const enrichedLeads = (realLeads || []).map(enrichLeadForFunnel)
+                setLeads(enrichedLeads)
+            }
+        } catch (error) {
+            console.error('Error loading leads:', error)
+            setLeads([])
+        } finally {
+            setLoading(false)
+        }
+    }
     //         const response = await fetch('/api/leads/funnel')
     //         const data = await response.json()
     //         setLeads(data)
@@ -146,8 +171,8 @@ export default function FunnelPage() {
     const filteredLeads = leads.filter(lead => {
         const matchesStage = selectedStage === 'all' || lead.stage === selectedStage
         const matchesSearch = lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            lead.phone.includes(searchTerm)
+            lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            lead.phone.includes(searchTerm)
         return matchesStage && matchesSearch
     })
 
@@ -158,8 +183,8 @@ export default function FunnelPage() {
     const getStageStats = (stageId: string): FunnelStats => {
         const stageLeads = getStageLeads(stageId)
         const totalValue = stageLeads.reduce((sum, lead) => sum + lead.value_potential, 0)
-        const avgScore = stageLeads.length > 0 
-            ? stageLeads.reduce((sum, lead) => sum + lead.score, 0) / stageLeads.length 
+        const avgScore = stageLeads.length > 0
+            ? stageLeads.reduce((sum, lead) => sum + lead.score, 0) / stageLeads.length
             : 0
 
         return {
@@ -206,9 +231,9 @@ export default function FunnelPage() {
     const handleDrop = (e: React.DragEvent, stageId: string) => {
         e.preventDefault()
         if (draggedLead) {
-            setLeads(prev => prev.map(lead => 
-                lead.id === draggedLead 
-                    ? { ...lead, stage: stageId as Lead['stage'] }
+            setLeads(prev => prev.map(lead =>
+                lead.id === draggedLead
+                    ? { ...lead, stage: stageId }
                     : lead
             ))
             setDraggedLead(null)
@@ -330,11 +355,10 @@ export default function FunnelPage() {
                     <div className="flex gap-3 flex-wrap">
                         <button
                             onClick={() => setSelectedStage('all')}
-                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                selectedStage === 'all'
+                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${selectedStage === 'all'
                                     ? 'bg-gray-900 text-white'
                                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                            }`}
+                                }`}
                         >
                             Todos os Estágios
                         </button>
@@ -342,11 +366,10 @@ export default function FunnelPage() {
                             <button
                                 key={stage.id}
                                 onClick={() => setSelectedStage(stage.id)}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-                                    selectedStage === stage.id
+                                className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${selectedStage === stage.id
                                         ? `${stage.color} text-white`
                                         : `${stage.lightColor} ${stage.textColor} hover:bg-opacity-80`
-                                }`}
+                                    }`}
                             >
                                 <stage.icon className="h-4 w-4" />
                                 {stage.name}
@@ -392,7 +415,7 @@ export default function FunnelPage() {
                                         <p className="text-xs text-gray-600">leads</p>
                                     </div>
                                 </div>
-                                
+
                                 <div className="space-y-1">
                                     <div className="flex justify-between text-xs text-gray-600">
                                         <span>Valor Total</span>
@@ -450,7 +473,7 @@ export default function FunnelPage() {
                                                         {formatCurrency(lead.budget_min)} - {formatCurrency(lead.budget_max)}
                                                     </span>
                                                 </div>
-                                                
+
                                                 <div className="flex items-center justify-between text-sm">
                                                     <span className="text-gray-600">Interesse</span>
                                                     <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getScoreColor(lead.score)}`}>
@@ -464,7 +487,7 @@ export default function FunnelPage() {
                                                         <span className="text-xs font-semibold">{lead.probability}%</span>
                                                     </div>
                                                     <div className="w-full bg-gray-200 rounded-full h-2">
-                                                        <div 
+                                                        <div
                                                             className={`h-2 rounded-full transition-all ${getProbabilityColor(lead.probability)}`}
                                                             style={{ width: `${lead.probability}%` }}
                                                         ></div>

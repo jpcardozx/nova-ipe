@@ -50,7 +50,7 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen bg-gray-100 flex relative rounded-xl shadow-md">
       <div
-        className="absolute inset-0 bg-repeat opacity-10 pointer-events-none"
+        className="absolute inset-0 bg-repeat opacity-30 pointer-events-none"
         style={{
           backgroundImage: 'url(/images/dashboard/texture.png)',
           backgroundSize: '400px 400px'
