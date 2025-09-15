@@ -3,339 +3,364 @@ import { supabase } from '@/lib/supabase'
 export interface Lead {
     id: string
     name: string
-    email?: string
+    email?: string | null
     phone?: string
-    source: 'website' | 'referral' | 'social_media' | 'phone' | 'walk_in' | 'real_estate_portal'
+    source: 'website' | 'facebook' | 'instagram' | 'whatsapp' | 'referral' | 'phone' | 'email' | 'walk_in' | 'other'
     status: 'new' | 'contacted' | 'qualified' | 'proposal' | 'negotiation' | 'won' | 'lost'
     priority: 'low' | 'medium' | 'high' | 'urgent'
     budget_min?: number
     budget_max?: number
-    property_type?: 'apartment' | 'house' | 'commercial' | 'land' | 'studio'
-    property_purpose?: 'buy' | 'rent' | 'sell'
-    location_preference?: string
-    notes?: string
-    assigned_to?: string
-    last_contact?: string
-    next_followup?: string
+    property_type?: string
+    interest_type?: 'buy' | 'sell' | 'rent_as_tenant' | 'rent_as_owner'
+    preferred_location?: string
+    notes?: string | null
+    follow_up_date?: string | null
+    score?: number
+    user_id: string
+    tags?: string[]
+    company?: string
+    occupation?: string
+    family_size?: number
+    urgency_level?: 'low' | 'medium' | 'high' | 'urgent'
     created_at: string
     updated_at: string
-    created_by?: string
-}
-
-export interface LeadActivity {
-    id: string
-    lead_id: string
-    type: 'call' | 'email' | 'whatsapp' | 'meeting' | 'property_visit' | 'proposal_sent' | 'contract_signed' | 'note'
-    title: string
-    description?: string
-    outcome?: 'positive' | 'negative' | 'neutral'
-    scheduled_for?: string
-    completed_at?: string
-    created_by?: string
-    created_at: string
-    metadata?: Record<string, any>
 }
 
 export class LeadsService {
-    // ==================== LEADS CRUD ====================
+    // Demo mode fallback - in a real implementation, this would connect to Supabase
+    private static isDemo = process.env.NODE_ENV === 'development'
     
-    static async createLead(leadData: Partial<Lead>) {
-        try {
-            const { data: user } = await supabase.auth.getUser()
-            
-            const { data, error } = await supabase
-                .from('leads')
-                .insert([{
-                    name: leadData.name,
-                    email: leadData.email,
-                    phone: leadData.phone,
-                    source: leadData.source || 'website',
-                    status: 'lead', // using crm_clients status field
-                    priority: leadData.priority || 'medium',
-                    notes: leadData.notes,
-                    budget_min: leadData.budget_min,
-                    budget_max: leadData.budget_max,
-                    assigned_to: leadData.assigned_to || user.user?.id,
-                    created_by: user.user?.id,
-                    // Store lead-specific data in notes or custom fields
-                    custom_fields: {
-                        property_type: leadData.property_type,
-                        property_purpose: leadData.property_purpose,
-                        location_preference: leadData.location_preference,
-                        lead_status: leadData.status || 'new'
-                    }
-                }])
-                .select()
-                .single()
+    private static demoLeads: Lead[] = [
+        {
+            id: '1',
+            name: 'Maria Silva',
+            email: 'maria@email.com',
+            phone: '(11) 99999-1111',
+            source: 'website',
+            status: 'new',
+            priority: 'high',
+            budget_min: 300000,
+            budget_max: 500000,
+            property_type: 'Casa',
+            interest_type: 'buy',
+            preferred_location: 'Guararema, Centro',
+            notes: 'Interessada em casa no centro',
+            score: 85,
+            follow_up_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+            user_id: 'current-user-id',
+            tags: ['Primeira compra', 'Financiamento'],
+            company: 'Tech Corp',
+            occupation: 'Desenvolvedora',
+            family_size: 3,
+            urgency_level: 'high',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        },
+        {
+            id: '2',
+            name: 'João Santos',
+            email: 'joao@email.com',
+            phone: '(11) 99999-2222',
+            source: 'facebook',
+            status: 'contacted',
+            priority: 'medium',
+            budget_min: 200000,
+            budget_max: 350000,
+            property_type: 'Apartamento',
+            interest_type: 'sell',
+            preferred_location: 'Guararema, Jardins',
+            notes: 'Quer vender apartamento',
+            score: 65,
+            follow_up_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+            user_id: 'current-user-id',
+            tags: ['Venda rápida'],
+            company: 'Autopeças Silva',
+            occupation: 'Empresário',
+            family_size: 2,
+            urgency_level: 'medium',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        },
+        {
+            id: '3',
+            name: 'Ana Costa',
+            email: 'ana@email.com',
+            phone: '(11) 99999-3333',
+            source: 'referral',
+            status: 'qualified',
+            priority: 'urgent',
+            budget_min: 150000,
+            budget_max: 250000,
+            property_type: 'Casa',
+            interest_type: 'rent_as_tenant',
+            preferred_location: 'Guararema, qualquer bairro',
+            notes: 'Precisa urgente de casa para família',
+            score: 95,
+            follow_up_date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
+            user_id: 'current-user-id',
+            tags: ['Urgente', 'Família grande'],
+            company: 'Escola Municipal',
+            occupation: 'Professora',
+            family_size: 5,
+            urgency_level: 'urgent',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        }
+    ]
 
-            if (error) throw error
-            
-            // Log activity
-            if (data) {
-                await this.createActivity({
-                    lead_id: data.id,
-                    type: 'note',
-                    title: 'Lead criado',
-                    description: `Lead criado via ${leadData.source || 'sistema'}`,
-                    outcome: 'positive',
-                    completed_at: new Date().toISOString()
-                })
+    static async createLead(leadData: Omit<Lead, 'id' | 'created_at' | 'updated_at'>): Promise<{
+        lead?: Lead;
+        error?: { message: string };
+    }> {
+        try {
+            if (this.isDemo) {
+                // Demo mode - use localStorage
+                const newLead: Lead = {
+                    ...leadData,
+                    id: Date.now().toString(),
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                }
+
+                const existingLeads = this.getDemoLeads()
+                const updatedLeads = [...existingLeads, newLead]
+                localStorage.setItem('demo_leads', JSON.stringify(updatedLeads))
+
+                return { lead: newLead }
+            } else {
+                // Production mode - would use Supabase
+                const { data, error } = await supabase
+                    .from('leads')
+                    .insert([leadData])
+                    .select()
+                    .single()
+                
+                if (error) throw error
+                return { lead: data }
             }
-            
-            return { lead: data, error: null }
         } catch (error) {
-            console.error('Erro ao criar lead:', error)
-            return { lead: null, error }
+            console.error('Error creating lead:', error)
+            return { 
+                error: { 
+                    message: error instanceof Error ? error.message : 'Erro desconhecido ao criar lead' 
+                } 
+            }
         }
     }
 
-    static async updateLead(leadId: string, updates: Partial<Lead>) {
+    static async updateLead(id: string, leadData: Partial<Omit<Lead, 'id' | 'created_at' | 'updated_at'>>): Promise<{
+        lead?: Lead;
+        error?: { message: string };
+    }> {
         try {
-            const { data, error } = await supabase
-                .from('leads')
-                .update({
-                    name: updates.name,
-                    email: updates.email,
-                    phone: updates.phone,
-                    priority: updates.priority,
-                    notes: updates.notes,
-                    budget_min: updates.budget_min,
-                    budget_max: updates.budget_max,
-                    assigned_to: updates.assigned_to,
-                    updated_at: new Date().toISOString(),
-                    custom_fields: updates.property_type || updates.property_purpose || updates.location_preference ? {
-                        property_type: updates.property_type,
-                        property_purpose: updates.property_purpose,
-                        location_preference: updates.location_preference,
-                        lead_status: updates.status
-                    } : undefined
-                })
-                .eq('id', leadId)
-                .select()
-                .single()
+            if (this.isDemo) {
+                // Demo mode - use localStorage
+                const existingLeads = this.getDemoLeads()
+                const leadIndex = existingLeads.findIndex(lead => lead.id === id)
+                
+                if (leadIndex === -1) {
+                    throw new Error('Lead não encontrado')
+                }
 
-            if (error) throw error
-            return { lead: data, error: null }
+                const updatedLead: Lead = {
+                    ...existingLeads[leadIndex],
+                    ...leadData,
+                    updated_at: new Date().toISOString()
+                }
+
+                existingLeads[leadIndex] = updatedLead
+                localStorage.setItem('demo_leads', JSON.stringify(existingLeads))
+
+                return { lead: updatedLead }
+            } else {
+                // Production mode - would use Supabase
+                const { data, error } = await supabase
+                    .from('leads')
+                    .update(leadData)
+                    .eq('id', id)
+                    .select()
+                    .single()
+                
+                if (error) throw error
+                return { lead: data }
+            }
         } catch (error) {
-            console.error('Erro ao atualizar lead:', error)
-            return { lead: null, error }
+            console.error('Error updating lead:', error)
+            return { 
+                error: { 
+                    message: error instanceof Error ? error.message : 'Erro desconhecido ao atualizar lead' 
+                } 
+            }
         }
     }
 
-    static async getLeads(filters: {
-        status?: string[]
-        source?: string[]
-        assigned_to?: string
-        priority?: string[]
-        search?: string
-        limit?: number
-        offset?: number
-    } = {}) {
+    static async deleteLead(id: string): Promise<{
+        success?: boolean;
+        error?: { message: string };
+    }> {
         try {
-            let query = supabase
-                .from('crm_clients')
-                .select(`
-                    *,
-                    assigned_user:profiles!crm_clients_assigned_to_fkey(full_name, email)
-                `)
-                .eq('status', 'lead') // Only get leads, not clients
-                .order('created_at', { ascending: false })
+            if (this.isDemo) {
+                // Demo mode - use localStorage
+                const existingLeads = this.getDemoLeads()
+                const filteredLeads = existingLeads.filter(lead => lead.id !== id)
+                
+                if (filteredLeads.length === existingLeads.length) {
+                    throw new Error('Lead não encontrado')
+                }
 
-            if (filters.priority?.length) {
-                query = query.in('priority', filters.priority)
+                localStorage.setItem('demo_leads', JSON.stringify(filteredLeads))
+                return { success: true }
+            } else {
+                // Production mode - would use Supabase
+                const { error } = await supabase
+                    .from('leads')
+                    .delete()
+                    .eq('id', id)
+                
+                if (error) throw error
+                return { success: true }
             }
-
-            if (filters.source?.length) {
-                query = query.in('source', filters.source)
-            }
-
-            if (filters.assigned_to) {
-                query = query.eq('assigned_to', filters.assigned_to)
-            }
-
-            if (filters.search) {
-                query = query.or(`name.ilike.%${filters.search}%,email.ilike.%${filters.search}%,phone.ilike.%${filters.search}%`)
-            }
-
-            if (filters.limit) {
-                query = query.limit(filters.limit)
-            }
-
-            if (filters.offset) {
-                query = query.range(filters.offset, filters.offset + (filters.limit || 20) - 1)
-            }
-
-            const { data, error } = await query
-
-            if (error) throw error
-            
-            // Transform crm_clients data to Lead format
-            const leads = data?.map(client => ({
-                ...client,
-                status: client.custom_fields?.lead_status || 'new',
-                property_type: client.custom_fields?.property_type,
-                property_purpose: client.custom_fields?.property_purpose,
-                location_preference: client.custom_fields?.location_preference
-            })) || []
-
-            return { leads, error: null }
         } catch (error) {
-            console.error('Erro ao buscar leads:', error)
-            return { leads: [], error }
+            console.error('Error deleting lead:', error)
+            return { 
+                error: { 
+                    message: error instanceof Error ? error.message : 'Erro desconhecido ao deletar lead' 
+                } 
+            }
         }
     }
 
-    static async getLeadById(leadId: string) {
+    static async getLeads(): Promise<{
+        leads?: Lead[];
+        error?: { message: string };
+    }> {
         try {
-            const { data, error } = await supabase
-                .from('crm_clients')
-                .select(`
-                    *,
-                    assigned_user:profiles!crm_clients_assigned_to_fkey(full_name, email, phone)
-                `)
-                .eq('id', leadId)
-                .single()
+            if (this.isDemo) {
+                // Demo mode - get from localStorage or use default demo data
+                const leads = this.getDemoLeads()
+                return { leads }
+            } else {
+                // Production mode - would use Supabase
+                const { data, error } = await supabase
+                    .from('leads')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                
+                if (error) throw error
+                return { leads: data }
+            }
+        } catch (error) {
+            console.error('Error getting leads:', error)
+            return { 
+                error: { 
+                    message: error instanceof Error ? error.message : 'Erro desconhecido ao buscar leads' 
+                } 
+            }
+        }
+    }
 
-            if (error) throw error
+    static async getLeadById(id: string): Promise<{
+        lead?: Lead;
+        error?: { message: string };
+    }> {
+        try {
+            if (this.isDemo) {
+                // Demo mode - get from localStorage or use default demo data
+                const leads = this.getDemoLeads()
+                const lead = leads.find(l => l.id === id)
+                
+                if (!lead) {
+                    throw new Error('Lead não encontrado')
+                }
+
+                return { lead }
+            } else {
+                // Production mode - would use Supabase
+                const { data, error } = await supabase
+                    .from('leads')
+                    .select('*')
+                    .eq('id', id)
+                    .single()
+                
+                if (error) throw error
+                return { lead: data }
+            }
+        } catch (error) {
+            console.error('Error getting lead by id:', error)
+            return { 
+                error: { 
+                    message: error instanceof Error ? error.message : 'Erro desconhecido ao buscar lead' 
+                } 
+            }
+        }
+    }
+
+    private static getDemoLeads(): Lead[] {
+        if (typeof window === 'undefined') return this.demoLeads
+        
+        try {
+            const stored = localStorage.getItem('demo_leads')
+            if (stored) {
+                return JSON.parse(stored)
+            }
+        } catch (error) {
+            console.warn('Error reading leads from localStorage:', error)
+        }
+        
+        // Initialize localStorage with demo data
+        localStorage.setItem('demo_leads', JSON.stringify(this.demoLeads))
+        return this.demoLeads
+    }
+
+    // Statistics and analytics methods
+    static async getLeadStats(): Promise<{
+        stats?: {
+            total: number;
+            new: number;
+            contacted: number;
+            qualified: number;
+            won: number;
+            lost: number;
+            conversionRate: number;
+            averageScore: number;
+        };
+        error?: { message: string };
+    }> {
+        try {
+            const { leads, error } = await this.getLeads()
             
-            // Transform to Lead format
-            const lead = {
-                ...data,
-                status: data.custom_fields?.lead_status || 'new',
-                property_type: data.custom_fields?.property_type,
-                property_purpose: data.custom_fields?.property_purpose,
-                location_preference: data.custom_fields?.location_preference
+            if (error || !leads) {
+                throw new Error(error?.message || 'Erro ao buscar leads para estatísticas')
             }
 
-            return { lead, error: null }
-        } catch (error) {
-            console.error('Erro ao buscar lead:', error)
-            return { lead: null, error }
-        }
-    }
+            const total = leads.length
+            const new_leads = leads.filter(l => l.status === 'new').length
+            const contacted = leads.filter(l => l.status === 'contacted').length
+            const qualified = leads.filter(l => l.status === 'qualified').length
+            const won = leads.filter(l => l.status === 'won').length
+            const lost = leads.filter(l => l.status === 'lost').length
+            const conversionRate = total > 0 ? (won / total) * 100 : 0
+            const averageScore = total > 0 ? leads.reduce((sum, lead) => sum + (lead.score || 0), 0) / total : 0
 
-    // ==================== ATIVIDADES ====================
-
-    static async createActivity(activityData: Partial<LeadActivity>) {
-        try {
-            const { data: user } = await supabase.auth.getUser()
-            
-            // Store activities in tasks table with lead reference
-            const { data, error } = await supabase
-                .from('tasks')
-                .insert([{
-                    title: activityData.title,
-                    description: activityData.description,
-                    type: activityData.type || 'other',
-                    status: activityData.completed_at ? 'completed' : 'pending',
-                    client_id: activityData.lead_id, // Reference to crm_clients (lead)
-                    assigned_to: user.user?.id,
-                    created_by: user.user?.id,
-                    due_date: activityData.scheduled_for,
-                    completed_at: activityData.completed_at,
-                    custom_fields: {
-                        activity_type: activityData.type,
-                        outcome: activityData.outcome,
-                        metadata: activityData.metadata,
-                        is_lead_activity: true
-                    }
-                }])
-                .select()
-                .single()
-
-            if (error) throw error
-            return { activity: data, error: null }
-        } catch (error) {
-            console.error('Erro ao criar atividade:', error)
-            return { activity: null, error }
-        }
-    }
-
-    static async getLeadActivities(leadId: string) {
-        try {
-            const { data, error } = await supabase
-                .from('tasks')
-                .select(`
-                    *,
-                    created_user:profiles!tasks_created_by_fkey(full_name)
-                `)
-                .eq('client_id', leadId)
-                .eq('custom_fields->is_lead_activity', true)
-                .order('created_at', { ascending: false })
-
-            if (error) throw error
-            
-            // Transform to LeadActivity format
-            const activities = data?.map(task => ({
-                id: task.id,
-                lead_id: leadId,
-                type: task.custom_fields?.activity_type || task.type,
-                title: task.title,
-                description: task.description,
-                outcome: task.custom_fields?.outcome,
-                scheduled_for: task.due_date,
-                completed_at: task.completed_at,
-                created_by: task.created_by,
-                created_at: task.created_at,
-                metadata: task.custom_fields?.metadata,
-                created_user: task.created_user
-            })) || []
-
-            return { activities, error: null }
-        } catch (error) {
-            console.error('Erro ao buscar atividades:', error)
-            return { activities: [], error }
-        }
-    }
-
-    // ==================== ESTATÍSTICAS ====================
-
-    static async getLeadStats(userId?: string) {
-        try {
-            const { leads } = await this.getLeads({ assigned_to: userId })
-            
-            const stats = {
-                total: leads.length,
-                new: leads.filter(l => l.status === 'new').length,
-                contacted: leads.filter(l => l.status === 'contacted').length,
-                qualified: leads.filter(l => l.status === 'qualified').length,
-                hot: leads.filter(l => l.priority === 'high' || l.priority === 'urgent').length,
-                thisWeek: leads.filter(l => {
-                    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-                    return new Date(l.created_at) > weekAgo
-                }).length,
-                needingFollowup: leads.filter(l => {
-                    if (!l.next_followup) return false
-                    return new Date(l.next_followup) <= new Date()
-                }).length
+            return {
+                stats: {
+                    total,
+                    new: new_leads,
+                    contacted,
+                    qualified,
+                    won,
+                    lost,
+                    conversionRate,
+                    averageScore
+                }
             }
-
-            return { stats, error: null }
         } catch (error) {
-            console.error('Erro ao calcular estatísticas:', error)
-            return { stats: null, error }
-        }
-    }
-
-    // ==================== FOLLOW-UP ====================
-
-    static async scheduleFollowup(leadId: string, followupDate: string, note?: string) {
-        try {
-            await this.updateLead(leadId, { next_followup: followupDate })
-            
-            // Create follow-up task
-            await this.createActivity({
-                lead_id: leadId,
-                type: 'note',
-                title: 'Follow-up agendado',
-                description: note || `Follow-up agendado para ${new Date(followupDate).toLocaleDateString('pt-BR')}`,
-                scheduled_for: followupDate
-            })
-
-            return { success: true, error: null }
-        } catch (error) {
-            console.error('Erro ao agendar follow-up:', error)
-            return { success: false, error }
+            console.error('Error getting lead stats:', error)
+            return { 
+                error: { 
+                    message: error instanceof Error ? error.message : 'Erro desconhecido ao calcular estatísticas' 
+                } 
+            }
         }
     }
 }

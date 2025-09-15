@@ -8,11 +8,11 @@ import { jetimobService } from '@/lib/jetimob/jetimob-service'
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: { id: string } }
 ) {
     try {
-        const { id } = await params
-        const property = await jetimobService.getProperty(id)
+        const propertyId = params.id
+        const property = await jetimobService.getProperty(propertyId)
         
         if (!property) {
             return NextResponse.json(
@@ -40,10 +40,10 @@ export async function GET(
 
 export async function PUT(
     request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: { id: string } }
 ) {
     try {
-        const { id } = await params
+        const propertyId = params.id
         const body = await request.json()
         const { updates } = body
 
@@ -54,7 +54,7 @@ export async function PUT(
             )
         }
 
-        const updatedProperty = await jetimobService.updateProperty(id, updates)
+        const updatedProperty = await jetimobService.updateProperty(propertyId, updates)
         
         return NextResponse.json({
             success: true,
@@ -75,11 +75,11 @@ export async function PUT(
 
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: { id: string } }
 ) {
     try {
-        const { id } = await params
-        const success = await jetimobService.deleteProperty(id)
+        const propertyId = params.id
+        const success = await jetimobService.deleteProperty(propertyId)
         
         if (!success) {
             return NextResponse.json(

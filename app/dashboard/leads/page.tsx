@@ -32,9 +32,27 @@ import {
     Timer,
     TrendingDown
 } from 'lucide-react'
-import { LeadsService } from '@/lib/supabase/leads-service'
-import LeadDetailModal from '@/app/dashboard/components/LeadDetailModal'
-import type { Lead } from '@/app/types/database'
+
+interface Lead {
+    id: string
+    name: string
+    email?: string
+    phone?: string
+    source: 'website' | 'facebook' | 'google' | 'referral' | 'phone' | 'walk_in'
+    status: 'new' | 'contacted' | 'qualified' | 'proposal' | 'won' | 'lost'
+    priority: 'low' | 'medium' | 'high'
+    property_interest: string
+    budget_min?: number
+    budget_max?: number
+    location_interest?: string
+    message?: string
+    assigned_to?: string
+    score: number
+    created_at: string
+    last_contact?: string
+    next_follow_up?: string
+    conversion_probability: number
+}
 
 export default function LeadsPage() {
     const [leads, setLeads] = useState<Lead[]>([])
@@ -44,8 +62,6 @@ export default function LeadsPage() {
     const [sourceFilter, setSourceFilter] = useState<'all' | Lead['source']>('all')
     const [priorityFilter, setPriorityFilter] = useState<'all' | Lead['priority']>('all')
     const [viewMode, setViewMode] = useState<'grid' | 'list' | 'pipeline'>('pipeline')
-    const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
-    const [showDetailModal, setShowDetailModal] = useState(false)
 
     const [stats, setStats] = useState({
         total: 0,
@@ -67,30 +83,41 @@ export default function LeadsPage() {
     const loadLeads = async () => {
         setLoading(true)
         try {
-            // Usar o serviço do Supabase para carregar leads reais
-            const { leads: realLeads, error } = await LeadsService.getLeads({
-                status: statusFilter !== 'all' ? [statusFilter] : undefined,
-                source: sourceFilter !== 'all' ? [sourceFilter] : undefined,
-                priority: priorityFilter !== 'all' ? [priorityFilter] : undefined,
-                search: searchQuery || undefined
-            })
+            // TODO: Implement actual API call to fetch leads
+            // const response = await fetch('/api/leads')
+            // const demoLeads = await response.json()
+            const demoLeads = getDemoLeads()
 
-            if (error) {
-                console.error('Erro ao carregar leads:', error)
-                // Fallback para dados demo se houver erro
-                const demoLeads = getDemoLeads()
-                setLeads(demoLeads)
-                calculateStats(demoLeads)
-            } else {
-                setLeads(realLeads || [])
-                calculateStats(realLeads || [])
+            let filteredLeads = demoLeads
+
+            if (statusFilter !== 'all') {
+                filteredLeads = filteredLeads.filter(lead => lead.status === statusFilter)
             }
+
+            if (sourceFilter !== 'all') {
+                filteredLeads = filteredLeads.filter(lead => lead.source === sourceFilter)
+            }
+
+            if (priorityFilter !== 'all') {
+                filteredLeads = filteredLeads.filter(lead => lead.priority === priorityFilter)
+            }
+
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase()
+                filteredLeads = filteredLeads.filter(lead =>
+                    lead.name.toLowerCase().includes(query) ||
+                    lead.email?.toLowerCase().includes(query) ||
+                    lead.phone?.includes(searchQuery) ||
+                    lead.property_interest.toLowerCase().includes(query)
+                )
+            }
+
+            setLeads(filteredLeads)
+
+            // Calculate stats
+            calculateStats(demoLeads)
         } catch (error) {
             console.error('Error loading leads:', error)
-            // Fallback para dados demo em caso de erro
-            const demoLeads = getDemoLeads()
-            setLeads(demoLeads)
-            calculateStats(demoLeads)
         } finally {
             setLoading(false)
         }
@@ -120,16 +147,6 @@ export default function LeadsPage() {
     // TODO: Replace with actual API call to fetch leads from backend
     // Mock data removed for production - connect to real leads management API
     const getDemoLeads = (): Lead[] => []
-
-    const openLeadDetail = (lead: Lead) => {
-        setSelectedLead(lead)
-        setShowDetailModal(true)
-    }
-
-    const handleLeadUpdate = (updatedLead: Lead) => {
-        setLeads(leads => leads.map(l => l.id === updatedLead.id ? updatedLead : l))
-        setSelectedLead(updatedLead)
-    }
 
     const getStatusConfig = (status: Lead['status']) => {
         const configs = {
@@ -179,8 +196,8 @@ export default function LeadsPage() {
     const getSourceIcon = (source: Lead['source']) => {
         switch (source) {
             case 'website': return '🌐'
-            case 'social_media': return '�'
-            case 'real_estate_portal': return '🏠'
+            case 'facebook': return '📘'
+            case 'google': return '🔍'
             case 'referral': return '👥'
             case 'phone': return '📞'
             case 'walk_in': return '🚶'
@@ -248,54 +265,78 @@ export default function LeadsPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+                    className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-9 gap-4 mb-8"
                 >
-                    {/* Card Principal - Total de Leads */}
-                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-all">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h3 className="text-lg font-semibold text-gray-900">Total de Leads</h3>
-                                <p className="text-3xl font-bold text-blue-600 mt-1">{stats.total}</p>
-                                <p className="text-sm text-gray-500 mt-1">
-                                    {stats.new} novos • {stats.contacted} em andamento
-                                </p>
-                            </div>
-                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <Users className="h-6 w-6 text-blue-600" />
-                            </div>
+                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all">
+                        <div className="flex items-center justify-between mb-3">
+                            <Users className="h-8 w-8 text-blue-600" />
+                            <span className="text-3xl font-bold text-gray-900">{stats.total}</span>
                         </div>
+                        <div className="text-sm text-gray-600">Total de Leads</div>
                     </div>
 
-                    {/* Card Conversão */}
-                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-all">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h3 className="text-lg font-semibold text-gray-900">Performance</h3>
-                                <p className="text-3xl font-bold text-green-600 mt-1">{stats.conversionRate.toFixed(1)}%</p>
-                                <p className="text-sm text-gray-500 mt-1">
-                                    {stats.won} convertidos de {stats.total}
-                                </p>
-                            </div>
-                            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                                <TrendingUp className="h-6 w-6 text-green-600" />
-                            </div>
+                    <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 shadow-sm border border-blue-100 hover:shadow-md transition-all">
+                        <div className="flex items-center justify-between mb-3">
+                            <Zap className="h-8 w-8 text-blue-600" />
+                            <span className="text-3xl font-bold text-blue-700">{stats.new}</span>
                         </div>
+                        <div className="text-sm text-blue-600">Novos</div>
                     </div>
 
-                    {/* Card Hot Leads */}
-                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-all">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h3 className="text-lg font-semibold text-gray-900">Hot Leads</h3>
-                                <p className="text-3xl font-bold text-orange-600 mt-1">{stats.qualified}</p>
-                                <p className="text-sm text-gray-500 mt-1">
-                                    Score alto • Prontos para proposta
-                                </p>
-                            </div>
-                            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                                <Star className="h-6 w-6 text-orange-600" />
-                            </div>
+                    <div className="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-2xl p-6 shadow-sm border border-yellow-100 hover:shadow-md transition-all">
+                        <div className="flex items-center justify-between mb-3">
+                            <Phone className="h-8 w-8 text-yellow-600" />
+                            <span className="text-3xl font-bold text-yellow-700">{stats.contacted}</span>
                         </div>
+                        <div className="text-sm text-yellow-600">Contatados</div>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl p-6 shadow-sm border border-purple-100 hover:shadow-md transition-all">
+                        <div className="flex items-center justify-between mb-3">
+                            <Target className="h-8 w-8 text-purple-600" />
+                            <span className="text-3xl font-bold text-purple-700">{stats.qualified}</span>
+                        </div>
+                        <div className="text-sm text-purple-600">Qualificados</div>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-6 shadow-sm border border-orange-100 hover:shadow-md transition-all">
+                        <div className="flex items-center justify-between mb-3">
+                            <Star className="h-8 w-8 text-orange-600" />
+                            <span className="text-3xl font-bold text-orange-700">{stats.proposal}</span>
+                        </div>
+                        <div className="text-sm text-orange-600">Propostas</div>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 shadow-sm border border-green-100 hover:shadow-md transition-all">
+                        <div className="flex items-center justify-between mb-3">
+                            <CheckCircle2 className="h-8 w-8 text-green-600" />
+                            <span className="text-3xl font-bold text-green-700">{stats.won}</span>
+                        </div>
+                        <div className="text-sm text-green-600">Convertidos</div>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-2xl p-6 shadow-sm border border-red-100 hover:shadow-md transition-all">
+                        <div className="flex items-center justify-between mb-3">
+                            <Star className="h-8 w-8 text-red-600" />
+                            <span className="text-3xl font-bold text-red-700">{stats.hotLeads}</span>
+                        </div>
+                        <div className="text-sm text-red-600">Hot Leads</div>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-6 shadow-sm border border-indigo-100 hover:shadow-md transition-all">
+                        <div className="flex items-center justify-between mb-3">
+                            <TrendingUp className="h-8 w-8 text-indigo-600" />
+                            <span className="text-3xl font-bold text-indigo-700">{stats.conversionRate.toFixed(1)}%</span>
+                        </div>
+                        <div className="text-sm text-indigo-600">Taxa Conversão</div>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-6 shadow-sm border border-amber-100 hover:shadow-md transition-all">
+                        <div className="flex items-center justify-between mb-3">
+                            <Target className="h-8 w-8 text-amber-600" />
+                            <span className="text-3xl font-bold text-amber-700">{stats.avgScore.toFixed(0)}</span>
+                        </div>
+                        <div className="text-sm text-amber-600">Score Médio</div>
                     </div>
                 </motion.div>
 
@@ -501,10 +542,7 @@ export default function LeadsPage() {
 
                                         {/* Actions */}
                                         <div className="flex gap-2 pt-4 border-t border-gray-100">
-                                            <button
-                                                onClick={() => openLeadDetail(lead)}
-                                                className="flex-1 bg-amber-50 hover:bg-amber-100 text-amber-700 py-2 px-3 rounded-lg text-sm font-medium text-center transition-colors flex items-center justify-center gap-1"
-                                            >
+                                            <button className="flex-1 bg-amber-50 hover:bg-amber-100 text-amber-700 py-2 px-3 rounded-lg text-sm font-medium text-center transition-colors flex items-center justify-center gap-1">
                                                 <Eye className="h-4 w-4" />
                                                 Ver
                                             </button>
@@ -523,16 +561,6 @@ export default function LeadsPage() {
                     )}
                 </AnimatePresence>
             </div>
-
-            {/* Modal de Detalhes do Lead */}
-            {selectedLead && (
-                <LeadDetailModal
-                    lead={selectedLead}
-                    isOpen={showDetailModal}
-                    onClose={() => setShowDetailModal(false)}
-                    onUpdate={handleLeadUpdate}
-                />
-            )}
         </div>
     )
 }

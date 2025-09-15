@@ -113,7 +113,7 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
                         {/* Mobile Layout */}
                         {isMobile ? (
                             <div className="flex items-center justify-between w-full">
-                                <div className="flex-shrink-0">
+                                <Link href="/" className="flex-shrink-0 cursor-pointer">
                                     <Image
                                         src="/images/ipeLogoWritten.png"
                                         alt="Ipê Imóveis"
@@ -122,7 +122,7 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
                                         className="object-contain"
                                         priority
                                     />
-                                </div>
+                                </Link>
 
                                 <button
                                     onClick={() => setIsOpen(!isOpen)}
@@ -135,10 +135,11 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
                             </div>
                         ) : (
                             /* Desktop Layout - Grid optimizado */
+                            /* Desktop Layout - Grid optimizado */
                             <div className="grid grid-cols-3 items-center w-full gap-8">
 
                                 {/* Logo - Esquerda */}
-                                <div className="flex justify-start">
+                                <Link href="/" className="flex justify-start cursor-pointer">
                                     <div>
                                         <div className="relative overflow-hidden rounded-xl p-2 transition-all duration-200 hover:bg-amber-50/50">
                                             <Image
@@ -151,32 +152,30 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
                                             />
                                         </div>
                                     </div>
-                                </div>
+                                </Link>
 
                                 {/* Navegação Central */}
-                                <div className="flex justify-center">
-                                    <nav className="flex items-center bg-white/80 backdrop-blur-sm rounded-2xl px-2 py-1 shadow-sm border border-gray-100">
-                                        <ul className="flex items-center gap-1">
-                                            {navItems.map(({ label, href }) => {
-                                                const isActive = pathname === href || (href !== '/' && pathname.startsWith(href));
+                                <nav className="flex items-center bg-white/80 backdrop-blur-sm rounded-2xl px-2 py-1 shadow-sm border border-gray-100">
+                                    <ul className="flex items-center gap-1">
+                                        {navItems.map(({ label, href }) => {
+                                            const isActive = pathname === href || (href !== '/' && pathname.startsWith(href));
 
-                                                return (
-                                                    <li key={label}>
-                                                        <Link
-                                                            href={href}
-                                                            className={`relative px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${isActive
-                                                                ? 'text-amber-700 bg-amber-50 shadow-sm'
-                                                                : 'text-gray-700 hover:text-amber-600 hover:bg-amber-50/60'
-                                                                }`}
-                                                        >
-                                                            {label}
-                                                        </Link>
-                                                    </li>
-                                                );
-                                            })}
-                                        </ul>
-                                    </nav>
-                                </div>
+                                            return (
+                                                <li key={label}>
+                                                    <Link
+                                                        href={href}
+                                                        className={`relative px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${isActive
+                                                            ? 'text-amber-700 bg-amber-50 shadow-sm'
+                                                            : 'text-gray-700 hover:text-amber-600 hover:bg-amber-50/60'
+                                                            }`}
+                                                    >
+                                                        {label}
+                                                    </Link>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                </nav>
 
                                 {/* CTAs - Direita */}
                                 <div className="flex justify-end items-center gap-3">
@@ -211,64 +210,64 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
                         )}
                     </div>
                 </div>
+            </nav>
 
-                {/* Mobile Menu - CSS transitions only */}
-                {isMobile && (
-                    <div
-                        className={`overflow-hidden transition-all duration-300 bg-white border-t border-gray-200 ${isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
-                            }`}
-                    >
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            {/* Mobile Menu - CSS transitions only */}
+            {isMobile && (
+                <div
+                    className={`overflow-hidden transition-all duration-300 bg-white border-t border-gray-200 ${isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+                        }`}
+                >
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-                            {/* Navigation Links */}
-                            <nav className="mb-6">
-                                <div className="space-y-2">
-                                    {navItems.map(({ label, href, icon: Icon }) => {
-                                        const isActive = pathname === href || (href !== '/' && pathname.startsWith(href));
+                        {/* Navigation Links */}
+                        <nav className="mb-6">
+                            <div className="space-y-2">
+                                {navItems.map(({ label, href, icon: Icon }) => {
+                                    const isActive = pathname === href || (href !== '/' && pathname.startsWith(href));
 
-                                        return (
-                                            <Link
-                                                key={label}
-                                                href={href}
-                                                onClick={() => setIsOpen(false)}
-                                                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors duration-200 ${isActive
-                                                    ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                                                    : 'text-gray-700 hover:bg-gray-50'
-                                                    }`}
-                                            >
-                                                <Icon className="w-5 h-5" />
-                                                <span className="font-medium text-lg">{label}</span>
-                                                {isActive && <div className="ml-auto w-2 h-2 bg-amber-500 rounded-full" />}
-                                            </Link>
-                                        );
-                                    })}
-                                </div>
-                            </nav>
-
-                            {/* Mobile CTAs */}
-                            <div className="space-y-3 pt-4 border-t border-gray-200">
-                                <a
-                                    href="https://wa.me/5511981845016"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-3 w-full bg-green-600 text-white px-4 py-3 rounded-xl hover:bg-green-700 transition-colors duration-200"
-                                >
-                                    <MessageCircle className="w-6 h-6" />
-                                    <span className="font-medium">Falar via WhatsApp</span>
-                                </a>
-
-                                <a
-                                    href="tel:+551146933003"
-                                    className="flex items-center gap-3 w-full text-gray-700 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors duration-200"
-                                >
-                                    <Phone className="w-5 h-5" />
-                                    <span className="font-medium">(11) 4693-3003</span>
-                                </a>
+                                    return (
+                                        <Link
+                                            key={label}
+                                            href={href}
+                                            onClick={() => setIsOpen(false)}
+                                            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors duration-200 ${isActive
+                                                ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                                                : 'text-gray-700 hover:bg-gray-50'
+                                                }`}
+                                        >
+                                            <Icon className="w-5 h-5" />
+                                            <span className="font-medium text-lg">{label}</span>
+                                            {isActive && <div className="ml-auto w-2 h-2 bg-amber-500 rounded-full" />}
+                                        </Link>
+                                    );
+                                })}
                             </div>
+                        </nav>
+
+                        {/* Mobile CTAs */}
+                        <div className="space-y-3 pt-4 border-t border-gray-200">
+                            <a
+                                href="https://wa.me/5511981845016"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-3 w-full bg-green-600 text-white px-4 py-3 rounded-xl hover:bg-green-700 transition-colors duration-200"
+                            >
+                                <MessageCircle className="w-6 h-6" />
+                                <span className="font-medium">Falar via WhatsApp</span>
+                            </a>
+
+                            <a
+                                href="tel:+551146933003"
+                                className="flex items-center gap-3 w-full text-gray-700 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors duration-200"
+                            >
+                                <Phone className="w-5 h-5" />
+                                <span className="font-medium">(11) 4693-3003</span>
+                            </a>
                         </div>
                     </div>
-                )}
-            </nav>
+                </div>
+            )}
 
             {/* Spacer */}
             <div className="h-18" />

@@ -58,29 +58,3 @@ export interface TaskCategory {
     created_by?: string;
     created_at: string;
 }
-
-export interface Lead {
-    id: string;
-    name: string;
-    email?: string;
-    phone?: string;
-    source: 'website' | 'referral' | 'social_media' | 'phone' | 'walk_in' | 'real_estate_portal';
-    status: 'new' | 'contacted' | 'qualified' | 'proposal' | 'negotiation' | 'won' | 'lost';
-    priority: 'low' | 'medium' | 'high' | 'urgent';
-    property_interest?: string;
-    budget_min?: number;
-    budget_max?: number;
-    location_interest?: string;
-    message?: string;
-    assigned_to?: string;
-    created_by?: string;
-    score?: number;
-    last_contact?: string;
-    next_followup?: string;
-    notes?: string;
-    tags?: string[];
-    custom_fields?: Record<string, any>;
-    created_at: string;
-    updated_at?: string;
-    conversion_probability?: number;
-}
