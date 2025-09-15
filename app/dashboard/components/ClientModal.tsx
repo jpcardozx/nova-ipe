@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, User, Phone, Mail, Building2, MapPin, Save, AlertCircle, FileText } from 'lucide-react'
-import { ClientsService, Client } from '@/lib/supabase/clients-service'
+import { X, User, Phone, Mail, Building2, MapPin, Save, AlertCircle, FileText, RefreshCw, Hash } from 'lucide-react'
+import { CRMService, Client } from '@/lib/supabase/crm-service'
 import { useCurrentUser } from '@/lib/hooks/useCurrentUser-simple'
 
 interface ClientModalProps {
@@ -19,17 +19,15 @@ export function ClientModal({ isOpen, onClose, onSave, client }: ClientModalProp
         name: '',
         email: '',
         phone: '',
-        client_type: 'individual' as Client['client_type'],
-        status: 'prospect' as Client['status'],
-        priority: 'medium' as Client['priority'],
-        document_number: '',
-        document_type: 'cpf' as Client['document_type'],
-        profession: '',
-        income: '',
-        company_name: '',
-        company_role: '',
-        birth_date: '',
-        notes: ''
+        client_code: '',
+        status: 'lead' as 'lead' | 'prospect' | 'client' | 'inactive',
+        priority: 'medium' as 'low' | 'medium' | 'high',
+        document: '',
+        notes: '',
+        budget_min: '',
+        budget_max: '',
+        property_type: '' as 'apartment' | 'house' | 'commercial' | 'land' | 'other' | '',
+        transaction_type: '' as 'buy' | 'rent' | 'sell' | ''
     })
     const [loading, setLoading] = useState(false)
     const [errors, setErrors] = useState<Record<string, string>>({})
@@ -40,37 +38,49 @@ export function ClientModal({ isOpen, onClose, onSave, client }: ClientModalProp
                 name: client.name,
                 email: client.email || '',
                 phone: client.phone || '',
-                client_type: client.client_type || 'individual',
+                client_code: client.client_code || '',
                 status: client.status,
-                priority: client.priority,
-                document_number: client.document_number || '',
-                document_type: client.document_type || 'cpf',
-                profession: client.profession || '',
-                income: client.income?.toString() || '',
-                company_name: client.company_name || '',
-                company_role: client.company_role || '',
-                birth_date: client.birth_date || '',
-                notes: client.notes || ''
+                priority: client.priority || 'medium',
+                document: client.document || '',
+                notes: client.notes || '',
+                budget_min: client.budget_min?.toString() || '',
+                budget_max: client.budget_max?.toString() || '',
+                property_type: (client.property_type as 'house' | 'apartment' | 'commercial' | 'land' | 'other' | '') || '',
+                transaction_type: (client.transaction_type as 'rent' | 'buy' | 'sell' | '') || ''
             })
         } else {
             setFormData({
                 name: '',
                 email: '',
                 phone: '',
-                client_type: 'individual',
-                status: 'prospect',
+                client_code: '',
+                status: 'lead',
                 priority: 'medium',
-                document_number: '',
-                document_type: 'cpf',
-                profession: '',
-                income: '',
-                company_name: '',
-                company_role: '',
-                birth_date: '',
-                notes: ''
+                document: '',
+                notes: '',
+                budget_min: '',
+                budget_max: '',
+                property_type: '',
+                transaction_type: ''
             })
         }
     }, [client, isOpen])
+
+    const generateClientCode = async () => {
+        if (!formData.name.trim()) {
+            setErrors({ ...errors, client_code: 'Digite o nome primeiro para gerar o código' })
+            return
+        }
+
+        const code = CRMService.generateClientCode(formData.name, formData.status)
+        const uniqueCode = await CRMService.ensureClientCodeUnique(code)
+        setFormData({ ...formData, client_code: uniqueCode })
+
+        // Remove any previous errors
+        const newErrors = { ...errors }
+        delete newErrors.client_code
+        setErrors(newErrors)
+    }
 
     const validateForm = () => {
         const newErrors: Record<string, string> = {}
@@ -87,6 +97,10 @@ export function ClientModal({ isOpen, onClose, onSave, client }: ClientModalProp
             newErrors.phone = 'Telefone deve ter pelo menos 10 dígitos'
         }
 
+        if (!formData.client_code.trim() && !client) {
+            newErrors.client_code = 'Código do cliente é obrigatório. Clique em "Gerar" para criar automaticamente.'
+        }
+
         setErrors(newErrors)
         return Object.keys(newErrors).length === 0
     }
@@ -99,28 +113,34 @@ export function ClientModal({ isOpen, onClose, onSave, client }: ClientModalProp
         setLoading(true)
 
         try {
+            // Generate client code if not exists
+            let clientCode = formData.client_code
+            if (!clientCode && formData.name.trim()) {
+                const code = CRMService.generateClientCode(formData.name, formData.status)
+                clientCode = await CRMService.ensureClientCodeUnique(code)
+            }
+
             const clientData = {
                 name: formData.name.trim(),
                 email: formData.email.trim() || undefined,
                 phone: formData.phone.trim() || undefined,
-                client_type: formData.client_type,
+                client_code: clientCode,
                 status: formData.status,
                 priority: formData.priority,
-                document_number: formData.document_number.trim() || undefined,
-                document_type: formData.document_type,
-                profession: formData.profession.trim() || undefined,
-                income: formData.income ? parseFloat(formData.income) : undefined,
-                company_name: formData.company_name.trim() || undefined,
-                company_role: formData.company_role.trim() || undefined,
-                birth_date: formData.birth_date || undefined,
+                document: formData.document.trim() || undefined,
                 notes: formData.notes.trim() || undefined,
-                user_id: user?.id || 'anonymous'
+                budget_min: formData.budget_min ? parseFloat(formData.budget_min) : undefined,
+                budget_max: formData.budget_max ? parseFloat(formData.budget_max) : undefined,
+                property_type: formData.property_type || undefined,
+                transaction_type: formData.transaction_type || undefined,
+                assigned_to: user?.id || undefined,
+                created_by: user?.id || undefined
             }
 
             if (client?.id) {
-                await ClientsService.updateClient(client.id, clientData)
+                await CRMService.updateClient(client.id, clientData)
             } else {
-                await ClientsService.createClient(clientData)
+                await CRMService.createClient(clientData)
             }
 
             onSave()
@@ -190,6 +210,42 @@ export function ClientModal({ isOpen, onClose, onSave, client }: ClientModalProp
                                         )}
                                     </div>
 
+                                    {/* Código do Cliente */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <Hash size={16} className="inline mr-2" />
+                                            Código do Cliente *
+                                        </label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={formData.client_code}
+                                                onChange={(e) => setFormData({ ...formData, client_code: e.target.value })}
+                                                className={`flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.client_code ? 'border-red-500' : 'border-gray-300'
+                                                    }`}
+                                                placeholder="Ex: LDJO24001"
+                                                readOnly={!client} // Read-only when editing existing clients
+                                            />
+                                            {!client && (
+                                                <button
+                                                    type="button"
+                                                    onClick={generateClientCode}
+                                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 whitespace-nowrap"
+                                                    title="Gerar código baseado no nome e status"
+                                                >
+                                                    <RefreshCw size={16} />
+                                                    Gerar
+                                                </button>
+                                            )}
+                                        </div>
+                                        {errors.client_code && (
+                                            <p className="text-red-500 text-sm mt-1">{errors.client_code}</p>
+                                        )}
+                                        <p className="text-gray-500 text-xs mt-1">
+                                            Código interno para controle comercial. Formato: [STATUS][NOME][ANO][SEQUENCIAL]
+                                        </p>
+                                    </div>
+
                                     {/* Email e Telefone */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
@@ -229,36 +285,21 @@ export function ClientModal({ isOpen, onClose, onSave, client }: ClientModalProp
                                         </div>
                                     </div>
 
-                                    {/* Tipo e Status */}
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Tipo
-                                            </label>
-                                            <select
-                                                value={formData.client_type}
-                                                onChange={(e) => setFormData({ ...formData, client_type: e.target.value as Client['client_type'] })}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                            >
-                                                <option value="individual">Pessoa Física</option>
-                                                <option value="company">Pessoa Jurídica</option>
-                                            </select>
-                                        </div>
-
+                                    {/* Status e Prioridade */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                                 Status
                                             </label>
                                             <select
                                                 value={formData.status}
-                                                onChange={(e) => setFormData({ ...formData, status: e.target.value as Client['status'] })}
+                                                onChange={(e) => setFormData({ ...formData, status: e.target.value as 'lead' | 'prospect' | 'client' | 'inactive' })}
                                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                             >
+                                                <option value="lead">Lead</option>
                                                 <option value="prospect">Prospect</option>
-                                                <option value="active">Ativo</option>
+                                                <option value="client">Cliente</option>
                                                 <option value="inactive">Inativo</option>
-                                                <option value="vip">VIP</option>
-                                                <option value="blacklist">Blacklist</option>
                                             </select>
                                         </div>
 
@@ -268,144 +309,113 @@ export function ClientModal({ isOpen, onClose, onSave, client }: ClientModalProp
                                             </label>
                                             <select
                                                 value={formData.priority}
-                                                onChange={(e) => setFormData({ ...formData, priority: e.target.value as Client['priority'] })}
+                                                onChange={(e) => setFormData({ ...formData, priority: e.target.value as 'low' | 'medium' | 'high' })}
                                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                             >
                                                 <option value="low">Baixa</option>
                                                 <option value="medium">Média</option>
                                                 <option value="high">Alta</option>
-                                                <option value="urgent">Urgente</option>
                                             </select>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Documentos */}
+                                {/* Interesse Imobiliário */}
                                 <div className="space-y-4">
                                     <h3 className="text-lg font-medium text-gray-900 border-b pb-2">
-                                        Documentação
+                                        Interesse Imobiliário
                                     </h3>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Tipo de Documento
+                                                Tipo de Imóvel
                                             </label>
                                             <select
-                                                value={formData.document_type}
-                                                onChange={(e) => setFormData({ ...formData, document_type: e.target.value as Client['document_type'] })}
+                                                value={formData.property_type}
+                                                onChange={(e) => setFormData({ ...formData, property_type: e.target.value as 'apartment' | 'house' | 'commercial' | 'land' | 'other' | '' })}
                                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                             >
-                                                <option value="cpf">CPF</option>
-                                                <option value="cnpj">CNPJ</option>
-                                                <option value="rg">RG</option>
-                                                <option value="passport">Passaporte</option>
+                                                <option value="">Selecione...</option>
+                                                <option value="house">Casa</option>
+                                                <option value="apartment">Apartamento</option>
+                                                <option value="commercial">Comercial</option>
+                                                <option value="land">Terreno</option>
+                                                <option value="other">Outro</option>
                                             </select>
                                         </div>
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                <FileText size={16} className="inline mr-2" />
-                                                Número do Documento
+                                                Tipo de Transação
                                             </label>
-                                            <input
-                                                type="text"
-                                                value={formData.document_number}
-                                                onChange={(e) => setFormData({ ...formData, document_number: e.target.value })}
+                                            <select
+                                                value={formData.transaction_type}
+                                                onChange={(e) => setFormData({ ...formData, transaction_type: e.target.value as 'buy' | 'rent' | 'sell' | '' })}
                                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder="000.000.000-00"
-                                            />
+                                            >
+                                                <option value="">Selecione...</option>
+                                                <option value="buy">Comprar</option>
+                                                <option value="rent">Alugar</option>
+                                                <option value="sell">Vender</option>
+                                            </select>
                                         </div>
                                     </div>
-                                </div>
-
-                                {/* Informações Profissionais */}
-                                <div className="space-y-4">
-                                    <h3 className="text-lg font-medium text-gray-900 border-b pb-2">
-                                        Informações Profissionais
-                                    </h3>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Profissão
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={formData.profession}
-                                                onChange={(e) => setFormData({ ...formData, profession: e.target.value })}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder="Profissão"
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Renda Mensal
+                                                Orçamento Mínimo (R$)
                                             </label>
                                             <input
                                                 type="number"
-                                                value={formData.income}
-                                                onChange={(e) => setFormData({ ...formData, income: e.target.value })}
+                                                value={formData.budget_min}
+                                                onChange={(e) => setFormData({ ...formData, budget_min: e.target.value })}
                                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                 placeholder="0"
+                                                min="0"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Orçamento Máximo (R$)
+                                            </label>
+                                            <input
+                                                type="number"
+                                                value={formData.budget_max}
+                                                onChange={(e) => setFormData({ ...formData, budget_max: e.target.value })}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                placeholder="0"
+                                                min="0"
                                             />
                                         </div>
                                     </div>
-
-                                    {formData.client_type === 'company' && (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                    <Building2 size={16} className="inline mr-2" />
-                                                    Nome da Empresa
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    value={formData.company_name}
-                                                    onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                    placeholder="Nome da empresa"
-                                                />
-                                            </div>
-
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                    Cargo na Empresa
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    value={formData.company_role}
-                                                    onChange={(e) => setFormData({ ...formData, company_role: e.target.value })}
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                    placeholder="Cargo ou função"
-                                                />
-                                            </div>
-                                        </div>
-                                    )}
                                 </div>
 
-                                {/* Informações Pessoais */}
+                                {/* Informações Adicionais */}
                                 <div className="space-y-4">
                                     <h3 className="text-lg font-medium text-gray-900 border-b pb-2">
-                                        Informações Pessoais
+                                        Informações Adicionais
                                     </h3>
 
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Data de Nascimento
+                                            <FileText size={16} className="inline mr-2" />
+                                            Documento
                                         </label>
                                         <input
-                                            type="date"
-                                            value={formData.birth_date}
-                                            onChange={(e) => setFormData({ ...formData, birth_date: e.target.value })}
+                                            type="text"
+                                            value={formData.document}
+                                            onChange={(e) => setFormData({ ...formData, document: e.target.value })}
                                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            placeholder="CPF, CNPJ ou RG"
                                         />
                                     </div>
 
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Notas
+                                            Observações
                                         </label>
                                         <textarea
                                             value={formData.notes}

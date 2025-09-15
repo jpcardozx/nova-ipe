@@ -100,6 +100,13 @@ const menuCategories: MenuCategory[] = [
             },
             {
                 icon: Calendar,
+                label: 'Agenda',
+                href: '/dashboard/agenda',
+                color: 'text-indigo-600',
+                description: 'Agenda profissional e compromissos'
+            },
+            {
+                icon: Calendar,
                 label: 'Agendamentos',
                 href: '/dashboard/appointments',
                 color: 'text-orange-600',

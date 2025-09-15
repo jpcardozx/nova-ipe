@@ -1,4 +1,5 @@
 import { defineType, defineField } from 'sanity'
+import GenerateInternalCode from '../../app/components/sanity/GenerateInternalCode'
 
 export default defineType({
   name: 'imovel',
@@ -270,50 +271,41 @@ export default defineType({
     }),
     defineField({
       name: 'codigoInterno',
-      title: '🔐 Código interno',
+      title: '🔐 Código Interno do Imóvel',
       type: 'string',
       fieldset: 'controle',
-      initialValue: () => {
-        // Gera código de 8 caracteres: 2 letras + 2 especiais + 4 números
-        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        const specials = '@#$%*&+!';
-        const numbers = '0123456789';
-        
-        let code = '';
-        // 2 letras
-        code += letters[Math.floor(Math.random() * letters.length)];
-        code += letters[Math.floor(Math.random() * letters.length)];
-        // 2 caracteres especiais  
-        code += specials[Math.floor(Math.random() * specials.length)];
-        code += specials[Math.floor(Math.random() * specials.length)];
-        // 4 números
-        for(let i = 0; i < 4; i++) {
-          code += numbers[Math.floor(Math.random() * numbers.length)];
-        }
-        
-        return code;
+      components: {
+        input: GenerateInternalCode
       },
+      description: 'Código único do imóvel no sistema. Use o botão "Gerar" para criar um código automaticamente com base no tipo, finalidade e ano.',
       validation: Rule => Rule.required().custom(async (value, context) => {
         if (!value) return 'Código interno é obrigatório';
-        
-        // Valida formato: 8 caracteres
-        if (value.length !== 8) {
-          return 'Código deve ter exatamente 8 caracteres';
+
+        // Valida formato: mínimo 8 caracteres, máximo 12
+        if (value.length < 8 || value.length > 12) {
+          return 'O código deve ter entre 8 e 12 caracteres.';
         }
-        
+
         // Verifica duplicidade no banco
         const client = context.getClient({apiVersion: '2024-01-01'});
         const existing = await client.fetch(
           `*[_type == "imovel" && codigoInterno == $codigo && _id != $currentId]`,
           { codigo: value, currentId: context.document?._id }
         );
-        
+
         if (existing.length > 0) {
-          return 'Este código já existe. Clique no botão de regenerar.';
+          return 'Este código já existe. Gere um novo ou edite-o para remover a duplicata.';
         }
-        
+
         return true;
       })
+    }),
+    defineField({
+      name: 'codigoCliente',
+      title: 'Código do Cliente (Privado)',
+      type: 'string',
+      fieldset: 'controle',
+      description: 'Código ou referência do cliente/proprietário. Este campo é apenas para controle interno e não é exibido no site.'
     }),
     defineField({
       name: 'observacoesInternas',

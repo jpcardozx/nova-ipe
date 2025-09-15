@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCurrentUser } from '@/lib/hooks/useCurrentUser'
 import { CRMService, Client } from '@/lib/supabase/crm-service'
+import ClientModal from '../components/ClientModal'
 import {
     Users,
     Plus,
@@ -541,7 +542,17 @@ export default function ClientsPage() {
                     )}
                 </AnimatePresence>
 
-                {/* Client Modal */}
+                {/* Client Modal - Replace with new ClientModal */}
+                <ClientModal
+                    isOpen={showClientModal}
+                    onClose={() => setShowClientModal(false)}
+                    onSave={() => {
+                        setShowClientModal(false)
+                        loadClients()
+                    }}
+                />
+
+                {/* Client Details Modal */}
                 <AnimatePresence>
                     {selectedClient && (
                         <motion.div

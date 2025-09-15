@@ -45,9 +45,9 @@ import {
     Activity
 } from 'lucide-react'
 
-import { TasksService } from '@/lib/supabase/tasks-service'
+import { CRMService, Task } from '@/lib/supabase/crm-service'
 import { useCurrentUser } from '@/lib/hooks/useCurrentUser-simple'
-import { Task, TaskCategory } from '@/app/types/database'
+import TaskModal from '../components/TaskModal'
 
 // Específico para imobiliária
 interface RealEstateTaskStats {
@@ -60,26 +60,32 @@ interface RealEstateTaskStats {
     overdueHigh: number     // Tarefas atrasadas de alta prioridade
 }
 
-interface PropertyTask extends Task {
-    property_id?: string
+interface ExtendedTask extends Task {
     property_address?: string
     property_value?: number
     lead_name?: string
     lead_phone?: string
     commission_value?: number
     category_string?: string // Para comparações
+    task_type: 'internal' | 'client' | 'team'
+    visibility: 'private' | 'shared'
+    client?: {
+        name: string
+        phone?: string
+        email?: string
+    }
 }
 
 export default function TasksPageProfessional() {
     const { user } = useCurrentUser()
     const [currentTime, setCurrentTime] = useState(new Date())
-    const [tasks, setTasks] = useState<PropertyTask[]>([])
-    const [categories, setCategories] = useState<TaskCategory[]>([])
+    const [tasks, setTasks] = useState<ExtendedTask[]>([])
     const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState('')
-    const [activeFilter, setActiveFilter] = useState<'all' | 'hot-leads' | 'visits' | 'contracts' | 'properties'>('all')
+    const [activeFilter, setActiveFilter] = useState<'all' | 'client' | 'internal' | 'team'>('all')
     const [viewMode, setViewMode] = useState<'board' | 'timeline' | 'priority'>('board')
-    const [showNewTaskModal, setShowNewTaskModal] = useState(false)
+    const [showTaskModal, setShowTaskModal] = useState(false)
+    const [selectedTask, setSelectedTask] = useState<ExtendedTask | null>(null)
 
     const [stats, setStats] = useState<RealEstateTaskStats>({
         total: 0,
@@ -104,26 +110,24 @@ export default function TasksPageProfessional() {
     const loadRealEstateData = async () => {
         setLoading(true)
         try {
-            // Tentar carregar dados reais do Supabase primeiro
-            const { data: realTasks, error } = await TasksService.getTasks({
-                status: activeFilter === 'all' ? undefined :
-                    activeFilter === 'hot-leads' ? 'pending' :
-                        activeFilter === 'visits' ? 'pending' :
-                            activeFilter === 'contracts' ? 'in_progress' : 'pending',
-                search: searchQuery || undefined
+            // Carregar dados reais do CRMService
+            const { data: realTasks, error } = await CRMService.getTasks({
+                task_type: activeFilter === 'all' ? undefined : activeFilter,
+                assigned_to: user?.id,
+                status: 'all'
             })
 
-            let tasksData: PropertyTask[] = []
+            let tasksData: ExtendedTask[] = []
 
             if (realTasks && realTasks.length > 0) {
-                // Converter dados do Supabase para PropertyTask
+                // Usar dados do CRMService diretamente
                 tasksData = realTasks.map(task => ({
                     ...task,
-                    category_string: task.category_id || 'other',
-                    property_address: task.property_title || 'Endereço não informado',
+                    category_string: task.category || 'other',
+                    property_address: task.property_id || 'Endereço não informado',
                     property_value: Math.floor(Math.random() * 2000000) + 300000, // Simular valor
-                    lead_name: task.client_name || 'Cliente não informado',
-                    lead_phone: task.client_phone || '',
+                    lead_name: task.client_id || 'Cliente não informado',
+                    lead_phone: task.client_id || '',
                     commission_value: Math.floor(Math.random() * 50000) + 10000 // Simular comissão
                 }))
             } else {
@@ -133,11 +137,12 @@ export default function TasksPageProfessional() {
                         id: '1',
                         title: 'Follow-up Lead Quente - Apartamento Jardins',
                         description: 'Cliente muito interessado, visitou 2x. Aguardando proposta.',
-                        type: 'follow_up',
+                        task_type: 'client',
+                        visibility: 'shared' as 'private' | 'shared',
                         status: 'pending',
                         priority: 'urgent',
                         due_date: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2h
-                        category_id: 'leads',
+                        category: 'follow_up',
                         category_string: 'leads',
                         property_address: 'Rua Augusta, 1200 - Jardins',
                         property_value: 850000,
@@ -146,19 +151,17 @@ export default function TasksPageProfessional() {
                         commission_value: 25500,
                         created_at: new Date().toISOString(),
                         updated_at: new Date().toISOString(),
-                        reminder_enabled: false,
-                        reminder_minutes_before: 0,
-                        recurring_type: 'none'
                     },
                     {
                         id: '2',
                         title: 'Visita Agendada - Casa Vila Madalena',
                         description: 'Visita às 14h com casal interessado em compra à vista.',
-                        type: 'visit',
+                        task_type: 'client',
+                        visibility: 'shared' as 'private' | 'shared',
                         status: 'pending',
                         priority: 'high',
                         due_date: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(), // 4h
-                        category_id: 'appointments',
+                        category: 'property_visit',
                         category_string: 'appointments',
                         property_address: 'Rua Harmonia, 456 - Vila Madalena',
                         property_value: 1200000,
@@ -167,19 +170,17 @@ export default function TasksPageProfessional() {
                         commission_value: 36000,
                         created_at: new Date().toISOString(),
                         updated_at: new Date().toISOString(),
-                        reminder_enabled: false,
-                        reminder_minutes_before: 0,
-                        recurring_type: 'none'
                     },
                     {
                         id: '3',
                         title: 'Revisar Contrato de Venda',
                         description: 'Contrato da venda do apartamento em Moema precisa de revisão jurídica.',
-                        type: 'document',
+                        task_type: 'client',
+                        visibility: 'shared' as 'private' | 'shared',
                         status: 'in_progress',
                         priority: 'high',
                         due_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 1 dia
-                        category_id: 'documentation',
+                        category: 'document_review',
                         category_string: 'documentation',
                         property_address: 'Av. Ibirapuera, 2000 - Moema',
                         property_value: 750000,
@@ -187,38 +188,34 @@ export default function TasksPageProfessional() {
                         commission_value: 22500,
                         created_at: new Date().toISOString(),
                         updated_at: new Date().toISOString(),
-                        reminder_enabled: false,
-                        reminder_minutes_before: 0,
-                        recurring_type: 'none'
                     },
                     {
                         id: '4',
                         title: 'Atualizar Fotos - Cobertura Itaim',
                         description: 'Proprietário reformou cozinha, precisa de novas fotos para portais.',
-                        type: 'other',
+                        task_type: 'internal',
+                        visibility: 'private' as 'private' | 'shared',
                         status: 'pending',
                         priority: 'medium',
                         due_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 dias
-                        category_id: 'properties',
+                        category: 'administrative',
                         category_string: 'properties',
                         property_address: 'Rua Jerônimo da Veiga, 500 - Itaim',
                         property_value: 2500000,
                         commission_value: 75000,
                         created_at: new Date().toISOString(),
                         updated_at: new Date().toISOString(),
-                        reminder_enabled: false,
-                        reminder_minutes_before: 0,
-                        recurring_type: 'none'
                     },
                     {
                         id: '5',
                         title: 'Negociação Final - Studio Pinheiros',
                         description: 'Cliente fez contraproposta, owner aguardando resposta.',
-                        type: 'follow_up',
+                        task_type: 'client',
+                        visibility: 'shared' as 'private' | 'shared',
                         status: 'pending',
                         priority: 'urgent',
                         due_date: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString(), // 6h
-                        category_id: 'leads',
+                        category: 'follow_up',
                         category_string: 'leads',
                         property_address: 'Rua dos Pinheiros, 800 - Pinheiros',
                         property_value: 420000,
@@ -227,9 +224,6 @@ export default function TasksPageProfessional() {
                         commission_value: 12600,
                         created_at: new Date().toISOString(),
                         updated_at: new Date().toISOString(),
-                        reminder_enabled: false,
-                        reminder_minutes_before: 0,
-                        recurring_type: 'none'
                     }
                 ]
             }
@@ -244,7 +238,7 @@ export default function TasksPageProfessional() {
         }
     }
 
-    const calculateRealEstateStats = (allTasks: PropertyTask[]) => {
+    const calculateRealEstateStats = (allTasks: ExtendedTask[]) => {
         const now = new Date()
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 
@@ -255,7 +249,7 @@ export default function TasksPageProfessional() {
                 (t.priority === 'urgent' || t.priority === 'high')
             ).length,
             visitsPending: allTasks.filter(t =>
-                t.type === 'visit' &&
+                t.task_type === 'client' &&
                 t.status === 'pending'
             ).length,
             contractsReview: allTasks.filter(t =>
@@ -282,7 +276,7 @@ export default function TasksPageProfessional() {
         })
     }
 
-    const getTaskIcon = (task: PropertyTask) => {
+    const getTaskIcon = (task: ExtendedTask) => {
         switch (task.category_string) {
             case 'leads': return <UserCheck className="h-5 w-5" />
             case 'appointments': return <Calendar className="h-5 w-5" />
@@ -329,7 +323,7 @@ export default function TasksPageProfessional() {
 
     const createNewTask = async (taskData: Partial<Task>) => {
         try {
-            const { data, error } = await TasksService.createTask({
+            const { data, error } = await CRMService.createTask({
                 ...taskData,
                 created_by: user?.id,
                 assigned_to: user?.id,
@@ -346,7 +340,7 @@ export default function TasksPageProfessional() {
 
             // Recarregar tarefas
             loadRealEstateData()
-            setShowNewTaskModal(false)
+            setShowTaskModal(false)
         } catch (error) {
             console.error('Error creating task:', error)
         }
@@ -360,10 +354,10 @@ export default function TasksPageProfessional() {
         }
 
         switch (activeFilter) {
-            case 'hot-leads': return task.category_string === 'leads' && (task.priority === 'urgent' || task.priority === 'high')
-            case 'visits': return task.type === 'visit'
-            case 'contracts': return task.category_string === 'documentation'
-            case 'properties': return task.category_string === 'properties'
+            case 'client': return task.task_type === 'client'
+            case 'internal': return task.task_type === 'internal'
+            case 'team': return task.task_type === 'team'
+            case 'all': return true
             default: return true
         }
     })
@@ -404,7 +398,7 @@ export default function TasksPageProfessional() {
                                 </div>
                             </div>
                             <button
-                                onClick={() => setShowNewTaskModal(true)}
+                                onClick={() => setShowTaskModal(true)}
                                 className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl"
                             >
                                 <Plus className="h-5 w-5" />
@@ -660,7 +654,7 @@ export default function TasksPageProfessional() {
             </div>
 
             {/* Modal Criar Nova Tarefa */}
-            {showNewTaskModal && (
+            {showTaskModal && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
@@ -672,7 +666,7 @@ export default function TasksPageProfessional() {
                             <div className="flex items-center justify-between">
                                 <h2 className="text-2xl font-bold text-gray-900">Nova Tarefa</h2>
                                 <button
-                                    onClick={() => setShowNewTaskModal(false)}
+                                    onClick={() => setShowTaskModal(false)}
                                     className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                                 >
                                     <X className="h-5 w-5 text-gray-500" />
@@ -813,7 +807,7 @@ export default function TasksPageProfessional() {
                             <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">
                                 <button
                                     type="button"
-                                    onClick={() => setShowNewTaskModal(false)}
+                                    onClick={() => setShowTaskModal(false)}
                                     className="px-6 py-3 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                                 >
                                     Cancelar
@@ -829,6 +823,20 @@ export default function TasksPageProfessional() {
                     </motion.div>
                 </div>
             )}
+            {/* Task Modal */}
+            <TaskModal
+                isOpen={showTaskModal}
+                onClose={() => {
+                    setShowTaskModal(false)
+                    setSelectedTask(null)
+                }}
+                onSave={() => {
+                    setShowTaskModal(false)
+                    setSelectedTask(null)
+                    loadRealEstateData()
+                }}
+                task={selectedTask as any}
+            />
         </div>
     )
 }
