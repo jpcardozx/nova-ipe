@@ -33,21 +33,23 @@ import {
     CheckCircle,
     X
 } from 'lucide-react'
-import { 
-    Card, 
+import {
+    Card,
     MetricCard,
-    Button, 
-    PageHeader, 
-    EmptyState, 
+    Button,
+    PageHeader,
+    EmptyState,
     Skeleton,
-    MetricsGrid 
+    MetricsGrid
 } from '@/lib/design-system/components'
+import { CloudStorageService, CloudFile as CloudServiceFile, CloudFolder } from '@/app/lib/supabase/cloud-storage-service'
 
+// Local interface for compatibility
 interface CloudFile {
     id: string
     name: string
     type: 'file' | 'folder'
-    size?: number
+    size: number
     mimeType?: string
     createdAt: string
     modifiedAt: string
@@ -60,547 +62,522 @@ interface CloudFile {
     thumbnail?: string
 }
 
-// Cloud Storage Service - Conectado ao backend real
-class CloudStorageService {
-    private static STORAGE_KEY = 'nova-ipe-cloud-files'
+export default function CloudPage() {
+    const [files, setFiles] = useState<CloudFile[]>([])
+    const [loading, setLoading] = useState(true)
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+    const [searchQuery, setSearchQuery] = useState('')
+    const [selectedFiles, setSelectedFiles] = useState<string[]>([])
+    const [currentPath, setCurrentPath] = useState('/')
+    const [filterType, setFilterType] = useState<'all' | 'files' | 'folders' | 'images' | 'documents' | 'videos'>('all')
+    const [sortBy, setSortBy] = useState<'name' | 'date' | 'size' | 'type'>('name')
+    const [showUploadModal, setShowUploadModal] = useState(false)
+    const [storageStats, setStorageStats] = useState({
+        used: 0,
+        total: 0,
+        files: 0,
+        folders: 0
+    })
+    const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null)
 
-    static async getFiles(): Promise<CloudFile[]> {
-        // Em produção, fazer chamada para API real
-        // return await fetch('/api/cloud/files').then(res => res.json())
+    useEffect(() => {
+        loadFiles()
+        loadStorageStats()
+    }, [currentPath, filterType, sortBy])
 
-        // Por enquanto retorna array vazio até conectar com backend
-        return []
-    }
+    const loadFiles = async () => {
+        setLoading(true)
+        try {
+            const { files, error } = await CloudStorageService.getFiles(currentPath)
 
-    static async saveFiles(files: CloudFile[]): Promise<void> {
-        // Em produção, salvar no backend
-        // await fetch('/api/cloud/files', { method: 'POST', body: JSON.stringify(files) })
-        console.log('Salvando arquivos no backend...')
-    }
-
-    static async addFile(file: Omit<CloudFile, 'id' | 'createdAt' | 'modifiedAt'>): Promise<CloudFile> {
-        const newFile: CloudFile = {
-            ...file,
-            id: Date.now().toString(),
-            createdAt: new Date().toISOString(),
-            modifiedAt: new Date().toISOString()
-        }
-
-        // Em produção, salvar no backend
-        // await fetch('/api/cloud/files', { method: 'POST', body: JSON.stringify(newFile) })
-
-        return newFile
-    }
-
-    static async deleteFile(id: string): Promise<boolean> {
-        // Em produção, deletar do backend
-        // const response = await fetch(`/api/cloud/files/${id}`, { method: 'DELETE' })
-        // return response.ok
-
-        console.log(`Deletando arquivo ${id} do backend...`)
-        return true
-    }
-
-    static async toggleStar(id: string): Promise<boolean> {
-        // Em produção, atualizar no backend
-        // const response = await fetch(`/api/cloud/files/${id}/star`, { method: 'PATCH' })
-        // return response.ok
-
-        console.log(`Alternando favorito do arquivo ${id} no backend...`)
-        return true
-    }
-
-    static async getStats() {
-        // Em produção, buscar estatísticas reais do backend
-        // const response = await fetch('/api/cloud/stats')
-        // return response.json()
-
-        return {
-            used: 0,
-            total: 10 * 1024 * 1024 * 1024, // 10GB
-            files: 0,
-            folders: 0
-        }
-    }
-}
-
-    export default function CloudPage() {
-        const [files, setFiles] = useState<CloudFile[]>([])
-        const [loading, setLoading] = useState(true)
-        const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-        const [searchQuery, setSearchQuery] = useState('')
-        const [selectedFiles, setSelectedFiles] = useState<string[]>([])
-        const [currentPath, setCurrentPath] = useState('/')
-        const [filterType, setFilterType] = useState<'all' | 'files' | 'folders' | 'images' | 'documents' | 'videos'>('all')
-        const [sortBy, setSortBy] = useState<'name' | 'date' | 'size' | 'type'>('name')
-        const [showUploadModal, setShowUploadModal] = useState(false)
-        const [storageStats, setStorageStats] = useState({
-            used: 0,
-            total: 0,
-            files: 0,
-            folders: 0
-        })
-        const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null)
-
-        useEffect(() => {
-            loadFiles()
-            loadStorageStats()
-        }, [currentPath, filterType, sortBy])
-
-        const loadFiles = async () => {
-            setLoading(true)
-            try {
-                // Simular delay de carregamento
-                await new Promise(resolve => setTimeout(resolve, 500))
-
-                const files = await CloudStorageService.getFiles()
-                setFiles(files)
-
-                showNotification('success', 'Conectado ao sistema de arquivos')
-            } catch (error) {
-                console.error('Erro ao carregar arquivos:', error)
-                showNotification('error', 'Erro ao carregar arquivos')
-            } finally {
-                setLoading(false)
+            if (error) {
+                throw new Error('Erro ao carregar arquivos')
             }
-        }
 
-        const loadStorageStats = async () => {
-            const stats = await CloudStorageService.getStats()
-            setStorageStats(stats)
-        }
-
-        const showNotification = (type: 'success' | 'error', message: string) => {
-            setNotification({ type, message })
-            setTimeout(() => setNotification(null), 3000)
-        }
-
-        const handleUpload = async () => {
-            // Simular upload
-            const fileName = `Documento_${Date.now()}.pdf`
-            const newFile = await CloudStorageService.addFile({
-                name: fileName,
+            // Convert API files to local interface
+            const convertedFiles: CloudFile[] = files.map(file => ({
+                id: file.id,
+                name: file.name,
                 type: 'file',
-                size: Math.floor(Math.random() * 5000000) + 100000, // 100KB a 5MB
-                mimeType: 'application/pdf',
+                size: file.size,
+                mimeType: file.type,
+                createdAt: file.created_at,
+                modifiedAt: file.updated_at,
                 owner: 'Usuário Atual',
                 shared: false,
                 starred: false,
-                tags: ['upload', 'novo'],
-                path: `/${fileName}`,
-                url: '#backend-file'
-            })
+                tags: [],
+                path: file.path,
+                url: file.path,
+                thumbnail: undefined
+            }))
 
-            setFiles(prev => [...prev, newFile])
-            loadStorageStats()
-            setShowUploadModal(false)
-            showNotification('success', `Arquivo "${fileName}" enviado com sucesso`)
+            setFiles(convertedFiles)
+            showNotification('success', 'Arquivos carregados com sucesso')
+        } catch (error) {
+            console.error('Erro ao carregar arquivos:', error)
+            showNotification('error', 'Erro ao carregar arquivos')
+        } finally {
+            setLoading(false)
         }
+    }
 
-        const handleDelete = async (id: string) => {
-            const file = files.find(f => f.id === id)
-            if (await CloudStorageService.deleteFile(id)) {
+    const loadStorageStats = async () => {
+        try {
+            // Use real stats based on current files
+            const totalSize = files.reduce((sum, file) => sum + file.size, 0)
+            setStorageStats({
+                used: totalSize,
+                total: 5 * 1024 * 1024 * 1024, // 5GB limit
+                files: files.length,
+                folders: 0 // TODO: Implement folder counting
+            })
+        } catch (error) {
+            console.error('Erro ao carregar estatísticas:', error)
+        }
+    }
+
+    const showNotification = (type: 'success' | 'error', message: string) => {
+        setNotification({ type, message })
+        setTimeout(() => setNotification(null), 3000)
+    }
+
+    const handleUpload = async (uploadFiles: FileList) => {
+        if (!uploadFiles || uploadFiles.length === 0) return
+
+        setLoading(true)
+        try {
+            for (const file of Array.from(uploadFiles)) {
+                const { path, error } = await CloudStorageService.uploadFile(file, currentPath)
+
+                if (error) {
+                    throw new Error(`Erro ao fazer upload de ${file.name}`)
+                }
+            }
+
+            await loadFiles()
+            await loadStorageStats()
+            showNotification('success', `${uploadFiles.length} arquivo(s) enviado(s) com sucesso`)
+        } catch (error) {
+            console.error('Erro no upload:', error)
+            showNotification('error', 'Erro ao fazer upload dos arquivos')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleDelete = async (id: string) => {
+        const file = files.find(f => f.id === id)
+        if (!file) return
+
+        try {
+            const deleteResult = await CloudStorageService.deleteFile(file.path)
+
+            if (deleteResult && deleteResult.success) {
                 setFiles(prev => prev.filter(f => f.id !== id))
-                loadStorageStats()
-                showNotification('success', `"${file?.name}" foi excluído`)
+                await loadStorageStats()
+                showNotification('success', `"${file.name}" foi excluído`)
             } else {
-                showNotification('error', 'Erro ao excluir arquivo')
+                throw new Error('Erro ao excluir arquivo')
             }
+        } catch (error) {
+            console.error('Erro ao excluir:', error)
+            showNotification('error', 'Erro ao excluir arquivo')
         }
+    }
 
-        const handleToggleStar = async (id: string) => {
-            if (await CloudStorageService.toggleStar(id)) {
-                setFiles(prev => prev.map(f =>
-                    f.id === id ? { ...f, starred: !f.starred } : f
-                ))
-                const file = files.find(f => f.id === id)
-                showNotification('success', file?.starred ? 'Removido dos favoritos' : 'Adicionado aos favoritos')
-            }
-        }
+    const handleToggleStar = async (id: string) => {
+        // TODO: Implement star/favorite functionality
+        setFiles(prev => prev.map(f =>
+            f.id === id ? { ...f, starred: !f.starred } : f
+        ))
+        const file = files.find(f => f.id === id)
+        showNotification('success', file?.starred ? 'Removido dos favoritos' : 'Adicionado aos favoritos')
+    }
 
-        // Funções auxiliares
-        const formatFileSize = (bytes: number) => {
-            if (bytes === 0) return '0 B'
-            const k = 1024
-            const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
-            const i = Math.floor(Math.log(bytes) / Math.log(k))
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-        }
+    // Funções auxiliares
+    const formatFileSize = (bytes: number) => {
+        if (bytes === 0) return '0 B'
+        const k = 1024
+        const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
+        const i = Math.floor(Math.log(bytes) / Math.log(k))
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+    }
 
-        const formatDate = (dateString: string) => {
-            const date = new Date(dateString)
-            return date.toLocaleString('pt-BR', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            })
-        }
-
-        const getFileIcon = (file: CloudFile) => {
-            if (file.type === 'folder') {
-                return <Folder className="h-8 w-8 text-primary-600" />
-            }
-
-            const mimeType = file.mimeType || ''
-            if (mimeType.startsWith('image/')) {
-                return <FileImage className="h-8 w-8 text-success-600" />
-            }
-            if (mimeType.includes('pdf')) {
-                return <FileText className="h-8 w-8 text-error-600" />
-            }
-            if (mimeType.startsWith('video/')) {
-                return <FileVideo className="h-8 w-8 text-info-600" />
-            }
-            if (mimeType.includes('zip') || mimeType.includes('rar')) {
-                return <Archive className="h-8 w-8 text-warning-600" />
-            }
-            return <File className="h-8 w-8 text-neutral-500" />
-        }
-
-        const handleSelectFile = (id: string) => {
-            setSelectedFiles(prev =>
-                prev.includes(id)
-                    ? prev.filter(fileId => fileId !== id)
-                    : [...prev, id]
-            )
-        }
-
-        const toggleFileSelection = (fileId: string) => {
-            setSelectedFiles(prev =>
-                prev.includes(fileId)
-                    ? prev.filter(id => id !== fileId)
-                    : [...prev, fileId]
-            )
-        }
-
-        const filteredFiles = files.filter(file => {
-            // Filtro por busca
-            if (searchQuery && !file.name.toLowerCase().includes(searchQuery.toLowerCase())) {
-                return false
-            }
-
-            // Filtro por tipo
-            if (filterType !== 'all') {
-                if (filterType === 'folders' && file.type !== 'folder') return false
-                if (filterType === 'files' && file.type !== 'file') return false
-                if (filterType === 'images' && !file.mimeType?.startsWith('image/')) return false
-                if (filterType === 'documents' && !file.mimeType?.includes('pdf') && !file.mimeType?.includes('document')) return false
-                if (filterType === 'videos' && !file.mimeType?.startsWith('video/')) return false
-            }
-
-            return true
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString)
+        return date.toLocaleString('pt-BR', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
         })
+    }
 
-        const usagePercentage = (storageStats.used / storageStats.total) * 100
+    const getFileIcon = (file: CloudFile) => {
+        if (file.type === 'folder') {
+            return <Folder className="h-8 w-8 text-primary-600" />
+        }
 
-        return (
-            <div className="min-h-screen bg-neutral-50">
-                {/* Page Header with Design System */}
-                <PageHeader
-                    title="Cloud Storage"
-                    subtitle="Gerencie documentos, imagens e arquivos da imobiliária"
-                    breadcrumbs={[
-                        { label: 'Dashboard', href: '/dashboard' },
-                        { label: 'Cloud Storage' }
-                    ]}
+        const mimeType = file.mimeType || ''
+        if (mimeType.startsWith('image/')) {
+            return <FileImage className="h-8 w-8 text-success-600" />
+        }
+        if (mimeType.includes('pdf')) {
+            return <FileText className="h-8 w-8 text-error-600" />
+        }
+        if (mimeType.startsWith('video/')) {
+            return <FileVideo className="h-8 w-8 text-info-600" />
+        }
+        if (mimeType.includes('zip') || mimeType.includes('rar')) {
+            return <Archive className="h-8 w-8 text-warning-600" />
+        }
+        return <File className="h-8 w-8 text-neutral-500" />
+    }
+
+    const handleSelectFile = (id: string) => {
+        setSelectedFiles(prev =>
+            prev.includes(id)
+                ? prev.filter(fileId => fileId !== id)
+                : [...prev, id]
+        )
+    }
+
+    const toggleFileSelection = (fileId: string) => {
+        setSelectedFiles(prev =>
+            prev.includes(fileId)
+                ? prev.filter(id => id !== fileId)
+                : [...prev, fileId]
+        )
+    }
+
+    const filteredFiles = files.filter(file => {
+        // Filtro por busca
+        if (searchQuery && !file.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+            return false
+        }
+
+        // Filtro por tipo
+        if (filterType !== 'all') {
+            if (filterType === 'folders' && file.type !== 'folder') return false
+            if (filterType === 'files' && file.type !== 'file') return false
+            if (filterType === 'images' && !file.mimeType?.startsWith('image/')) return false
+            if (filterType === 'documents' && !file.mimeType?.includes('pdf') && !file.mimeType?.includes('document')) return false
+            if (filterType === 'videos' && !file.mimeType?.startsWith('video/')) return false
+        }
+
+        return true
+    })
+
+    const usagePercentage = (storageStats.used / storageStats.total) * 100
+
+    return (
+        <div className="min-h-screen bg-neutral-50">
+            {/* Page Header with Design System */}
+            <PageHeader
+                title="Cloud Storage"
+                subtitle="Gerencie documentos, imagens e arquivos da imobiliária"
+                breadcrumbs={[
+                    { label: 'Dashboard', href: '/dashboard' },
+                    { label: 'Cloud Storage' }
+                ]}
+            >
+                <motion.div className="text-sm text-neutral-600 bg-primary-50 px-3 py-1 rounded-full font-medium">
+                    {formatFileSize(storageStats.used)} / {formatFileSize(storageStats.total)}
+                </motion.div>
+                <Button
+                    onClick={() => setShowUploadModal(true)}
+                    className="flex items-center gap-2"
                 >
-                    <motion.div className="text-sm text-neutral-600 bg-primary-50 px-3 py-1 rounded-full font-medium">
-                        {formatFileSize(storageStats.used)} / {formatFileSize(storageStats.total)}
-                    </motion.div>
-                    <Button
-                        onClick={() => setShowUploadModal(true)}
-                        className="flex items-center gap-2"
-                    >
-                        <Upload className="h-4 w-4" />
-                        Upload
-                    </Button>
-                </PageHeader>
+                    <Upload className="h-4 w-4" />
+                    Upload
+                </Button>
+            </PageHeader>
 
-                <div className="max-w-7xl mx-auto p-6 space-y-8">
-                    {/* Storage Stats com Design System */}
-                    <MetricsGrid>
-                        <MetricCard
-                            title="Armazenamento"
-                            value={`${formatFileSize(storageStats.used)} / ${formatFileSize(storageStats.total)}`}
-                            description={`${usagePercentage.toFixed(1)}% utilizado`}
-                            status={usagePercentage > 80 ? 'warning' : 'default'}
-                            icon={<HardDrive className="h-5 w-5" />}
-                        />
-                        
-                        <MetricCard
-                            title="Arquivos"
-                            value={storageStats.files.toString()}
-                            description="Total de arquivos"
-                            icon={<File className="h-5 w-5" />}
-                        />
-                        
-                        <MetricCard
-                            title="Pastas"
-                            value={storageStats.folders.toString()}
-                            description="Total de pastas"
-                            icon={<Folder className="h-5 w-5" />}
-                        />
-                        
-                        <MetricCard
-                            title="Compartilhados"
-                            value={files.filter(f => f.shared).length.toString()}
-                            description="Arquivos compartilhados"
-                            icon={<Users className="h-5 w-5" />}
-                        />
-                    </MetricsGrid>
+            <div className="max-w-7xl mx-auto p-6 space-y-8">
+                {/* Storage Stats com Design System */}
+                <MetricsGrid>
+                    <MetricCard
+                        title="Armazenamento"
+                        value={`${formatFileSize(storageStats.used)} / ${formatFileSize(storageStats.total)}`}
+                        description={`${usagePercentage.toFixed(1)}% utilizado`}
+                        status={usagePercentage > 80 ? 'warning' : 'default'}
+                        icon={<HardDrive className="h-5 w-5" />}
+                    />
 
-                    {/* Toolbar com Design System */}
-                    <Card padding="md">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                                {/* Search */}
-                                <div className="relative min-w-0">
-                                    <Search className="absolute left-3 top-1/2 h-4 w-4 text-neutral-400 -translate-y-1/2" />
-                                    <input
-                                        type="text"
-                                        placeholder="Buscar arquivos..."
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="pl-10 pr-4 py-2 w-full sm:w-64 border border-neutral-200 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
-                                    />
-                                </div>
+                    <MetricCard
+                        title="Arquivos"
+                        value={storageStats.files.toString()}
+                        description="Total de arquivos"
+                        icon={<File className="h-5 w-5" />}
+                    />
 
-                                {/* Filters */}
-                                <div className="flex gap-2">
-                                    <select
-                                        value={filterType}
-                                        onChange={(e) => setFilterType(e.target.value as any)}
-                                        className="px-3 py-2 border border-neutral-200 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors text-sm"
-                                    >
-                                        <option value="all">Todos</option>
-                                        <option value="folders">Pastas</option>
-                                        <option value="files">Arquivos</option>
-                                        <option value="images">Imagens</option>
-                                        <option value="documents">Documentos</option>
-                                        <option value="videos">Vídeos</option>
-                                    </select>
+                    <MetricCard
+                        title="Pastas"
+                        value={storageStats.folders.toString()}
+                        description="Total de pastas"
+                        icon={<Folder className="h-5 w-5" />}
+                    />
 
-                                    <select
-                                        value={sortBy}
-                                        onChange={(e) => setSortBy(e.target.value as any)}
-                                        className="px-3 py-2 border border-neutral-200 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors text-sm"
-                                    >
-                                        <option value="name">Nome</option>
-                                        <option value="date">Data</option>
-                                        <option value="size">Tamanho</option>
-                                        <option value="type">Tipo</option>
-                                    </select>
-                                </div>
+                    <MetricCard
+                        title="Compartilhados"
+                        value={files.filter(f => f.shared).length.toString()}
+                        description="Arquivos compartilhados"
+                        icon={<Users className="h-5 w-5" />}
+                    />
+                </MetricsGrid>
+
+                {/* Toolbar com Design System */}
+                <Card padding="md">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                            {/* Search */}
+                            <div className="relative min-w-0">
+                                <Search className="absolute left-3 top-1/2 h-4 w-4 text-neutral-400 -translate-y-1/2" />
+                                <input
+                                    type="text"
+                                    placeholder="Buscar arquivos..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="pl-10 pr-4 py-2 w-full sm:w-64 border border-neutral-200 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                                />
                             </div>
 
-                            <div className="flex items-center gap-2">
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => loadFiles()}
-                                    title="Atualizar"
+                            {/* Filters */}
+                            <div className="flex gap-2">
+                                <select
+                                    value={filterType}
+                                    onChange={(e) => setFilterType(e.target.value as any)}
+                                    className="px-3 py-2 border border-neutral-200 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors text-sm"
                                 >
-                                    <RefreshCw className="h-4 w-4" />
-                                </Button>
+                                    <option value="all">Todos</option>
+                                    <option value="folders">Pastas</option>
+                                    <option value="files">Arquivos</option>
+                                    <option value="images">Imagens</option>
+                                    <option value="documents">Documentos</option>
+                                    <option value="videos">Vídeos</option>
+                                </select>
 
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-                                    title={`Mudar para visão em ${viewMode === 'grid' ? 'lista' : 'grade'}`}
+                                <select
+                                    value={sortBy}
+                                    onChange={(e) => setSortBy(e.target.value as any)}
+                                    className="px-3 py-2 border border-neutral-200 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors text-sm"
                                 >
-                                    {viewMode === 'grid' ? <List className="h-4 w-4" /> : <Grid3X3 className="h-4 w-4" />}
-                                </Button>
+                                    <option value="name">Nome</option>
+                                    <option value="date">Data</option>
+                                    <option value="size">Tamanho</option>
+                                    <option value="type">Tipo</option>
+                                </select>
                             </div>
                         </div>
-                    </Card>
 
-                    {/* Files Grid/List */}
-                    <Card padding="md">
-                            <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-lg font-semibold text-gray-900">
-                                    Arquivos e Pastas
-                                </h2>
-                                {selectedFiles.length > 0 && (
-                                    <div className="flex items-center space-x-2">
-                                        <span className="text-sm text-gray-600">
-                                            {selectedFiles.length} selecionado(s)
-                                        </span>
-                                        <motion.button
-                                            whileHover={{ scale: 1.05 }}
-                                            whileTap={{ scale: 0.95 }}
-                                            className="p-2 text-gray-600 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
-                                        >
-                                            <Share2 className="h-4 w-4" />
-                                        </motion.button>
-                                        <motion.button
-                                            whileHover={{ scale: 1.05 }}
-                                            whileTap={{ scale: 0.95 }}
-                                            className="p-2 text-gray-600 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </motion.button>
-                                    </div>
-                                )}
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => loadFiles()}
+                                title="Atualizar"
+                            >
+                                <RefreshCw className="h-4 w-4" />
+                            </Button>
+
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+                                title={`Mudar para visão em ${viewMode === 'grid' ? 'lista' : 'grade'}`}
+                            >
+                                {viewMode === 'grid' ? <List className="h-4 w-4" /> : <Grid3X3 className="h-4 w-4" />}
+                            </Button>
+                        </div>
+                    </div>
+                </Card>
+
+                {/* Files Grid/List */}
+                <Card padding="md">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-lg font-semibold text-gray-900">
+                            Arquivos e Pastas
+                        </h2>
+                        {selectedFiles.length > 0 && (
+                            <div className="flex items-center space-x-2">
+                                <span className="text-sm text-gray-600">
+                                    {selectedFiles.length} selecionado(s)
+                                </span>
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="p-2 text-gray-600 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                                >
+                                    <Share2 className="h-4 w-4" />
+                                </motion.button>
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="p-2 text-gray-600 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </motion.button>
                             </div>
+                        )}
+                    </div>
 
-                            {loading ? (
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-2 text-sm text-neutral-600">
-                                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary-200 border-t-primary-600"></div>
-                                        Carregando arquivos...
-                                    </div>
-                                    {/* Loading Skeletons */}
-                                    <div className={viewMode === 'grid' 
-                                        ? 'grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4'
-                                        : 'space-y-3'
+                    {loading ? (
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2 text-sm text-neutral-600">
+                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary-200 border-t-primary-600"></div>
+                                Carregando arquivos...
+                            </div>
+                            {/* Loading Skeletons */}
+                            <div className={viewMode === 'grid'
+                                ? 'grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4'
+                                : 'space-y-3'
+                            }>
+                                {Array.from({ length: viewMode === 'grid' ? 12 : 6 }).map((_, i) => (
+                                    <div key={i} className={viewMode === 'grid'
+                                        ? 'space-y-3'
+                                        : 'flex items-center gap-3'
                                     }>
-                                        {Array.from({ length: viewMode === 'grid' ? 12 : 6 }).map((_, i) => (
-                                            <div key={i} className={viewMode === 'grid' 
-                                                ? 'space-y-3'
-                                                : 'flex items-center gap-3'
-                                            }>
-                                                <Skeleton className={viewMode === 'grid' ? 'h-12 w-12 rounded-lg mx-auto' : 'h-8 w-8 rounded'} />
-                                                <div className={viewMode === 'grid' ? 'space-y-2 text-center' : 'flex-1 space-y-2'}>
-                                                    <Skeleton className={viewMode === 'grid' ? 'h-4 w-20 mx-auto' : 'h-4 w-40'} />
-                                                    <Skeleton className={viewMode === 'grid' ? 'h-3 w-16 mx-auto' : 'h-3 w-24'} />
+                                        <Skeleton className={viewMode === 'grid' ? 'h-12 w-12 rounded-lg mx-auto' : 'h-8 w-8 rounded'} />
+                                        <div className={viewMode === 'grid' ? 'space-y-2 text-center' : 'flex-1 space-y-2'}>
+                                            <Skeleton className={viewMode === 'grid' ? 'h-4 w-20 mx-auto' : 'h-4 w-40'} />
+                                            <Skeleton className={viewMode === 'grid' ? 'h-3 w-16 mx-auto' : 'h-3 w-24'} />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ) : filteredFiles.length === 0 ? (
+                        <EmptyState
+                            icon={<Cloud />}
+                            title="Nenhum arquivo encontrado"
+                            description={
+                                searchQuery || filterType !== 'all'
+                                    ? 'Tente ajustar os filtros ou termo de busca.'
+                                    : 'Faça upload do seu primeiro arquivo para começar a usar o Cloud Storage.'
+                            }
+                            action={
+                                !searchQuery && filterType === 'all' ? (
+                                    <Button onClick={() => setShowUploadModal(true)}>
+                                        <Upload className="h-4 w-4 mr-2" />
+                                        Fazer Upload
+                                    </Button>
+                                ) : null
+                            }
+                        />
+                    ) : (
+                        <div className={viewMode === 'grid'
+                            ? 'grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4'
+                            : 'space-y-2'
+                        }>
+                            <AnimatePresence>
+                                {filteredFiles.map((file, index) => (
+                                    <motion.div
+                                        key={file.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -20 }}
+                                        transition={{ delay: index * 0.05 }}
+                                        className={`group cursor-pointer ${viewMode === 'grid'
+                                            ? 'bg-gradient-to-br from-white to-gray-50/50 border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-all duration-300'
+                                            : 'flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors'
+                                            } ${selectedFiles.includes(file.id) ? 'ring-2 ring-blue-500 bg-blue-50' : ''}`}
+                                        onClick={() => toggleFileSelection(file.id)}
+                                    >
+                                        {viewMode === 'grid' ? (
+                                            <div className="text-center">
+                                                <div className="flex justify-center mb-3">
+                                                    {file.type === 'file' && file.thumbnail ? (
+                                                        <img
+                                                            src={file.thumbnail}
+                                                            alt={file.name}
+                                                            className="w-12 h-12 object-cover rounded-lg"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-12 h-12 flex items-center justify-center">
+                                                            {getFileIcon(file)}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <h3 className="font-medium text-gray-900 text-sm truncate group-hover:text-blue-700 transition-colors">
+                                                        {file.name}
+                                                    </h3>
+                                                    {file.size && (
+                                                        <p className="text-xs text-gray-500">
+                                                            {formatFileSize(file.size)}
+                                                        </p>
+                                                    )}
+                                                    <div className="flex items-center justify-center space-x-1">
+                                                        {file.starred && <Star className="h-3 w-3 text-yellow-500 fill-current" />}
+                                                        {file.shared && <Users className="h-3 w-3 text-purple-500" />}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            ) : filteredFiles.length === 0 ? (
-                                <EmptyState
-                                    icon={<Cloud />}
-                                    title="Nenhum arquivo encontrado"
-                                    description={
-                                        searchQuery || filterType !== 'all'
-                                            ? 'Tente ajustar os filtros ou termo de busca.'
-                                            : 'Faça upload do seu primeiro arquivo para começar a usar o Cloud Storage.'
-                                    }
-                                    action={
-                                        !searchQuery && filterType === 'all' ? (
-                                            <Button onClick={() => setShowUploadModal(true)}>
-                                                <Upload className="h-4 w-4 mr-2" />
-                                                Fazer Upload
-                                            </Button>
-                                        ) : null
-                                    }
-                                />
-                            ) : (
-                                <div className={viewMode === 'grid'
-                                    ? 'grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4'
-                                    : 'space-y-2'
-                                }>
-                                    <AnimatePresence>
-                                        {filteredFiles.map((file, index) => (
-                                            <motion.div
-                                                key={file.id}
-                                                initial={{ opacity: 0, y: 20 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, y: -20 }}
-                                                transition={{ delay: index * 0.05 }}
-                                                className={`group cursor-pointer ${viewMode === 'grid'
-                                                    ? 'bg-gradient-to-br from-white to-gray-50/50 border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-all duration-300'
-                                                    : 'flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors'
-                                                    } ${selectedFiles.includes(file.id) ? 'ring-2 ring-blue-500 bg-blue-50' : ''}`}
-                                                onClick={() => toggleFileSelection(file.id)}
-                                            >
-                                                {viewMode === 'grid' ? (
-                                                    <div className="text-center">
-                                                        <div className="flex justify-center mb-3">
-                                                            {file.type === 'file' && file.thumbnail ? (
-                                                                <img
-                                                                    src={file.thumbnail}
-                                                                    alt={file.name}
-                                                                    className="w-12 h-12 object-cover rounded-lg"
-                                                                />
-                                                            ) : (
-                                                                <div className="w-12 h-12 flex items-center justify-center">
-                                                                    {getFileIcon(file)}
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            <h3 className="font-medium text-gray-900 text-sm truncate group-hover:text-blue-700 transition-colors">
-                                                                {file.name}
-                                                            </h3>
-                                                            {file.size && (
-                                                                <p className="text-xs text-gray-500">
-                                                                    {formatFileSize(file.size)}
-                                                                </p>
-                                                            )}
-                                                            <div className="flex items-center justify-center space-x-1">
-                                                                {file.starred && <Star className="h-3 w-3 text-yellow-500 fill-current" />}
-                                                                {file.shared && <Users className="h-3 w-3 text-purple-500" />}
-                                                            </div>
-                                                        </div>
+                                        ) : (
+                                            <>
+                                                <div className="flex items-center space-x-3 flex-1 min-w-0">
+                                                    <div className="flex-shrink-0">
+                                                        {getFileIcon(file)}
                                                     </div>
-                                                ) : (
-                                                    <>
-                                                        <div className="flex items-center space-x-3 flex-1 min-w-0">
-                                                            <div className="flex-shrink-0">
-                                                                {getFileIcon(file)}
-                                                            </div>
-                                                            <div className="flex-1 min-w-0">
-                                                                <h3 className="font-medium text-gray-900 truncate group-hover:text-blue-700 transition-colors">
-                                                                    {file.name}
-                                                                </h3>
-                                                                <p className="text-sm text-gray-500">
-                                                                    {formatDate(file.modifiedAt)} • {file.owner}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                        <div className="flex items-center space-x-4">
-                                                            {file.size && (
-                                                                <span className="text-sm text-gray-500 w-20 text-right">
-                                                                    {formatFileSize(file.size)}
-                                                                </span>
-                                                            )}
-                                                            <div className="flex items-center space-x-1">
-                                                                {file.starred && <Star className="h-4 w-4 text-yellow-500 fill-current" />}
-                                                                {file.shared && <Users className="h-4 w-4 text-purple-500" />}
-                                                            </div>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className="h-8 w-8"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation()
-                                                                    // Show context menu
-                                                                }}
-                                                            >
-                                                                <MoreVertical className="h-4 w-4" />
-                                                            </Button>
-                                                        </div>
-                                                    </>
-                                                )}
-                                            </motion.div>
-                                        ))}
-                                    </AnimatePresence>
-                                </div>
-                            )}
-                        </Card>
-                </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <h3 className="font-medium text-gray-900 truncate group-hover:text-blue-700 transition-colors">
+                                                            {file.name}
+                                                        </h3>
+                                                        <p className="text-sm text-gray-500">
+                                                            {formatDate(file.modifiedAt)} • {file.owner}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center space-x-4">
+                                                    {file.size && (
+                                                        <span className="text-sm text-gray-500 w-20 text-right">
+                                                            {formatFileSize(file.size)}
+                                                        </span>
+                                                    )}
+                                                    <div className="flex items-center space-x-1">
+                                                        {file.starred && <Star className="h-4 w-4 text-yellow-500 fill-current" />}
+                                                        {file.shared && <Users className="h-4 w-4 text-purple-500" />}
+                                                    </div>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-8 w-8"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            // Show context menu
+                                                        }}
+                                                    >
+                                                        <MoreVertical className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        )}
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
+                        </div>
+                    )}
+                </Card>
+            </div>
 
-                {/* Upload Modal com Design System */}
-                <AnimatePresence>
-                    {showUploadModal && (
+            {/* Upload Modal com Design System */}
+            <AnimatePresence>
+                {showUploadModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        onClick={(e) => e.target === e.currentTarget && setShowUploadModal(false)}
+                    >
                         <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-                            onClick={(e) => e.target === e.currentTarget && setShowUploadModal(false)}
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
                         >
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            >
-                                <Card className="w-full max-w-lg" padding="lg">
+                            <Card className="w-full max-w-lg" padding="lg">
                                 <div className="text-center space-y-4">
                                     <div className="mx-auto w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center">
                                         <Upload className="h-8 w-8 text-primary-600" />
@@ -622,11 +599,11 @@ class CloudStorageService {
                                         </Button>
                                     </div>
                                 </div>
-                                </Card>
-                            </motion.div>
+                            </Card>
                         </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
-        )
-    }
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    )
+}

@@ -25,7 +25,11 @@ import {
     Calculator,
     Percent,
     Cloud,
-    Network
+    Network,
+    TrendingUp,
+    Star,
+    BookOpen,
+    Megaphone
 } from 'lucide-react'
 
 interface MenuItem {
@@ -166,6 +170,55 @@ const menuCategories: MenuCategory[] = [
                 href: '/dashboard/reports',
                 color: 'text-blue-600',
                 description: 'Relatórios detalhados'
+            }
+        ]
+    },
+    {
+        category: 'Gestão Avançada',
+        icon: Building2,
+        items: [
+            {
+                icon: Building2,
+                label: 'Propriedades',
+                href: '/dashboard/properties',
+                color: 'text-green-600',
+                description: 'Gestão de propriedades'
+            },
+            {
+                icon: TrendingUp,
+                label: 'Funil de Vendas',
+                href: '/dashboard/funil',
+                color: 'text-blue-600',
+                description: 'Pipeline de vendas'
+            },
+            {
+                icon: Megaphone,
+                label: 'Campanhas',
+                href: '/dashboard/campaigns',
+                color: 'text-purple-600',
+                description: 'Marketing digital'
+            },
+            {
+                icon: Star,
+                label: 'Avaliações',
+                href: '/dashboard/reviews',
+                color: 'text-yellow-600',
+                description: 'Feedback de clientes'
+            },
+            {
+                icon: Users,
+                label: 'Usuários',
+                href: '/dashboard/users',
+                color: 'text-red-600',
+                description: 'Gestão de usuários',
+                adminOnly: true
+            },
+            {
+                icon: BookOpen,
+                label: 'Educacional',
+                href: '/dashboard/educational',
+                color: 'text-indigo-600',
+                description: 'Conteúdo educativo'
             }
         ]
     },
