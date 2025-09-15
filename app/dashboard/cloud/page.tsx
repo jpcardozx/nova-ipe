@@ -72,6 +72,9 @@ export default function CloudPage() {
     const [filterType, setFilterType] = useState<'all' | 'files' | 'folders' | 'images' | 'documents' | 'videos'>('all')
     const [sortBy, setSortBy] = useState<'name' | 'date' | 'size' | 'type'>('name')
     const [showUploadModal, setShowUploadModal] = useState(false)
+    const [uploading, setUploading] = useState(false)
+    const [uploadProgress, setUploadProgress] = useState(0)
+    const [dragOver, setDragOver] = useState(false)
     const [storageStats, setStorageStats] = useState({
         used: 0,
         total: 0,
@@ -145,25 +148,60 @@ export default function CloudPage() {
     const handleUpload = async (uploadFiles: FileList) => {
         if (!uploadFiles || uploadFiles.length === 0) return
 
-        setLoading(true)
+        setUploading(true)
+        setUploadProgress(0)
+
         try {
+            const totalFiles = uploadFiles.length
+            let uploadedFiles = 0
+
             for (const file of Array.from(uploadFiles)) {
+                console.log(`Uploading file: ${file.name}`)
+
                 const { path, error } = await CloudStorageService.uploadFile(file, currentPath)
 
                 if (error) {
-                    throw new Error(`Erro ao fazer upload de ${file.name}`)
+                    console.error(`Error uploading ${file.name}:`, error)
+                    throw new Error(`Erro ao fazer upload de ${file.name}: ${error}`)
                 }
+
+                uploadedFiles++
+                setUploadProgress((uploadedFiles / totalFiles) * 100)
+
+                console.log(`Successfully uploaded: ${file.name} to ${path}`)
             }
 
             await loadFiles()
             await loadStorageStats()
             showNotification('success', `${uploadFiles.length} arquivo(s) enviado(s) com sucesso`)
+            setShowUploadModal(false)
         } catch (error) {
             console.error('Erro no upload:', error)
-            showNotification('error', 'Erro ao fazer upload dos arquivos')
+            showNotification('error', error instanceof Error ? error.message : 'Erro ao fazer upload dos arquivos')
         } finally {
-            setLoading(false)
+            setUploading(false)
+            setUploadProgress(0)
         }
+    }
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault()
+        setDragOver(false)
+
+        const droppedFiles = e.dataTransfer.files
+        if (droppedFiles.length > 0) {
+            handleUpload(droppedFiles)
+        }
+    }
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault()
+        setDragOver(true)
+    }
+
+    const handleDragLeave = (e: React.DragEvent) => {
+        e.preventDefault()
+        setDragOver(false)
     }
 
     const handleDelete = async (id: string) => {
@@ -570,7 +608,7 @@ export default function CloudPage() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-                        onClick={(e) => e.target === e.currentTarget && setShowUploadModal(false)}
+                        onClick={(e) => e.target === e.currentTarget && !uploading && setShowUploadModal(false)}
                     >
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -578,25 +616,102 @@ export default function CloudPage() {
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                         >
                             <Card className="w-full max-w-lg" padding="lg">
-                                <div className="text-center space-y-4">
-                                    <div className="mx-auto w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center">
-                                        <Upload className="h-8 w-8 text-primary-600" />
-                                    </div>
-                                    <div className="space-y-2">
+                                <div className="space-y-6">
+                                    <div className="text-center space-y-2">
+                                        <div className="mx-auto w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center">
+                                            <Upload className="h-8 w-8 text-primary-600" />
+                                        </div>
                                         <h3 className="text-lg font-semibold text-neutral-900">
                                             Upload de Arquivos
                                         </h3>
                                         <p className="text-neutral-600">
-                                            Funcionalidade em desenvolvimento. Em breve você poderá fazer upload de documentos, imagens e vídeos.
+                                            {uploading ? 'Enviando arquivos...' : 'Selecione os arquivos que deseja enviar para o cloud storage'}
                                         </p>
                                     </div>
-                                    <div className="flex gap-3 justify-center pt-2">
-                                        <Button variant="secondary" onClick={() => setShowUploadModal(false)}>
-                                            Fechar
+
+                                    {/* Progress Bar */}
+                                    {uploading && (
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between items-center text-sm">
+                                                <span className="text-neutral-600">Progresso</span>
+                                                <span className="text-neutral-900 font-medium">{Math.round(uploadProgress)}%</span>
+                                            </div>
+                                            <div className="w-full bg-neutral-200 rounded-full h-2">
+                                                <div
+                                                    className="bg-primary-600 h-2 rounded-full transition-all duration-300"
+                                                    style={{ width: `${uploadProgress}%` }}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* File Upload Area */}
+                                    {!uploading && (
+                                        <div className="space-y-4">
+                                            <label className="block">
+                                                <input
+                                                    type="file"
+                                                    multiple
+                                                    className="sr-only"
+                                                    onChange={(e) => {
+                                                        if (e.target.files) {
+                                                            handleUpload(e.target.files)
+                                                        }
+                                                    }}
+                                                />
+                                                <div
+                                                    className={`border-2 border-dashed rounded-lg p-8 text-center transition-all cursor-pointer
+                                                        ${dragOver
+                                                            ? 'border-primary-500 bg-primary-50'
+                                                            : 'border-neutral-300 hover:border-primary-400 hover:bg-primary-50/50'
+                                                        }`}
+                                                    onDrop={handleDrop}
+                                                    onDragOver={handleDragOver}
+                                                    onDragLeave={handleDragLeave}
+                                                >
+                                                    <Upload className="mx-auto h-12 w-12 text-neutral-400 mb-4" />
+                                                    <div className="space-y-2">
+                                                        <p className="text-sm font-medium text-neutral-900">
+                                                            Clique para selecionar arquivos
+                                                        </p>
+                                                        <p className="text-xs text-neutral-500">
+                                                            Ou arraste e solte aqui
+                                                        </p>
+                                                        <p className="text-xs text-neutral-400">
+                                                            PNG, JPG, PDF, DOC, MP4 até 50MB
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    )}
+
+                                    <div className="flex gap-3 justify-end pt-2">
+                                        <Button
+                                            variant="secondary"
+                                            onClick={() => setShowUploadModal(false)}
+                                            disabled={uploading}
+                                        >
+                                            {uploading ? 'Aguarde...' : 'Cancelar'}
                                         </Button>
-                                        <Button disabled>
-                                            Aguarde...
-                                        </Button>
+                                        {!uploading && (
+                                            <Button
+                                                onClick={() => {
+                                                    const input = document.createElement('input')
+                                                    input.type = 'file'
+                                                    input.multiple = true
+                                                    input.onchange = (e) => {
+                                                        const target = e.target as HTMLInputElement
+                                                        if (target.files) {
+                                                            handleUpload(target.files)
+                                                        }
+                                                    }
+                                                    input.click()
+                                                }}
+                                            >
+                                                Selecionar Arquivos
+                                            </Button>
+                                        )}
                                     </div>
                                 </div>
                             </Card>
@@ -604,6 +719,37 @@ export default function CloudPage() {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* Notification */}
+            {notification && (
+                <motion.div
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 50 }}
+                    className="fixed bottom-4 right-4 z-50"
+                >
+                    <Card padding="md" className={`flex items-center gap-3 ${notification.type === 'success' ? 'bg-success-50 border-success-200' : 'bg-error-50 border-error-200'
+                        }`}>
+                        {notification.type === 'success' ? (
+                            <CheckCircle className="h-5 w-5 text-success-600" />
+                        ) : (
+                            <AlertCircle className="h-5 w-5 text-error-600" />
+                        )}
+                        <span className={`text-sm font-medium ${notification.type === 'success' ? 'text-success-800' : 'text-error-800'
+                            }`}>
+                            {notification.message}
+                        </span>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setNotification(null)}
+                            className="h-6 w-6"
+                        >
+                            <X className="h-4 w-4" />
+                        </Button>
+                    </Card>
+                </motion.div>
+            )}
         </div>
     )
 }
