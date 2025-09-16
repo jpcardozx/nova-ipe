@@ -586,7 +586,7 @@ export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
                                                 </div>
                                                 <div>
                                                     <p className="font-medium text-green-900">
-                                                        {selectedUser.name || selectedUser.full_name || 'Funcionário'}
+                                                        {(selectedUser as any).name || selectedUser.full_name || 'Funcionário'}
                                                     </p>
                                                     <p className="text-sm text-green-700">
                                                         {selectedUser.email}
@@ -598,7 +598,7 @@ export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
                                                             </span>
                                                         ) : (
                                                             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                                {selectedUser.department || selectedUser.role || 'Funcionário'}
+                                                                {(selectedUser as any).department || (selectedUser as any).role || 'Funcionário'}
                                                             </span>
                                                         )}
                                                     </div>

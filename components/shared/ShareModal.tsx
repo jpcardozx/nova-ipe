@@ -105,7 +105,7 @@ export function ShareModal({ isOpen, onClose, item, onShare }: ShareModalProps) 
                     id: user.id,
                     name: user.name,
                     email: user.email,
-                    avatar: user.avatar,
+                    avatar: (user as any).avatar,
                     permissions,
                     shared_at: new Date().toISOString()
                 }
