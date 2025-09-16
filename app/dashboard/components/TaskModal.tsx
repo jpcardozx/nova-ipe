@@ -17,43 +17,53 @@ import {
     AlertCircle,
     Building2,
     Phone,
-    Mail
+    Mail,
+    Share2
 } from 'lucide-react'
 import { Task, Client, CRMService } from '@/lib/supabase/crm-service'
+import { User as SystemUser, UserService } from '@/lib/supabase/user-service'
 import { useCurrentUser } from '@/lib/hooks/useCurrentUser-simple'
+import { ShareModal } from '@/components/shared/ShareModal'
 
 interface TaskModalProps {
     isOpen: boolean
     onClose: () => void
     onSave: () => void
-    task?: Task // Para edi��o
+    task?: Task // Para edição
 }
 
 export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
     const { user } = useCurrentUser()
     const [clients, setClients] = useState<Client[]>([])
+    const [users, setUsers] = useState<SystemUser[]>([])
     const [formData, setFormData] = useState({
         title: '',
         description: '',
         priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent',
         status: 'pending' as 'pending' | 'in_progress' | 'completed' | 'cancelled',
+        assigned_to: '',
         client_id: '',
         property_id: '',
         due_date: '',
         task_type: 'internal' as 'internal' | 'client' | 'team',
         visibility: 'private' as 'private' | 'shared',
         category: '' as 'follow_up' | 'property_visit' | 'document_review' | 'contract' | 'marketing' | 'administrative' | 'other' | '',
-        estimated_duration: '',
-        reminders: [] as string[]
+        start_time: '',
+        end_time: '',
+        reminders: [] as string[],
+        notifications_enabled: true
     })
     const [loading, setLoading] = useState(false)
     const [loadingClients, setLoadingClients] = useState(false)
+    const [loadingUsers, setLoadingUsers] = useState(false)
     const [errors, setErrors] = useState<Record<string, string>>({})
+    const [showShareModal, setShowShareModal] = useState(false)
 
-    // Load clients for selection
+    // Load clients and users for selection
     useEffect(() => {
         if (isOpen) {
             loadClients()
+            loadUsers()
         }
     }, [isOpen])
 
@@ -71,6 +81,20 @@ export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
         }
     }
 
+    const loadUsers = async () => {
+        setLoadingUsers(true)
+        try {
+            console.log('TaskModal: Loading users...')
+            const allUsers = await UserService.getAllUsers()
+            console.log('TaskModal: Loaded users:', allUsers)
+            setUsers(allUsers)
+        } catch (error) {
+            console.error('TaskModal: Error loading users:', error)
+        } finally {
+            setLoadingUsers(false)
+        }
+    }
+
     useEffect(() => {
         if (task) {
             setFormData({
@@ -78,14 +102,17 @@ export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
                 description: task.description || '',
                 priority: task.priority,
                 status: task.status,
+                assigned_to: task.assigned_to || '',
                 client_id: task.client_id || '',
                 property_id: task.property_id || '',
                 due_date: task.due_date ? task.due_date.split('T')[0] : '',
                 task_type: task.task_type,
                 visibility: task.visibility,
                 category: task.category || '',
-                estimated_duration: task.estimated_duration?.toString() || '',
-                reminders: task.reminders || []
+                start_time: task.start_time || '',
+                end_time: task.end_time || '',
+                reminders: task.reminders || [],
+                notifications_enabled: true
             })
         } else {
             setFormData({
@@ -93,14 +120,17 @@ export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
                 description: '',
                 priority: 'medium',
                 status: 'pending',
+                assigned_to: '',
                 client_id: '',
                 property_id: '',
                 due_date: '',
                 task_type: 'internal',
                 visibility: 'private',
                 category: '',
-                estimated_duration: '',
-                reminders: []
+                start_time: '',
+                end_time: '',
+                reminders: [],
+                notifications_enabled: true
             })
         }
     }, [task, isOpen])
@@ -109,15 +139,24 @@ export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
         const newErrors: Record<string, string> = {}
 
         if (!formData.title.trim()) {
-            newErrors.title = 'T�tulo � obrigat�rio'
+            newErrors.title = 'Título é obrigatório'
         }
 
         if (formData.task_type === 'client' && !formData.client_id) {
-            newErrors.client_id = 'Cliente � obrigat�rio para tarefas de cliente'
+            newErrors.client_id = 'Cliente é obrigatório para tarefas de cliente'
         }
 
         if (formData.due_date && new Date(formData.due_date) < new Date()) {
-            newErrors.due_date = 'Data de vencimento n�o pode ser no passado'
+            newErrors.due_date = 'Data de vencimento não pode ser no passado'
+        }
+
+        if (formData.start_time && formData.end_time) {
+            const startTime = new Date(`2024-01-01T${formData.start_time}`)
+            const endTime = new Date(`2024-01-01T${formData.end_time}`)
+
+            if (startTime >= endTime) {
+                newErrors.end_time = 'Horário de término deve ser posterior ao de início'
+            }
         }
 
         setErrors(newErrors)
@@ -143,9 +182,10 @@ export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
                 task_type: formData.task_type,
                 visibility: formData.visibility,
                 category: formData.category || undefined,
-                estimated_duration: formData.estimated_duration ? parseInt(formData.estimated_duration) : undefined,
+                start_time: formData.start_time || undefined,
+                end_time: formData.end_time || undefined,
                 reminders: formData.reminders,
-                assigned_to: user?.id || undefined,
+                assigned_to: formData.assigned_to || user?.id || undefined,
                 created_by: user?.id || undefined
             }
 
@@ -171,8 +211,8 @@ export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
     const getCategoryLabel = (category: string) => {
         const labels = {
             follow_up: 'Follow-up',
-            property_visit: 'Visita de Im�vel',
-            document_review: 'Revis�o de Documentos',
+            property_visit: 'Visita de Imóvel',
+            document_review: 'Revisão de Documentos',
             contract: 'Contrato',
             marketing: 'Marketing',
             administrative: 'Administrativo',
@@ -182,6 +222,24 @@ export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
     }
 
     const selectedClient = getSelectedClient()
+
+    const getSelectedUser = () => {
+        if (!formData.assigned_to) return null
+        if (formData.assigned_to === user?.id) return user
+        return users.find(u => u.id === formData.assigned_to)
+    }
+
+    const selectedUser = getSelectedUser()
+
+    const handleShare = async (userIds: string[], permissions: 'view' | 'edit') => {
+        try {
+            // TODO: Implementar compartilhamento de tarefa via API
+            console.log('Compartilhando tarefa com usuários:', userIds, 'Permissões:', permissions)
+            // Aqui você faria a chamada para a API de compartilhamento
+        } catch (error) {
+            console.error('Erro ao compartilhar tarefa:', error)
+        }
+    }
 
     return (
         <AnimatePresence>
@@ -206,27 +264,38 @@ export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
                                 <h2 className="text-xl font-semibold text-gray-900">
                                     {task ? 'Editar Tarefa' : 'Nova Tarefa'}
                                 </h2>
-                                <button
-                                    onClick={onClose}
-                                    className="text-gray-500 hover:text-gray-700 transition-colors"
-                                >
-                                    <X size={24} />
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    {task && (
+                                        <button
+                                            onClick={() => setShowShareModal(true)}
+                                            className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                            title="Compartilhar tarefa"
+                                        >
+                                            <Share2 size={20} />
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={onClose}
+                                        className="text-gray-500 hover:text-gray-700 transition-colors"
+                                    >
+                                        <X size={24} />
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Form */}
                             <form onSubmit={handleSubmit} className="space-y-6">
-                                {/* Informa��es B�sicas */}
+                                {/* Informações Básicas */}
                                 <div className="space-y-4">
                                     <h3 className="text-lg font-medium text-gray-900 border-b pb-2">
-                                        Informa��es B�sicas
+                                        Informações Básicas
                                     </h3>
 
-                                    {/* T�tulo */}
+                                    {/* Título */}
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
                                             <FileText size={16} className="inline mr-2" />
-                                            T�tulo *
+                                            Título *
                                         </label>
                                         <input
                                             type="text"
@@ -241,10 +310,10 @@ export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
                                         )}
                                     </div>
 
-                                    {/* Descri��o */}
+                                    {/* Descrição */}
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Descri��o
+                                            Descrição
                                         </label>
                                         <textarea
                                             value={formData.description}
@@ -272,7 +341,7 @@ export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
                                             </select>
                                             <p className="text-xs text-gray-500 mt-1">
                                                 {formData.task_type === 'internal' && 'Tarefa pessoal ou administrativa'}
-                                                {formData.task_type === 'client' && 'Tarefa relacionada a um cliente espec�fico'}
+                                                {formData.task_type === 'client' && 'Tarefa relacionada a um cliente específico'}
                                                 {formData.task_type === 'team' && 'Tarefa colaborativa da equipe'}
                                             </p>
                                         </div>
@@ -291,7 +360,7 @@ export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
                                                 <option value="shared">Compartilhada</option>
                                             </select>
                                             <p className="text-xs text-gray-500 mt-1">
-                                                {formData.visibility === 'private' ? 'Apenas voc� pode ver esta tarefa' : 'Equipe pode ver esta tarefa'}
+                                                {formData.visibility === 'private' ? 'Apenas você pode ver esta tarefa' : 'Equipe pode ver esta tarefa'}
                                             </p>
                                         </div>
                                     </div>
@@ -358,7 +427,7 @@ export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
                                                     {selectedClient.client_code && (
                                                         <p className="flex items-center gap-2">
                                                             <Tag size={14} />
-                                                            C�digo: {selectedClient.client_code}
+                                                            Código: {selectedClient.client_code}
                                                         </p>
                                                     )}
                                                 </div>
@@ -367,10 +436,10 @@ export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
                                     </div>
                                 )}
 
-                                {/* Configura��es da Tarefa */}
+                                {/* Configurações da Tarefa */}
                                 <div className="space-y-4">
                                     <h3 className="text-lg font-medium text-gray-900 border-b pb-2">
-                                        Configura��es
+                                        Configurações
                                     </h3>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -385,7 +454,7 @@ export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
                                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                             >
                                                 <option value="low">Baixa</option>
-                                                <option value="medium">M�dia</option>
+                                                <option value="medium">Média</option>
                                                 <option value="high">Alta</option>
                                                 <option value="urgent">Urgente</option>
                                             </select>
@@ -403,8 +472,8 @@ export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
                                             >
                                                 <option value="">Selecione...</option>
                                                 <option value="follow_up">Follow-up</option>
-                                                <option value="property_visit">Visita de Im�vel</option>
-                                                <option value="document_review">Revis�o de Documentos</option>
+                                                <option value="property_visit">Visita de Imóvel</option>
+                                                <option value="document_review">Revisão de Documentos</option>
                                                 <option value="contract">Contrato</option>
                                                 <option value="marketing">Marketing</option>
                                                 <option value="administrative">Administrativo</option>
@@ -414,19 +483,190 @@ export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                <Clock size={16} className="inline mr-2" />
-                                                Dura��o Estimada (min)
+                                                <User size={16} className="inline mr-2" />
+                                                Responsável (Funcionário)
                                             </label>
-                                            <input
-                                                type="number"
-                                                value={formData.estimated_duration}
-                                                onChange={(e) => setFormData({ ...formData, estimated_duration: e.target.value })}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder="30"
-                                                min="1"
-                                            />
+                                            {loadingUsers ? (
+                                                <div className="flex items-center justify-center py-3">
+                                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                                                    <span className="ml-2 text-sm text-gray-600">Carregando da tabela profiles...</span>
+                                                </div>
+                                            ) : users.length === 0 ? (
+                                                <div className="text-center py-3 space-y-2">
+                                                    <p className="text-sm text-red-600">
+                                                        ⚠️ Nenhum funcionário encontrado na tabela profiles
+                                                    </p>
+                                                    <p className="text-xs text-gray-500">
+                                                        Possível problema: RLS policies, tabela vazia ou permissões
+                                                    </p>
+                                                    <div className="space-y-1">
+                                                        <button
+                                                            type="button"
+                                                            onClick={async () => {
+                                                                console.log('🔐 Checking authentication...')
+                                                                const authOk = await UserService.checkAndRefreshAuth()
+                                                                if (authOk) {
+                                                                    console.log('✅ Auth OK, reloading users...')
+                                                                    await loadUsers()
+                                                                } else {
+                                                                    console.log('❌ Auth failed - user needs to login')
+                                                                    alert('Sua sessão expirou. Por favor, faça login novamente.')
+                                                                }
+                                                            }}
+                                                            className="text-xs text-green-600 hover:text-green-800 underline block"
+                                                        >
+                                                            🔐 Verificar Login e Recarregar
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={async () => {
+                                                                console.log('🔧 Running database debug...')
+                                                                await UserService.debugDatabaseAccess()
+                                                            }}
+                                                            className="text-xs text-blue-600 hover:text-blue-800 underline block"
+                                                        >
+                                                            🔍 Executar diagnóstico (ver console)
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={async () => {
+                                                                console.log('🔄 Reloading users...')
+                                                                await loadUsers()
+                                                            }}
+                                                            className="text-xs text-orange-600 hover:text-orange-800 underline block"
+                                                        >
+                                                            🔄 Forçar recarregamento
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={async () => {
+                                                                console.log('🎯 FORCING REAL DATABASE CONNECTION...')
+                                                                console.log('This will show all query attempts in detail')
+                                                                await loadUsers()
+                                                            }}
+                                                            className="text-xs text-red-600 hover:text-red-800 underline block font-bold"
+                                                        >
+                                                            🎯 FORÇAR CONEXÃO REAL (debug)
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <select
+                                                    value={formData.assigned_to}
+                                                    onChange={(e) => setFormData({ ...formData, assigned_to: e.target.value })}
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                >
+                                                    <option value="">Selecione um funcionário responsável...</option>
+                                                    <option value={user?.id || ''}>Eu mesmo</option>
+                                                    {users.filter(u => u.id !== user?.id).map(employee => (
+                                                        <option key={employee.id} value={employee.id}>
+                                                            {employee.name} - {employee.department || employee.role}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            )}
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                {users.length > 1
+                                                    ? `✅ Conectado à tabela profiles - ${users.length} funcionário(s) encontrado(s)`
+                                                    : users.length === 1
+                                                    ? '⚠️ Apenas seu perfil encontrado - usando dados de exemplo'
+                                                    : 'Selecione um funcionário da equipe para ser responsável por esta tarefa'
+                                                }
+                                            </p>
                                         </div>
                                     </div>
+
+                                    {/* Responsável Selecionado */}
+                                    {selectedUser && (
+                                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                                            <h4 className="font-medium text-green-900 mb-2">Responsável Selecionado:</h4>
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                                                    <User className="h-5 w-5 text-white" />
+                                                </div>
+                                                <div>
+                                                    <p className="font-medium text-green-900">
+                                                        {selectedUser.name || selectedUser.full_name || 'Funcionário'}
+                                                    </p>
+                                                    <p className="text-sm text-green-700">
+                                                        {selectedUser.email}
+                                                    </p>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        {formData.assigned_to === user?.id ? (
+                                                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                                Você mesmo
+                                                            </span>
+                                                        ) : (
+                                                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                                {selectedUser.department || selectedUser.role || 'Funcionário'}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Horários */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                <Clock size={16} className="inline mr-2" />
+                                                Horário de Início (opcional)
+                                            </label>
+                                            <input
+                                                type="time"
+                                                value={formData.start_time}
+                                                onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            />
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                Define quando a tarefa deve começar
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                <Clock size={16} className="inline mr-2" />
+                                                Horário de Término (opcional)
+                                            </label>
+                                            <input
+                                                type="time"
+                                                value={formData.end_time}
+                                                onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
+                                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                                                    errors.end_time ? 'border-red-500' : 'border-gray-300'
+                                                }`}
+                                            />
+                                            {errors.end_time && (
+                                                <p className="text-red-500 text-sm mt-1">{errors.end_time}</p>
+                                            )}
+                                            {!errors.end_time && (
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    Define quando a tarefa deve terminar
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Duração Calculada */}
+                                    {formData.start_time && formData.end_time && !errors.end_time && (
+                                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                            <div className="flex items-center gap-2">
+                                                <Clock className="h-4 w-4 text-blue-600" />
+                                                <span className="text-sm font-medium text-blue-900">
+                                                    Duração estimada: {(() => {
+                                                        const start = new Date(`2024-01-01T${formData.start_time}`)
+                                                        const end = new Date(`2024-01-01T${formData.end_time}`)
+                                                        const diff = (end.getTime() - start.getTime()) / (1000 * 60)
+                                                        const hours = Math.floor(diff / 60)
+                                                        const minutes = diff % 60
+                                                        return hours > 0 ? `${hours}h ${minutes}min` : `${minutes}min`
+                                                    })()}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
 
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -484,6 +724,20 @@ export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
                             </form>
                         </div>
                     </motion.div>
+
+                    {/* Share Modal */}
+                    {task && (
+                        <ShareModal
+                            isOpen={showShareModal}
+                            onClose={() => setShowShareModal(false)}
+                            item={{
+                                id: task.id,
+                                type: 'task',
+                                title: task.title
+                            }}
+                            onShare={handleShare}
+                        />
+                    )}
                 </motion.div>
             )}
         </AnimatePresence>

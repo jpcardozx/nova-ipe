@@ -5,8 +5,9 @@ import { createClient } from 'next-sanity'
 export const sanityClient = createClient({
     projectId: '0nks58lj',
     dataset: 'production',
-    apiVersion: '2023-05-03',
+    apiVersion: '2024-01-01',
     useCdn: true,
+    token: process.env.SANITY_API_TOKEN,
 })
 
 export async function clientFetch<T>(

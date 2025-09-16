@@ -79,7 +79,8 @@ export interface Task {
     task_type: 'internal' | 'client' | 'team' // Tipo da tarefa para controle de visibilidade
     visibility: 'private' | 'shared' // Privada (só o criador vê) ou compartilhada (equipe vê)
     category?: 'follow_up' | 'property_visit' | 'document_review' | 'contract' | 'marketing' | 'administrative' | 'other'
-    estimated_duration?: number // Em minutos
+    start_time?: string // Horário de início opcional
+    end_time?: string // Horário de término opcional
     reminders?: string[] // Array de timestamps para lembretes
 }
 

@@ -23,13 +23,8 @@ import {
     Target,
     CheckSquare,
     Calculator,
-    Percent,
     Cloud,
-    Network,
-    TrendingUp,
-    Star,
-    BookOpen,
-    Megaphone
+    Network
 } from 'lucide-react'
 
 interface MenuItem {
@@ -61,13 +56,6 @@ const menuCategories: MenuCategory[] = [
                 href: '/dashboard',
                 color: 'text-blue-600',
                 description: 'Visão geral do sistema'
-            },
-            {
-                icon: BarChart3,
-                label: 'Analytics',
-                href: '/dashboard/analytics',
-                color: 'text-purple-600',
-                description: 'Métricas e relatórios'
             }
         ]
     },
@@ -108,13 +96,6 @@ const menuCategories: MenuCategory[] = [
                 href: '/dashboard/agenda',
                 color: 'text-indigo-600',
                 description: 'Agenda profissional e compromissos'
-            },
-            {
-                icon: Calendar,
-                label: 'Agendamentos',
-                href: '/dashboard/appointments',
-                color: 'text-orange-600',
-                description: 'Visitas agendadas'
             }
         ]
     },
@@ -158,67 +139,11 @@ const menuCategories: MenuCategory[] = [
                 description: 'Controle financeiro'
             },
             {
-                icon: Percent,
-                label: 'Comissões',
-                href: '/dashboard/commissions',
-                color: 'text-emerald-600',
-                description: 'Gestão de comissões'
-            },
-            {
                 icon: BarChart3,
                 label: 'Relatórios',
                 href: '/dashboard/reports',
                 color: 'text-blue-600',
                 description: 'Relatórios detalhados'
-            }
-        ]
-    },
-    {
-        category: 'Gestão Avançada',
-        icon: Building2,
-        items: [
-            {
-                icon: Building2,
-                label: 'Propriedades',
-                href: '/dashboard/properties',
-                color: 'text-green-600',
-                description: 'Gestão de propriedades'
-            },
-            {
-                icon: TrendingUp,
-                label: 'Funil de Vendas',
-                href: '/dashboard/funil',
-                color: 'text-blue-600',
-                description: 'Pipeline de vendas'
-            },
-            {
-                icon: Megaphone,
-                label: 'Campanhas',
-                href: '/dashboard/campaigns',
-                color: 'text-purple-600',
-                description: 'Marketing digital'
-            },
-            {
-                icon: Star,
-                label: 'Avaliações',
-                href: '/dashboard/reviews',
-                color: 'text-yellow-600',
-                description: 'Feedback de clientes'
-            },
-            {
-                icon: Users,
-                label: 'Usuários',
-                href: '/dashboard/users',
-                color: 'text-red-600',
-                description: 'Gestão de usuários',
-                adminOnly: true
-            },
-            {
-                icon: BookOpen,
-                label: 'Educacional',
-                href: '/dashboard/educational',
-                color: 'text-indigo-600',
-                description: 'Conteúdo educativo'
             }
         ]
     },

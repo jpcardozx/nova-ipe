@@ -183,7 +183,24 @@ export class CloudStorageService {
         error: any
     }> {
         try {
-            const listPath = folderPath === '/' ? '' : folderPath
+            console.log('CloudStorageService.getFiles called with folderPath:', folderPath)
+
+            // Check authentication first
+            const { data: { user }, error: authError } = await supabase.auth.getUser()
+            if (authError || !user) {
+                console.error('User not authenticated:', authError)
+                return { files: [], error: { message: 'Usuário não autenticado' } }
+            }
+
+            // Normalize the path for Supabase storage
+            let listPath = folderPath === '/' ? '' : folderPath
+
+            // Remove leading slash if present (Supabase storage doesn't like it)
+            if (listPath.startsWith('/')) {
+                listPath = listPath.substring(1)
+            }
+
+            console.log('Using listPath for storage.list:', listPath)
 
             const { data, error } = await supabase.storage
                 .from('documents')
@@ -192,15 +209,25 @@ export class CloudStorageService {
                     offset: 0
                 })
 
-            if (error) throw error
+            console.log('Supabase storage.list response:', { data, error })
+
+            if (error) {
+                console.error('Supabase storage.list error:', error)
+                throw error
+            }
+
+            if (!data) {
+                console.warn('No data returned from storage.list')
+                return { files: [], error: null }
+            }
 
             // Processar dados dos arquivos
-            const files: CloudFile[] = (data || [])
-                .filter(item => !item.name?.endsWith('/'))
+            const files: CloudFile[] = data
+                .filter(item => !item.name?.endsWith('/')) // Remove folders
                 .map(file => ({
                     id: file.id || crypto.randomUUID(),
                     name: file.name,
-                    path: `${folderPath}${folderPath.endsWith('/') ? '' : '/'}${file.name}`,
+                    path: listPath ? `${listPath}/${file.name}` : file.name,
                     size: file.metadata?.size || 0,
                     type: file.metadata?.mimetype || 'application/octet-stream',
                     created_at: file.created_at || new Date().toISOString(),
@@ -209,15 +236,16 @@ export class CloudStorageService {
                     metadata: file.metadata
                 }))
 
+            console.log('Processed files:', files)
             return { files, error: null }
         } catch (error) {
-            console.error('Erro ao buscar arquivos:', error)
+            console.error('CloudStorageService.getFiles error:', error)
             return { files: [], error }
         }
     }
 
     static async uploadFile(
-        file: File, 
+        file: File,
         folderPath: string = '/',
         options: {
             overwrite?: boolean
@@ -228,7 +256,37 @@ export class CloudStorageService {
         error: any
     }> {
         try {
-            const filePath = `${folderPath}${folderPath.endsWith('/') ? '' : '/'}${file.name}`
+            console.log('CloudStorageService.uploadFile called with:', {
+                fileName: file.name,
+                folderPath,
+                fileSize: file.size,
+                fileType: file.type
+            })
+
+            // Check authentication first
+            const { data: { user }, error: authError } = await supabase.auth.getUser()
+            if (authError || !user) {
+                console.error('User not authenticated:', authError)
+                return { path: null, error: { message: 'Usuário não autenticado' } }
+            }
+
+            // Normalize folder path
+            let normalizedPath = folderPath === '/' ? '' : folderPath
+
+            // Remove leading slash if present
+            if (normalizedPath.startsWith('/')) {
+                normalizedPath = normalizedPath.substring(1)
+            }
+
+            // Ensure no trailing slash
+            if (normalizedPath.endsWith('/')) {
+                normalizedPath = normalizedPath.slice(0, -1)
+            }
+
+            // Build final file path
+            const filePath = normalizedPath ? `${normalizedPath}/${file.name}` : file.name
+
+            console.log('Upload file path:', filePath)
 
             const { data, error } = await supabase.storage
                 .from('documents')
@@ -237,11 +295,16 @@ export class CloudStorageService {
                     upsert: options.overwrite || false
                 })
 
-            if (error) throw error
+            console.log('Supabase upload response:', { data, error })
+
+            if (error) {
+                console.error('Supabase upload error:', error)
+                throw error
+            }
 
             return { path: data.path, error: null }
         } catch (error) {
-            console.error('Erro no upload:', error)
+            console.error('CloudStorageService.uploadFile error:', error)
             return { path: null, error }
         }
     }

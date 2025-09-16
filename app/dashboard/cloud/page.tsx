@@ -43,6 +43,8 @@ import {
     MetricsGrid
 } from '@/lib/design-system/components'
 import { CloudStorageService, CloudFile as CloudServiceFile, CloudFolder } from '@/app/lib/supabase/cloud-storage-service'
+import { ShareModal } from '@/components/shared/ShareModal'
+import { useCurrentUser } from '@/lib/hooks/useCurrentUser-simple'
 
 // Local interface for compatibility
 interface CloudFile {
@@ -63,6 +65,7 @@ interface CloudFile {
 }
 
 export default function CloudPage() {
+    const { user, loading: userLoading, isAuthenticated } = useCurrentUser()
     const [files, setFiles] = useState<CloudFile[]>([])
     const [loading, setLoading] = useState(true)
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
@@ -82,23 +85,37 @@ export default function CloudPage() {
         folders: 0
     })
     const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null)
+    const [showShareModal, setShowShareModal] = useState(false)
+    const [fileToShare, setFileToShare] = useState<CloudFile | null>(null)
 
     useEffect(() => {
-        loadFiles()
-        loadStorageStats()
-    }, [currentPath, filterType, sortBy])
+        if (isAuthenticated && !userLoading) {
+            loadFiles()
+            loadStorageStats()
+        }
+    }, [currentPath, filterType, sortBy, isAuthenticated, userLoading])
 
     const loadFiles = async () => {
         setLoading(true)
         try {
-            const { files, error } = await CloudStorageService.getFiles(currentPath)
+            console.log('Loading files from path:', currentPath)
 
-            if (error) {
-                throw new Error('Erro ao carregar arquivos')
+            const result = await CloudStorageService.getFiles(currentPath)
+            console.log('CloudStorageService.getFiles result:', result)
+
+            if (result.error) {
+                console.error('CloudStorageService returned error:', result.error)
+                throw new Error(`Erro ao carregar arquivos: ${result.error.message || 'Erro desconhecido'}`)
+            }
+
+            if (!result.files) {
+                console.warn('No files returned from CloudStorageService')
+                setFiles([])
+                return
             }
 
             // Convert API files to local interface
-            const convertedFiles: CloudFile[] = files.map(file => ({
+            const convertedFiles: CloudFile[] = result.files.map(file => ({
                 id: file.id,
                 name: file.name,
                 type: 'file',
@@ -115,11 +132,13 @@ export default function CloudPage() {
                 thumbnail: undefined
             }))
 
+            console.log('Converted files:', convertedFiles)
             setFiles(convertedFiles)
-            showNotification('success', 'Arquivos carregados com sucesso')
+            // showNotification('success', 'Arquivos carregados com sucesso') // Removido para não poluir UI
         } catch (error) {
             console.error('Erro ao carregar arquivos:', error)
-            showNotification('error', 'Erro ao carregar arquivos')
+            setFiles([])
+            showNotification('error', error instanceof Error ? error.message : 'Erro ao carregar arquivos')
         } finally {
             setLoading(false)
         }
@@ -310,6 +329,54 @@ export default function CloudPage() {
 
     const usagePercentage = (storageStats.used / storageStats.total) * 100
 
+    const handleShareFile = async (userIds: string[], permissions: 'view' | 'edit') => {
+        try {
+            // TODO: Implementar compartilhamento de arquivo via API
+            console.log('Compartilhando arquivo com usuários:', userIds, 'Permissões:', permissions)
+            showNotification('success', 'Arquivo compartilhado com sucesso')
+        } catch (error) {
+            console.error('Erro ao compartilhar arquivo:', error)
+            showNotification('error', 'Erro ao compartilhar arquivo')
+        }
+    }
+
+    const openShareModal = (file: CloudFile) => {
+        setFileToShare(file)
+        setShowShareModal(true)
+    }
+
+    // Show loading while checking authentication
+    if (userLoading) {
+        return (
+            <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+                <div className="flex items-center gap-3">
+                    <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary-200 border-t-primary-600"></div>
+                    <span className="text-gray-600">Carregando...</span>
+                </div>
+            </div>
+        )
+    }
+
+    // Show authentication error
+    if (!isAuthenticated) {
+        return (
+            <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+                <Card padding="lg" className="text-center">
+                    <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+                    <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                        Acesso Negado
+                    </h2>
+                    <p className="text-gray-600 mb-4">
+                        Você precisa estar logado para acessar o Cloud Storage.
+                    </p>
+                    <Button onClick={() => window.location.href = '/login'}>
+                        Fazer Login
+                    </Button>
+                </Card>
+            </div>
+        )
+    }
+
     return (
         <div className="min-h-screen bg-neutral-50">
             {/* Page Header with Design System */}
@@ -326,10 +393,11 @@ export default function CloudPage() {
                 </motion.div>
                 <Button
                     onClick={() => setShowUploadModal(true)}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg border-0"
+                    size="lg"
                 >
-                    <Upload className="h-4 w-4" />
-                    Upload
+                    <Upload className="h-5 w-5" />
+                    Fazer Upload
                 </Button>
             </PageHeader>
 
@@ -447,6 +515,14 @@ export default function CloudPage() {
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                     className="p-2 text-gray-600 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        const selectedFilesData = selectedFiles.map(id => files.find(f => f.id === id)).filter(Boolean) as CloudFile[]
+                                        if (selectedFilesData.length === 1) {
+                                            openShareModal(selectedFilesData[0])
+                                        }
+                                    }}
+                                    title="Compartilhar arquivo(s)"
                                 >
                                     <Share2 className="h-4 w-4" />
                                 </motion.button>
@@ -497,10 +573,34 @@ export default function CloudPage() {
                             }
                             action={
                                 !searchQuery && filterType === 'all' ? (
-                                    <Button onClick={() => setShowUploadModal(true)}>
-                                        <Upload className="h-4 w-4 mr-2" />
-                                        Fazer Upload
-                                    </Button>
+                                    <div className="flex flex-col sm:flex-row gap-3">
+                                        <Button
+                                            onClick={() => setShowUploadModal(true)}
+                                            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg border-0"
+                                            size="lg"
+                                        >
+                                            <Upload className="h-5 w-5 mr-2" />
+                                            Fazer Upload de Arquivos
+                                        </Button>
+                                        <Button
+                                            variant="secondary"
+                                            onClick={() => {
+                                                const input = document.createElement('input')
+                                                input.type = 'file'
+                                                input.multiple = true
+                                                input.onchange = (e) => {
+                                                    const target = e.target as HTMLInputElement
+                                                    if (target.files) {
+                                                        handleUpload(target.files)
+                                                    }
+                                                }
+                                                input.click()
+                                            }}
+                                        >
+                                            <Folder className="h-4 w-4 mr-2" />
+                                            Escolher Arquivos
+                                        </Button>
+                                    </div>
                                 ) : null
                             }
                         />
@@ -749,6 +849,23 @@ export default function CloudPage() {
                         </Button>
                     </Card>
                 </motion.div>
+            )}
+
+            {/* Share Modal */}
+            {fileToShare && (
+                <ShareModal
+                    isOpen={showShareModal}
+                    onClose={() => {
+                        setShowShareModal(false)
+                        setFileToShare(null)
+                    }}
+                    item={{
+                        id: fileToShare.id,
+                        type: 'document',
+                        title: fileToShare.name
+                    }}
+                    onShare={handleShareFile}
+                />
             )}
         </div>
     )
