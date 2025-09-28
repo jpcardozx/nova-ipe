@@ -1,8 +1,6 @@
 'use client';
 
-import React, { useCallback } from 'react';
-import { VariableSizeGrid as Grid } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
+import React, { useCallback, useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { XCircle, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -21,6 +19,26 @@ const PropertyCardUnified = dynamic(() => import('@/app/components/ui/property/P
         </div>
     )
 });
+
+// Simple AutoSizer replacement
+function SimpleAutoSizer({ children }: { children: (size: { width: number; height: number }) => React.ReactNode }) {
+    const [size, setSize] = useState({ width: 1200, height: 800 });
+
+    useEffect(() => {
+        const updateSize = () => {
+            setSize({
+                width: window.innerWidth - 64, // Account for padding
+                height: window.innerHeight - 200 // Account for header/footer
+            });
+        };
+
+        updateSize();
+        window.addEventListener('resize', updateSize);
+        return () => window.removeEventListener('resize', updateSize);
+    }, []);
+
+    return <>{children(size)}</>;
+}
 
 // Interface matching the unified property card format
 export interface UnifiedPropertyItem {
@@ -205,34 +223,37 @@ export default function VirtualizedPropertiesGridUnified({
 
     return (
         <div className={cn("w-full h-screen max-h-[1200px]", className)}>
-            <AutoSizer>
+            <SimpleAutoSizer>
                 {({ height, width }) => {
                     // Calculate the number of columns that can fit in the available width
                     const columnCount = Math.max(1, Math.floor(width / CARD_WIDTH));
-                    // Calculate the number of rows needed to display all items
-                    const rowCount = Math.ceil(properties.length / columnCount);
-
-                    // Calculate column width based on available space
-                    const calculatedColumnWidth = (width - GAP * (columnCount - 1)) / columnCount;
-
+                    
                     return (
-                        <Grid
-                            columnCount={columnCount}
-                            columnWidth={() => calculatedColumnWidth}
-                            height={height}
-                            rowCount={rowCount}
-                            rowHeight={() => ROW_HEIGHT}
-                            width={width}
-                            itemKey={({ columnIndex, rowIndex }: { columnIndex: number; rowIndex: number }) => {
-                                const index = rowIndex * columnCount + columnIndex;
-                                return index < properties.length ? properties[index].id : `empty-${index}`;
-                            }}
+                        <div 
+                            className="overflow-auto" 
+                            style={{ height, width }}
                         >
-                            {Cell}
-                        </Grid>
+                            <div 
+                                className="grid gap-4 p-4"
+                                style={{
+                                    gridTemplateColumns: `repeat(${columnCount}, 1fr)`,
+                                    gridAutoRows: `${ROW_HEIGHT}px`
+                                }}
+                            >
+                                {properties.map((property, index) => (
+                                    <div key={property.id} className="w-full">
+                                        <PropertyCardUnified
+                                            property={property}
+                                            priority={index < 6}
+                                            format="unified"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     );
                 }}
-            </AutoSizer>
+            </SimpleAutoSizer>
         </div>
     );
 }

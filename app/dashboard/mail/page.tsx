@@ -6,7 +6,7 @@ import {
   Mail,
   Plus,
   Send,
-  Draft,
+  Edit,
   Inbox,
   Archive,
   Search,
@@ -162,7 +162,7 @@ export default function DashboardMail() {
               {[
                 { key: 'inbox', icon: Inbox, label: 'Caixa de Entrada', count: unreadCount, active: true },
                 { key: 'sent', icon: Send, label: 'Enviados', count: 0 },
-                { key: 'drafts', icon: Draft, label: 'Rascunhos', count: 2 },
+                { key: 'drafts', icon: Edit, label: 'Rascunhos', count: 2 },
                 { key: 'starred', icon: Star, label: 'Favoritos', count: 0 },
                 { key: 'archived', icon: Archive, label: 'Arquivados', count: 0 },
               ].map((folder) => {

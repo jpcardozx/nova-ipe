@@ -36,6 +36,6 @@ module.exports = {
     },
   },
   plugins: [
-    require('@tailwindcss/typography'),
+    // @tailwindcss/typography removed for dependency optimization
   ],
 };

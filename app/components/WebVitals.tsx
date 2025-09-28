@@ -1,9 +1,16 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { onCLS, onFCP, onLCP, onTTFB, onINP, type Metric } from 'web-vitals';
 
-const vitalsUrl = '/api/vitals';
+const APP_VITALS_ENDPOINT = '/api/vitals';
+
+// Interface to match previous Metric type
+interface Metric {
+    name: string;
+    value: number;
+    delta: number;
+    id: string;
+}
 
 // Cache para evitar reportar a mesma métrica múltiplas vezes
 const reportedMetrics = new Set<string>();
@@ -34,9 +41,9 @@ const sendToAnalytics = (metric: Metric) => {
     // Usa sendBeacon para métricas não críticas e fetch para críticas
     const isCriticalMetric = metric.name === 'LCP' || metric.name === 'FCP';
     if (!isCriticalMetric && 'sendBeacon' in navigator) {
-        navigator.sendBeacon(vitalsUrl, JSON.stringify(body));
+        navigator.sendBeacon(APP_VITALS_ENDPOINT, JSON.stringify(body));
     } else {
-        fetch(vitalsUrl, {
+        fetch(APP_VITALS_ENDPOINT, {
             body: JSON.stringify(body),
             method: 'POST',
             keepalive: true,
@@ -44,11 +51,70 @@ const sendToAnalytics = (metric: Metric) => {
         }).catch(() => {
             // Fallback para sendBeacon em caso de erro
             if ('sendBeacon' in navigator) {
-                navigator.sendBeacon(vitalsUrl, JSON.stringify(body));
+                navigator.sendBeacon(APP_VITALS_ENDPOINT, JSON.stringify(body));
             }
         });
     }
 };
+
+// Simple performance observation without web-vitals library
+function observePerformance() {
+    if (typeof window === 'undefined' || !('PerformanceObserver' in window)) {
+        return;
+    }
+
+    try {
+        // LCP (Largest Contentful Paint)
+        const lcpObserver = new PerformanceObserver((entryList) => {
+            const entries = entryList.getEntries();
+            const lastEntry = entries[entries.length - 1];
+            sendToAnalytics({ 
+                name: 'LCP', 
+                value: lastEntry.startTime, 
+                delta: lastEntry.startTime,
+                id: Math.random().toString(36).substr(2, 9)
+            });
+        });
+        lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+
+        // FCP (First Contentful Paint)
+        const fcpObserver = new PerformanceObserver((entryList) => {
+            for (const entry of entryList.getEntries()) {
+                if (entry.name === 'first-contentful-paint') {
+                    sendToAnalytics({ 
+                        name: 'FCP', 
+                        value: entry.startTime, 
+                        delta: entry.startTime,
+                        id: Math.random().toString(36).substr(2, 9)
+                    });
+                }
+            }
+        });
+        fcpObserver.observe({ entryTypes: ['paint'] });
+
+        // CLS (Cumulative Layout Shift) - simplified
+        let clsValue = 0;
+        const clsObserver = new PerformanceObserver((entryList) => {
+            for (const entry of entryList.getEntries()) {
+                if (!(entry as any).hadRecentInput) {
+                    clsValue += (entry as any).value;
+                }
+            }
+            if (clsValue > 0) {
+                sendToAnalytics({ 
+                    name: 'CLS', 
+                    value: clsValue, 
+                    delta: clsValue,
+                    id: Math.random().toString(36).substr(2, 9)
+                });
+            }
+        });
+        clsObserver.observe({ entryTypes: ['layout-shift'] });
+
+    } catch (error) {
+        console.warn('Performance monitoring not supported', error);
+    }
+}
 
 /**
  * Componente para rastrear Web Vitals
@@ -59,26 +125,7 @@ export function WebVitals() {
 
     const registerVitals = useCallback(() => {
         try {
-            // Registra primeiro as métricas mais importantes
-            onLCP((metric) => {
-                // Report LCP immediately
-                sendToAnalytics(metric);
-            });
-
-            // Delay non-critical metrics
-            setTimeout(() => {
-                // FCP é importante mas pode esperar um pouco
-                onFCP(sendToAnalytics);
-
-                // TTFB já aconteceu, então podemos coletar
-                onTTFB(sendToAnalytics);
-
-                // Métricas de interação podem esperar mais
-                setTimeout(() => {
-                    onCLS(sendToAnalytics);
-                    onINP(sendToAnalytics);
-                }, 300);
-            }, 100);
+            observePerformance();
         } catch (error) {
             console.warn('Error registering Web Vitals:', error);
         }

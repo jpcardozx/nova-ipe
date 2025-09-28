@@ -101,7 +101,7 @@ export { default as UnifiedLoading } from './UnifiedLoading';
 export { default as VirtualizedPropertiesGrid } from './VirtualizedPropertiesGrid';
 export { default as VirtualizedPropertiesGridUnified } from './VirtualizedPropertiesGridUnified';
 export { default as VirtualTourViewer } from './VirtualTourViewer';
-export { default as WebVitals } from './WebVitals';
+export { default as VerifiedWebVitals } from './WebVitals';
 export { default as WebVitalsDebuggerWrapper } from './WebVitalsDebuggerWrapper';
 export { default as WebVitalsMonitor } from './WebVitalsMonitor';
 export { default as WhatsAppButton } from './WhatsAppButton';

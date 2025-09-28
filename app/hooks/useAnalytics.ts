@@ -356,27 +356,80 @@ export function useWebVitals() {
     if (typeof window === 'undefined' || 
         process.env['NEXT_PUBLIC_ENABLE_WEB_VITALS'] !== 'true') {
       return;
-    }    // Importar Web Vitals dinamicamente
-    import('web-vitals').then(({ onCLS, onFCP, onLCP, onTTFB }) => {
-      const sendToAnalytics = (metric: any) => {
-        if (window.gtag) {
-          window.gtag('event', metric.name, {
-            event_category: 'Web Vitals',
-            event_label: metric.id,
-            value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
-            non_interaction: true
-          });
-        }
+    }
 
-        // Log para debug em desenvolvimento
-        if (process.env['NEXT_PUBLIC_VITALS_DEBUG'] === 'true') {
-          console.log('Web Vital:', metric);
-        }
-      };      onCLS(sendToAnalytics);
-      onFCP(sendToAnalytics);
-      onLCP(sendToAnalytics);
-      onTTFB(sendToAnalytics);
-    });
+    // Simple performance observation without external dependency
+    const sendToAnalytics = (metric: any) => {
+      if (window.gtag) {
+        window.gtag('event', metric.name, {
+          event_category: 'Web Vitals',
+          event_label: metric.id,
+          value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
+          non_interaction: true
+        });
+      }
+
+      // Log para debug em desenvolvimento
+      if (process.env['NEXT_PUBLIC_VITALS_DEBUG'] === 'true') {
+        console.log('Web Vital:', metric);
+      }
+    };
+
+    // Simple performance observation
+    const observePerformance = () => {
+      if (!('PerformanceObserver' in window)) return;
+
+      try {
+        // LCP (Largest Contentful Paint)
+        const lcpObserver = new PerformanceObserver((entryList) => {
+          const entries = entryList.getEntries();
+          const lastEntry = entries[entries.length - 1];
+          sendToAnalytics({ 
+            name: 'LCP', 
+            value: lastEntry.startTime,
+            id: Math.random().toString(36).substr(2, 9)
+          });
+        });
+        lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+
+        // FCP (First Contentful Paint)
+        const fcpObserver = new PerformanceObserver((entryList) => {
+          for (const entry of entryList.getEntries()) {
+            if (entry.name === 'first-contentful-paint') {
+              sendToAnalytics({ 
+                name: 'FCP', 
+                value: entry.startTime,
+                id: Math.random().toString(36).substr(2, 9)
+              });
+            }
+          }
+        });
+        fcpObserver.observe({ entryTypes: ['paint'] });
+
+        // CLS (Cumulative Layout Shift)
+        let clsValue = 0;
+        const clsObserver = new PerformanceObserver((entryList) => {
+          for (const entry of entryList.getEntries()) {
+            if (!(entry as any).hadRecentInput) {
+              clsValue += (entry as any).value;
+            }
+          }
+          if (clsValue > 0) {
+            sendToAnalytics({ 
+              name: 'CLS', 
+              value: clsValue,
+              id: Math.random().toString(36).substr(2, 9)
+            });
+          }
+        });
+        clsObserver.observe({ entryTypes: ['layout-shift'] });
+
+      } catch (error) {
+        console.warn('Performance monitoring not supported', error);
+      }
+    };
+
+    observePerformance();
   }, []);
 }
 
