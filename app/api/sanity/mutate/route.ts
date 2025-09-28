@@ -3,8 +3,8 @@ import { createClient } from '@sanity/client'
 
 // Cliente com token de escrita
 const writeClient = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '0nks58lj',
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   token: process.env.SANITY_API_WRITE_TOKEN, // Token de escrita
   apiVersion: '2024-01-01',
   useCdn: false

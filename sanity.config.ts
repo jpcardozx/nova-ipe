@@ -16,8 +16,8 @@ if (process.env.NODE_ENV === 'development') {
 export default defineConfig({
   name: 'nova-ipe-studio',
   title: 'Ipê Imóveis - Gerenciamento de Conteúdo',
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '0nks58lj',
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   apiVersion: '2024-01-01',
   basePath: '/studio',
   plugins: [

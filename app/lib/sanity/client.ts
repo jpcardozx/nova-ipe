@@ -8,9 +8,9 @@ import FallbackDataService from '../../../lib/fallback-data/fallback-service';
 // ==========================================================================
 
 export const sanityConfig = {
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
-  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION!,
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '0nks58lj',
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
+  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2023-05-03',
   token: process.env.SANITY_API_TOKEN,
   useCdn: process.env.NODE_ENV === 'production',
 };

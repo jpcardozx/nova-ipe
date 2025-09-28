@@ -1,33 +1,14 @@
 import type { Metadata } from 'next';
-import { Inter, Lexend, Playfair_Display } from 'next/font/google';
 import { Providers } from './providers/QueryProvider';
 import ConditionalLayout from './components/ConditionalLayout';
 import './globals.css';
 
-// Otimização de fontes com next/font
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  preload: true,
-  variable: '--font-inter',
-  fallback: ['system-ui', 'arial']
-});
-
-const lexend = Lexend({
-  subsets: ['latin'],
-  display: 'swap',
-  preload: true,
-  variable: '--font-lexend',
-  fallback: ['system-ui', 'arial']
-});
-
-const playfairDisplay = Playfair_Display({
-  subsets: ['latin'],
-  display: 'swap',
-  preload: true,
-  variable: '--font-playfair-display',
-  fallback: ['serif']
-});
+// CSS variables para fontes usando fallbacks
+const fontVariables = `
+  --font-inter: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-lexend: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-playfair-display: Georgia, 'Times New Roman', Times, serif;
+`;
 
 export const metadata: Metadata = {
   title: {
@@ -154,7 +135,8 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
-      <body className={`${inter.variable} ${lexend.variable} ${playfairDisplay.variable} font-sans antialiased bg-white text-gray-900`}>
+      <body className="font-sans antialiased bg-white text-gray-900" style={{ fontFamily: 'var(--font-inter)' }}>
+        <style dangerouslySetInnerHTML={{ __html: `:root { ${fontVariables} }` }} />
         <Providers>
           <ConditionalLayout>
             {children}
