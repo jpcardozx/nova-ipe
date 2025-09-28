@@ -41,7 +41,8 @@ import {
     Cloud,
     StarOff,
     BarChart2,
-    Network
+    Network,
+    MessageCircle
 } from 'lucide-react'
 
 interface MenuItem {
@@ -87,6 +88,13 @@ const menuItems: MenuCategory[] = [
         ]
     },
     {
+        category: 'Comunicação',
+        items: [
+            { icon: Mail, label: 'E-mail', href: '/dashboard/mail', color: 'text-blue-600' },
+            { icon: MessageCircle, label: 'WhatsApp', href: '/dashboard/whatsapp', color: 'text-green-600' }
+        ]
+    },
+    {
         category: 'Vendas',
         items: [
             { icon: TrendingUp, label: 'Funil de Vendas', href: '/dashboard/funil', color: 'text-emerald-600' },
@@ -98,6 +106,7 @@ const menuItems: MenuCategory[] = [
     {
         category: 'Administração',
         items: [
+            { icon: Percent, label: 'Alíquotas', href: '/dashboard/aliquotas', color: 'text-orange-600' },
             { icon: UserCircle, label: 'Meu Perfil', href: '/dashboard/profile', color: 'text-blue-600' },
             { icon: Settings, label: 'Configurações', href: '/dashboard/settings', color: 'text-gray-500' }
         ]
