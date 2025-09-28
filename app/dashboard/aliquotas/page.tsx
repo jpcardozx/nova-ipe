@@ -21,6 +21,8 @@ import {
   Eye,
   Printer
 } from 'lucide-react'
+import { AliquotasPDFService } from '@/lib/pdf/aliquotas-pdf'
+import { getCRMClients, logClientTransaction } from '@/lib/supabase/aliquotas-service'
 
 interface Property {
   id: string
@@ -39,6 +41,10 @@ interface Client {
   name: string
   email: string
   phone: string
+  document?: string
+  address?: string
+  city?: string
+  state?: string
 }
 
 const mockProperties: Property[] = [
@@ -89,6 +95,26 @@ export default function DashboardAliquotas() {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null)
   const [showClientModal, setShowClientModal] = useState(false)
   const [currentAction, setCurrentAction] = useState<'download' | 'send' | null>(null)
+  const [clients, setClients] = useState<Client[]>([])
+  const [loadingClients, setLoadingClients] = useState(false)
+
+  // Load clients when modal opens
+  const loadClients = async () => {
+    if (clients.length > 0) return // Already loaded
+    
+    setLoadingClients(true)
+    try {
+      const crmClients = await getCRMClients()
+      setClients(crmClients)
+    } catch (error) {
+      console.error('Error loading clients:', error)
+      alert('Erro ao carregar clientes. Usando dados locais.')
+      // Fallback to mock data
+      setClients(mockClients)
+    } finally {
+      setLoadingClients(false)
+    }
+  }
 
   const filteredProperties = useMemo(() => {
     return mockProperties.filter(property => 
@@ -117,7 +143,7 @@ export default function DashboardAliquotas() {
     )
   }
 
-  const handleGeneratePDF = (action: 'download' | 'send') => {
+  const handleGeneratePDF = async (action: 'download' | 'send') => {
     if (selectedProperties.length === 0) {
       alert('Selecione pelo menos um imóvel para gerar o PDF')
       return
@@ -126,34 +152,99 @@ export default function DashboardAliquotas() {
     if (action === 'send') {
       setCurrentAction('send')
       setShowClientModal(true)
+      loadClients() // Load clients when opening modal
     } else {
-      // Simulate PDF download
-      const selectedProps = mockProperties.filter(p => selectedProperties.includes(p.id))
-      console.log('Gerando PDF para download:', selectedProps)
-      alert(`PDF gerado para download com ${selectedProps.length} imóveis`)
-      
-      // Reset selection after download
-      setSelectedProperties([])
+      try {
+        // Generate PDF using the service
+        const selectedProps = mockProperties.filter(p => selectedProperties.includes(p.id))
+        const currentDate = new Date()
+        const month = currentDate.toLocaleString('pt-BR', { month: 'long' })
+        const year = currentDate.getFullYear().toString()
+        
+        const pdfBlob = await AliquotasPDFService.generatePDF({
+          properties: selectedProps,
+          includeLetterhead: true,
+          includeCalculations: true,
+          month,
+          year
+        })
+        
+        const filename = `aliquotas_${month}_${year}_${selectedProps.length}_imoveis.pdf`
+        await AliquotasPDFService.downloadPDF(pdfBlob, filename)
+        
+        alert(`PDF gerado e baixado com sucesso!\nArquivo: ${filename}`)
+        
+        // Reset selection after download
+        setSelectedProperties([])
+      } catch (error) {
+        console.error('Erro ao gerar PDF:', error)
+        alert('Erro ao gerar PDF. Tente novamente.')
+      }
     }
   }
 
-  const handleSendToClient = () => {
+  const handleSendToClient = async () => {
     if (!selectedClient) {
       alert('Selecione um cliente para enviar')
       return
     }
 
-    const selectedProps = mockProperties.filter(p => selectedProperties.includes(p.id))
-    console.log('Enviando PDF para cliente:', selectedClient, selectedProps)
-    
-    // Simulate sending email and saving to CRM
-    alert(`PDF enviado para ${selectedClient.name} (${selectedClient.email}) com ${selectedProps.length} imóveis`)
-    
-    // Reset states
-    setSelectedProperties([])
-    setSelectedClient(null)
-    setShowClientModal(false)
-    setCurrentAction(null)
+    try {
+      const selectedProps = mockProperties.filter(p => selectedProperties.includes(p.id))
+      const currentDate = new Date()
+      const month = currentDate.toLocaleString('pt-BR', { month: 'long' })
+      const year = currentDate.getFullYear().toString()
+      
+      // Generate PDF
+      const pdfBlob = await AliquotasPDFService.generatePDF({
+        properties: selectedProps,
+        client: selectedClient,
+        includeLetterhead: true,
+        includeCalculations: true,
+        month,
+        year
+      })
+      
+      // Send PDF by email
+      const subject = `Comunicado de Reajuste de Aluguel - ${month}/${year}`
+      const message = `Prezado(a) ${selectedClient.name},\n\nSegue em anexo o comunicado de reajuste de aluguel referente ao mês de ${month}/${year}.\n\nAtenciosamente,\nIpê Imóveis`
+      
+      const success = await AliquotasPDFService.sendPDFByEmail(
+        pdfBlob,
+        selectedClient,
+        subject,
+        message
+      )
+      
+      if (success) {
+        // Log transaction in CRM
+        await logClientTransaction(
+          selectedClient.id,
+          'aliquotas_pdf_sent',
+          {
+            properties: selectedProps.map(p => ({ id: p.id, address: p.address, newRent: p.newRent })),
+            filename: `aliquotas_${month}_${year}.pdf`,
+            properties_count: selectedProps.length,
+            total_increase: selectedProps.reduce((sum, p) => sum + (p.newRent - p.currentRent), 0)
+          },
+          `PDF de reajuste de aluguel enviado - ${month}/${year}`,
+          selectedProps.reduce((sum, p) => sum + p.newRent, 0)
+        )
+
+        alert(`PDF enviado com sucesso para ${selectedClient.name} (${selectedClient.email})!\n\nMovimentação registrada no CRM do cliente.`)
+        
+        // Reset states
+        setSelectedProperties([])
+        setSelectedClient(null)
+        setShowClientModal(false)
+        setCurrentAction(null)
+      } else {
+        alert('Erro ao enviar PDF. Tente novamente.')
+      }
+    } catch (error) {
+      console.error('Erro ao enviar PDF:', error)
+      alert('Erro ao enviar PDF. Tente novamente.')
+    }
   }
 
   const getStatusColor = (status: string) => {
@@ -453,28 +544,38 @@ export default function DashboardAliquotas() {
               </div>
 
               <div className="space-y-3 mb-6 max-h-64 overflow-y-auto">
-                {mockClients.map((client) => (
-                  <motion.div
-                    key={client.id}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setSelectedClient(client)}
-                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                      selectedClient?.id === client.id
-                        ? 'border-orange-500 bg-orange-50'
-                        : 'border-gray-200 hover:border-orange-300 hover:bg-orange-50/50'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Users className="h-5 w-5 text-gray-400" />
-                      <div>
-                        <div className="font-medium text-gray-900">{client.name}</div>
-                        <div className="text-sm text-gray-500">{client.email}</div>
-                        <div className="text-sm text-gray-500">{client.phone}</div>
+                {loadingClients ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
+                    <span className="ml-2 text-gray-600">Carregando clientes...</span>
+                  </div>
+                ) : (
+                  clients.map((client) => (
+                    <motion.div
+                      key={client.id}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setSelectedClient(client)}
+                      className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                        selectedClient?.id === client.id
+                          ? 'border-orange-500 bg-orange-50'
+                          : 'border-gray-200 hover:border-orange-300 hover:bg-orange-50/50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Users className="h-5 w-5 text-gray-400" />
+                        <div>
+                          <div className="font-medium text-gray-900">{client.name}</div>
+                          <div className="text-sm text-gray-500">{client.email}</div>
+                          <div className="text-sm text-gray-500">{client.phone}</div>
+                          {client.address && (
+                            <div className="text-xs text-gray-400">{client.address}, {client.city}</div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
+                    </motion.div>
+                  ))
+                )}
               </div>
 
               <div className="flex items-center justify-end gap-3">
