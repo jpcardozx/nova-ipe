@@ -67,11 +67,43 @@ const mockEmails: Email[] = [
   }
 ]
 
+interface Draft {
+  id: string
+  to: string
+  subject: string
+  message: string
+  savedAt: string
+}
+
 export default function DashboardMail() {
   const [view, setView] = useState<'inbox' | 'compose'>('inbox')
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedFolder, setSelectedFolder] = useState('inbox')
+  
+  // Draft functionality
+  const [drafts, setDrafts] = useState<Draft[]>([])
+  const [currentDraft, setCurrentDraft] = useState({
+    to: '',
+    subject: '',
+    message: ''
+  })
+
+  const saveDraft = () => {
+    if (!currentDraft.to && !currentDraft.subject && !currentDraft.message) return
+    
+    const draft: Draft = {
+      id: Date.now().toString(),
+      ...currentDraft,
+      savedAt: new Date().toLocaleTimeString()
+    }
+    
+    setDrafts(prev => [draft, ...prev])
+    // Reset form after saving
+    setCurrentDraft({ to: '', subject: '', message: '' })
+    // Show success message (you can add toast here)
+    alert('Rascunho salvo com sucesso!')
+  }
 
   const filteredEmails = useMemo(() => {
     return mockEmails.filter(email => 
@@ -404,6 +436,8 @@ export default function DashboardMail() {
                     <input
                       type="email"
                       placeholder="destinatario@email.com"
+                      value={currentDraft.to}
+                      onChange={(e) => setCurrentDraft(prev => ({ ...prev, to: e.target.value }))}
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all duration-200"
                     />
                   </div>
@@ -413,6 +447,8 @@ export default function DashboardMail() {
                     <input
                       type="text"
                       placeholder="Assunto do e-mail"
+                      value={currentDraft.subject}
+                      onChange={(e) => setCurrentDraft(prev => ({ ...prev, subject: e.target.value }))}
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all duration-200"
                     />
                   </div>
@@ -422,6 +458,8 @@ export default function DashboardMail() {
                     <textarea
                       rows={12}
                       placeholder="Escreva sua mensagem..."
+                      value={currentDraft.message}
+                      onChange={(e) => setCurrentDraft(prev => ({ ...prev, message: e.target.value }))}
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all duration-200 resize-none"
                     />
                   </div>
@@ -442,6 +480,7 @@ export default function DashboardMail() {
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
+                        onClick={saveDraft}
                         className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
                       >
                         Salvar Rascunho
