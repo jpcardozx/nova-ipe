@@ -1,6 +1,11 @@
 'use client';
 
-import { Metric, onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals';
+// Simple Metric interface to replace web-vitals import
+interface Metric {
+  name: string;
+  value: number;
+  id: string;
+}
 
 // Tipos para configuração do webVitals
 type WebVitalsParams = {
@@ -62,6 +67,62 @@ function sendToAnalytics(
   }
 }
 
+// Simple performance observation without web-vitals library
+function observePerformance(reportHandler: (metric: Metric) => void) {
+  if (typeof window === 'undefined' || !('PerformanceObserver' in window)) {
+    return;
+  }
+
+  try {
+    // LCP (Largest Contentful Paint)
+    const lcpObserver = new PerformanceObserver((entryList) => {
+      const entries = entryList.getEntries();
+      const lastEntry = entries[entries.length - 1];
+      reportHandler({ 
+        name: 'LCP', 
+        value: lastEntry.startTime,
+        id: Math.random().toString(36).substr(2, 9)
+      });
+    });
+    lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+
+    // FCP (First Contentful Paint)
+    const fcpObserver = new PerformanceObserver((entryList) => {
+      for (const entry of entryList.getEntries()) {
+        if (entry.name === 'first-contentful-paint') {
+          reportHandler({ 
+            name: 'FCP', 
+            value: entry.startTime,
+            id: Math.random().toString(36).substr(2, 9)
+          });
+        }
+      }
+    });
+    fcpObserver.observe({ entryTypes: ['paint'] });
+
+    // CLS (Cumulative Layout Shift)
+    let clsValue = 0;
+    const clsObserver = new PerformanceObserver((entryList) => {
+      for (const entry of entryList.getEntries()) {
+        if (!(entry as any).hadRecentInput) {
+          clsValue += (entry as any).value;
+        }
+      }
+      if (clsValue > 0) {
+        reportHandler({ 
+          name: 'CLS', 
+          value: clsValue,
+          id: Math.random().toString(36).substr(2, 9)
+        });
+      }
+    });
+    clsObserver.observe({ entryTypes: ['layout-shift'] });
+
+  } catch (error) {
+    console.warn('Performance monitoring not supported', error);
+  }
+}
+
 // Função principal para registrar todas as métricas Web Vitals
 export function webVitals({ 
   path, 
@@ -69,30 +130,14 @@ export function webVitals({
   debug = false,
   reportAllChanges = false
 }: WebVitalsParams) {
-  try {    // Cria handler para processamento consistente
+  try {
+    // Cria handler para processamento consistente
     const reportHandler = (metric: Metric) => {
       sendToAnalytics(metric, path, analyticsId, debug);
     };
 
-    // Registra observadores para cada métrica
-    // https://web.dev/vitals/
-      // Largest Contentful Paint - tempo para renderizar o maior elemento visível
-    onLCP(reportHandler, { reportAllChanges });
-    
-    // Interaction to Next Paint - substitui FID nas versões mais recentes
-    onINP(reportHandler, { reportAllChanges });
-    
-    // Cumulative Layout Shift - soma de todas as mudanças inesperadas de layout
-    onCLS(reportHandler, { reportAllChanges });
-    
-    // First Contentful Paint - primeiro conteúdo significativo renderizado
-    onFCP(reportHandler, { reportAllChanges });
-    
-    // Time to First Byte - tempo até o primeiro byte da resposta
-    onTTFB(reportHandler);
-    
-    // Interaction to Next Paint - responsividade a interações do usuário
-    onINP(reportHandler, { reportAllChanges });
+    // Observa performance usando PerformanceObserver nativo
+    observePerformance(reportHandler);
 
   } catch (error) {
     console.error('[Web Vitals] Error initializing metrics:', error);
