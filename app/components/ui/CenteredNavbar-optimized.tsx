@@ -124,14 +124,36 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
                                     />
                                 </Link>
 
-                                <button
-                                    onClick={() => setIsOpen(!isOpen)}
-                                    className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-colors duration-200"
-                                    aria-label="Menu de navegação"
-                                    aria-expanded={isOpen}
-                                >
-                                    {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    {/* Login Icon Mobile */}
+                                    <Link
+                                        href="/login"
+                                        className="flex items-center justify-center w-10 h-10 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all duration-200"
+                                        title="Acesso para sócios"
+                                    >
+                                        <User className="w-5 h-5" />
+                                    </Link>
+
+                                    {/* Hamburger Menu Button - Melhorado */}
+                                    <button
+                                        onClick={() => setIsOpen(!isOpen)}
+                                        className="relative w-10 h-10 flex items-center justify-center bg-gray-50 hover:bg-amber-50 rounded-xl transition-all duration-200 hover:shadow-sm"
+                                        aria-label="Menu de navegação"
+                                        aria-expanded={isOpen}
+                                    >
+                                        <div className="relative w-6 h-6">
+                                            <span className={`absolute block h-0.5 w-6 bg-gray-600 transform transition-all duration-300 ${
+                                                isOpen ? 'rotate-45 translate-y-0' : '-translate-y-2'
+                                            }`} />
+                                            <span className={`absolute block h-0.5 w-6 bg-gray-600 transform transition-all duration-300 ${
+                                                isOpen ? 'opacity-0' : 'opacity-100'
+                                            }`} />
+                                            <span className={`absolute block h-0.5 w-6 bg-gray-600 transform transition-all duration-300 ${
+                                                isOpen ? '-rotate-45 translate-y-0' : 'translate-y-2'
+                                            }`} />
+                                        </div>
+                                    </button>
+                                </div>
                             </div>
                         ) : (
                             /* Desktop Layout - Grid optimizado */
@@ -245,13 +267,25 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
                             </div>
                         </nav>
 
+                        {/* Mobile Login */}
+                        <div className="pb-4 border-b border-gray-200 mb-4">
+                            <Link
+                                href="/login"
+                                onClick={() => setIsOpen(false)}
+                                className="flex items-center gap-3 w-full text-gray-700 px-4 py-3 rounded-xl hover:bg-amber-50 hover:text-amber-700 transition-all duration-200"
+                            >
+                                <User className="w-5 h-5" />
+                                <span className="font-medium">Acesso para Sócios</span>
+                            </Link>
+                        </div>
+
                         {/* Mobile CTAs */}
-                        <div className="space-y-3 pt-4 border-t border-gray-200">
+                        <div className="space-y-3">
                             <a
                                 href="https://wa.me/5511981845016"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-3 w-full bg-green-600 text-white px-4 py-3 rounded-xl hover:bg-green-700 transition-colors duration-200"
+                                className="flex items-center gap-3 w-full bg-green-600 text-white px-4 py-3 rounded-xl hover:bg-green-700 transition-colors duration-200 shadow-sm hover:shadow-md"
                             >
                                 <MessageCircle className="w-6 h-6" />
                                 <span className="font-medium">Falar via WhatsApp</span>
@@ -259,7 +293,7 @@ const CenteredNavbar: React.FC<CenteredNavbarProps> = ({ className }) => {
 
                             <a
                                 href="tel:+551146933003"
-                                className="flex items-center gap-3 w-full text-gray-700 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors duration-200"
+                                className="flex items-center gap-3 w-full text-gray-700 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors duration-200 border border-gray-200"
                             >
                                 <Phone className="w-5 h-5" />
                                 <span className="font-medium">(11) 4693-3003</span>

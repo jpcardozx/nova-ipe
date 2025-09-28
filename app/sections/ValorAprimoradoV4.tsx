@@ -87,16 +87,52 @@ export default function ValorAprimoradoModerno() {
 
     const faqItems: FaqItem[] = [
         {
-            question: "Quais são os custos para vender um imóvel?",
-            answer: "Os principais custos incluem documentação, ITBI e nossa comissão. Fornecemos uma estimativa detalhada sem compromisso para que você possa avaliar."
+            question: "Quais são os custos envolvidos na venda de um imóvel?",
+            answer: "Os custos de venda incluem: nossa comissão de corretagem (negociada conforme o imóvel), documentação cartorial, ITBI (pago pelo comprador), certidões atualizadas e eventual regularização documental. Fornecemos um relatório detalhado de custos antes de iniciarmos o processo de venda."
         },
         {
-            question: "Qual o tempo médio para venda em Guararema?",
-            answer: "O tempo varia conforme localização, preço e condições do imóvel. Imóveis bem posicionados no mercado costumam ser vendidos entre 60 a 120 dias."
+            question: "Qual o prazo médio para comercialização de imóveis em Guararema?",
+            answer: "Com base em nosso histórico de 15 anos no mercado local, imóveis com precificação adequada e em boas condições são comercializados entre 45 a 90 dias. Fatores como localização, documentação regular e estratégia de marketing influenciam diretamente no prazo de venda."
         },
         {
-            question: "Como funciona a administração de aluguel?",
-            answer: "Cuidamos de toda a gestão: desde a busca do inquilino até a manutenção do imóvel, garantindo que você receba sua renda sem preocupações."
+            question: "Como funciona o serviço de administração predial?",
+            answer: "Nossa administração predial inclui: seleção criteriosa de locatários com análise de crédito, elaboração de contratos, cobrança de aluguéis, gestão de manutenções preventivas e corretivas, relatórios mensais de rentabilidade e assessoria jurídica especializada."
+        },
+        {
+            question: "Vocês trabalham com financiamento imobiliário?",
+            answer: "Sim, temos parcerias com as principais instituições financeiras da região. Auxiliamos nossos clientes em todo processo: pré-aprovação de crédito, documentação necessária, acompanhamento na avaliação do imóvel e liberação dos recursos. Nossa equipe especializada orienta sobre as melhores condições disponíveis no mercado."
+        },
+        {
+            question: "Qual a diferença entre avaliar e precificar um imóvel?",
+            answer: "A avaliação técnica considera aspectos estruturais, localização, metragem e estado de conservação para determinar o valor real do imóvel. A precificação é estratégica, considerando a dinâmica do mercado local, concorrência e objetivos do proprietário para definir o preço de venda mais eficaz."
+        },
+        {
+            question: "Quais documentos são necessários para vender meu imóvel?",
+            answer: "Documentação essencial: escritura ou registro de imóvel, certidões negativas (federal, estadual, municipal), IPTU quitado, declaração de confrontantes, planta baixa aprovada, habite-se (quando aplicável) e documentos pessoais. Nossa equipe jurídica verifica toda documentação e orienta sobre eventuais regularizações necessárias."
+        },
+        {
+            question: "Como é calculada a comissão de corretagem?",
+            answer: "Nossa comissão é negociada individualmente, considerando fatores como valor do imóvel, complexidade da transação, prazo para venda e serviços inclusos. Trabalhamos com percentuais competitivos no mercado e transparência total sobre todos os custos envolvidos."
+        },
+        {
+            question: "Vocês oferecem consultoria para investidores?",
+            answer: "Sim, oferecemos consultoria especializada para investidores imobiliários, incluindo: análise de potencial de valorização, estudo de rentabilidade, identificação de oportunidades no mercado local, orientação sobre estratégias de investimento e acompanhamento pós-compra."
+        },
+        {
+            question: "Como garantem a segurança jurídica das transações?",
+            answer: "Mantemos parceria com escritório jurídico especializado em direito imobiliário, realizamos due diligence completa da documentação, verificamos registros cartoriais, analisamos ônus e gravames, e acompanhamos todo processo até a escrituração final, garantindo máxima segurança jurídica."
+        },
+        {
+            question: "Atendem imóveis em outras cidades da região?",
+            answer: "Atendemos Guararema e região metropolitana, incluindo Mogi das Cruzes, Jacareí, Santa Isabel e São José dos Campos. Nossa expertise local nos permite oferecer assessoria qualificada sobre as particularidades de cada mercado regional."
+        },
+        {
+            question: "Qual o suporte oferecido pós-venda?",
+            answer: "Nosso relacionamento não termina com a venda. Oferecemos suporte contínuo incluindo: orientações sobre escrituração, acompanhamento em cartório, esclarecimento sobre documentação, indicação de profissionais especializados (advogados, engenheiros, arquitetos) e assessoria para futuras transações imobiliárias."
+        },
+        {
+            question: "Como funciona a avaliação gratuita do meu imóvel?",
+            answer: "Nossa avaliação gratuita inclui: visita técnica presencial, análise comparativa de mercado, verificação documental prévia, relatório detalhado com precificação sugerida e apresentação de estratégia de marketing personalizada. O processo é realizado por corretor qualificado e sem compromisso de exclusividade."
         }
     ];
 
@@ -197,11 +233,11 @@ export default function ValorAprimoradoModerno() {
                                 <span className="font-semibold">DÚVIDAS FREQUENTES</span>
                             </div>
                             <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-                                Respostas que
-                                <span className="block text-amber-700">facilitam sua decisão</span>
+                                Informações Essenciais
+                                <span className="block text-amber-700">para Sua Transação Imobiliária</span>
                             </h2>
-                            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-                                Esclarecemos as principais dúvidas sobre processos imobiliários em Guararema
+                            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                                Respondemos às questões mais importantes sobre compra, venda e locação de imóveis em Guararema e região, com base em nossa experiência de 15 anos no mercado local
                             </p>
                         </div>
 

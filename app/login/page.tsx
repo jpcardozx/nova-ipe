@@ -12,9 +12,16 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PillSelector } from '@/components/ui/pill-selector'
-import { ArrowRight, Building2, User, AlertTriangle, Eye, EyeOff, UserPlus, ArrowLeft, Sparkles } from 'lucide-react'
+import { ArrowRight, Building2, User, AlertTriangle, Eye, EyeOff, UserPlus, ArrowLeft, Sparkles, ExternalLink } from 'lucide-react'
 import { SimpleAuthManager } from '@/lib/auth-simple'
 import { EnhancedAuthManager, type LoginMode } from '@/lib/auth/enhanced-auth-manager'
+
+// WordPress Icon Component
+const WordPressIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M21.469 6.825c.84 1.537 1.318 3.3 1.318 5.175 0 3.979-2.156 7.456-5.363 9.325l3.295-9.527c.615-1.54.82-2.771.82-3.864 0-.405-.026-.78-.07-1.11m-7.981.105c.647-.03 1.232-.105 1.232-.105.582-.075.514-.93-.067-.899 0 0-1.755.135-2.88.135-1.064 0-2.85-.135-2.85-.135-.584-.031-.661.854-.078.884 0 0 .541.075 1.116.105l1.659 4.553-2.425 7.270-4.095-11.823c.646-.03 1.231-.105 1.231-.105.584-.075.515-.93-.068-.899 0 0-1.755.135-2.88.135-.202 0-.44-.005-.692-.015C2.566 4.753 6.056 2.5 10.21 2.5c3.096 0 5.913 1.18 8.015 3.11-.052-.003-.101-.009-.156-.009-1.064 0-1.818.93-1.818 1.93 0 .898.52 1.659.075 2.588-.434.93-.899 2.128-.899 3.858 0 1.197.46 2.588 1.049 4.523l1.37 4.58c.005-.004.01-.007.016-.011m-8.709-1.695l3.59 9.837c-1.042.299-2.162.462-3.33.462-1.302 0-2.537-.206-3.7-.584l3.44-9.715m7.081-5.573C11.7 1.674 6.73 6.644 6.73 12.814s4.97 11.14 11.14 11.14S29.01 19.184 29.01 13.014 24.04 1.874 17.87 1.874z"/>
+  </svg>
+)
 
 // Schemas
 const loginSchema = z.object({
@@ -390,7 +397,7 @@ function LoginPageContent() {
       <div className="absolute inset-0 bg-black bg-opacity-60 bg-gradient-to-t from-black via-transparent to-black" />
 
       {/* Container principal */}
-      <div className="relative z-10 flex min-h-screen items-center justify-center p-4 sm:p-6 lg:p-12">
+      <div className="relative z-10 flex min-h-screen items-center justify-center p-3 sm:p-4 md:p-6 lg:p-12">
         <AnimatePresence mode="wait">
           {/* LOGIN VIEW */}
           {viewMode === 'login' && (
@@ -401,7 +408,7 @@ function LoginPageContent() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
-              className="w-full max-w-md space-y-8 rounded-2xl bg-white/20 p-8 shadow-2xl backdrop-blur-2xl border border-white/30"
+              className="w-full max-w-md space-y-6 sm:space-y-8 rounded-2xl bg-white/20 p-6 sm:p-8 shadow-2xl backdrop-blur-2xl border border-white/30"
             >
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
@@ -410,7 +417,7 @@ function LoginPageContent() {
               >
                 <h2
                   onClick={handlePortfolioAccess}
-                  className={`mt-6 bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-center text-4xl font-bold tracking-tight text-transparent font-serif transition-all duration-200 select-none ${
+                  className={`mt-6 bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-center text-3xl sm:text-4xl font-bold tracking-tight text-transparent font-serif transition-all duration-200 select-none ${
                     // Only show as clickable when form is empty/invalid
                     (!loginForm.formState.isValid || (!loginForm.watch('email') && !loginForm.watch('password')))
                       ? `cursor-pointer ${portfolioClicks > 0 ? 'brightness-125 scale-105' : 'hover:brightness-110'}`
@@ -513,7 +520,7 @@ function LoginPageContent() {
                   <Button
                     type="submit"
                     disabled={isLoading || !loginForm.formState.isValid}
-                    className={`group relative mx-auto flex w-3/4 justify-center shadow-lg transform transition-all duration-300 ${isLoading
+                    className={`group relative mx-auto flex w-full sm:w-3/4 justify-center shadow-lg transform transition-all duration-300 ${isLoading
                       ? 'bg-gradient-to-r from-amber-400 to-amber-500 cursor-wait'
                       : !loginForm.formState.isValid
                         ? 'bg-gradient-to-r from-gray-500 to-gray-600 cursor-not-allowed'
@@ -545,6 +552,53 @@ function LoginPageContent() {
                   </Button>
                 </motion.div>
               </form>
+
+              {/* WordPress Access Button */}
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="mt-6"
+              >
+                <motion.a
+                  href="https://wordpress.imobiliariaipe.com.br"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="group relative mx-auto flex w-full sm:w-3/4 justify-center items-center gap-2 sm:gap-3 py-3 px-3 sm:px-4 rounded-lg bg-gradient-to-r from-gray-600 via-gray-700 to-gray-800 text-white shadow-lg border border-amber-500/30 hover:border-amber-400/50 transition-all duration-300 hover:shadow-amber-500/20 hover:shadow-xl"
+                >
+                  {/* WordPress Icon */}
+                  <WordPressIcon className="h-5 w-5 text-amber-400 group-hover:text-amber-300 transition-colors" />
+
+                  {/* Button Content */}
+                  <div className="flex flex-col items-center">
+                    <span className="text-sm sm:text-base font-medium">Site WordPress</span>
+                    <span className="text-xs text-gray-300 group-hover:text-gray-200 hidden sm:block">Sistema Legado</span>
+                  </div>
+
+                  {/* External Link Icon */}
+                  <ExternalLink className="h-4 w-4 text-amber-400 group-hover:text-amber-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+
+                  {/* Hover Effect Overlay */}
+                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-amber-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </motion.a>
+              </motion.div>
+
+              {/* Solicitar Acesso Button */}
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="mt-4 text-center"
+              >
+                <button
+                  onClick={switchToSignup}
+                  className="text-amber-300 hover:text-amber-200 text-sm underline transition-colors duration-200"
+                >
+                  Não tem acesso? Solicitar aqui
+                </button>
+              </motion.div>
             </motion.div>
           )}
 

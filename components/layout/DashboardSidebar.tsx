@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -24,11 +24,13 @@ import {
     CheckSquare,
     Calculator,
     Cloud,
-    Network
+    Network,
+    Mail,
+    type LucideIcon
 } from 'lucide-react'
 
 interface MenuItem {
-    icon: any;
+    icon: LucideIcon;
     label: string;
     href: string;
     color: string;
@@ -40,7 +42,7 @@ interface MenuItem {
 
 interface MenuCategory {
     category: string;
-    icon: any;
+    icon: LucideIcon;
     items: MenuItem[];
     expanded?: boolean;
 }
@@ -166,6 +168,13 @@ const menuCategories: MenuCategory[] = [
                 description: 'Gestão de documentos'
             },
             {
+                icon: Mail,
+                label: 'E-mail',
+                href: '/dashboard/mail',
+                color: 'text-indigo-600',
+                description: 'Sistema de e-mail'
+            },
+            {
                 icon: Settings,
                 label: 'Configurações',
                 href: '/dashboard/settings',
@@ -186,16 +195,35 @@ export default function DashboardSidebar({ collapsed, onToggle }: DashboardSideb
     const { user } = useCurrentUser()
     const [searchQuery, setSearchQuery] = useState('')
 
-    const allItems = menuCategories.flatMap(category => category.items)
+    const allItems = useMemo(() =>
+        menuCategories.flatMap(category => category.items),
+        []
+    )
 
-    const filteredItems = allItems.filter(item => {
-        if (item.adminOnly && !isAdmin(user)) return false
-        if (searchQuery) {
-            return item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                item.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredItems = useMemo(() => {
+        return allItems.filter(item => {
+            if (item.adminOnly && !isAdmin(user)) return false
+            if (searchQuery) {
+                const searchLower = searchQuery.toLowerCase()
+                return item.label.toLowerCase().includes(searchLower) ||
+                    item.description?.toLowerCase().includes(searchLower)
+            }
+            return true
+        })
+    }, [allItems, user, searchQuery])
+
+    const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value)
+    }, [])
+
+    const handleLogout = useCallback(async () => {
+        try {
+            // Add your logout logic here
+            console.log('Logout functionality to be implemented')
+        } catch (error) {
+            console.error('Error during logout:', error)
         }
-        return true
-    })
+    }, [])
 
     return (
         <div
@@ -238,7 +266,7 @@ export default function DashboardSidebar({ collapsed, onToggle }: DashboardSideb
                             type="text"
                             placeholder="Buscar funcionalidades..."
                             value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onChange={handleSearchChange}
                             className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 text-gray-900"
                         />
                     </div>
@@ -314,14 +342,20 @@ export default function DashboardSidebar({ collapsed, onToggle }: DashboardSideb
                                 </p>
                             </div>
                         </div>
-                        <button className="w-full flex items-center space-x-2 p-2 text-gray-500 hover:text-red-500 transition-colors">
+                        <button
+                            onClick={handleLogout}
+                            className="w-full flex items-center space-x-2 p-2 text-gray-500 hover:text-red-500 transition-colors"
+                        >
                             <LogOut className="h-4 w-4" />
                             <span className="text-sm">Sair</span>
                         </button>
                     </div>
                 )}
                 {collapsed && (
-                    <button className="w-full flex justify-center p-2 text-gray-500 hover:text-red-500 transition-colors">
+                    <button
+                        onClick={handleLogout}
+                        className="w-full flex justify-center p-2 text-gray-500 hover:text-red-500 transition-colors"
+                    >
                         <LogOut className="h-5 w-5" />
                     </button>
                 )}
