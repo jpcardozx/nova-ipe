@@ -561,7 +561,7 @@ function LoginPageContent() {
                 className="mt-6"
               >
                 <motion.a
-                  href="https://wordpress.imobiliariaipe.com.br"
+                  href="https://portal.imobiliariaipe.com.br"
                   target="_blank"
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.02, y: -2 }}
