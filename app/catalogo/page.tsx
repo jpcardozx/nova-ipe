@@ -2,6 +2,7 @@ import React from 'react'
 import { Metadata } from 'next'
 import { Building2, MapPin, Award, Users, Search, Filter, Grid3x3, TrendingUp } from 'lucide-react'
 import PropertyCatalogClean from './components/PropertyCatalogClean'
+import { getAllProperties, transformPropertyToImovelClient } from '@/lib/sanity/queries'
 
 export const metadata: Metadata = {
     title: 'Catálogo de Imóveis | Ipê Concept',
@@ -22,6 +23,18 @@ interface CatalogoPageProps {
 
 export default async function CatalogoPage({ searchParams }: CatalogoPageProps) {
     const params = await searchParams
+    
+    // Fetch real properties from Sanity
+    let properties: any[] = []
+    try {
+        const sanityProperties = await getAllProperties()
+        properties = sanityProperties.map(transformPropertyToImovelClient)
+        console.log('✅ Carregadas', properties.length, 'propriedades do Sanity para o catálogo')
+    } catch (error) {
+        console.error('❌ Erro ao carregar propriedades do Sanity:', error)
+        // Fallback to empty array - the component will handle this
+        properties = []
+    }
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -214,7 +227,10 @@ export default async function CatalogoPage({ searchParams }: CatalogoPageProps) 
                                 </div>
 
                                 {/* Property Catalog Component */}
-                                <PropertyCatalogClean searchParams={params as Record<string, string>} />
+                                <PropertyCatalogClean 
+                                    searchParams={params as Record<string, string>} 
+                                    initialProperties={properties}
+                                />
                             </div>
                         </div>
                     </div>
