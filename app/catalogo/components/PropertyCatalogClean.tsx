@@ -27,9 +27,7 @@ interface FilterState {
     bedrooms: string
 }
 
-// TODO: Remover mock data quando conectar com API real
-const mockImovelClient: ImovelClient[] = []
-
+// Dados reais conectados via props - sem mock data
 export default function PropertyCatalogClean({
     searchParams = {},
     className,
@@ -48,8 +46,8 @@ export default function PropertyCatalogClean({
         bedrooms: '',
     })
 
-    // Usar dados reais ou mock como fallback
-    const sourceProperties = initialProperties.length > 0 ? initialProperties : mockImovelClient
+    // Usar dados reais vindos das props
+    const sourceProperties = initialProperties
 
     // Transformar para formato unificado
     const unifiedProperties = useMemo(() => {
