@@ -1,7 +1,9 @@
+
 'use client'
 
 import { useState, useEffect } from 'react'
 import { useCurrentUser } from '@/lib/hooks/useCurrentUser-simple'
+import { useZohoUser } from '@/hooks/use-zoho-user'
 import { redirect } from 'next/navigation'
 import DashboardSidebar from '@/components/layout/DashboardSidebar'
 import DashboardHeader from './components/DashboardHeader'
@@ -12,7 +14,12 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { user, loading } = useCurrentUser()
+  const { user: supabaseUser, loading: supabaseLoading } = useCurrentUser()
+  const { user: zohoUser, loading: zohoLoading, isAuthenticated } = useZohoUser()
+  
+  // Usar Zoho se disponível, senão Supabase
+  const user = zohoUser || supabaseUser
+  const loading = zohoLoading || supabaseLoading
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true) // Iniciar colapsado por padrão
 
   // Controlar sidebar baseado no tamanho da tela

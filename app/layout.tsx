@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Providers } from './providers/QueryProvider';
+import ReactQueryProvider from './providers/ReactQueryProvider';
 import ConditionalLayout from './components/ConditionalLayout';
 import './globals.css';
 
@@ -138,9 +139,11 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-white text-gray-900" style={{ fontFamily: 'var(--font-inter)' }}>
         <style dangerouslySetInnerHTML={{ __html: `:root { ${fontVariables} }` }} />
         <Providers>
-          <ConditionalLayout>
-            {children}
-          </ConditionalLayout>
+          <ReactQueryProvider>
+            <ConditionalLayout>
+              {children}
+            </ConditionalLayout>
+          </ReactQueryProvider>
         </Providers>
       </body>
     </html>

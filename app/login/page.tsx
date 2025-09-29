@@ -15,17 +15,21 @@ import { PillSelector } from '@/components/ui/pill-selector'
 import { ArrowRight, Building2, User, AlertTriangle, Eye, EyeOff, UserPlus, ArrowLeft, Sparkles, ExternalLink } from 'lucide-react'
 import { SimpleAuthManager } from '@/lib/auth-simple'
 import { EnhancedAuthManager, type LoginMode } from '@/lib/auth/enhanced-auth-manager'
+import { zohoMail360 } from '@/lib/zoho-mail360'
 
-// WordPress Icon Component
-const WordPressIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M21.469 6.825c.84 1.537 1.318 3.3 1.318 5.175 0 3.979-2.156 7.456-5.363 9.325l3.295-9.527c.615-1.54.82-2.771.82-3.864 0-.405-.026-.78-.07-1.11m-7.981.105c.647-.03 1.232-.105 1.232-.105.582-.075.514-.93-.067-.899 0 0-1.755.135-2.88.135-1.064 0-2.85-.135-2.85-.135-.584-.031-.661.854-.078.884 0 0 .541.075 1.116.105l1.659 4.553-2.425 7.270-4.095-11.823c.646-.03 1.231-.105 1.231-.105.584-.075.515-.93-.068-.899 0 0-1.755.135-2.88.135-.202 0-.44-.005-.692-.015C2.566 4.753 6.056 2.5 10.21 2.5c3.096 0 5.913 1.18 8.015 3.11-.052-.003-.101-.009-.156-.009-1.064 0-1.818.93-1.818 1.93 0 .898.52 1.659.075 2.588-.434.93-.899 2.128-.899 3.858 0 1.197.46 2.588 1.049 4.523l1.37 4.58c.005-.004.01-.007.016-.011m-8.709-1.695l3.59 9.837c-1.042.299-2.162.462-3.33.462-1.302 0-2.537-.206-3.7-.584l3.44-9.715m7.081-5.573C11.7 1.674 6.73 6.644 6.73 12.814s4.97 11.14 11.14 11.14S29.01 19.184 29.01 13.014 24.04 1.874 17.87 1.874z"/>
+// Website Icon Component - Modern Globe Icon
+const WebsiteIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+    <path d="M2 12h20"/>
+    <path d="M12 2a14.5 14.5 0 0 1 0 20"/>
   </svg>
 )
 
 // Schemas
 const loginSchema = z.object({
-  email: z.string().email({ message: 'Email inválido.' }),
+  username: z.string().min(1, { message: 'Digite seu usuário.' }),
   password: z.string().min(6, { message: 'Senha deve ter pelo menos 6 caracteres.' }),
 })
 
@@ -57,6 +61,7 @@ function LoginPageContent() {
   const [errorMessage, setErrorMessage] = useState('')
   const [selectedDepartment, setSelectedDepartment] = useState('')
   const [portfolioClicks, setPortfolioClicks] = useState(0)
+  const [selectedDomain, setSelectedDomain] = useState('@imobiliariaipe.com.br')
   const router = useRouter()
   const searchParams = useSearchParams()
   const authManager = new SimpleAuthManager()
@@ -104,171 +109,47 @@ function LoginPageContent() {
   })
 
   const onLoginSubmit = async (data: LoginFormValues) => {
-    console.log('🔄 Iniciando login para:', data.email)
+    const fullEmail = `${data.username}${selectedDomain}`
+    console.log('🔄 Iniciando login Zoho para:', fullEmail)
     setIsLoading(true)
     setErrorMessage('')
 
     try {
-      console.log('📡 Tentando autenticação no Supabase...')
-
-      // Função de retry para problemas de rede
-      const authenticateWithRetry = async (retries = 3): Promise<any> => {
-        for (let attempt = 1; attempt <= retries; attempt++) {
-          try {
-            console.log(`🔄 Tentativa ${attempt}/${retries}...`)
-
-            const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-              email: data.email,
-              password: data.password,
-            })
-
-            return { data: authData, error: authError }
-          } catch (networkError: any) {
-            console.warn(`⚠️ Erro de rede na tentativa ${attempt}:`, networkError.message)
-
-            if (attempt === retries) {
-              throw networkError
-            }
-
-            // Aguarda antes da próxima tentativa (exponential backoff)
-            await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000))
-          }
-        }
-      }      // Authenticate with Supabase (with retry)
-      const { data: authData, error: authError } = await authenticateWithRetry()
-
-      if (authError) {
-        console.error('❌ Erro de login:', authError)
-        console.error('❌ Código do erro:', authError.status)
-        console.error('❌ Mensagem completa:', authError.message, '=> localmente não dá esse erro, mas na vercel dá, após deploy')
-
-        // Handle different error types
-        if (authError.message.includes('Failed to fetch') || authError.message.includes('fetch')) {
-          setErrorMessage('🌐 Erro de conexão. Verifique sua internet e tente novamente.')
-        } else if (authError.message.includes('Invalid login credentials')) {
-          setErrorMessage('❌ Credenciais inválidas. Verifique seu email e senha.')
-        } else if (authError.message.includes('Email not confirmed')) {
-          setErrorMessage('📧 Email não confirmado. Verifique sua caixa de entrada.')
-        } else if (authError.message.includes('Too many requests')) {
-          setErrorMessage('⏰ Muitas tentativas. Tente novamente em alguns minutos.')
-        } else if (authError.message.includes('signup')) {
-          setErrorMessage('🚫 Usuário não encontrado. Use "Solicitar acesso" para se cadastrar.')
+      console.log('� Autenticando exclusivamente via Zoho Mail360...')
+      
+      const zohoUser = await zohoMail360.verifyUser(fullEmail, data.password)
+      
+      if (zohoUser) {
+        console.log('✅ Usuário Zoho autenticado:', zohoUser.emailAddress)
+        
+        // Salvar dados do usuário
+        localStorage.setItem('currentUser', JSON.stringify({
+          email: zohoUser.emailAddress,
+          name: zohoUser.displayName,
+          organization: zohoUser.organizationName,
+          provider: 'zoho_mail360'
+        }))
+        
+        // Redirecionar
+        if (loginMode === 'studio') {
+          router.push('/studio')
         } else {
-          setErrorMessage(`❌ Erro: ${authError.message}`)
+          router.push('/dashboard')
         }
         return
-      }
-
-      if (!authData.user) {
-        console.error('❌ Usuário não retornado após autenticação')
-        setErrorMessage('❌ Erro na autenticação. Tente novamente.')
-        return
-      }
-
-      console.log('✅ Autenticação bem-sucedida para:', authData.user.email)
-
-      // Check if user has a profile, create one if needed
-      let profile = null
-
-      try {
-        console.log('🔍 Verificando profile do usuário...')
-
-        const { data: existingProfile, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', authData.user.id)
-          .single()
-
-        if (profileError && profileError.code !== 'PGRST116') {
-          console.warn('⚠️ Erro ao buscar profile:', profileError.message)
-        }
-
-        if (existingProfile) {
-          console.log('✅ Profile encontrado:', existingProfile.email)
-          profile = existingProfile
-        } else {
-          console.log('🔧 Criando profile para usuário...')
-
-          // Create a basic profile for the user
-          const userEmail = authData.user.email || ''
-          const { data: newProfile, error: createError } = await supabase
-            .from('profiles')
-            .insert([{
-              id: authData.user.id,
-              email: userEmail,
-              full_name: authData.user.user_metadata?.full_name || userEmail.split('@')[0],
-              role: 'user',
-              is_active: true,
-              is_approved: true
-            }])
-            .select()
-            .single()
-
-          if (createError) {
-            console.warn('⚠️ Não foi possível criar profile, continuando com dados básicos:', createError.message)
-            // Proceed with basic user data
-            profile = {
-              id: authData.user.id,
-              email: userEmail,
-              full_name: userEmail.split('@')[0],
-              role: 'user'
-            }
-          } else {
-            console.log('✅ Profile criado com sucesso')
-            profile = newProfile
-          }
-        }
-      } catch (error) {
-        console.warn('⚠️ Erro na verificação de profile, continuando com autenticação básica:', error)
-        const userEmail = authData.user.email || ''
-        profile = {
-          id: authData.user.id,
-          email: userEmail,
-          full_name: userEmail.split('@')[0],
-          role: 'user'
-        }
-      }
-
-      console.log('✅ Login bem-sucedido para usuário:', profile.email)
-
-      // Log successful login (optional - continue even if this fails)
-      try {
-        const { error: logError } = await supabase
-          .from('login_attempts')
-          .insert([{
-            email: data.email,
-            success: true,
-            attempted_at: new Date().toISOString()
-          }])
-
-        if (logError) {
-          console.warn('⚠️ Não foi possível registrar tentativa de login:', logError.message)
-        }
-      } catch (logError) {
-        console.warn('⚠️ Não foi possível registrar tentativa de login:', logError instanceof Error ? logError.message : String(logError))
-      }
-
-      // Redirect based on mode
-      console.log('🚀 Redirecionando para:', loginMode === 'studio' ? '/structure' : '/dashboard')
-
-      if (loginMode === 'studio') {
-        router.push('/structure')
       } else {
-        router.push('/dashboard')
+        setErrorMessage('❌ Usuário ou senha inválidos no sistema Zoho.')
+        return
       }
+
+      
+
+      
 
     } catch (error) {
-      console.error('❌ Erro crítico no login:', error)
-      const errorMessage = error instanceof Error ? error.message : String(error)
-
-      // Tratamento específico para erros de rede
-      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('fetch') || errorMessage.includes('ERR_NAME_NOT_RESOLVED')) {
-        setErrorMessage('🌐 Erro de conexão com o servidor. Verifique sua internet e tente novamente.')
-      } else {
-        setErrorMessage(`❌ Erro interno: ${errorMessage}`)
-      }
+      console.error('❌ Erro no login Zoho:', error)
+      setErrorMessage('❌ Erro na autenticação. Verifique suas credenciais.')
     } finally {
-      console.log('🏁 Finalizando processo de login')
       setIsLoading(false)
     }
   }
@@ -351,7 +232,7 @@ function LoginPageContent() {
 
     // Only allow portfolio access if login form is not filled/valid
     const isFormEmptyOrInvalid = !loginForm.formState.isValid ||
-      (!loginForm.getValues('email') && !loginForm.getValues('password'))
+            (!loginForm.getValues('username') && !loginForm.getValues('password'))
 
     if (!isFormEmptyOrInvalid) {
       return // Don't allow portfolio access when form is valid/filled
@@ -408,7 +289,7 @@ function LoginPageContent() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
-              className="w-full max-w-md space-y-6 sm:space-y-8 rounded-2xl bg-white/20 p-6 sm:p-8 shadow-2xl backdrop-blur-2xl border border-white/30"
+              className="w-full max-w-md space-y-6 sm:space-y-8 rounded-3xl bg-gradient-to-br from-white/25 via-white/20 to-white/15 p-8 sm:p-10 shadow-2xl backdrop-blur-3xl border border-white/20 ring-1 ring-white/10"
             >
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
@@ -419,12 +300,12 @@ function LoginPageContent() {
                   onClick={handlePortfolioAccess}
                   className={`mt-6 bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-center text-3xl sm:text-4xl font-bold tracking-tight text-transparent font-serif transition-all duration-200 select-none ${
                     // Only show as clickable when form is empty/invalid
-                    (!loginForm.formState.isValid || (!loginForm.watch('email') && !loginForm.watch('password')))
+                    (!loginForm.formState.isValid || (!loginForm.watch('username') && !loginForm.watch('password')))
                       ? `cursor-pointer ${portfolioClicks > 0 ? 'brightness-125 scale-105' : 'hover:brightness-110'}`
                       : 'cursor-default'
                     }`}
                   title={
-                    (!loginForm.formState.isValid || (!loginForm.watch('email') && !loginForm.watch('password'))) && portfolioClicks > 0
+                    (!loginForm.formState.isValid || (!loginForm.watch('username') && !loginForm.watch('password'))) && portfolioClicks > 0
                       ? `${portfolioClicks}/5`
                       : undefined
                   }
@@ -452,7 +333,7 @@ function LoginPageContent() {
                 />
               </motion.div>
 
-              <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-6">
+              <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-7">
                 <motion.div
                   className="space-y-4"
                   initial={{ y: 20, opacity: 0 }}
@@ -460,17 +341,58 @@ function LoginPageContent() {
                   transition={{ delay: 0.3 }}
                 >
                   <div>
-                    <Label htmlFor="email" className="text-gray-200">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="seu@email.com"
-                      {...loginForm.register('email')}
-                      className={`mt-1 bg-white/10 text-white placeholder-white/50 border-white/20 focus:border-amber-400 focus:ring-amber-400 ${loginForm.formState.errors.email ? 'border-red-500' : ''
-                        }`}
-                    />
-                    {loginForm.formState.errors.email && (
-                      <p className="text-red-400 text-sm mt-1">{loginForm.formState.errors.email.message}</p>
+                    <Label htmlFor="username" className="text-gray-200">Email</Label>
+                    <div className="mt-1 relative">
+                      <div className="flex items-center bg-white/10 rounded-lg border border-white/20 focus-within:border-amber-400 focus-within:ring-1 focus-within:ring-amber-400 overflow-hidden">
+                        <Input
+                          id="username"
+                          type="text"
+                          placeholder="imobipe"
+                          {...loginForm.register('username')}
+                          className={`flex-1 bg-transparent border-0 text-white placeholder-white/50 focus:ring-0 focus:border-0 ${loginForm.formState.errors.username ? 'text-red-400' : ''
+                            }`}
+                        />
+                        <div className="flex items-center border-l border-white/20">
+                          <span className="px-3 py-2 text-sm text-white/80">
+                            {selectedDomain}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedDomain(selectedDomain === '@imobiliariaipe.com.br' ? '@ipeimoveis.com' : '@imobiliariaipe.com.br')}
+                            className="px-2 py-2 text-white/60 hover:text-white/90 transition-colors"
+                            title="Alternar domínio"
+                          >
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                      
+                      {/* Help Icon */}
+                      <div className="absolute -right-6 top-1/2 transform -translate-y-1/2 group">
+                        <button
+                          type="button"
+                          className="w-4 h-4 text-white/50 hover:text-white/80 transition-colors"
+                        >
+                          <svg fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM8.94 6.94a1.5 1.5 0 112.12 2.12L10 10.06V11a1 1 0 102 0v-.94l.94-.94a3.5 3.5 0 00-4.94-4.94 1 1 0 001.42 1.42z" clipRule="evenodd" />
+                            <path d="M10 15a1 1 0 100-2 1 1 0 000 2z" />
+                          </svg>
+                        </button>
+                        
+                        {/* Simple Tooltip */}
+                        <div className="absolute bottom-full right-0 mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                          <div className="font-medium text-amber-300 mb-1">Recomendação</div>
+                          <div className="mb-2">Use <span className="text-amber-200">@imobiliariaipe.com.br</span> como padrão.</div>
+                          <div className="text-green-400 text-xs">✅ Zoho API validada</div>
+                          
+                          <div className="absolute top-full right-3 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                        </div>
+                      </div>
+                    </div>
+                    {loginForm.formState.errors.username && (
+                      <p className="text-red-400 text-sm mt-1">{loginForm.formState.errors.username.message}</p>
                     )}
                   </div>
 
@@ -553,7 +475,7 @@ function LoginPageContent() {
                 </motion.div>
               </form>
 
-              {/* WordPress Access Button */}
+              {/* WordPress Access Button - Botão Secundário */}
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -564,24 +486,19 @@ function LoginPageContent() {
                   href="https://wordpress.imobiliariaipe.com.br"
                   target="_blank"
                   rel="noopener noreferrer"
-                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="group relative mx-auto flex w-full sm:w-3/4 justify-center items-center gap-2 sm:gap-3 py-3 px-3 sm:px-4 rounded-lg bg-gradient-to-r from-gray-600 via-gray-700 to-gray-800 text-white shadow-lg border border-amber-500/30 hover:border-amber-400/50 transition-all duration-300 hover:shadow-amber-500/20 hover:shadow-xl"
+                  className="group relative mx-auto flex w-full sm:w-3/4 justify-center items-center gap-3 py-3 px-4 rounded-lg bg-white/10 text-white border border-white/20 hover:border-white/30 hover:bg-white/15 transition-all duration-300 shadow-lg"
                 >
-                  {/* WordPress Icon */}
-                  <WordPressIcon className="h-5 w-5 text-amber-400 group-hover:text-amber-300 transition-colors" />
-
-                  {/* Button Content */}
-                  <div className="flex flex-col items-center">
-                    <span className="text-sm sm:text-base font-medium">Site WordPress</span>
-                    <span className="text-xs text-gray-300 group-hover:text-gray-200 hidden sm:block">Sistema Legado</span>
-                  </div>
-
-                  {/* External Link Icon */}
-                  <ExternalLink className="h-4 w-4 text-amber-400 group-hover:text-amber-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-
-                  {/* Hover Effect Overlay */}
-                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-amber-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                    <WebsiteIcon className="h-5 w-5 text-white/70 group-hover:text-white transition-colors" />
+                  </span>
+                  
+                  <span className="font-medium">Site WordPress</span>
+                  
+                  <span className="absolute inset-y-0 right-0 flex items-center pr-3">
+                    <ExternalLink className="h-4 w-4 text-white/70 group-hover:text-white transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </span>
                 </motion.a>
               </motion.div>
 

@@ -34,8 +34,42 @@ export function useCurrentUser() {
 
     const getUser = async () => {
       try {
+        // 🚀 DESENVOLVIMENTO: Liberar acesso em localhost:3000
+        const isDevelopment = process.env.NODE_ENV === 'development' &&
+                             (typeof window !== 'undefined' && window.location.hostname === 'localhost')
+
+        if (isDevelopment) {
+          console.log('🔓 Modo desenvolvimento: Acesso liberado ao dashboard')
+          const devProfile: UserProfile = {
+            id: 'dev-user-' + Date.now(),
+            email: 'dev@localhost.com',
+            full_name: 'Desenvolvedor Local',
+            phone: '(11) 99999-9999',
+            department: 'Desenvolvimento',
+            status: 'active',
+            role: {
+              id: 'admin',
+              name: 'Administrador',
+              hierarchy_level: 10,
+              permissions: ['*']
+            },
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            last_login: new Date().toISOString(),
+            avatar_url: '/images/dev-avatar.png',
+            permissions: ['*']
+          }
+
+          if (mounted) {
+            setUser(devProfile)
+            setLoading(false)
+            setError(null)
+          }
+          return
+        }
+
         const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
-        
+
         if (authError || !authUser) {
           if (mounted) {
             setUser(null)

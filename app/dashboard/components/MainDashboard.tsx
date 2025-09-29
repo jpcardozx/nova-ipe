@@ -94,6 +94,28 @@ function MainDashboardContent() {
   // Ações estratégicas para crescimento do negócio
   const strategicActions = [
     {
+      id: 'mail-service',
+      label: 'Email Marketing',
+      subtitle: 'Comunicação',
+      icon: MessageSquare,
+      color: 'from-indigo-500 to-indigo-600',
+      action: () => {
+        window.location.href = '/dashboard/mail'
+        toast.info('Acessando sistema de email profissional...')
+      }
+    },
+    {
+      id: 'whatsapp',
+      label: 'WhatsApp Business',
+      subtitle: 'Atendimento',
+      icon: Phone,
+      color: 'from-green-500 to-green-600',
+      action: () => {
+        window.location.href = '/dashboard/whatsapp'
+        toast.info('Gerenciando conversas no WhatsApp...')
+      }
+    },
+    {
       id: 'jetimob',
       label: 'Integrar Portais',
       subtitle: 'Jetimob',
@@ -109,38 +131,34 @@ function MainDashboardContent() {
       label: 'Primeiro Lead',
       subtitle: 'Comece aqui',
       icon: Users,
-      color: 'from-green-500 to-green-600',
+      color: 'from-cyan-500 to-cyan-600',
       action: () => {
         window.location.href = '/dashboard/leads?action=create'
         toast.info('Criando seu primeiro lead...')
-      }
-    },
-    {
-      id: 'properties',
-      label: 'Cadastrar Imóvel',
-      subtitle: 'Portfólio',
-      icon: Building2,
-      color: 'from-purple-500 to-purple-600',
-      action: () => {
-        window.location.href = '/dashboard/jetimob'
-        toast.info('Vamos cadastrar seu primeiro imóvel...')
-      }
-    },
-    {
-      id: 'agenda',
-      label: 'Organizar Agenda',
-      subtitle: 'Produtividade',
-      icon: Calendar,
-      color: 'from-orange-500 to-orange-600',
-      action: () => {
-        window.location.href = '/dashboard/appointments'
-        toast.info('Organizando sua agenda de visitas...')
       }
     }
   ]
 
   // Oportunidades de crescimento (em vez de métricas zeradas)
   const growthOpportunities = [
+    {
+      title: 'Email Marketing Profissional',
+      description: 'Envie campanhas personalizadas e newsletters para clientes',
+      action: 'Configurar Email',
+      href: '/dashboard/mail',
+      icon: MessageSquare,
+      progress: 0,
+      benefit: 'Até 40% mais conversões'
+    },
+    {
+      title: 'WhatsApp Business',
+      description: 'Automatize atendimento e campanhas via WhatsApp',
+      action: 'Conectar WhatsApp',
+      href: '/dashboard/whatsapp',
+      icon: Phone,
+      progress: 0,
+      benefit: 'Resposta 24/7 automatizada'
+    },
     {
       title: 'Conecte-se aos Portais',
       description: 'Publique em Viva Real, ZAP e OLX automaticamente',
@@ -158,24 +176,6 @@ function MainDashboardContent() {
       icon: Users,
       progress: 0,
       benefit: 'Conversão 5x maior'
-    },
-    {
-      title: 'Monte seu Portfólio',
-      description: 'Cadastre imóveis com fotos profissionais',
-      action: 'Adicionar Imóveis',
-      href: '/dashboard/jetimob',
-      icon: Building2,
-      progress: 0,
-      benefit: 'Credibilidade no mercado'
-    },
-    {
-      title: 'Automatize Processos',
-      description: 'Workflows inteligentes para sua operação',
-      action: 'Explorar Automação',
-      href: '/dashboard/cloud',
-      icon: Zap,
-      progress: 0,
-      benefit: 'Economia de 4h/dia'
     }
   ]
 
@@ -267,6 +267,77 @@ function MainDashboardContent() {
                 </motion.div>
               )
             })}
+          </div>
+        </section>
+
+        {/* Central de Comunicação */}
+        <section className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-semibold text-neutral-900 flex items-center gap-2">
+                <MessageSquare className="h-5 w-5 text-blue-600" />
+                Central de Comunicação
+              </h2>
+              <p className="text-neutral-600 text-sm mt-1">
+                Gerencie toda comunicação com clientes em um só lugar
+              </p>
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            {/* Email Marketing */}
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.1 }}
+            >
+              <Card padding="lg" className="cursor-pointer group h-full bg-white hover:shadow-lg transition-all" 
+                    onClick={() => window.location.href = '/dashboard/mail'}>
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <MessageSquare className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-neutral-900 mb-1">
+                  Email Marketing
+                </h3>
+                <p className="text-sm text-neutral-600 mb-4">
+                  Templates profissionais, campanhas automáticas e relatórios detalhados
+                </p>
+                <div className="flex items-center justify-between">
+                  <Button variant="ghost" size="sm" className="p-0 h-auto font-medium text-primary-600 group-hover:text-primary-700">
+                    Compor Email
+                    <ArrowUpRight className="h-4 w-4 ml-1" />
+                  </Button>
+                  <Badge variant="success">Ativo</Badge>
+                </div>
+              </Card>
+            </motion.div>
+
+            {/* WhatsApp Business */}
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Card padding="lg" className="cursor-pointer group h-full bg-white hover:shadow-lg transition-all" 
+                    onClick={() => window.location.href = '/dashboard/whatsapp'}>
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Phone className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-neutral-900 mb-1">
+                  WhatsApp Business
+                </h3>
+                <p className="text-sm text-neutral-600 mb-4">
+                  Atendimento automatizado, campanhas e gestão de contatos
+                </p>
+                <div className="flex items-center justify-between">
+                  <Button variant="ghost" size="sm" className="p-0 h-auto font-medium text-primary-600 group-hover:text-primary-700">
+                    Abrir Conversas
+                    <ArrowUpRight className="h-4 w-4 ml-1" />
+                  </Button>
+                  <Badge variant="success">Conectado</Badge>
+                </div>
+              </Card>
+            </motion.div>
           </div>
         </section>
 

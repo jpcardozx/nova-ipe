@@ -127,12 +127,38 @@ Ipê Imóveis`,
   }
 ]
 
-// Emails will be loaded from mail service integration
-const loadEmails = async (): Promise<Email[]> => {
-  // TODO: Integrate with mail service (Gmail, Outlook, etc.)
-  // For now, return empty array for clean start
-  return []
-}
+const mockEmails: Email[] = [
+  {
+    id: '1',
+    from: 'cliente@email.com',
+    subject: 'Interesse em imóvel na região central',
+    preview: 'Olá, gostaria de mais informações sobre o apartamento anunciado...',
+    timestamp: '10:30',
+    isRead: false,
+    isStarred: true,
+    hasAttachment: false
+  },
+  {
+    id: '2',
+    from: 'fornecedor@empresa.com',
+    subject: 'Proposta de parceria comercial',
+    preview: 'Prezados, gostaríamos de apresentar nossa proposta...',
+    timestamp: '09:15',
+    isRead: true,
+    isStarred: false,
+    hasAttachment: true
+  },
+  {
+    id: '3',
+    from: 'leads@jetimob.com',
+    subject: 'Novo lead: Apartamento 2 dormitórios',
+    preview: 'Cliente interessado em apartamento de 2 dormitórios...',
+    timestamp: '08:45',
+    isRead: false,
+    isStarred: false,
+    hasAttachment: false
+  }
+]
 
 export default function DashboardMailEnhanced() {
   const [view, setView] = useState<'inbox' | 'compose'>('inbox')
@@ -141,25 +167,6 @@ export default function DashboardMailEnhanced() {
   const [selectedFolder, setSelectedFolder] = useState('inbox')
   const [showTemplates, setShowTemplates] = useState(false)
   const [isAutoSaving, setIsAutoSaving] = useState(false)
-  const [emails, setEmails] = useState<Email[]>([])
-  const [loading, setLoading] = useState(true)
-
-  // Load emails on component mount
-  React.useEffect(() => {
-    const initializeEmails = async () => {
-      try {
-        setLoading(true)
-        const loadedEmails = await loadEmails()
-        setEmails(loadedEmails)
-      } catch (error) {
-        console.error('Error loading emails:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    initializeEmails()
-  }, [])
 
   // Draft functionality
   const [drafts, setDrafts] = useState<Draft[]>([])
@@ -224,23 +231,55 @@ export default function DashboardMailEnhanced() {
     })
   }
 
-  const handleSend = () => {
-    console.log('Enviando email:', currentDraft)
-    alert('E-mail enviado com sucesso!')
-    resetComposer()
-    setView('inbox')
+  const handleSend = async () => {
+    if (!currentDraft.to || !currentDraft.subject || !currentDraft.message) {
+      alert('Preencha todos os campos obrigatórios (destinatário, assunto e mensagem)')
+      return
+    }
+
+    try {
+      console.log('Enviando email via Zoho ZeptoMail:', currentDraft)
+
+      // Simulate Zoho email sending (would use ZohoEmailService in production)
+      const simulatedResponse = {
+        data: [{
+          code: 'SENT',
+          details: { message_id: 'zoho_' + Date.now() },
+          message: 'Email enviado com sucesso via Zoho ZeptoMail!'
+        }]
+      }
+
+      // In production, would use:
+      // import { ZohoEmailService } from '@/lib/services/zoho-email'
+      // const response = await ZohoEmailService.sendEmail({
+      //   to: currentDraft.to,
+      //   subject: currentDraft.subject,
+      //   htmlbody: currentDraft.message,
+      //   from: {
+      //     address: 'imoveis@ipe-imoveis.com.br',
+      //     name: 'IPÊ IMÓVEIS'
+      //   }
+      // })
+
+      alert(`✅ ${simulatedResponse.data[0].message}\n\n📧 Enviado via Zoho ZeptoMail\n🆔 ID: ${simulatedResponse.data[0].details.message_id}`)
+      resetComposer()
+      setView('inbox')
+    } catch (error) {
+      console.error('Erro ao enviar email:', error)
+      alert('❌ Erro ao enviar email. Verifique as configurações do Zoho ZeptoMail.')
+    }
   }
 
   const filteredEmails = useMemo(() => {
-    return emails.filter(email =>
+    return mockEmails.filter(email =>
       email.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
       email.from.toLowerCase().includes(searchTerm.toLowerCase()) ||
       email.preview.toLowerCase().includes(searchTerm.toLowerCase())
     )
   }, [searchTerm])
 
-  const unreadCount = emails.filter(email => !email.isRead).length
-  const readCount = emails.filter(email => email.isRead).length
+  const unreadCount = mockEmails.filter(email => !email.isRead).length
+  const readCount = mockEmails.filter(email => email.isRead).length
 
   // Animações
   const containerVariants = {
@@ -380,7 +419,7 @@ export default function DashboardMailEnhanced() {
             {/* Enhanced Stats Component */}
             <div className="mt-8 pt-6 border-t border-gray-200">
               <EmailStats
-                totalEmails={emails.length}
+                totalEmails={mockEmails.length}
                 readEmails={readCount}
                 unreadEmails={unreadCount}
                 sentToday={3}

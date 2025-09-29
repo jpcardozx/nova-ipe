@@ -26,6 +26,7 @@ import {
     Cloud,
     Network,
     Mail,
+    MessageCircle,
     type LucideIcon
 } from 'lucide-react'
 
@@ -141,6 +142,13 @@ const menuCategories: MenuCategory[] = [
                 description: 'Controle financeiro'
             },
             {
+                icon: Calculator,
+                label: 'Alíquotas',
+                href: '/dashboard/aliquotas',
+                color: 'text-orange-600',
+                description: 'Cálculo de alíquotas e impostos'
+            },
+            {
                 icon: BarChart3,
                 label: 'Relatórios',
                 href: '/dashboard/reports',
@@ -173,6 +181,14 @@ const menuCategories: MenuCategory[] = [
                 href: '/dashboard/mail',
                 color: 'text-indigo-600',
                 description: 'Sistema de e-mail'
+            },
+            {
+                icon: MessageCircle,
+                label: 'WhatsApp',
+                href: '/dashboard/whatsapp',
+                color: 'text-green-600',
+                badge: 'NEW',
+                description: 'Central WhatsApp Business'
             },
             {
                 icon: Settings,
