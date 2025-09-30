@@ -307,10 +307,10 @@ export class WhatsAppDB {
         .from('whatsapp_conversations')
         .update({
           last_message_at: message.timestamp,
-          message_count: supabase.raw('message_count + 1'),
+          message_count: `message_count + 1`,
           unread_count: message.is_from_me ?
-            supabase.raw('unread_count') :
-            supabase.raw('unread_count + 1'),
+            `unread_count` :
+            `unread_count + 1`,
           updated_at: new Date().toISOString()
         })
         .eq('id', conversationId)

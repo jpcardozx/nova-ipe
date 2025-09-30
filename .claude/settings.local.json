@@ -29,7 +29,9 @@
       "Bash(npm uninstall:*)",
       "Bash(npm run analyze:*)",
       "Bash(del:*)",
-      "Bash(npm run type-check:*)"
+      "Bash(npm run type-check:*)",
+      "Bash(nslookup:*)",
+      "Bash(curl -s -H \"Host: portal.imobiliariaipe.com.br\" http://187.45.193.173/wp-includes/js/jquery/jquery.js)"
     ],
     "deny": []
   },

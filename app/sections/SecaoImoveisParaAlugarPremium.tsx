@@ -220,6 +220,32 @@ export default function SecaoImoveisParaAlugarPremium({ properties }: SecaoImove
                     <p className="text-slate-600 mb-6 max-w-xl mx-auto">
                         Explore todas as opções de aluguel disponíveis ou entre em contato para mais informações.
                     </p>
+
+                    {/* Catálogo Complementar */}
+                    <div className="bg-gradient-to-r from-slate-50 to-blue-50 border border-slate-200/60 rounded-xl p-6 mb-6 max-w-3xl mx-auto">
+                        <div className="flex items-center justify-center gap-3 mb-2">
+                            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                            <p className="text-slate-700 font-medium">
+                                Catálogo Complementar
+                            </p>
+                            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                        </div>
+                        <p className="text-slate-600 text-sm leading-relaxed">
+                            Explore opções adicionais de imóveis em{' '}
+                            <a
+                                href="https://portal.imobiliariaipe.com.br"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-700 font-medium transition-colors inline-flex items-center gap-1"
+                            >
+                                portal.imobiliariaipe.com.br
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                            </a>
+                        </p>
+                    </div>
+
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link
                             href="/catalogo?tipo=aluguel"

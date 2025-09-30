@@ -16,33 +16,19 @@ import {
   Search,
   MoreVertical,
   Pin,
-  Archive,
-  Trash2,
-  Star,
-  Download,
-  Image as ImageIcon,
-  File,
-  Mic,
   CheckCheck,
   Check,
-  Clock,
   Plus,
   Users,
   Settings,
-  Filter,
   Bot,
   Zap,
   QrCode,
   Building2,
   Calculator,
-  Calendar,
   ChevronLeft,
-  Shield,
-  Key,
-  UserCheck,
-  Lock,
-  Eye,
-  EyeOff
+  Mic,
+  ImageIcon
 } from 'lucide-react'
 
 interface Contact {
@@ -152,7 +138,7 @@ export default function WhatsAppPage() {
   const [isMobile, setIsMobile] = useState(false)
   const [showContactList, setShowContactList] = useState(true)
   const [isTyping, setIsTyping] = useState(false)
-  const [activeTab, setActiveTab] = useState<'conversations' | 'bot' | 'users'>('conversations')
+  const [activeTab, setActiveTab] = useState('conversations')
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -271,7 +257,7 @@ export default function WhatsAppPage() {
         <Tabs 
           tabs={tabs} 
           activeTab={activeTab} 
-          onTabChange={(tabId) => setActiveTab(tabId as 'conversations' | 'bot' | 'users')}
+          onTabChange={setActiveTab}
           className="px-6"
         />
       </div>
@@ -865,6 +851,7 @@ export default function WhatsAppPage() {
             </div>
           </motion.div>
         )}
+      </div>
         </div>
       )}
 

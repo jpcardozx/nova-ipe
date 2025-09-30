@@ -12,20 +12,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PillSelector } from '@/components/ui/pill-selector'
-import { ArrowRight, Building2, User, AlertTriangle, Eye, EyeOff, UserPlus, ArrowLeft, Sparkles, ExternalLink } from 'lucide-react'
+import { ArrowRight, Building2, User, AlertTriangle, Eye, EyeOff, UserPlus, ArrowLeft, Sparkles, ExternalLink, Stethoscope, HelpCircle } from 'lucide-react'
+import { LegacyPortalAccess } from '@/components/ui/legacy-portal-access'
 import { SimpleAuthManager } from '@/lib/auth-simple'
 import { EnhancedAuthManager, type LoginMode } from '@/lib/auth/enhanced-auth-manager'
 import { zohoMail360 } from '@/lib/zoho-mail360'
+import { usePortalDiagnostic } from '@/lib/services/portal-diagnostic'
 
-// Website Icon Component - Modern Globe Icon
-const WebsiteIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <circle cx="12" cy="12" r="10"/>
-    <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
-    <path d="M2 12h20"/>
-    <path d="M12 2a14.5 14.5 0 0 1 0 20"/>
-  </svg>
-)
+
 
 // Schemas
 const loginSchema = z.object({
@@ -65,6 +59,7 @@ function LoginPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const authManager = new SimpleAuthManager()
+  const { isRunning: isDiagnosticRunning, result: diagnosticResult, runDiagnostic } = usePortalDiagnostic()
 
   // Handle URL parameters
   useEffect(() => {
@@ -347,7 +342,7 @@ function LoginPageContent() {
                         <Input
                           id="username"
                           type="text"
-                          placeholder="imobipe"
+                          placeholder="usuario"
                           {...loginForm.register('username')}
                           className={`flex-1 bg-transparent border-0 text-white placeholder-white/50 focus:ring-0 focus:border-0 ${loginForm.formState.errors.username ? 'text-red-400' : ''
                             }`}
@@ -375,10 +370,7 @@ function LoginPageContent() {
                           type="button"
                           className="w-4 h-4 text-white/50 hover:text-white/80 transition-colors"
                         >
-                          <svg fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM8.94 6.94a1.5 1.5 0 112.12 2.12L10 10.06V11a1 1 0 102 0v-.94l.94-.94a3.5 3.5 0 00-4.94-4.94 1 1 0 001.42 1.42z" clipRule="evenodd" />
-                            <path d="M10 15a1 1 0 100-2 1 1 0 000 2z" />
-                          </svg>
+                          <HelpCircle className="w-4 h-4" />
                         </button>
                         
                         {/* Simple Tooltip */}
@@ -475,31 +467,81 @@ function LoginPageContent() {
                 </motion.div>
               </form>
 
-              {/* WordPress Access Button - Botão Secundário */}
+              {/* Portal Access & Diagnostic */}
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.5 }}
-                className="mt-6"
+                className="mt-4"
               >
-                <motion.a
-                  href="https://imobiliariaipe.com.br/wp-admin"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="group relative mx-auto flex w-full sm:w-3/4 justify-center items-center gap-3 py-3 px-4 rounded-lg bg-white/10 text-white border border-white/20 hover:border-white/30 hover:bg-white/15 transition-all duration-300 shadow-lg"
-                >
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                    <WebsiteIcon className="h-5 w-5 text-white/70 group-hover:text-white transition-colors" />
-                  </span>
-                  
-                  <span className="font-medium">Site WordPress</span>
-                  
-                  <span className="absolute inset-y-0 right-0 flex items-center pr-3">
-                    <ExternalLink className="h-4 w-4 text-white/70 group-hover:text-white transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                  </span>
-                </motion.a>
+                {/* Portal Link */}
+                <LegacyPortalAccess />
+
+                {/* Diagnostic Results */}
+                {diagnosticResult && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="mx-auto w-full sm:w-3/4 mt-4"
+                  >
+                    <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-4 text-xs font-mono">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-amber-400 font-semibold">🔍 DIAGNÓSTICO</span>
+                        <span className="text-gray-400">
+                          {new Date(diagnosticResult.timestamp).toLocaleTimeString('pt-BR')}
+                        </span>
+                      </div>
+                      
+                      <div className="space-y-2 text-gray-300">
+                        <div className="flex items-center gap-2">
+                          <span className={diagnosticResult.dns.resolved ? 'text-green-400' : 'text-red-400'}>
+                            {diagnosticResult.dns.resolved ? '✅' : '❌'}
+                          </span>
+                          <span>DNS: {diagnosticResult.dns.resolved ? `${diagnosticResult.dns.ip}` : 'FALHOU'}</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <span className={diagnosticResult.http.accessible ? 'text-green-400' : 'text-red-400'}>
+                            {diagnosticResult.http.accessible ? '✅' : '❌'}
+                          </span>
+                          <span>
+                            HTTP: {diagnosticResult.http.accessible 
+                              ? `${diagnosticResult.http.status} (${diagnosticResult.http.responseTime}ms)` 
+                              : 'FALHOU'
+                            }
+                          </span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <span className={diagnosticResult.ssl.valid ? 'text-green-400' : 'text-red-400'}>
+                            {diagnosticResult.ssl.valid ? '✅' : '❌'}
+                          </span>
+                          <span>SSL: {diagnosticResult.ssl.valid ? 'OK' : 'INVÁLIDO'}</span>
+                        </div>
+
+                        {diagnosticResult.http.status === 500 && (
+                          <div className="mt-3 p-2 bg-red-900/50 border border-red-700 rounded">
+                            <div className="text-red-400 font-semibold">🚨 ERRO 500 DETECTADO</div>
+                            <div className="text-red-300 text-xs mt-1">
+                              Provável problema suPHP (UID menor que min_uid)
+                            </div>
+                            <div className="text-yellow-300 text-xs mt-2">
+                              <strong>Solução:</strong> Verificar proprietário dos arquivos PHP no servidor
+                            </div>
+                          </div>
+                        )}
+
+                        {diagnosticResult.http.error && (
+                          <div className="mt-2 p-2 bg-red-900/30 border border-red-800 rounded">
+                            <div className="text-red-400 text-xs">
+                              Erro: {diagnosticResult.http.error}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
               </motion.div>
 
               {/* Solicitar Acesso Button */}
