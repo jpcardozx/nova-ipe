@@ -131,7 +131,7 @@ async function processMessage(message: WebhookMessage, phoneNumberId: string) {
 
   } catch (error) {
     console.error('Error processing message:', error)
-    return { success: false, error: error.message }
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
   }
 }
 
@@ -164,7 +164,7 @@ async function processStatus(status: WebhookStatus) {
 
   } catch (error) {
     console.error('Error processing status:', error)
-    return { success: false, error: error.message }
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
   }
 }
 
