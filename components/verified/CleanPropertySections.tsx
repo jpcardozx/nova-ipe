@@ -16,7 +16,7 @@ import {
     Eye
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { ImovelClient } from '../../../src/types/imovel-client';
+import type { ImovelClient } from '../../src/types/imovel-client';
 import MobilePropertyCard from '../MobilePropertyCard';
 
 // Função para transformar dados para MobilePropertyCard
