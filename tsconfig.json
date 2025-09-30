@@ -5,89 +5,41 @@
       "dom.iterable",
       "esnext"
     ],
-    "allowJs": false,
-    "checkJs": false,
+    "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
     "noEmit": true,
-    "incremental": true,
-    "tsBuildInfoFile": ".next/cache/tsbuildinfo.json",
-    "target": "es2022",
-    "module": "esnext",
     "esModuleInterop": true,
+    "module": "esnext",
     "moduleResolution": "bundler",
-    "downlevelIteration": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "incremental": true,
     "plugins": [
       {
         "name": "next"
       }
     ],
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "noImplicitReturns": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "@lib/*": [
-        "lib/*"
-      ],
-      "@app/*": [
-        "app/*"
-      ],
-      "@components/*": [
-        "app/components/*",
-        "components/*"
-      ],
-      "@/components/ui/*": [
-        "app/components/ui/*",
-        "components/ui/*"
-      ],
-      "@hooks/*": [
-        "app/hooks/*"
-      ],
-      "@sections/*": [
-        "app/sections/*",
-        "sections/*"
-      ],
-      "@/types/sanity-schema": [
-        "src/types/sanity-schema.d.ts"
-      ],
-      "@types/*": [
-        "src/types/*"
-      ],
-      "@legacy-types/*": [
-        "types/*"
-      ],
-      "@property-types/*": [
-        "app/components/ui/property/types"
-      ]
-    }
+      "@/*": ["./*"],
+      "@components/*": ["app/components/*"],
+      "@sections/*": ["app/sections/*"],
+      "@lib/*": ["lib/*"],
+      "@types/*": ["src/types/*"]
+    },
+    "target": "ES2017"
   },
   "include": [
     "next-env.d.ts",
-    "global.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "src/types/**/*.d.ts",
     ".next/types/**/*.ts"
   ],
-      "exclude": [
+  "exclude": [
     "node_modules",
-    "archive",
-    "temp",
-    "public/api",
-    "types/sanity-schema.js",
-    "app/page.backup.tsx",
-    "app/page.clean.tsx",
-    "app/page.restored.tsx",
     "components/verified",
-    "examples/**/*"
+    "examples"
   ]
 }

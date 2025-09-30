@@ -68,6 +68,8 @@ function MainDashboardContent() {
   }, [user])
 
   const loadDashboardData = async () => {
+    if (!user) return;
+    
     startLoading()
 
     try {

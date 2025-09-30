@@ -40,3 +40,4 @@ export const buttonVariants = {
 };
 
 export default Button;
+export { Button };

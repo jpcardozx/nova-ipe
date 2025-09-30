@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { BedDouble, Bath, Car, Ruler, MapPin } from 'lucide-react'
 import { formatarMoeda, formatarImovelInfo } from '@/lib/utils'
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import type { Imovel } from '@/types/sanity-schema';
+import type { Imovel } from '../../src/types/sanity-schema';
 import ImoveisDestaqueContext from './ImoveisDestaqueContext'
 
 /**
