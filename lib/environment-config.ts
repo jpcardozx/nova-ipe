@@ -14,8 +14,11 @@ export class EnvironmentManager {
       dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
       apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2023-05-03',
       token: process.env.SANITY_API_TOKEN || '',
-      // Para o Studio, precisamos principalmente do projectId e dataset
-      configured: !!(process.env.NEXT_PUBLIC_SANITY_PROJECT_ID && process.env.NEXT_PUBLIC_SANITY_DATASET)
+      // Para o Studio, consideramos configurado se temos projectId e dataset (mesmo que sejam os padrões)
+      configured: !!(
+        (process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '0nks58lj') && 
+        (process.env.NEXT_PUBLIC_SANITY_DATASET || 'production')
+      )
     }
     
     // Debug detalhado

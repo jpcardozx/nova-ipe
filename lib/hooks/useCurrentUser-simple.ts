@@ -68,6 +68,47 @@ export function useCurrentUser() {
           return
         }
 
+        // Primeiro, verificar se há um usuário salvo no localStorage (Zoho)
+        if (typeof window !== 'undefined') {
+          const savedUser = localStorage.getItem('currentUser')
+          if (savedUser) {
+            try {
+              const zohoUser = JSON.parse(savedUser)
+              console.log('✅ Usuário Zoho encontrado no localStorage:', zohoUser.email)
+              
+              const zohoProfile: UserProfile = {
+                id: 'zoho-' + Date.now(),
+                email: zohoUser.email,
+                full_name: zohoUser.name || zohoUser.email.split('@')[0],
+                phone: zohoUser.phone,
+                department: 'Vendas',
+                status: 'active',
+                role: {
+                  id: 'zoho-user',
+                  name: 'Usuário Zoho',
+                  hierarchy_level: 2,
+                  permissions: ['dashboard:read', 'properties:read']
+                },
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                last_login: new Date().toISOString(),
+                avatar_url: undefined,
+                permissions: ['dashboard:read', 'properties:read']
+              }
+
+              if (mounted) {
+                setUser(zohoProfile)
+                setLoading(false)
+                setError(null)
+              }
+              return
+            } catch (error) {
+              console.error('Erro ao carregar usuário do localStorage:', error)
+            }
+          }
+        }
+
+        // Se não houver usuário Zoho, verificar Supabase
         const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
 
         if (authError || !authUser) {
@@ -169,3 +210,4 @@ export function useCurrentUser() {
     isAuthenticated: !!user
   }
 }
+

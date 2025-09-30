@@ -79,11 +79,18 @@ function StudioPageContent() {
 
             // Check authentication status first
             setState('checking-auth')
-            const authStatus = await authManager.getAuthenticationStatus('studio')
+            
+            // Verificar sessão do Studio via API
+            console.log('🔍 Studio: Verificando sessão via API...')
+            const sessionResponse = await fetch('/api/studio/session', {
+                method: 'GET',
+                credentials: 'include'
+            })
+            
+            const sessionData = await sessionResponse.json()
+            console.log('🔍 Studio: Status da sessão:', sessionData)
 
-            console.log('🔍 Studio: Status de autenticação:', authStatus)
-
-            if (!authStatus.isAuthenticated) {
+            if (!sessionData.authenticated) {
                 console.log('❌ Studio: Usuário não autenticado, redirecionando para login')
 
                 // Check for error from URL params

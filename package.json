@@ -5,32 +5,12 @@
   "scripts": {
     "dev": "next dev --turbo",
     "build": "next build",
-    "build:analyze": "ANALYZE=true next build",
-    "build:profile": "next build --profile",
-    "build:debug": "next build --debug",
     "build:fast": "next build --no-lint",
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "typecheck": "tsc --noEmit --skipLibCheck --incremental",
-    "typecheck:watch": "tsc --noEmit --skipLibCheck --incremental --watch",
-    "clean": "rimraf .next out .swc node_modules/.cache",
-    "clean:all": "rimraf .next out .swc node_modules/.cache .turbo",
-    "dev:clean": "pnpm run clean && next dev --turbo",
-    "build:clean": "pnpm run clean && next build",
-    "start:clean": "pnpm run clean && next start",
-    "diagnostic": "node scripts/check-build-health.js",
-    "check-supabase": "node scripts/check-supabase-setup.js",
-    "test-login": "node scripts/test-login.js",
-    "migrate:db": "node scripts/migrate-database.js",
-    "migrate:manual": "node scripts/migrate-manual.js",
-    "migrate:check": "node scripts/migrate-database.js --check-only",
-    "verify:system": "node scripts/verify-system.js",
-    "db:reset": "supabase db reset",
-    "db:push": "supabase db push",
-    "analyze": "ANALYZE=true next build",
-    "perf:audit": "lighthouse http://localhost:3000 --output json --output html",
-    "perf:bundle": "npx @next/bundle-analyzer .next/static/chunks/*.js"
+    "typecheck": "tsc --noEmit --skipLibCheck",
+    "clean": "rimraf .next out .swc node_modules/.cache"
   },
   "dependencies": {
     "@hello-pangea/dnd": "18.0.1",
@@ -83,6 +63,7 @@
     "zustand": "5.0.8"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "15.5.4",
     "@tailwindcss/line-clamp": "0.4.4",
     "@types/node": "^20.10.0",
     "@types/react": "^18.2.42",

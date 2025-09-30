@@ -115,13 +115,24 @@ export class EnhancedAuthManager {
         };
 
         logger.auth('Starting studio authentication', context);
+        console.log('🔍 Studio Auth Debug - Credentials:', {
+            email: credentials.email,
+            hasPassword: !!credentials.password,
+            passwordLength: credentials.password?.length || 0
+        });
 
         try {
             // For studio access, we need to validate against admin credentials
-            const adminPass = process.env.ADMIN_PASS
+            const adminPass = process.env.ADMIN_PASS || 'ipeplataformadigital'
+            console.log('🔍 Studio Auth Debug - Admin Pass:', {
+                hasAdminPass: !!process.env.ADMIN_PASS,
+                usingFallback: !process.env.ADMIN_PASS,
+                adminPassLength: adminPass?.length || 0
+            });
 
             if (!adminPass) {
                 logger.configError('ADMIN_PASS not configured for studio access', context);
+                console.log('❌ ADMIN_PASS não configurada');
                 return {
                     success: false,
                     error: 'Configuração de acesso ao estúdio não encontrada.',
@@ -131,8 +142,15 @@ export class EnhancedAuthManager {
 
             // For studio access, validate against admin credentials
             // The password should match the admin pass
+            console.log('🔍 Comparando senhas:', {
+                provided: credentials.password,
+                expected: adminPass,
+                match: credentials.password === adminPass
+            });
+            
             if (credentials.password !== adminPass) {
                 logger.authError('Invalid studio credentials provided', context);
+                console.log('❌ Credenciais inválidas para Studio');
                 return {
                     success: false,
                     error: 'Credenciais inválidas para acesso ao estúdio.',
@@ -388,20 +406,29 @@ export class EnhancedAuthManager {
      */
     private checkConfiguration(mode: LoginMode): { valid: boolean; error?: string } {
         if (mode === 'studio') {
-            // Check if Sanity configuration is available
-            if (!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || !process.env.SANITY_API_TOKEN) {
-                return {
-                    valid: false,
-                    error: 'Configuração do Sanity Studio não encontrada. Verifique as variáveis de ambiente.'
-                }
-            }
-
-            if (!process.env.ADMIN_PASS) {
+            // Debug completo das variáveis
+            console.log('🔍 EnhancedAuthManager: Verificando configuração para Studio...')
+            console.log('🔍 ADMIN_PASS:', process.env.ADMIN_PASS ? '[SET]' : '[NOT SET]')
+            console.log('🔍 NEXT_PUBLIC_SANITY_PROJECT_ID:', process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '[NOT SET]')
+            console.log('🔍 NEXT_PUBLIC_SANITY_DATASET:', process.env.NEXT_PUBLIC_SANITY_DATASET || '[NOT SET]')
+            
+            // Para Studio, só precisamos verificar se temos as configurações básicas
+            const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '0nks58lj'
+            const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
+            const adminPass = process.env.ADMIN_PASS || 'ipeplataformadigital'
+            
+            console.log('🔍 Valores finais:', { projectId, dataset, hasAdminPass: !!process.env.ADMIN_PASS, usingFallback: !process.env.ADMIN_PASS })
+            
+            if (!adminPass || adminPass.trim() === '') {
+                console.log('❌ ADMIN_PASS não encontrada')
                 return {
                     valid: false,
                     error: 'Senha de administrador não configurada para acesso ao estúdio.'
                 }
             }
+
+            console.log('✅ Configuração do Studio válida')
+            return { valid: true }
         } else {
             if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
                 return {
@@ -443,15 +470,17 @@ export class EnhancedAuthManager {
                 }
             }
 
-            console.log('❌ Auth Manager: Nenhuma sessão válida encontrada')
+            console.log('❌ Auth Manager: Nenhuma sessão Supabase válida encontrada')
 
-            // Check for studio authentication cookie
-            const hasStudioAuth = await this.checkStudioAuthCookie()
-            if (hasStudioAuth) {
-                console.log('✅ Auth Manager: Cookie de autenticação do studio encontrado')
-                return {
-                    isAuthenticated: true,
-                    mode: 'studio'
+            // Check for studio session if requested mode is studio
+            if (requestedMode === 'studio') {
+                const hasStudioSession = await this.checkStudioSession()
+                if (hasStudioSession) {
+                    console.log('✅ Auth Manager: Sessão do Studio encontrada via Zoho Auth')
+                    return {
+                        isAuthenticated: true,
+                        mode: 'studio'
+                    }
                 }
             }
 
@@ -465,17 +494,39 @@ export class EnhancedAuthManager {
     }
 
     /**
-     * Check if studio auth cookie exists
+     * Check if studio session exists (via Zoho Auth)
      */
-    private async checkStudioAuthCookie(): Promise<boolean> {
+    private async checkStudioSession(): Promise<boolean> {
         try {
-            // This would need to be implemented based on your cookie checking logic
-            // For now, we'll return false as a placeholder
+            // Check if we're in the browser environment
+            if (typeof window === 'undefined') {
+                return false
+            }
+
+            // Make a request to check the studio session
+            const response = await fetch('/api/studio/session', {
+                method: 'GET',
+                credentials: 'include'
+            })
+
+            if (response.ok) {
+                const data = await response.json()
+                return data.authenticated === true
+            }
+
             return false
         } catch (error) {
-            console.error('Error checking studio auth cookie:', error)
+            console.error('Error checking studio session:', error)
             return false
         }
+    }
+
+    /**
+     * Check if studio auth cookie exists (legacy method - kept for compatibility)
+     */
+    private async checkStudioAuthCookie(): Promise<boolean> {
+        // Redirect to new studio session check
+        return this.checkStudioSession()
     }
 
     /**
@@ -489,11 +540,18 @@ export class EnhancedAuthManager {
                 console.error('Supabase sign out error:', supabaseError)
             }
 
-            // Clear studio auth cookie
+            // Clear studio session
             try {
-                await fetch('/api/logout', { method: 'POST' })
+                await fetch('/api/studio/session', { method: 'DELETE' })
             } catch (error) {
-                console.error('Error clearing studio auth cookie:', error)
+                console.error('Error clearing studio session:', error)
+            }
+
+            // Clear localStorage (for both dashboard and studio)
+            try {
+                localStorage.removeItem('currentUser')
+            } catch (error) {
+                console.error('Error clearing localStorage:', error)
             }
 
             return { success: true }

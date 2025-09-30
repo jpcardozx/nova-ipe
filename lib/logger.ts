@@ -29,6 +29,34 @@ export class EnhancedLogger {
 
     private constructor() { }
 
+    // Performance-optimized logging methods
+    static perfStart(label: string): number {
+        if (process.env.NODE_ENV === 'development') {
+            return performance.now()
+        }
+        return 0
+    }
+
+    static perfEnd(label: string, startTime: number): void {
+        if (process.env.NODE_ENV === 'development' && startTime > 0) {
+            const duration = performance.now() - startTime
+            console.log(`⏱️ [PERF] ${label}: ${Math.round(duration)}ms`)
+        }
+    }
+
+    // Optimized console methods that are stripped in production
+    static devLog(message: string, ...args: any[]): void {
+        if (process.env.NODE_ENV === 'development') {
+            console.log(message, ...args)
+        }
+    }
+
+    static devWarn(message: string, ...args: any[]): void {
+        if (process.env.NODE_ENV === 'development') {
+            console.warn(message, ...args)
+        }
+    }
+
     static getInstance(): EnhancedLogger {
         if (!EnhancedLogger.instance) {
             EnhancedLogger.instance = new EnhancedLogger();

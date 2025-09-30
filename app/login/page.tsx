@@ -105,44 +105,77 @@ function LoginPageContent() {
 
   const onLoginSubmit = async (data: LoginFormValues) => {
     const fullEmail = `${data.username}${selectedDomain}`
-    console.log('🔄 Iniciando login Zoho para:', fullEmail)
     setIsLoading(true)
     setErrorMessage('')
 
     try {
-      console.log('� Autenticando exclusivamente via Zoho Mail360...')
+      console.log('🔄 === INÍCIO DO PROCESSO DE LOGIN ===')
+      console.log('🔄 Modo de login:', loginMode)
+      console.log('📧 Email completo:', fullEmail)
+      console.log('🔒 Senha fornecida:', data.password ? `${data.password.length} caracteres` : 'não fornecida')
+      console.log('🌐 URL atual:', window.location.href)
       
       const zohoUser = await zohoMail360.verifyUser(fullEmail, data.password)
       
       if (zohoUser) {
         console.log('✅ Usuário Zoho autenticado:', zohoUser.emailAddress)
         
-        // Salvar dados do usuário
-        localStorage.setItem('currentUser', JSON.stringify({
+        // Salvar dados do usuário para ambos os modos
+        const userData = {
           email: zohoUser.emailAddress,
           name: zohoUser.displayName,
           organization: zohoUser.organizationName,
-          provider: 'zoho_mail360'
-        }))
+          provider: 'zoho_mail360' as const,
+          mode: loginMode,
+          timestamp: new Date().toISOString()
+        }
         
-        // Redirecionar
+        localStorage.setItem('currentUser', JSON.stringify(userData))
+        
+        // Sincronizar com perfil estendido (async, não bloquear login)
+        import('@/lib/services/user-profile-service').then(({ UserProfileService }) => {
+          UserProfileService.syncZohoUser(userData).catch(error => {
+            console.warn('⚠️ Sincronização Supabase falhou, mas login continua:', error)
+          })
+        })
+        
+        // Para Studio, também criar um cookie de sessão simples
         if (loginMode === 'studio') {
-          router.push('/studio')
+          try {
+            console.log('🎬 Criando sessão do Studio...')
+            const sessionResponse = await fetch('/api/studio/session', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ user: userData })
+            })
+            
+            const sessionResult = await sessionResponse.json()
+            console.log('🎬 Resultado da criação de sessão:', sessionResult)
+            
+            if (!sessionResponse.ok) {
+              throw new Error(`Erro ao criar sessão: ${sessionResult.error}`)
+            }
+            
+            console.log('🎬 Sessão criada com sucesso, redirecionando para Studio...')
+            router.push('/studio')
+          } catch (error) {
+            console.error('❌ Erro ao criar sessão do Studio:', error)
+            setErrorMessage('Erro ao criar sessão do Studio. Tente novamente.')
+            return
+          }
         } else {
+          console.log('📊 Redirecionando para Dashboard...')
           router.push('/dashboard')
         }
+        
         return
       } else {
         setErrorMessage('❌ Usuário ou senha inválidos no sistema Zoho.')
         return
       }
 
-      
-
-      
-
     } catch (error) {
-      console.error('❌ Erro no login Zoho:', error)
+      console.error('❌ Erro no processo de login:', error)
       setErrorMessage('❌ Erro na autenticação. Verifique suas credenciais.')
     } finally {
       setIsLoading(false)
@@ -328,7 +361,7 @@ function LoginPageContent() {
                 />
               </motion.div>
 
-              <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-7">
+              <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-6">
                 <motion.div
                   className="space-y-4"
                   initial={{ y: 20, opacity: 0 }}
@@ -424,47 +457,22 @@ function LoginPageContent() {
                   </motion.div>
                 )}
 
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Button
-                    type="submit"
-                    disabled={isLoading || !loginForm.formState.isValid}
-                    className={`group relative mx-auto flex w-full sm:w-3/4 justify-center shadow-lg transform transition-all duration-300 ${isLoading
-                      ? 'bg-gradient-to-r from-amber-400 to-amber-500 cursor-wait'
-                      : !loginForm.formState.isValid
-                        ? 'bg-gradient-to-r from-gray-500 to-gray-600 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 hover:shadow-amber-500/40'
-                      }`}
+                <div className="space-y-4 mt-6">
+                  <Button 
+                    type="submit" 
+                    className="w-full h-12 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-base shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl" 
+                    disabled={isLoading}
                   >
-                    <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                      {isLoading ? (
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                      ) : loginMode === 'dashboard' ? (
-                        <User className="h-5 w-5 text-amber-300 transition-all group-hover:text-white" />
-                      ) : (
-                        <Building2 className="h-5 w-5 text-amber-300 transition-all group-hover:text-white" />
-                      )}
-                    </span>
                     {isLoading ? (
-                      <span className="flex items-center gap-2">
-                        <span>Autenticando</span>
-                        <span className="animate-pulse">...</span>
-                      </span>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                     ) : (
-                      loginMode === 'dashboard' ? 'Entrar no Dashboard' : 'Acessar Studio'
-                    )}
-                    {!isLoading && (
-                      <span className="absolute inset-y-0 right-0 flex items-center pr-3">
-                        <ArrowRight className="h-5 w-5 text-amber-300 transition-transform group-hover:translate-x-1 group-hover:text-white" />
-                      </span>
+                      <>
+                        Acessar Plataforma
+                        <ArrowRight className="ml-2 h-5 w-5" />
+                      </>
                     )}
                   </Button>
-                </motion.div>
+                </div>
               </form>
 
               {/* Portal Access & Diagnostic */}
@@ -472,7 +480,7 @@ function LoginPageContent() {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.5 }}
-                className="mt-4"
+                className="mt-6"
               >
                 {/* Portal Link */}
                 <LegacyPortalAccess />
@@ -549,13 +557,13 @@ function LoginPageContent() {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.6 }}
-                className="mt-4 text-center"
+                className="mt-6 text-center"
               >
                 <button
                   onClick={switchToSignup}
-                  className="text-amber-300 hover:text-amber-200 text-sm underline transition-colors duration-200"
+                  className="text-amber-300 hover:text-amber-200 text-sm transition-colors duration-200 group"
                 >
-                  Não tem acesso? Solicitar aqui
+                  Não tem acesso? <span className="font-semibold underline group-hover:text-white">Solicite aqui</span>
                 </button>
               </motion.div>
             </motion.div>
@@ -723,47 +731,16 @@ function LoginPageContent() {
                   </motion.div>
                 )}
 
-                <motion.div
-                  className="flex flex-col sm:flex-row gap-4 pt-2"
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.7 }}
-                >
-                  <motion.button
-                    type="button"
-                    onClick={switchToLogin}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex-1 h-12 rounded-xl border-2 border-white/20 text-white hover:border-amber-300 hover:bg-white/10 transition-all duration-200 flex items-center justify-center gap-2"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Voltar
-                  </motion.button>
-
-                  <motion.button
-                    type="submit"
-                    disabled={isLoading || !signupForm.formState.isValid}
-                    whileHover={{ scale: isLoading ? 1 : 1.02 }}
-                    whileTap={{ scale: isLoading ? 1 : 0.98 }}
-                    className={`flex-1 h-12 rounded-xl font-medium transition-all duration-300 flex items-center justify-center gap-2 ${isLoading || !signupForm.formState.isValid
-                      ? 'bg-gray-500/50 text-gray-300 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg hover:shadow-xl'
-                      }`}
-                  >
-                    {isLoading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-                        Enviando...
-                      </>
-                    ) : (
-                      <>
-                        <UserPlus className="h-4 w-4" />
-                        Solicitar Acesso
-                        <Sparkles className="h-4 w-4" />
-                      </>
-                    )}
-                  </motion.button>
-                </motion.div>
+                <div className="space-y-4">
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? 'Enviando...' : 'Enviar Solicitação'}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" className="w-full" onClick={() => setViewMode('login')}>
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Voltar para o Login
+                  </Button>
+                </div>
               </form>
             </motion.div>
           )}
