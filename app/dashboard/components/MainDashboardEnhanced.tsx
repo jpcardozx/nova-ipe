@@ -91,9 +91,9 @@ export default function MainDashboardEnhanced() {
                     setMetrics(prev => ({
                         ...prev,
                         totalTasks: tasksResult.total || 0,
-                        totalLeads: leadsResult.stats.total || 0,
-                        totalClients: clientsResult.stats.total || 0,
-                        conversionRate: leadsResult.stats.conversionRate || 0
+                        totalLeads: leadsResult.stats?.total || 0,
+                        totalClients: clientsResult.stats?.total || 0,
+                        conversionRate: leadsResult.stats?.conversionRate || 0
                     }))
                 }
             } catch (error) {
