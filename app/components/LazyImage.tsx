@@ -64,11 +64,17 @@ export default function LazyImage({
 
   const handleLoad = () => {
     setIsLoaded(true)
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`✅ Imagem LazyImage carregada: ${src.slice(-50)}`)
+    }
     onLoad?.()
   }
 
   const handleError = () => {
     setIsError(true)
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(`🖼️ Erro ao carregar imagem LazyImage: ${src}`)
+    }
     onError?.()
   }
 
@@ -79,8 +85,7 @@ export default function LazyImage({
       {!isInView && (
         <div 
           className={cn(
-            'absolute inset-0 bg-gray-200 animate-pulse',
-            fill ? '' : 'aspect-video'
+            'absolute inset-0 bg-gray-200 animate-pulse'
           )}
           style={!fill ? { width, height } : undefined}
         />

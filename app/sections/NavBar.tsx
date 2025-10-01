@@ -36,6 +36,7 @@ export default function Navbar() {
                         width={scrolled ? 130 : 160}
                         height={scrolled ? 41 : 50}
                         className="object-contain transition-all duration-300 cursor-pointer"
+                        style={{ width: 'auto', height: 'auto' }}
                         priority
                     />
                 </Link>{/* ✅ Links Desktop */}

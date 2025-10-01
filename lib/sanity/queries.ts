@@ -110,10 +110,12 @@ const PROPERTY_FIELDS = `
   imagem {
     asset-> {
       _id,
-      url
+      url,
+      metadata
     },
     alt,
-    hotspot
+    hotspot,
+    "imagemUrl": asset->url
   }
 `
 
@@ -135,11 +137,13 @@ const PROPERTY_DETAILED_FIELDS = `
   galeria[] {
     asset-> {
       _id,
-      url
+      url,
+      metadata
     },
     alt,
     titulo,
-    hotspot
+    hotspot,
+    "imagemUrl": asset->url
   },
   valorCondominio,
   iptu,
@@ -337,14 +341,14 @@ export function transformPropertyToImovelClient(property: Property): ImovelClien
     })) || []
   }
 
-  // Debug log para verificar a transformação
-  console.log('🔄 Transformação Property -> ImovelClient:', {
-    id: transformed._id,
-    titulo: transformed.titulo,
-    descricao: transformed.descricao ? 'Transformada' : 'Ausente',
-    galeriaCount: transformed.galeria?.length || 0,
-    imagemPrincipal: transformed.imagem?.imagemUrl ? 'Transformada' : 'Ausente'
-  })
+  // Log apenas se houver problemas críticos na transformação
+  if (process.env.NODE_ENV === 'development' && (!transformed.titulo || !transformed.imagem?.imagemUrl)) {
+    console.warn('⚠️ Transformação com problemas:', {
+      id: transformed._id.slice(-8),
+      titulo: transformed.titulo ? '✅' : '❌ Ausente',
+      imagem: transformed.imagem?.imagemUrl ? '✅' : '❌ Ausente'
+    });
+  }
 
   return transformed
 }

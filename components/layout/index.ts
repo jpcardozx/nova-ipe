@@ -1,4 +1,2 @@
-// Auto-generated barrel exports
-// Components will be added here as they are migrated
-
-export * from './';
+// ARQUIVO REMOVIDO - BARREL EXPORT VAZIO E CIRCULAR
+// Exports movidos para arquivos específicos

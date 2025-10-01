@@ -73,21 +73,16 @@ export function transformToUnifiedProperty(imovel: ImovelClient): UnifiedPropert
         throw new Error('Dados do imóvel inválidos ou ausentes')
     }
 
-    // Debug de entrada
-    console.log('🔄 Transformando imóvel:', {
-        id: imovel._id,
-        titulo: imovel.titulo,
-        codigo: imovel.codigo,
-        dormitorios: imovel.dormitorios,
-        banheiros: imovel.banheiros,
-        areaUtil: imovel.areaUtil,
-        area: imovel.area,
-        vagas: imovel.vagas,
-        imagem: imovel.imagem,
-        galeria: imovel.galeria?.length || 0,
-        'imagem.asset.url': (imovel.imagem?.asset as any)?.url,
-        'galeria[0]': imovel.galeria?.[0]
-    })
+    // Debug batch - coleta dados para log agrupado
+    if (process.env.NODE_ENV === 'development') {
+        if (!global.transformBatch) global.transformBatch = [];
+        global.transformBatch.push({
+            id: imovel._id?.slice(-8),
+            titulo: imovel.titulo?.slice(0, 20),
+            hasImage: !!(imovel.imagem?.imagemUrl || (imovel.imagem?.asset as any)?.url),
+            galleryCount: imovel.galeria?.length || 0
+        });
+    }
 
     // Normalizar slug com tipo seguro
     const slug = typeof imovel.slug === 'string'
@@ -205,19 +200,22 @@ export function transformToUnifiedProperty(imovel: ImovelClient): UnifiedPropert
         metaDescription: imovel.metaDescription,
     };
 
-    // Debug de saída
-    console.log('✅ Imóvel transformado:', {
-        id: transformedProperty.id,
-        title: transformedProperty.title,
-        codigo: transformedProperty.codigo,
-        area: transformedProperty.area,
-        totalArea: transformedProperty.totalArea,
-        mainImage: transformedProperty.mainImage?.url,
-        galleryCount: transformedProperty.gallery?.length || 0,
-        description: transformedProperty.description ? 'Presente' : 'Ausente'
-    });
+    // Adiciona dados brutos para processamento avançado de imagens
+    const enhancedProperty = {
+        ...transformedProperty,
+        rawPropertyData: imovel // Dados brutos do Sanity para processamento avançado
+    };
 
-    return transformedProperty;
+    // Log apenas se houver problemas críticos
+    if (process.env.NODE_ENV === 'development' && (!transformedProperty.mainImage || !transformedProperty.title)) {
+        console.warn('⚠️ Propriedade com dados críticos ausentes:', {
+            id: transformedProperty.id.slice(-8),
+            title: transformedProperty.title ? '✅' : '❌',
+            mainImage: transformedProperty.mainImage ? '✅' : '❌'
+        });
+    }
+
+    return enhancedProperty;
 }
 
 /**
@@ -259,7 +257,7 @@ export function toSimplePropertyCardProps(property: UnifiedPropertyData) {
 /**
  * Converte UnifiedPropertyData para PropertyCardPremium props
  */
-export function toPropertyCardPremiumProps(property: UnifiedPropertyData) {
+export function toPropertyCardPremiumProps(property: UnifiedPropertyData & { rawPropertyData?: any }) {
     return {
         id: property.id,
         title: property.title,
@@ -271,6 +269,7 @@ export function toPropertyCardPremiumProps(property: UnifiedPropertyData) {
         area: property.area,
         parkingSpots: property.parkingSpots,
         mainImage: property.mainImage,
+        rawPropertyData: property.rawPropertyData, // Dados brutos para processamento avançado
         description: property.description,
         isHighlight: property.isHighlight,
         isPremium: property.isPremium,

@@ -1,0 +1,27 @@
+/* 
+ * Estilos customizados para o catálogo modular
+ * Scroll horizontal sem scrollbar visível
+ */
+
+@layer utilities {
+  /* Esconde scrollbar mas mantém funcionalidade */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE e Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari e Opera */
+  }
+
+  /* Smooth scroll para mobile */
+  .smooth-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Animação de scale sutil */
+  .scale-102 {
+    transform: scale(1.02);
+  }
+}
