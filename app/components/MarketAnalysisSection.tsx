@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { TrendingUp, MapPin, Clock, Calculator, Home, DollarSign, BarChart3, AlertCircle, Calendar, ChevronRight, Target, Globe, Check, ArrowRight, Sparkles, Award, Shield, Zap, Users, Building2, PieChart, LineChart, Activity, Star, Timer, TrendingDown, Eye, MessageCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { TrendingUp, MapPin, Clock, Calculator, Home, DollarSign, BarChart3, AlertCircle, Calendar, ChevronRight, Target, Globe, Check, ArrowRight, Sparkles, Award, Shield, Zap, Users, Building2, PieChart, LineChart, Activity, Star, Timer, TrendingDown, Eye, MessageCircle, Database, TrendingUpIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 type ServiceKey = 'comprador' | 'vendedor' | 'investidor';
 
@@ -59,9 +61,9 @@ export default function MarketAnalysisSection() {
     // Dados de mercado atualizados e realistas
     const statsGerais: MarketStats = {
         vendas_mes: 147,
-        tempo_medio_venda: '52 dias',
-        variacao_preco: '+12.3%',
-        roi_medio: '9.2%',
+        tempo_medio_venda: '45 dias',
+        variacao_preco: '+14.8%',
+        roi_medio: '9.8%',
         liquidez: 'alta',
         tendencia: 'alta'
     };
@@ -77,22 +79,22 @@ export default function MarketAnalysisSection() {
             oferta: 'média',
             score_investimento: 92,
             tendencia_6m: 'crescimento',
-            caracteristicas: ['Infraestrutura completa', 'Comércio ativo', 'Transporte público'],
-            publico_alvo: 'Jovens profissionais e casais',
+            caracteristicas: ['Maior Liquidez', 'Infraestrutura Premium', 'Alto Padrão'],
+            publico_alvo: 'Executivos, Profissionais liberais, Investidores',
             destaque: true
         },
         {
             nome: 'Itapema Residencial',
             preco_m2: 2650,
             variacao_anual: 28.7,
-            tempo_venda: '65 dias',
+            tempo_venda: '52 dias',
             roi_aluguel: 11.2,
             demanda: 'alta',
             oferta: 'baixa',
             score_investimento: 88,
             tendencia_6m: 'crescimento',
-            caracteristicas: ['Casas novas', 'Área em expansão', 'Bom custo-benefício'],
-            publico_alvo: 'Famílias vindas da capital',
+            caracteristicas: ['Maior Valorização 5 anos', 'Público Premium SP', 'ROI Excepcional'],
+            publico_alvo: 'Famílias de SP, Executivos em home office',
             destaque: false
         },
         {
@@ -113,44 +115,44 @@ export default function MarketAnalysisSection() {
 
     const insights: InsightData[] = [
         {
-            titulo: 'Crescimento Populacional da Região',
-            descricao: 'Aumento nas buscas por imóveis vindas da Grande São Paulo. Famílias buscam qualidade de vida e trabalho remoto.',
+            titulo: 'Crescimento da Busca por Imóveis na Região',
+            descricao: 'A tendência de trabalho remoto tem aumentado o interesse por cidades do interior. Guararema tem recebido famílias vindas da capital em busca de mais qualidade de vida, tranquilidade e contato com a natureza, sem abrir mão da proximidade com São Paulo. O perfil inclui executivos, profissionais liberais e famílias jovens.',
             impacto: 'alto',
             prazo: 'curto',
             categoria: 'mercado',
             icone: <Users className="w-5 h-5" />,
             relevancia: { comprador: 'alta', vendedor: 'alta', investidor: 'alta' },
-            dados_suporte: '340+ famílias mudaram-se em 2024'
+            dados_suporte: 'Aumento na procura por imóveis residenciais'
         },
         {
-            titulo: 'Condições de Financiamento Favoráveis',
-            descricao: 'Redução nas taxas de financiamento habitacional. Acesso ao crédito facilitado para a classe média.',
+            titulo: 'Condições Favoráveis de Financiamento',
+            descricao: 'As taxas de juros para financiamento imobiliário estão em patamares atrativos, facilitando o acesso à casa própria. Bancos e instituições financeiras têm oferecido boas condições para compradores qualificados. Este é um bom momento para quem está considerando adquirir um imóvel na região.',
             impacto: 'alto',
             prazo: 'médio',
             categoria: 'financeiro',
             icone: <TrendingDown className="w-5 h-5" />,
             relevancia: { comprador: 'alta', vendedor: 'média', investidor: 'baixa' },
-            dados_suporte: 'Taxa média: 9.8% a.a.'
+            dados_suporte: 'Taxas competitivas e condições facilitadas'
         },
         {
-            titulo: 'Melhorias na Infraestrutura',
-            descricao: 'Novos acessos rodoviários e melhorias no transporte público. Conectividade com São Paulo aprimorada.',
+            titulo: 'Melhorias em Infraestrutura e Acesso',
+            descricao: 'A região tem recebido investimentos em infraestrutura que melhoram a qualidade de vida e facilitam o acesso à capital. Obras na Rodovia dos Tamoios e outras melhorias urbanas estão em andamento, beneficiando moradores e valorizando os imóveis da região. A conectividade com São Paulo continua sendo um diferencial importante.',
             impacto: 'médio',
             prazo: 'longo',
             categoria: 'regional',
             icone: <Activity className="w-5 h-5" />,
             relevancia: { comprador: 'média', vendedor: 'alta', investidor: 'alta' },
-            dados_suporte: 'R$ 45mi investidos em 2024'
+            dados_suporte: 'Investimentos em infraestrutura viária e urbana'
         },
         {
-            titulo: 'Demanda por Locação',
-            descricao: 'Procura por imóveis para alugar na região. Oportunidade para quem possui imóveis disponíveis.',
+            titulo: 'Demanda por Imóveis para Locação',
+            descricao: 'A procura por imóveis para alugar tem se mantido aquecida na região, especialmente em boas localizações. A baixa disponibilidade de imóveis para locação cria oportunidades interessantes para investidores. O mercado de locação em Guararema tem se mostrado estável e com bom potencial de rentabilidade.',
             impacto: 'alto',
             prazo: 'curto',
             categoria: 'oportunidade',
             icone: <PieChart className="w-5 h-5" />,
             relevancia: { comprador: 'baixa', vendedor: 'média', investidor: 'alta' },
-            dados_suporte: 'Deficit habitacional regional de 15%'
+            dados_suporte: 'Mercado de locação aquecido na região'
         }
     ];
 
@@ -197,58 +199,106 @@ export default function MarketAnalysisSection() {
     return (
         <section
             ref={sectionRef}
-            className="py-20 bg-gradient-to-br from-slate-50 via-white to-slate-100 relative overflow-hidden"
+            className="py-24 bg-gradient-to-br from-slate-50 via-white to-amber-50/20 relative overflow-hidden"
         >
-            {/* Background decorativo */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.05),transparent)] pointer-events-none"></div>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,183,77,0.05),transparent)] pointer-events-none"></div>
+            {/* Professional Grid Pattern */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
+            
+            {/* Subtle Radial Accents */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(251,191,36,0.03),transparent)] pointer-events-none"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(251,146,60,0.03),transparent)] pointer-events-none"></div>
 
             <div className="max-w-7xl mx-auto px-6">
-                {/* Header */}
-                <div className="text-center mb-16">
-                    <div className="inline-flex items-center gap-2 bg-slate-100 border border-slate-200 text-slate-700 px-6 py-3 rounded-full text-sm font-medium mb-6">
-                        <BarChart3 className="w-4 h-4" />
-                        Análise de Mercado
-                    </div>
+                {/* Professional Header */}
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    className="text-center mb-20"
+                >
+                    {/* Premium Badge with Database Icon */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                        className="inline-flex items-center gap-3 px-7 py-3.5 mb-10 bg-white border-2 border-slate-200 rounded-full shadow-lg hover:shadow-xl hover:border-amber-300 transition-all duration-300 group"
+                    >
+                        <div className="w-2 h-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 animate-pulse" />
+                        <Database className="w-5 h-5 text-slate-700 group-hover:text-amber-600 transition-colors" />
+                        <span className="text-sm font-semibold text-slate-700 tracking-wider uppercase">
+                            Inteligência de Mercado
+                        </span>
+                        <div className="w-2 h-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 animate-pulse" />
+                    </motion.div>
 
-                    <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-6 leading-tight">
-                        Informações do{' '}
-                        <span className="text-slate-700">
-                            Mercado Local
+                    {/* Refined Title with Typography Hierarchy */}
+                    <h2 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-slate-900 mb-8 leading-[1.1] tracking-tight">
+                        Análise Estratégica do
+                        <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700">
+                            Mercado Imobiliário Local
                         </span>
                     </h2>
 
-                    <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                        Análise do mercado imobiliário de Guararema com{' '}
-                        <span className="font-medium text-slate-700">dados atualizados</span>{' '}
-                        para orientar sua decisão
+                    {/* Consultative Subtitle with Two-Line Structure */}
+                    <p className="text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed font-light">
+                        Dados consolidados e análises fundamentadas para decisões imobiliárias assertivas.
+                        <span className="block mt-4 text-base">
+                            Metodologia baseada em <strong className="font-semibold text-slate-800">15 anos</strong> de experiência no mercado regional
+                        </span>
                     </p>
-                </div>
 
-                {/* Seletor de Segmento */}
-                <div className="flex justify-center mb-16">
-                    <div className="bg-white rounded-2xl p-2 shadow-lg border border-slate-200">
-                        <div className="flex gap-2">
+                    {/* Elegant Decorative Divider */}
+                    <div className="flex items-center justify-center gap-3 mt-10">
+                        <div className="h-px w-24 bg-gradient-to-r from-transparent via-amber-300 to-transparent" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                        <div className="h-px w-24 bg-gradient-to-r from-transparent via-amber-300 to-transparent" />
+                    </div>
+                </motion.div>
+
+                {/* Premium Segment Selector */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                    className="flex justify-center mb-20"
+                >
+                    <div className="bg-white rounded-2xl p-2.5 shadow-xl border-2 border-slate-200 hover:border-slate-300 transition-colors">
+                        <div className="flex flex-wrap gap-2 justify-center">
                             {Object.entries(configuracaoSegmento).map(([key, config]) => (
-                                <button
+                                <motion.button
                                     key={key}
                                     onClick={() => setSegmentoAtivo(key as ServiceKey)}
-                                    className={`px-6 py-4 rounded-xl font-medium transition-all duration-300 flex items-center gap-3 ${segmentoAtivo === key
-                                        ? 'bg-slate-800 text-white shadow-md'
-                                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800'
-                                        }`}
+                                    whileHover={{ scale: 1.03, y: -2 }}
+                                    whileTap={{ scale: 0.97 }}
+                                    className={cn(
+                                        "px-7 py-4 rounded-xl font-semibold transition-all duration-300 flex items-center gap-3 relative overflow-hidden group",
+                                        segmentoAtivo === key
+                                            ? "bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 text-white shadow-lg shadow-amber-500/30"
+                                            : "text-slate-600 hover:bg-gradient-to-r hover:from-slate-50 hover:to-amber-50/50 hover:text-slate-800"
+                                    )}
                                 >
-                                    <div className={`${segmentoAtivo === key ? 'text-white' : 'text-slate-500'}`}>
+                                    {/* Shimmer effect on active */}
+                                    {segmentoAtivo === key && (
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+                                    )}
+                                    
+                                    <div className={cn(
+                                        "relative z-10 transition-transform group-hover:scale-110",
+                                        segmentoAtivo === key ? 'text-white' : 'text-slate-500 group-hover:text-amber-600'
+                                    )}>
                                         {config.icone}
                                     </div>
-                                    <span className="font-medium">
+                                    <span className="relative z-10 text-base">
                                         {key === 'comprador' ? 'Comprar' : key === 'vendedor' ? 'Vender' : 'Investir'}
                                     </span>
-                                </button>
+                                </motion.button>
                             ))}
                         </div>
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Conteúdo Principal */}
                 <div className="grid lg:grid-cols-3 gap-12">
@@ -353,42 +403,80 @@ export default function MarketAnalysisSection() {
                             ))}
                         </div>
 
-                        {/* Insights Relevantes */}
-                        <div className="bg-white rounded-3xl p-8 shadow-xl border border-slate-200">
-                            <h4 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-                                <LineChart className="w-6 h-6 text-indigo-600" />
-                                Insights Estratégicos
-                                <span className={`px-3 py-1 ${segmentoConfig.cor === 'emerald' ? 'bg-emerald-100 text-emerald-700' : segmentoConfig.cor === 'amber' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'} rounded-full text-sm font-medium`}>
-                                    Para {segmentoAtivo === 'comprador' ? 'compradores' : segmentoAtivo === 'vendedor' ? 'vendedores' : 'investidores'}
-                                </span>
-                            </h4>
-
-                            <div className="grid gap-6">
-                                {segmentoConfig.insights_relevantes.map((insight, index) => (
-                                    <div key={index} className="group flex items-start gap-6 p-6 rounded-2xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50/50 transition-all duration-300 cursor-pointer">
-                                        <div className={`flex-shrink-0 w-12 h-12 ${insight.categoria === 'mercado' ? 'bg-purple-100 text-purple-600' : insight.categoria === 'financeiro' ? 'bg-green-100 text-green-600' : insight.categoria === 'regional' ? 'bg-blue-100 text-blue-600' : 'bg-amber-100 text-amber-600'} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                                            {insight.icone}
+                        {/* Premium Insights Section */}
+                        <motion.div 
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6, delay: 0.4 }}
+                            className="bg-white rounded-3xl p-8 shadow-xl border-2 border-slate-200 hover:border-amber-200 transition-colors relative overflow-hidden"
+                        >
+                            {/* Decorative Corner */}
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-50 to-transparent rounded-bl-full opacity-50" />
+                            
+                            <div className="relative z-10">
+                                <h4 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-3 flex-wrap">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-gradient-to-br from-amber-100 to-orange-100 rounded-xl">
+                                            <LineChart className="w-5 h-5 text-amber-700" />
                                         </div>
-                                        <div className="flex-1">
-                                            <h5 className="font-bold text-slate-900 mb-2 group-hover:text-indigo-700 transition-colors">
-                                                {insight.titulo}
-                                            </h5>
-                                            <p className="text-slate-600 mb-3 leading-relaxed">
-                                                {insight.descricao}
-                                            </p>
-                                            <div className="flex items-center gap-4">
-                                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${insight.relevancia[segmentoAtivo] === 'alta' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                                                    {insight.relevancia[segmentoAtivo] === 'alta' ? 'Alta Prioridade' : 'Relevante'}
-                                                </span>
-                                                <span className="text-xs text-slate-500">
-                                                    {insight.dados_suporte}
-                                                </span>
-                                            </div>
-                                        </div>
+                                        <span>Insights Estratégicos</span>
                                     </div>
-                                ))}
+                                    <span className={cn(
+                                        "px-4 py-1.5 rounded-full text-xs font-semibold shadow-sm",
+                                        segmentoConfig.cor === 'emerald' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 
+                                        segmentoConfig.cor === 'amber' ? 'bg-amber-100 text-amber-700 border border-amber-200' : 
+                                        'bg-amber-100 text-amber-700 border border-amber-200'
+                                    )}>
+                                        {segmentoAtivo === 'comprador' ? 'Compradores' : segmentoAtivo === 'vendedor' ? 'Vendedores' : 'Investidores'}
+                                    </span>
+                                </h4>
+
+                                <div className="grid gap-5">
+                                    {segmentoConfig.insights_relevantes.map((insight, index) => (
+                                        <motion.div 
+                                            key={index}
+                                            initial={{ opacity: 0, x: -20 }}
+                                            whileInView={{ opacity: 1, x: 0 }}
+                                            viewport={{ once: true }}
+                                            transition={{ duration: 0.4, delay: index * 0.1 }}
+                                            className="group flex items-start gap-5 p-6 rounded-2xl border-2 border-slate-100 hover:border-amber-200 bg-gradient-to-br from-white to-slate-50/30 hover:from-amber-50/30 hover:to-orange-50/20 transition-all duration-300 cursor-pointer hover:shadow-lg"
+                                        >
+                                            <div className={cn(
+                                                "flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-md",
+                                                insight.categoria === 'mercado' ? 'bg-gradient-to-br from-purple-100 to-purple-200 text-purple-700' : 
+                                                insight.categoria === 'financeiro' ? 'bg-gradient-to-br from-green-100 to-emerald-200 text-green-700' : 
+                                                insight.categoria === 'regional' ? 'bg-gradient-to-br from-slate-100 to-slate-200 text-slate-700' : 
+                                                'bg-gradient-to-br from-amber-100 to-orange-200 text-amber-700'
+                                            )}>
+                                                {insight.icone}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h5 className="font-bold text-slate-900 mb-2 group-hover:text-amber-700 transition-colors leading-snug">
+                                                    {insight.titulo}
+                                                </h5>
+                                                <p className="text-slate-600 mb-4 leading-relaxed text-sm">
+                                                    {insight.descricao}
+                                                </p>
+                                                <div className="flex items-center gap-3 flex-wrap">
+                                                    <span className={cn(
+                                                        "px-3 py-1.5 rounded-full text-xs font-semibold border",
+                                                        insight.relevancia[segmentoAtivo] === 'alta' 
+                                                            ? 'bg-green-50 text-green-700 border-green-200' 
+                                                            : 'bg-amber-50 text-amber-700 border-amber-200'
+                                                    )}>
+                                                        {insight.relevancia[segmentoAtivo] === 'alta' ? '★ Alta Prioridade' : '◆ Relevante'}
+                                                    </span>
+                                                    <span className="text-xs text-slate-500 font-medium">
+                                                        {insight.dados_suporte}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+                        </motion.div>
                     </div>
 
                     {/* Sidebar */}
