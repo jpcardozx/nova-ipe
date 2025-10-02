@@ -16,11 +16,7 @@ export default function ImageDiagnostic({ properties }: ImageDiagnosticProps) {
         if (process.env.NODE_ENV === 'development' && properties.length > 0) {
             // Aguarda um pouco para garantir que todos os componentes foram montados
             const timer = setTimeout(() => {
-                // Só mostra diagnóstico se houver problemas reais
-                const hasProblems = properties.some(p => !p.imagem?.imagemUrl && !p.imagem?.asset?.url);
-                if (!hasProblems) return;
-                
-                console.group('🔍 DIAGNÓSTICO DE IMAGENS (Apenas Problemas)');
+                console.group('🖼️ DIAGNÓSTICO DE IMAGENS - /catalogo');
                 
                 let totalImages = 0;
                 let workingImages = 0;
@@ -95,8 +91,23 @@ export default function ImageDiagnostic({ properties }: ImageDiagnosticProps) {
                     'Imagens funcionando': workingImages,
                     'URLs quebradas': brokenImages,
                     'Propriedades sem imagem': missingImages,
-                    'Taxa de sucesso': `${Math.round((workingImages / totalImages) * 100)}%`
+                    'Taxa de sucesso': totalImages > 0 ? `${Math.round((workingImages / totalImages) * 100)}%` : 'N/A'
                 });
+                
+                // Mostrar estrutura da primeira propriedade para debug
+                if (properties.length > 0) {
+                    console.log('🔬 ESTRUTURA DA PRIMEIRA PROPRIEDADE:');
+                    const sample = properties[0];
+                    console.log({
+                        '_id': sample._id,
+                        'titulo': sample.titulo,
+                        'imagem': sample.imagem,
+                        'imagem.imagemUrl': sample.imagem?.imagemUrl,
+                        'imagem.asset': sample.imagem?.asset,
+                        'imagem.asset.url': sample.imagem?.asset?.url,
+                        'galeria count': sample.galeria?.length || 0
+                    });
+                }
                 
                 console.log('🏠 DIAGNÓSTICO POR PROPRIEDADE:');
                 console.table(detailedReport.map(d => ({

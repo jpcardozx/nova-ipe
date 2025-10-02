@@ -36,9 +36,23 @@ export default function ModularCatalog({ properties, onSearch }: ModularCatalogP
         });
     }, [analytics, properties.length]);
 
+    // Preparar propriedades com campo imagemPrincipal para compatibilidade
+    const preparedProperties = useMemo(() => {
+        return properties.map(property => ({
+            ...property,
+            // Adicionar imagemPrincipal para compatibilidade com PropertyCard
+            imagemPrincipal: property.imagem?.imagemUrl || property.imagem?.asset?.url || '',
+            // Mapear campos para filtros
+            tipo: property.finalidade || property.tipo,
+            quartos: property.dormitorios || property.quartos,
+            banheiros: property.banheiros,
+            preco: property.preco
+        }));
+    }, [properties]);
+
     // Aplicar filtros
     const filteredProperties = useMemo(() => {
-        let filtered = [...properties];
+        let filtered = [...preparedProperties];
 
         // Filtro de tipo
         if (filters.tipo) {
@@ -83,7 +97,7 @@ export default function ModularCatalog({ properties, onSearch }: ModularCatalogP
         }
 
         return filtered;
-    }, [properties, filters]);
+    }, [preparedProperties, filters]);
 
     // Handlers
     const handleFilterChange = (newFilters: FilterState) => {
