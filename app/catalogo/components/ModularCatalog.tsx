@@ -36,15 +36,56 @@ export default function ModularCatalog({ properties, onSearch }: ModularCatalogP
         });
     }, [analytics, properties.length]);
 
+    // Preparar propriedades com campo imagemPrincipal para compatibilidade
+    const preparedProperties = useMemo(() => {
+        const prepared = properties.map(property => {
+            const imagemPrincipal = property.imagem?.imagemUrl || property.imagem?.asset?.url || '';
+            
+            return {
+                ...property,
+                // Adicionar imagemPrincipal para compatibilidade com PropertyCard
+                imagemPrincipal,
+                // Mapear campos para filtros - suporta tanto finalidade quanto tipoImovel
+                tipo: property.finalidade || property.tipo,
+                tipoImovel: property.tipoImovel,
+                finalidade: property.finalidade,
+                quartos: property.dormitorios || property.quartos,
+                banheiros: property.banheiros,
+                preco: property.preco
+            };
+        });
+        
+        // Debug apenas em desenvolvimento
+        if (process.env.NODE_ENV === 'development' && prepared.length > 0) {
+            const withImages = prepared.filter(p => p.imagemPrincipal).length;
+            console.log('📦 ModularCatalog preparou propriedades:', {
+                total: prepared.length,
+                comImagens: withImages,
+                semImagens: prepared.length - withImages,
+                percentual: `${Math.round((withImages / prepared.length) * 100)}%`
+            });
+        }
+        
+        return prepared;
+    }, [properties]);
+
     // Aplicar filtros
     const filteredProperties = useMemo(() => {
-        let filtered = [...properties];
+        let filtered = [...preparedProperties];
 
-        // Filtro de tipo
+        // Filtro de tipo - suporta finalidade (venda/aluguel) ou tipoImovel (casa/apartamento)
         if (filters.tipo) {
-            filtered = filtered.filter(p => 
-                p.tipo?.toLowerCase() === filters.tipo?.toLowerCase()
-            );
+            const filterValue = filters.tipo.toLowerCase();
+            filtered = filtered.filter(p => {
+                const finalidade = p.finalidade?.toLowerCase();
+                const tipoImovel = p.tipoImovel?.toLowerCase();
+                const tipo = p.tipo?.toLowerCase();
+                
+                // Permite buscar por finalidade (venda/aluguel) ou tipo de imóvel (casa/apartamento)
+                return finalidade === filterValue || 
+                       tipoImovel === filterValue || 
+                       tipo === filterValue;
+            });
         }
 
         // Filtro de preço
@@ -83,7 +124,7 @@ export default function ModularCatalog({ properties, onSearch }: ModularCatalogP
         }
 
         return filtered;
-    }, [properties, filters]);
+    }, [preparedProperties, filters]);
 
     // Handlers
     const handleFilterChange = (newFilters: FilterState) => {

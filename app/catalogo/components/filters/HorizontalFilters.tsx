@@ -29,6 +29,8 @@ export interface FilterState {
 
 const propertyTypes = [
     { value: '', label: 'Todos', icon: Home },
+    { value: 'venda', label: 'Venda', icon: DollarSign },
+    { value: 'aluguel', label: 'Aluguel', icon: Home },
     { value: 'casa', label: 'Casa', icon: Home },
     { value: 'apartamento', label: 'Apartamento', icon: Building2 },
     { value: 'terreno', label: 'Terreno', icon: MapPin },
