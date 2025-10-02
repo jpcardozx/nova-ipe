@@ -38,18 +38,35 @@ export default function ModularCatalog({ properties, onSearch }: ModularCatalogP
 
     // Preparar propriedades com campo imagemPrincipal para compatibilidade
     const preparedProperties = useMemo(() => {
-        return properties.map(property => ({
-            ...property,
-            // Adicionar imagemPrincipal para compatibilidade com PropertyCard
-            imagemPrincipal: property.imagem?.imagemUrl || property.imagem?.asset?.url || '',
-            // Mapear campos para filtros - suporta tanto finalidade quanto tipoImovel
-            tipo: property.finalidade || property.tipo,
-            tipoImovel: property.tipoImovel,
-            finalidade: property.finalidade,
-            quartos: property.dormitorios || property.quartos,
-            banheiros: property.banheiros,
-            preco: property.preco
-        }));
+        const prepared = properties.map(property => {
+            const imagemPrincipal = property.imagem?.imagemUrl || property.imagem?.asset?.url || '';
+            
+            return {
+                ...property,
+                // Adicionar imagemPrincipal para compatibilidade com PropertyCard
+                imagemPrincipal,
+                // Mapear campos para filtros - suporta tanto finalidade quanto tipoImovel
+                tipo: property.finalidade || property.tipo,
+                tipoImovel: property.tipoImovel,
+                finalidade: property.finalidade,
+                quartos: property.dormitorios || property.quartos,
+                banheiros: property.banheiros,
+                preco: property.preco
+            };
+        });
+        
+        // Debug apenas em desenvolvimento
+        if (process.env.NODE_ENV === 'development' && prepared.length > 0) {
+            const withImages = prepared.filter(p => p.imagemPrincipal).length;
+            console.log('📦 ModularCatalog preparou propriedades:', {
+                total: prepared.length,
+                comImagens: withImages,
+                semImagens: prepared.length - withImages,
+                percentual: `${Math.round((withImages / prepared.length) * 100)}%`
+            });
+        }
+        
+        return prepared;
     }, [properties]);
 
     // Aplicar filtros
