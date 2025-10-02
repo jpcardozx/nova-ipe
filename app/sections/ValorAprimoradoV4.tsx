@@ -310,7 +310,7 @@ export default function ValorAprimoradoModerno() {
                                         transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
                                     >
                                         <img
-                                            src="/escritorio.jpg"
+                                            src="/images/escritorio.jpg"
                                             alt="Escritório Nova Ipê - Atendimento Presencial em Guararema"
                                             className="w-full h-full object-cover"
                                             loading="lazy"
@@ -350,7 +350,7 @@ export default function ValorAprimoradoModerno() {
                                                 </div>
                                                 <div>
                                                     <p className="text-sm font-semibold">Centro de Guararema</p>
-                                                    <p className="text-xs text-white/70">R. Campos Sales, 86 - Centro</p>
+                                                    <p className="text-xs text-white/70">Praça 9 de Julho, 65 - Centro</p>
                                                 </div>
                                             </div>
                                             
@@ -417,8 +417,8 @@ export default function ValorAprimoradoModerno() {
                                         </span>
                                     </h2>
                                     <p className="text-base text-slate-600 leading-relaxed">
-                                        Atendimento presencial com consultores especializados no mercado imobiliário local. 
-                                        Combinamos conhecimento da região com tecnologia para oferecer a melhor experiência.
+                                        Visite nosso escritório no centro de Guararema para atendimento presencial 
+                                        com consultores especializados no mercado imobiliário local.
                                     </p>
                                 </div>
 
@@ -435,31 +435,13 @@ export default function ValorAprimoradoModerno() {
                                             hoverGradient: "from-blue-600 to-cyan-600"
                                         },
                                         {
-                                            id: 'families',
-                                            icon: <Home className="w-5 h-5" />,
-                                            value: "500+",
-                                            unit: "",
-                                            label: "Famílias atendidas",
-                                            gradient: "from-amber-500 to-orange-500",
-                                            hoverGradient: "from-amber-600 to-orange-600"
-                                        },
-                                        {
-                                            id: 'satisfaction',
-                                            icon: <Check className="w-5 h-5" />,
-                                            value: "98%",
-                                            unit: "",
-                                            label: "Satisfação",
-                                            gradient: "from-emerald-500 to-green-500",
-                                            hoverGradient: "from-emerald-600 to-green-600"
-                                        },
-                                        {
                                             id: 'focus',
                                             icon: <MapPin className="w-5 h-5" />,
-                                            value: "100%",
+                                            value: "Guararema",
                                             unit: "",
                                             label: "Foco regional",
-                                            gradient: "from-purple-500 to-pink-500",
-                                            hoverGradient: "from-purple-600 to-pink-600"
+                                            gradient: "from-amber-500 to-orange-500",
+                                            hoverGradient: "from-amber-600 to-orange-600"
                                         }
                                     ].map((metric, index) => (
                                         <motion.div
@@ -544,7 +526,7 @@ export default function ValorAprimoradoModerno() {
                                     className="pt-4 flex items-center gap-4"
                                 >
                                     <a
-                                        href="/sobre"
+                                        href="/contato"
                                         className="group/cta inline-flex items-center gap-2.5 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold text-sm shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/30 transition-all duration-300"
                                         onClick={() => {
                                             if (typeof window !== 'undefined') {
@@ -552,14 +534,14 @@ export default function ValorAprimoradoModerno() {
                                                 window.dataLayer.push({
                                                     event: 'cta_click',
                                                     cta_type: 'primary',
-                                                    cta_text: 'conheça_nossa_história',
+                                                    cta_text: 'agendar_visita',
                                                     section: 'nossa_estrutura',
-                                                    destination: '/sobre'
+                                                    destination: '/contato'
                                                 });
                                             }
                                         }}
                                     >
-                                        Conheça nossa história
+                                        Agendar visita
                                         <motion.div
                                             animate={{ x: [0, 4, 0] }}
                                             transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
