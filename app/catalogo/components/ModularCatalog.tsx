@@ -42,8 +42,10 @@ export default function ModularCatalog({ properties, onSearch }: ModularCatalogP
             ...property,
             // Adicionar imagemPrincipal para compatibilidade com PropertyCard
             imagemPrincipal: property.imagem?.imagemUrl || property.imagem?.asset?.url || '',
-            // Mapear campos para filtros
+            // Mapear campos para filtros - suporta tanto finalidade quanto tipoImovel
             tipo: property.finalidade || property.tipo,
+            tipoImovel: property.tipoImovel,
+            finalidade: property.finalidade,
             quartos: property.dormitorios || property.quartos,
             banheiros: property.banheiros,
             preco: property.preco
@@ -54,11 +56,19 @@ export default function ModularCatalog({ properties, onSearch }: ModularCatalogP
     const filteredProperties = useMemo(() => {
         let filtered = [...preparedProperties];
 
-        // Filtro de tipo
+        // Filtro de tipo - suporta finalidade (venda/aluguel) ou tipoImovel (casa/apartamento)
         if (filters.tipo) {
-            filtered = filtered.filter(p => 
-                p.tipo?.toLowerCase() === filters.tipo?.toLowerCase()
-            );
+            const filterValue = filters.tipo.toLowerCase();
+            filtered = filtered.filter(p => {
+                const finalidade = p.finalidade?.toLowerCase();
+                const tipoImovel = p.tipoImovel?.toLowerCase();
+                const tipo = p.tipo?.toLowerCase();
+                
+                // Permite buscar por finalidade (venda/aluguel) ou tipo de imóvel (casa/apartamento)
+                return finalidade === filterValue || 
+                       tipoImovel === filterValue || 
+                       tipo === filterValue;
+            });
         }
 
         // Filtro de preço
