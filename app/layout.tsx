@@ -18,17 +18,17 @@ export const metadata: Metadata = {
   },
   description: 'Encontre seu imóvel ideal em Guararema com a Ipê Imóveis. 15 anos de experiência, 500+ imóveis vendidos, atendimento personalizado.',
   keywords: 'imóveis Guararema, casas venda Guararema, apartamentos aluguel Guararema, terrenos Guararema, Ipê Imóveis, imobiliária Guararema SP',
-  authors: [{ name: 'Ipê Imóveis', url: 'https://ipeimoveis.vercel.app' }],
+  authors: [{ name: 'Ipê Imóveis', url: 'https://www.imobiliariaipe.com.br' }],
   creator: 'Ipê Imóveis',
   publisher: 'Ipê Imóveis',
-  metadataBase: new URL('https://ipeimoveis.vercel.app'),
+  metadataBase: new URL('https://www.imobiliariaipe.com.br'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     title: 'Ipê Imóveis - Especialistas em Imóveis em Guararema',
     description: 'Encontre seu imóvel ideal em Guararema. 15 anos de experiência, 500+ imóveis vendidos.',
-    url: 'https://ipeimoveis.vercel.app',
+    url: 'https://www.imobiliariaipe.com.br',
     siteName: 'Ipê Imóveis',
     images: [
       {
@@ -82,7 +82,7 @@ export default function RootLayout({
     "@type": "RealEstateAgent",
     "name": "Ipê Imóveis",
     "description": "Especialistas em imóveis em Guararema com mais de 15 anos de experiência",
-    "url": "https://ipeimoveis.vercel.app",
+    "url": "https://www.imobiliariaipe.com.br",
     "telephone": "+55-11-99999-9999",
     "address": {
       "@type": "PostalAddress",

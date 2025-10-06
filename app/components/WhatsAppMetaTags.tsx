@@ -28,7 +28,7 @@ export default function WhatsAppMetaTags({
     url,
 }: WhatsAppMetaTagsProps) {
     // Determinar a URL absoluta da imagem
-    const domain = process.env.NEXT_PUBLIC_SITE_URL || 'https://ipeimoveis.vercel.app';
+    const domain = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imobiliariaipe.com.br';
     const absoluteImageUrl = imageUrl.startsWith('http') ? imageUrl : `${domain}${imageUrl}`;
     const pageUrl = url || domain;
 

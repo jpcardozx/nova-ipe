@@ -1,0 +1,98 @@
+name: SEO Smoke Test
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # A cada 6 horas
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'app/layout.tsx'
+      - 'app/robots.ts'
+      - 'app/sitemap.ts'
+      - 'lib/metadata-generators.ts'
+
+jobs:
+  seo-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Test Homepage as Googlebot
+        run: |
+          URL="https://www.imobiliariaipe.com.br/"
+          GOOGLEBOT_UA="Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+          
+          echo "🤖 Testing as Googlebot: $URL"
+          
+          # Check HTTP Status
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" -A "$GOOGLEBOT_UA" "$URL")
+          echo "Status Code: $STATUS"
+          
+          if [[ "$STATUS" == "403" || "$STATUS" == "401" ]]; then
+            echo "❌ ERROR: Googlebot receiving $STATUS"
+            exit 1
+          fi
+          
+          # Check X-Robots-Tag Header
+          curl -sI -A "$GOOGLEBOT_UA" "$URL" | tee /tmp/headers.txt
+          if grep -iq "x-robots-tag:.*noindex" /tmp/headers.txt; then
+            echo "❌ ERROR: X-Robots-Tag noindex found!"
+            exit 2
+          fi
+          
+          # Check Meta Robots Tag
+          curl -s -A "$GOOGLEBOT_UA" "$URL" | tee /tmp/page.html
+          if grep -iq '<meta[^>]*name="robots"[^>]*content="[^"]*noindex' /tmp/page.html; then
+            echo "❌ ERROR: Meta robots noindex found!"
+            exit 3
+          fi
+          
+          echo "✅ All SEO checks passed!"
+
+      - name: Test Key Pages
+        run: |
+          GOOGLEBOT_UA="Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+          PAGES=(
+            "https://www.imobiliariaipe.com.br/comprar"
+            "https://www.imobiliariaipe.com.br/alugar"
+            "https://www.imobiliariaipe.com.br/contato"
+          )
+          
+          for page in "${PAGES[@]}"; do
+            echo ""
+            echo "Testing: $page"
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" -A "$GOOGLEBOT_UA" "$page")
+            
+            if [[ "$STATUS" == "200" ]]; then
+              echo "  ✅ $STATUS"
+            else
+              echo "  ⚠️  $STATUS"
+            fi
+          done
+
+      - name: Check robots.txt
+        run: |
+          echo ""
+          echo "📄 Checking robots.txt..."
+          curl -s "https://www.imobiliariaipe.com.br/robots.txt"
+          
+          if curl -s "https://www.imobiliariaipe.com.br/robots.txt" | grep -q "Sitemap:"; then
+            echo "✅ Sitemap directive found"
+          else
+            echo "⚠️  No sitemap directive in robots.txt"
+          fi
+
+      - name: Check sitemap.xml
+        run: |
+          echo ""
+          echo "🗺️  Checking sitemap.xml..."
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://www.imobiliariaipe.com.br/sitemap.xml")
+          
+          if [[ "$STATUS" == "200" ]]; then
+            echo "✅ Sitemap accessible ($STATUS)"
+            curl -s "https://www.imobiliariaipe.com.br/sitemap.xml" | head -30
+          else
+            echo "❌ Sitemap not accessible ($STATUS)"
+            exit 4
+          fi

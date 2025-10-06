@@ -5,7 +5,7 @@ import { MetadataRoute } from 'next';
  * Importante para SEO: Ajuda search engines a descobrir todas as páginas
  */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://www.nova-ipe.com.br';
+  const baseUrl = 'https://www.imobiliariaipe.com.br';
   const currentDate = new Date().toISOString();
 
   // Páginas principais e estáticas

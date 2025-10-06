@@ -5,7 +5,7 @@ import { MetadataRoute } from 'next';
  * Controla como os motores de busca interagem com o site
  */
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://www.nova-ipe.com.br';
+  const baseUrl = 'https://www.imobiliariaipe.com.br';
   
   return {
     rules: {
@@ -20,8 +20,6 @@ export default function robots(): MetadataRoute.Robots {
         '/_next/',
         '/cdn-cgi/',
       ],
-      // Reduzir a frequência de crawling para não sobrecarregar o servidor
-      crawlDelay: 5,
     },
     sitemap: `${baseUrl}/sitemap.xml`,
   };

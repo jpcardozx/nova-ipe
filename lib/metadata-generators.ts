@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 // This function generates site-wide metadata
 export function generateSiteMetadata(): Metadata {
     // Base domain for absolute URLs
-    const domain = process.env.NEXT_PUBLIC_SITE_URL || 'https://ipeimoveis.vercel.app';
+    const domain = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.imobiliariaipe.com.br';
 
     return {
         title: 'Nova Ipê Imobiliária - Imóveis Premium em Guararema',

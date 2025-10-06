@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
     metadataBase: process.env.NODE_ENV === 'production'
-        ? new URL('https://ipeimoveis.vercel.app')
+        ? new URL('https://imobiliariaipe.com.br')
         : new URL(`http://localhost:${process.env.PORT || 3002}`),
     title: {
         default: 'Ipê - Imóveis Selecionados em Guararema | Compra, Venda e Locação',
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     },
     description: 'Descobra imóveis exclusivos em Guararema e região com a Ipê Imóveis. Mais de 15 anos de experiência em vendas, locações e investimentos imobiliários de alto padrão. Atendimento personalizado e consultoria especializada.',
     keywords: ['imóveis Guararema', 'casas para venda Guararema', 'apartamentos aluguel Guararema', 'imobiliária Guararema', 'investimento imobiliário', 'terrenos Guararema', 'condomínios fechados', 'imóveis premium', 'corretores especializados'],
-    authors: [{ name: 'Ipê Imóveis', url: 'https://ipeimoveis.vercel.app' }],
+    authors: [{ name: 'Ipê Imóveis', url: 'https://imobiliariaipe.com.br' }],
     creator: 'Ipê Imóveis',
     publisher: 'Ipê Imóveis',
     category: 'Real Estate',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     }, openGraph: {
         title: 'Ipê Imóveis - Imóveis Selecionados em Guararema',
         description: 'Consultoria imobiliária especializada há 15 anos. Encontre o imóvel ideal em Guararema com nossa expertise em vendas, locações e investimentos de alto padrão.',
-        url: 'https://ipeimoveis.vercel.app',
+        url: 'https://imobiliariaipe.com.br',
         siteName: 'Ipê Imóveis',
         images: [
             {
@@ -69,9 +69,9 @@ export const metadata: Metadata = {
         yahoo: 'verification-token-here',
     },
     alternates: {
-        canonical: 'https://ipeimoveis.vercel.app',
+        canonical: 'https://imobiliariaipe.com.br',
         languages: {
-            'pt-BR': 'https://ipeimoveis.vercel.app',
+            'pt-BR': 'https://imobiliariaipe.com.br',
         },
     }, other: {
         'msapplication-TileColor': '#E6AA2C',
