@@ -43,6 +43,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
-
-.vercel
+# Sensitive documentation (internal only)
+docs/*_VALIDATION_REPORT.md
+docs/*_SENSITIVE.md
+docs/INTERNAL_*.md
+*.private.md
