@@ -151,7 +151,7 @@ export async function GET(request: NextRequest) {
                             opacity: 0.7,
                         }}
                     >
-                        www.novaipe.com.br
+                        www.imobiliariaipe.com.br
                     </div>
                 </div>
             ),

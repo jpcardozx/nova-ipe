@@ -51,7 +51,7 @@ function PropertyMetadata({ property }: PropertyMetadataProps) {
     const propertySchema = {
         '@context': 'https://schema.org',
         '@type': 'RealEstateListing',
-        url: `https://www.novaipe.com.br/imovel/${property.slug}`,
+        url: `https://www.imobiliariaipe.com.br/imovel/${property.slug}`,
         name: property.title,
         description: property.description || `${property.title} em ${property.city}`,
         offers: {
@@ -94,19 +94,19 @@ function PropertyMetadata({ property }: PropertyMetadataProps) {
                 '@type': 'ListItem',
                 position: 1,
                 name: 'Início',
-                item: 'https://www.novaipe.com.br'
+                item: 'https://www.imobiliariaipe.com.br'
             },
             {
                 '@type': 'ListItem',
                 position: 2,
                 name: property.propertyType === 'sale' ? 'Comprar' : 'Alugar',
-                item: `https://www.novaipe.com.br/${property.propertyType === 'sale' ? 'comprar' : 'alugar'}`
+                item: `https://www.imobiliariaipe.com.br/${property.propertyType === 'sale' ? 'comprar' : 'alugar'}`
             },
             {
                 '@type': 'ListItem',
                 position: 3,
                 name: property.title,
-                item: `https://www.novaipe.com.br/imovel/${property.slug}`
+                item: `https://www.imobiliariaipe.com.br/imovel/${property.slug}`
             }
         ]
     };

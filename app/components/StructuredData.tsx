@@ -7,11 +7,11 @@ export const OrganizationSchema = () => {
         '@type': 'RealEstateAgent',
         name: 'Nova Ipê Imobiliária',
         alternateName: 'Ipê Imóveis',
-        url: 'https://www.novaipe.com.br',
-        logo: 'https://www.novaipe.com.br/images/logo.png',
-        image: 'https://www.novaipe.com.br/images/og-image-2025.jpg',
+        url: 'https://www.imobiliariaipe.com.br',
+        logo: 'https://www.imobiliariaipe.com.br/images/logo.png',
+        image: 'https://www.imobiliariaipe.com.br/images/og-image-2025.jpg',
         description: 'Imobiliária especializada em Guararema e região com atendimento personalizado e curadoria de imóveis premium.',
-        email: 'contato@novaipe.com.br',
+        email: 'contato@imobiliariaipe.com.br',
         telephone: '+551146958999',
         address: {
             '@type': 'PostalAddress',
@@ -72,12 +72,12 @@ export const WebsiteSchema = () => {
         '@context': 'https://schema.org',
         '@type': 'WebSite',
         name: 'Nova Ipê Imobiliária',
-        url: 'https://www.novaipe.com.br',
+        url: 'https://www.imobiliariaipe.com.br',
         potentialAction: {
             '@type': 'SearchAction',
             target: {
                 '@type': 'EntryPoint',
-                urlTemplate: 'https://www.novaipe.com.br/busca?q={search_term_string}'
+                urlTemplate: 'https://www.imobiliariaipe.com.br/busca?q={search_term_string}'
             },
             'query-input': 'required name=search_term_string'
         },
@@ -117,9 +117,9 @@ export const LocalBusinessSchema = () => {
         '@context': 'https://schema.org',
         '@type': ['LocalBusiness', 'RealEstateAgent'],
         name: 'Nova Ipê Imobiliária',
-        image: 'https://www.novaipe.com.br/images/storefront.jpg',
-        '@id': 'https://www.novaipe.com.br/#business',
-        url: 'https://www.novaipe.com.br',
+        image: 'https://www.imobiliariaipe.com.br/images/storefront.jpg',
+        '@id': 'https://www.imobiliariaipe.com.br/#business',
+        url: 'https://www.imobiliariaipe.com.br',
         telephone: '+551146958999',
         priceRange: '$$',
         address: {

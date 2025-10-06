@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Analytics } from '@vercel/analytics/react';
 import { Providers } from './providers/QueryProvider';
 import ReactQueryProvider from './providers/ReactQueryProvider';
 import ConditionalLayout from './components/ConditionalLayout';
@@ -145,6 +146,7 @@ export default function RootLayout({
             </ConditionalLayout>
           </ReactQueryProvider>
         </Providers>
+        <Analytics />
       </body>
     </html>
   );

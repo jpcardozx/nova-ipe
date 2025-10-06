@@ -107,7 +107,7 @@ export default function BelowFoldContent() {
                             <h4 className="text-lg font-semibold mb-4">Contato</h4>
                             <ul className="space-y-2 text-gray-400">
                                 <li>📞 (11) 99999-9999</li>
-                                <li>📧 contato@novaipe.com.br</li>
+                                <li>📧 contato@imobiliariaipe.com.br</li>
                                 <li>📍 São Paulo, SP</li>
                             </ul>
                         </div>

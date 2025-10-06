@@ -16,7 +16,7 @@ import { useEffect, useState } from 'react';
 export default function WhatsAppPreviewCard({
     title = 'Nova Ipê Imobiliária - Imóveis em Guararema',
     description = 'Propriedades exclusivas em Guararema com atendimento personalizado',
-    imageUrl = 'https://www.novaipe.com.br/images/og-image-whatsapp.jpg',
+    imageUrl = 'https://www.imobiliariaipe.com.br/images/og-image-whatsapp.jpg',
     imageAlt = 'Nova Ipê Imobiliária - Imóveis Premium em Guararema'
 }) {
     const pathname = usePathname();

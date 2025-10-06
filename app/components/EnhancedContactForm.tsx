@@ -332,8 +332,8 @@ const EnhancedContactForm = () => {
                       {
                         icon: Mail,
                         title: 'Email',
-                        content: 'contato@novaipe.com.br',
-                        href: 'mailto:contato@novaipe.com.br',
+                        content: 'contato@imobiliariaipe.com.br',
+                        href: 'mailto:contato@imobiliariaipe.com.br',
                         description: 'Resposta em até 2 horas'
                       },
                       {

@@ -44,7 +44,7 @@ export default function WhatsAppShare({
     const getFullUrl = useCallback(() => {
         const baseUrl = typeof window !== 'undefined'
             ? window.location.origin
-            : 'https://www.novaipe.com.br';
+            : 'https://www.imobiliariaipe.com.br';
 
         // Add UTM parameters for tracking
         const url = new URL(`${baseUrl}${pathname}`);

@@ -32,8 +32,8 @@ const ContactSection = () => {
                                 </div>
                                 <div>
                                     <h3 className="font-semibold text-lg mb-1">E-mail</h3>
-                                    <p className="text-neutral-600">contato@novaipe.com.br</p>
-                                    <p className="text-neutral-600">vendas@novaipe.com.br</p>
+                                    <p className="text-neutral-600">contato@imobiliariaipe.com.br</p>
+                                    <p className="text-neutral-600">vendas@imobiliariaipe.com.br</p>
                                 </div>
                             </div>
 

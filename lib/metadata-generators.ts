@@ -86,7 +86,7 @@ export function generatePropertyMetadata(property: {
     const title = `${property.title} | ${formattedPrice}${property.propertyType === 'rent' ? '/mês' : ''} | Nova Ipê Imobiliária`;
 
     // Create canonical URL
-    const canonicalUrl = `https://www.novaipe.com.br/imovel/${property.slug}`;
+    const canonicalUrl = `https://www.imobiliariaipe.com.br/imovel/${property.slug}`;
 
     // Get image URLs ensuring we have all required formats
     const mainImageUrl = property.mainImage?.url || '/images/og-image-2025.jpg';
@@ -185,7 +185,7 @@ export function generateListingPageMetadata(type: 'rent' | 'sale', count?: numbe
         ? `${count ? `${count} imóveis` : 'Imóveis'} disponíveis para alugar em Guararema e região. Casas, apartamentos e imóveis comerciais com localização privilegiada.`
         : `${count ? `${count} imóveis` : 'Imóveis'} à venda em Guararema e região. Encontre a casa dos seus sonhos com a Nova Ipê Imobiliária.`;
 
-    const canonicalUrl = `https://www.novaipe.com.br/${isRent ? 'alugar' : 'comprar'}`;
+    const canonicalUrl = `https://www.imobiliariaipe.com.br/${isRent ? 'alugar' : 'comprar'}`;
 
     return {
         title,

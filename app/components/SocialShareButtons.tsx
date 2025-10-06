@@ -31,7 +31,7 @@ export default function SocialShareButtons({
     const getFullUrl = () => {
         return typeof window !== 'undefined'
             ? `${window.location.origin}${pathname || ''}`
-            : `https://www.novaipe.com.br${pathname || ''}`;
+            : `https://www.imobiliariaipe.com.br${pathname || ''}`;
     };
 
     // Track share events
