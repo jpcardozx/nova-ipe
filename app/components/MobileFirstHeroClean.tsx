@@ -1010,19 +1010,20 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
                             </p>
                         </div>
 
-                        {/* Cards de Navegação com Imagens Reais */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                        {/* Cards de Navegação com Imagens Reais - Otimizado para Mobile */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6">
                             {/* Card Casas */}
                             <Link
                                 href="/catalogo?tipo=casa"
-                                className="group relative overflow-hidden rounded-2xl bg-slate-900/60 backdrop-blur-xl border border-slate-600/30 hover:border-blue-400/50 transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+                                className="group relative overflow-hidden rounded-xl sm:rounded-2xl bg-slate-900/60 backdrop-blur-xl border border-slate-600/30 hover:border-blue-400/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900"
                                 aria-label="Ver casas disponíveis"
                             >
-                                <div className="aspect-[4/3] relative overflow-hidden">
+                                <div className="aspect-[4/3] sm:aspect-[4/3] relative overflow-hidden">
                                     <img
                                         src="/images/imagensHero/casasHero.webp"
                                         alt="Casas Residenciais"
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                        loading="lazy"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-800/40 to-transparent"></div>
 
@@ -1030,16 +1031,16 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
                                     <div className="absolute inset-0 bg-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                 </div>
 
-                                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <div className="p-2 bg-blue-500/20 rounded-lg backdrop-blur-sm">
-                                            <Home className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
+                                <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-6">
+                                    <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                                        <div className="p-1.5 sm:p-2 bg-blue-500/20 rounded-lg backdrop-blur-sm">
+                                            <Home className="w-4 h-4 sm:w-6 sm:h-6 text-blue-400" />
                                         </div>
                                         <div>
-                                            <h4 className="text-white font-bold text-base sm:text-lg group-hover:text-blue-100 transition-colors">
+                                            <h4 className="text-white font-bold text-sm sm:text-lg group-hover:text-blue-100 transition-colors">
                                                 Casas
                                             </h4>
-                                            <p className="text-slate-300 text-sm group-hover:text-blue-200 transition-colors">
+                                            <p className="text-slate-300 text-xs sm:text-sm group-hover:text-blue-200 transition-colors">
                                                 Residenciais completas
                                             </p>
                                         </div>
@@ -1050,14 +1051,15 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
                             {/* Card Sítios */}
                             <Link
                                 href="/catalogo?tipo=sitio"
-                                className="group relative overflow-hidden rounded-2xl bg-slate-900/60 backdrop-blur-xl border border-slate-600/30 hover:border-green-400/50 transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+                                className="group relative overflow-hidden rounded-xl sm:rounded-2xl bg-slate-900/60 backdrop-blur-xl border border-slate-600/30 hover:border-green-400/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-slate-900"
                                 aria-label="Ver sítios e chácaras disponíveis"
                             >
-                                <div className="aspect-[4/3] relative overflow-hidden">
+                                <div className="aspect-[4/3] sm:aspect-[4/3] relative overflow-hidden">
                                     <img
                                         src="/images/imagensHero/sitiosHero.webp"
                                         alt="Sítios e Chácaras"
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                        loading="lazy"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-800/40 to-transparent"></div>
 
@@ -1065,16 +1067,16 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
                                     <div className="absolute inset-0 bg-green-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                 </div>
 
-                                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <div className="p-2 bg-green-500/20 rounded-lg backdrop-blur-sm">
-                                            <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-green-400" />
+                                <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-6">
+                                    <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                                        <div className="p-1.5 sm:p-2 bg-green-500/20 rounded-lg backdrop-blur-sm">
+                                            <Building2 className="w-4 h-4 sm:w-6 sm:h-6 text-green-400" />
                                         </div>
                                         <div>
-                                            <h4 className="text-white font-bold text-base sm:text-lg group-hover:text-green-100 transition-colors">
+                                            <h4 className="text-white font-bold text-sm sm:text-lg group-hover:text-green-100 transition-colors">
                                                 Sítios
                                             </h4>
-                                            <p className="text-slate-300 text-sm group-hover:text-green-200 transition-colors">
+                                            <p className="text-slate-300 text-xs sm:text-sm group-hover:text-green-200 transition-colors">
                                                 Propriedades rurais
                                             </p>
                                         </div>
@@ -1082,17 +1084,18 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
                                 </div>
                             </Link>
 
-                            {/* Card Terrenos */}
+                            {/* Card Terrenos - Coluna inteira em mobile */}
                             <Link
                                 href="/catalogo?tipo=terreno"
-                                className="group relative overflow-hidden rounded-2xl bg-slate-900/60 backdrop-blur-xl border border-slate-600/30 hover:border-amber-400/50 transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+                                className="group relative overflow-hidden rounded-xl sm:rounded-2xl bg-slate-900/60 backdrop-blur-xl border border-slate-600/30 hover:border-amber-400/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-900 col-span-2 sm:col-span-1"
                                 aria-label="Ver terrenos disponíveis"
                             >
-                                <div className="aspect-[4/3] relative overflow-hidden">
+                                <div className="aspect-[4/3] sm:aspect-[4/3] relative overflow-hidden">
                                     <img
                                         src="/images/imagensHero/terrenosHero.webp"
                                         alt="Terrenos para Construção"
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                        loading="lazy"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-800/40 to-transparent"></div>
 
@@ -1100,16 +1103,16 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
                                     <div className="absolute inset-0 bg-amber-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                 </div>
 
-                                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <div className="p-2 bg-amber-500/20 rounded-lg backdrop-blur-sm">
-                                            <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />
+                                <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-6">
+                                    <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                                        <div className="p-1.5 sm:p-2 bg-amber-500/20 rounded-lg backdrop-blur-sm">
+                                            <MapPin className="w-4 h-4 sm:w-6 sm:h-6 text-amber-400" />
                                         </div>
                                         <div>
-                                            <h4 className="text-white font-bold text-base sm:text-lg group-hover:text-amber-100 transition-colors">
+                                            <h4 className="text-white font-bold text-sm sm:text-lg group-hover:text-amber-100 transition-colors">
                                                 Terrenos
                                             </h4>
-                                            <p className="text-slate-300 text-sm group-hover:text-amber-200 transition-colors">
+                                            <p className="text-slate-300 text-xs sm:text-sm group-hover:text-amber-200 transition-colors">
                                                 Lotes para construir
                                             </p>
                                         </div>
