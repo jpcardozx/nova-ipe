@@ -165,7 +165,7 @@ export default function HeroStyleCarousel({
                         }}
                     >
                         <motion.div
-                            className="flex transition-transform duration-500 ease-out"
+                            className="flex transition-transform duration-300 ease-out"
                             style={{
                                 transform: `translateX(-${currentSlide * (
                                     100 / (
@@ -193,14 +193,14 @@ export default function HeroStyleCarousel({
                                                     itemsPerView.desktop
                                         )}%`
                                     }}
-                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{
                                         opacity: isInView ? 1 : 0,
-                                        scale: isInView ? 1 : 0.9
+                                        scale: isInView ? 1 : 0.95
                                     }}
                                     transition={{
-                                        duration: 0.6,
-                                        delay: index * 0.1
+                                        duration: 0.4,
+                                        delay: index * 0.05
                                     }}
                                 >
                                     {child}
@@ -209,10 +209,10 @@ export default function HeroStyleCarousel({
                         </motion.div>
                     </div>
 
-                    {/* Botões de Navegação - Posicionados dentro do padding seguro */}
+                    {/* Botões de Navegação - Ocultar em mobile, mostrar em tablet+ */}
                     {maxSlides.desktop > 0 && (
                         <>
-                            <div className="absolute top-1/2 -translate-y-1/2 left-2 sm:left-0 z-20">
+                            <div className="hidden sm:block absolute top-1/2 -translate-y-1/2 left-0 z-20">
                                 <motion.button
                                     onClick={goToPrevious}
                                     disabled={currentSlide === 0}
@@ -232,7 +232,7 @@ export default function HeroStyleCarousel({
                                 </motion.button>
                             </div>
 
-                            <div className="absolute top-1/2 -translate-y-1/2 right-2 sm:right-0 z-20">
+                            <div className="hidden sm:block absolute top-1/2 -translate-y-1/2 right-0 z-20">
                                 <motion.button
                                     onClick={goToNext}
                                     disabled={currentSlide >= maxSlides.desktop}
@@ -252,8 +252,8 @@ export default function HeroStyleCarousel({
                                 </motion.button>
                             </div>
                         </>
-                    )}                    {/* Indicadores para mobile com responsividade melhorada */}
-                    <div className="flex sm:hidden justify-center mt-4 space-x-2">
+                    )}                    {/* Indicadores para mobile - mais compactos */}
+                    <div className="flex sm:hidden justify-center mt-3 gap-1.5">
                         {Array.from({
                             length: Math.ceil(children.length / (
                                 typeof window !== 'undefined' && window.innerWidth < 640 ? itemsPerView.mobile :
@@ -265,23 +265,14 @@ export default function HeroStyleCarousel({
                                 key={index}
                                 onClick={() => setCurrentSlide(index)}
                                 className={cn(
-                                    "w-2 h-2 rounded-full transition-all duration-300 touch-manipulation",
+                                    "h-1.5 rounded-full transition-all duration-300 touch-manipulation",
                                     currentSlide === index
-                                        ? "bg-amber-600 w-6 shadow-sm"
-                                        : "bg-gray-300 hover:bg-gray-400 active:bg-amber-400"
+                                        ? "bg-amber-600 w-6"
+                                        : "bg-gray-300 w-1.5 active:bg-amber-400"
                                 )}
                                 aria-label={`Ir para slide ${index + 1}`}
                             />
                         ))}
-                    </div>
-
-                    {/* Instruções de swipe para mobile */}
-                    <div className="flex sm:hidden justify-center mt-2">
-                        <p className="text-xs text-gray-500 flex items-center">
-                            <span className="mr-1">👈</span>
-                            Deslize para navegar
-                            <span className="ml-1">👉</span>
-                        </p>
                     </div>
 
                     {/* Indicadores desktop */}

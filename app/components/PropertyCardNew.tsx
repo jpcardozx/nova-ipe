@@ -101,11 +101,9 @@ export default function PropertyCardNew({
         <motion.div
             ref={cardRef}
             className={cn("group relative", className)}
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={isInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            style={{ perspective: 1000 }}
-            onMouseMove={handleMouseMove}
+            initial={{ opacity: 0, y: 10 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={handleMouseLeave}
         >
@@ -114,43 +112,33 @@ export default function PropertyCardNew({
                 className="block focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 rounded-2xl"
                 aria-label={`Ver detalhes do imóvel: ${title} em ${location}`}
             >
-                <motion.article
+                <article
                     className={cn(
                         "relative bg-white rounded-2xl overflow-hidden",
                         "shadow-md hover:shadow-xl border border-gray-200",
                         "transition-all duration-300 ease-out h-full flex flex-col",
-                        "hover:border-amber-300/50",
+                        "hover:border-amber-300/50 hover:-translate-y-1",
                         "max-w-sm mx-auto", // Tamanho mais compacto
                         isHighlighted ? 'ring-2 ring-amber-400/50 shadow-amber-100/50' : ''
                     )}
-                    style={{ rotateX: springX, rotateY: springY }}
-                    whileHover={{
-                        y: -6,
-                        scale: 1.02,
-                        transition: { duration: 0.3, ease: "easeOut" }
-                    }}
                 >
                     {/* Container de Imagem Premium - Tamanho otimizado */}
                     <div className="relative h-48 sm:h-52 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
                         {/* Loading Skeleton Premium */}
                         {imageLoading && (
-                            <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 bg-[length:200%_100%] animate-pulse">
+                            <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse">
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    <motion.div
-                                        className="w-8 h-8 border-3 border-amber-300 border-t-amber-600 rounded-full"
-                                        animate={{ rotate: 360 }}
-                                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                    />
+                                    <div className="w-8 h-8 border-3 border-amber-300 border-t-amber-600 rounded-full animate-spin" />
                                 </div>
                             </div>
                         )}
 
                         {/* Overlay de hover premium */}
-                        <motion.div
-                            className="absolute inset-0 bg-gradient-to-t from-amber-900/20 via-orange-800/5 to-transparent"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: isHovered ? 1 : 0 }}
-                            transition={{ duration: 0.3 }}
+                        <div
+                            className={cn(
+                                "absolute inset-0 bg-gradient-to-t from-amber-900/20 via-orange-800/5 to-transparent transition-opacity duration-300",
+                                isHovered ? "opacity-100" : "opacity-0"
+                            )}
                         />
 
                         {!imageError ? (
@@ -159,15 +147,15 @@ export default function PropertyCardNew({
                                 alt={mainImage.alt || title}
                                 fill
                                 className={cn(
-                                    "object-cover transition-all duration-500",
-                                    "group-hover:scale-105 group-hover:brightness-105",
+                                    "object-cover transition-all duration-300",
+                                    "group-hover:scale-105",
                                     imageLoading ? 'opacity-0' : 'opacity-100'
                                 )}
                                 onError={handleImageError}
                                 onLoad={handleImageLoad}
                                 sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                                 priority={isHighlighted}
-                                quality={85}
+                                quality={80}
                             />
                         ) : (
                             <div className="w-full h-full bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 flex items-center justify-center">
@@ -184,7 +172,7 @@ export default function PropertyCardNew({
 
                         {/* Badge de Tipo Premium */}
                         <div className="absolute top-3 left-3">
-                            <motion.span
+                            <span
                                 className={cn(
                                     "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide",
                                     "backdrop-blur-sm border border-white/20 shadow-md",
@@ -192,51 +180,38 @@ export default function PropertyCardNew({
                                         ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white'
                                         : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
                                 )}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.5, delay: 0.2 }}
                             >
                                 {type === 'venda' ? 'À Venda' : 'Aluguel'}
-                            </motion.span>
+                            </span>
                         </div>
 
                         {/* Botão de Favorito Premium */}
                         <div className="absolute top-3 right-3">
-                            <motion.button
+                            <button
                                 onClick={handleLike}
                                 className={cn(
                                     "w-9 h-9 rounded-full backdrop-blur-sm border border-white/20",
                                     "flex items-center justify-center shadow-md",
-                                    "transition-all duration-300",
+                                    "transition-all duration-300 hover:scale-105 active:scale-95",
                                     isLiked
                                         ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white'
                                         : 'bg-white/90 text-gray-600 hover:bg-white hover:text-red-500'
                                 )}
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.95 }}
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.5, delay: 0.3 }}
                             >
                                 <Heart
                                     className="w-4 h-4"
                                     fill={isLiked ? "currentColor" : "none"}
                                 />
-                            </motion.button>
+                            </button>
                         </div>
 
                         {/* Badge de Destaque Premium */}
                         {isHighlighted && (
                             <div className="absolute bottom-3 left-3">
-                                <motion.span
-                                    className="bg-gradient-to-r from-amber-400 to-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-md"
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.5, delay: 0.4 }}
-                                >
+                                <span className="bg-gradient-to-r from-amber-400 to-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-md">
                                     <Sparkles className="w-3 h-3" />
                                     Destaque
-                                </motion.span>
+                                </span>
                             </div>
                         )}
                     </div>
@@ -344,7 +319,7 @@ export default function PropertyCardNew({
                             </div>
                         </div>
                     </div>
-                </motion.article>
+                </article>
             </Link>
         </motion.div>
     )
