@@ -48,7 +48,7 @@ Verificação completa de erros ortográficos críticos em páginas ativas do si
 ### 1. Busca Automatizada
 ```bash
 # Erros de cedilha
-grep -rn "loçal|loçalização|açao|ediçao|publicaçao"
+grep -rn "loçal|loçalização|açao|ediçao|publicaçao|seleçionado"
 
 # Palavras erradas comuns
 grep -rn "concerteza|apartir|porisso|atravez|previlégio"
@@ -79,6 +79,7 @@ grep -rn "imovel|familia|area|voce"
 | **loçal** (errado) | 0 | ✅ Sempre "local" |
 | **loçalização** (errado) | 0 | ✅ Sempre "localização" |
 | **açao** (errado) | 0 | ✅ Sempre "ação" |
+| **seleçionados** (errado) | 0 | ✅ Sempre "selecionados" |
 | **concerteza** | 0 | ✅ Sempre "com certeza" |
 | **apartir** | 0 | ✅ Sempre "a partir" |
 | **porisso** | 0 | ✅ Sempre "por isso" |
@@ -188,10 +189,15 @@ as melhores oportunidades de investimento em Guararema."
 
 **Nunca confundido com "c" simples:**
 - ✅ Sempre "local" (não "loçal")
-- ✅ Sempre "fiscal" (não "fis
-
-çal")
+- ✅ Sempre "fiscal" (não "fiscal")
 - ✅ Sempre "especial" (não "espeçial")
+- ✅ Sempre "selecionados" (não "seleçionados")
+
+**Nota especial sobre "selecionados":**
+- ✅ **Correto:** "selecionados" (particípio do verbo "selecionar")
+- ❌ **Errado:** "seleçionados" 
+- **Explicação:** Apesar de "seleção" ser escrita com "ç", o verbo "selecionar" e suas formas derivadas (selecionado, selecionados, selecionada, etc.) são escritas com "c".
+- **Uso no site:** "Imóveis selecionados" (LuxuryHero.tsx, linha 189) ✅
 
 ---
 
@@ -242,14 +248,14 @@ Ao adicionar novo conteúdo, verificar:
 ### 2. Ferramentas de Apoio
 ```bash
 # Script de verificação rápida
-grep -rn --include="*.tsx" -E "(loçal|açao|imovel[^é])" app/
+grep -rn --include="*.tsx" -E "(loçal|açao|imovel[^é]|seleçionado)" app/
 ```
 
 ### 3. Revisão de Conteúdo Novo
 Antes de commit:
 ```bash
 # Verificar arquivos modificados
-git diff --cached | grep -E "^\+" | grep -iE "loçal|apartir|porisso"
+git diff --cached | grep -E "^\+" | grep -iE "loçal|apartir|porisso|seleçionado"
 ```
 
 ---
