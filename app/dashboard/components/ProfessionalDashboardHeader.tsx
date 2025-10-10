@@ -54,7 +54,7 @@ interface Notification {
   title: string
   message: string
   timestamp: Date
-  read: boolean
+  is_read: boolean
   actionUrl?: string
 }
 
@@ -144,7 +144,19 @@ export default function ProfessionalDashboardHeader({
 
   const loadNotifications = async () => {
     try {
-      if (!user?.id) return
+      if (!user?.id) {
+        console.warn('⚠️ loadNotifications: user.id não disponível')
+        return
+      }
+      
+      console.log('📡 loadNotifications: Carregando para user:', user.id)
+      
+      // Verificar sessão ativa
+      const { data: { session } } = await supabase.auth.getSession()
+      console.log('🔐 Sessão ativa:', session ? 'Sim' : 'Não')
+      if (session) {
+        console.log('👤 Sessão user_id:', session.user.id)
+      }
       
       // Conectar com Supabase para notificações reais
       const { data, error } = await supabase
@@ -155,7 +167,8 @@ export default function ProfessionalDashboardHeader({
         .limit(10)
 
       if (error) {
-        console.error('Erro no Supabase:', error)
+        console.error('❌ Erro ao carregar notifications:', error)
+        console.error('❌ Error details:', JSON.stringify(error, null, 2))
         // Se tabela não existe ainda, usar array vazio
         setNotifications([])
         setUnreadCount(0)
@@ -168,12 +181,12 @@ export default function ProfessionalDashboardHeader({
         title: n.title,
         message: n.message,
         timestamp: new Date(n.created_at),
-        read: n.read,
+        is_read: n.is_read,
         actionUrl: n.action_url
       }))
       
       setNotifications(notifications)
-      setUnreadCount(notifications.filter(n => !n.read).length)
+      setUnreadCount(notifications.filter(n => !n.is_read).length)
     } catch (error) {
       console.error('Erro ao carregar notificações:', error)
       // Em caso de erro, usar valores padrão

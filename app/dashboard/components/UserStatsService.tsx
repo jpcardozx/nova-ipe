@@ -231,9 +231,18 @@ export default function UserStatsService({ onStatsUpdate }: UserStatsServiceProp
     description: string, 
     metadata?: Record<string, any>
   ) => {
-    if (!user?.id) return
+    if (!user?.id) {
+      console.warn('⚠️ trackActivity: user.id não disponível')
+      return
+    }
 
     try {
+      console.log('📝 trackActivity: Registrando atividade para user:', user.id)
+      
+      // Verificar sessão ativa
+      const { data: { session } } = await supabase.auth.getSession()
+      console.log('🔐 Sessão ativa:', session ? 'Sim' : 'Não')
+      
       const { error } = await supabase
         .from('user_activities')
         .insert({
@@ -244,13 +253,19 @@ export default function UserStatsService({ onStatsUpdate }: UserStatsServiceProp
           timestamp: new Date().toISOString()
         })
 
-      if (error) throw error
+      if (error) {
+        console.error('❌ Erro no INSERT:', error)
+        console.error('❌ Error details:', JSON.stringify(error, null, 2))
+        throw error
+      }
 
+      console.log('✅ Atividade registrada com sucesso')
+      
       // Recarregar stats após nova atividade
       loadUserStats()
       
     } catch (error) {
-      console.error('Erro ao registrar atividade:', error)
+      console.error('❌ Erro ao registrar atividade:', error)
     }
   }
 

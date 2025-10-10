@@ -38,7 +38,8 @@
       "Bash(curl:*)",
       "Bash(host:*)",
       "Bash(timeout:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(node:*)"
     ],
     "deny": []
   },

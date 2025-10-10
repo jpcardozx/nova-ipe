@@ -9,8 +9,9 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { createClientComponentClient, type User } from '@supabase/auth-helpers-nextjs'
+import { type User } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase' // ✅ Usar singleton compartilhado
 
 interface UseSupabaseAuthReturn {
   user: User | null
@@ -27,7 +28,6 @@ export function useSupabaseAuth(): UseSupabaseAuthReturn {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
-  const supabase = createClientComponentClient()
 
   // Get initial session
   useEffect(() => {
@@ -62,22 +62,30 @@ export function useSupabaseAuth(): UseSupabaseAuthReturn {
   const signIn = useCallback(async (email: string, password: string) => {
     try {
       setLoading(true)
-      const { error } = await supabase.auth.signInWithPassword({
+      console.log('🔐 useSupabaseAuth.signIn - Tentando login...')
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
       if (error) {
+        console.error('❌ useSupabaseAuth.signIn - Erro:', error)
         return { error }
       }
 
+      console.log('✅ useSupabaseAuth.signIn - Sucesso!')
+      console.log('📝 Session:', data.session ? 'Criada' : 'NULL')
+      console.log('👤 User:', data.user?.email)
+
       return { error: null }
     } catch (error) {
+      console.error('❌ useSupabaseAuth.signIn - Exceção:', error)
       return { error: error as Error }
     } finally {
       setLoading(false)
     }
-  }, [supabase])
+  }, [])
 
   // Sign up new user
   const signUp = useCallback(async (

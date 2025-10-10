@@ -34,46 +34,14 @@ export function useCurrentUser() {
 
     const getUser = async () => {
       try {
-        // 🚀 DESENVOLVIMENTO: Liberar acesso em localhost:3000
-        const isDevelopment = process.env.NODE_ENV === 'development' &&
-                             (typeof window !== 'undefined' && window.location.hostname === 'localhost')
-
-        if (isDevelopment) {
-          console.log('🔓 Modo desenvolvimento: Acesso liberado ao dashboard')
-
-          // ✅ ID FIXO para desenvolvimento (evita problemas de subscriptions)
-          const DEV_USER_ID = '00000000-0000-0000-0000-000000000000'
-
-          const devProfile: UserProfile = {
-            id: DEV_USER_ID,
-            email: 'dev@localhost.com',
-            full_name: 'Desenvolvedor Local',
-            phone: '(11) 99999-9999',
-            department: 'Desenvolvimento',
-            status: 'active',
-            role: {
-              id: 'admin',
-              name: 'Administrador',
-              hierarchy_level: 10,
-              permissions: ['*']
-            },
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            last_login: new Date().toISOString(),
-            avatar_url: '/images/dev-avatar.png',
-            permissions: ['*']
-          }
-
-          if (mounted) {
-            setUser(devProfile)
-            setLoading(false)
-            setError(null)
-          }
-          return
-        }
-
+        // � SEMPRE usar autenticação real do Supabase
+        console.log('� useCurrentUser: Verificando autenticação Supabase...')
+        
         // Verificar autenticação Supabase
         const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
+        
+        console.log('👤 authUser:', authUser ? authUser.email : 'NULL')
+        console.log('❌ authError:', authError?.message || 'none')
 
         if (authError || !authUser) {
           if (mounted) {

@@ -143,7 +143,7 @@ export default function RealTimeNotifications({
     try {
       const { error } = await supabase
         .from('notifications')
-        .update({ read: true, updated_at: new Date().toISOString() })
+        .update({ is_read: true, updated_at: new Date().toISOString() })
         .eq('id', notificationId)
         .eq('user_id', user?.id)
 
@@ -151,7 +151,7 @@ export default function RealTimeNotifications({
 
       // Atualizar estado local
       setNotifications(prev => prev.map(n => 
-        n.id === notificationId ? { ...n, read: true } : n
+        n.id === notificationId ? { ...n, is_read: true } : n
       ))
       
       setUnreadCount(prev => Math.max(0, prev - 1))
@@ -170,13 +170,13 @@ export default function RealTimeNotifications({
     try {
       const { error } = await supabase
         .from('notifications')
-        .update({ read: true, updated_at: new Date().toISOString() })
+        .update({ is_read: true, updated_at: new Date().toISOString() })
         .eq('user_id', user.id)
-        .eq('read', false)
+        .eq('is_read', false)
 
       if (error) throw error
 
-      setNotifications(prev => prev.map(n => ({ ...n, read: true })))
+      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
       setUnreadCount(0)
       onUnreadCountChange?.(0)
       
@@ -432,7 +432,7 @@ export function useRealTimeNotifications() {
         .from('notifications')
         .select('*', { count: 'exact', head: true })
         .eq('user_id', user.id)
-        .eq('read', false)
+        .eq('is_read', false)
 
       if (error) {
         console.error('❌ Error loading unread count:', error)
