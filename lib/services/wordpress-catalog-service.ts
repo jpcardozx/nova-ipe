@@ -29,7 +29,14 @@ const getSupabaseAdmin = () => {
   })
 }
 
-const db = getSupabaseAdmin()
+// Lazy initialization: only create client when needed, not at module load time
+let db: ReturnType<typeof getSupabaseAdmin> | null = null
+const getDb = () => {
+  if (!db) {
+    db = getSupabaseAdmin()
+  }
+  return db
+}
 
 export interface WordPressPropertyRecord {
   id: string
@@ -74,7 +81,7 @@ export class WordPressCatalogService {
     for (const prop of properties) {
       try {
         // Verifica se já existe
-        const { data: existing, error: checkError } = await db
+        const { data: existing, error: checkError } = await getDb()
           .from('wordpress_properties')
           .select('id')
           .eq('wp_id', prop.id)
@@ -93,7 +100,7 @@ export class WordPressCatalogService {
         }
 
         // Insere no Supabase
-        const { error: insertError } = await db.from('wordpress_properties').insert({
+        const { error: insertError } = await getDb().from('wordpress_properties').insert({
           wp_id: prop.id,
           data: prop,
           status: 'pending',
@@ -121,7 +128,7 @@ export class WordPressCatalogService {
    * Conta total de properties no Supabase
    */
   static async countProperties() {
-    const { count, error } = await db
+    const { count, error } = await getDb()
       .from('wordpress_properties')
       .select('*', { count: 'exact', head: true })
     
@@ -194,7 +201,7 @@ export class WordPressCatalogService {
    * Obtém property única com detalhes
    */
   static async getProperty(id: string) {
-    const { data, error } = await db
+    const { data, error } = await getDb()
       .from('wordpress_properties')
       .select('*')
       .eq('id', id)
@@ -208,7 +215,7 @@ export class WordPressCatalogService {
    * Obtém property por wp_id
    */
   static async getPropertyByWpId(wpId: number) {
-    const { data, error } = await db
+    const { data, error } = await getDb()
       .from('wordpress_properties')
       .select('*')
       .eq('wp_id', wpId)
@@ -223,7 +230,7 @@ export class WordPressCatalogService {
    * Usado após upload local → R2
    */
   static async updatePhotoUrls(wpId: number, photoUrls: string[]) {
-    const { error } = await db
+    const { error } = await getDb()
       .from('wordpress_properties')
       .update({
         photo_urls: photoUrls,
@@ -243,7 +250,7 @@ export class WordPressCatalogService {
     status: WordPressPropertyRecord['status'],
     notes?: string
   ) {
-    const { error } = await db
+    const { error } = await getDb()
       .from('wordpress_properties')
       .update({
         status,
@@ -273,7 +280,7 @@ export class WordPressCatalogService {
     )
 
     // Atualiza record no Supabase com URLs do R2
-    const { data: property } = await db
+    const { data: property } = await getDb()
       .from('wordpress_properties')
       .select('id')
       .eq('wp_id', wpId)
@@ -317,7 +324,7 @@ export class WordPressCatalogService {
     )
 
     // Atualiza record no Supabase
-    const { data: property } = await db
+    const { data: property } = await getDb()
       .from('wordpress_properties')
       .select('id')
       .eq('wp_id', wpId)
@@ -352,7 +359,7 @@ export class WordPressCatalogService {
     }
 
     // Cria task de migração
-    const { data: task } = await db
+    const { data: task } = await getDb()
       .from('wordpress_migration_tasks')
       .insert({
         property_id: propertyId,
@@ -493,7 +500,7 @@ export class WordPressCatalogService {
   static async getStats() {
     logger.service('WordPressCatalogService', 'getStats called')
 
-    const { data: all, error } = await db
+    const { data: all, error } = await getDb()
       .from('wordpress_properties')
       .select('status, photo_count')
 
