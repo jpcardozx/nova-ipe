@@ -3,23 +3,18 @@
 
 import { useState, useEffect } from 'react'
 import { useCurrentUser } from '@/lib/hooks/useCurrentUser-simple'
-import { useZohoUser } from '@/hooks/use-zoho-user'
 import { redirect } from 'next/navigation'
 import DashboardSidebar from '@/components/layout/DashboardSidebar'
-import DashboardHeader from './components/DashboardHeader'
+import ProfessionalDashboardHeader from './components/ProfessionalDashboardHeader'
 import QuickActions from './components/QuickActions'
+import UserStatsService from './components/UserStatsService'
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const { user: supabaseUser, loading: supabaseLoading } = useCurrentUser()
-  const { user: zohoUser, loading: zohoLoading, isAuthenticated } = useZohoUser()
-  
-  // Usar Zoho se disponível, senão Supabase
-  const user = zohoUser || supabaseUser
-  const loading = zohoLoading || supabaseLoading
+  const { user, loading } = useCurrentUser()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true) // Iniciar colapsado por padrão
 
   // Controlar sidebar baseado no tamanho da tela
@@ -55,9 +50,9 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex relative rounded-xl shadow-md">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-950 flex relative rounded-xl shadow-md transition-colors duration-200">
       <div
-        className="absolute inset-0 bg-repeat opacity-30 pointer-events-none"
+        className="absolute inset-0 bg-repeat opacity-30 dark:opacity-10 pointer-events-none"
         style={{
           backgroundImage: 'url(/images/dashboard/texture.png)',
           backgroundSize: '400px 400px'
@@ -78,11 +73,12 @@ export default function DashboardLayout({
       />
 
       <div className="flex-1 flex flex-col overflow-hidden relative z-10 min-w-0">
-        <DashboardHeader
+        <ProfessionalDashboardHeader
           sidebarCollapsed={sidebarCollapsed}
           onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
         />
         <main className="flex-1 overflow-y-auto p-2 md:p-4 lg:p-6 xl:p-8 rounded-lg">
+          <UserStatsService />
           {children}
         </main>
         <QuickActions />

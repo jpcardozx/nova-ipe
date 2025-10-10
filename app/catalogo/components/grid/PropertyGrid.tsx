@@ -1,3 +1,4 @@
+
 /**
  * Grid de Propriedades Modular e Responsivo
  * Usa as libs do projeto: framer-motion, lucide-react, cn
@@ -29,20 +30,20 @@ interface PropertyGridProps {
 
 const viewModeConfig = {
     compact: {
-        cols: 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
-        gap: 'gap-3 md:gap-4',
+        cols: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6',
+        gap: 'gap-4 md:gap-5',
         icon: LayoutGrid,
         label: 'Compacto'
     },
     comfortable: {
-        cols: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
-        gap: 'gap-4 md:gap-6',
+        cols: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+        gap: 'gap-5 md:gap-6 lg:gap-7',
         icon: Grid3x3,
         label: 'Confortável'
     },
     spacious: {
-        cols: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
-        gap: 'gap-6 md:gap-8',
+        cols: 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3',
+        gap: 'gap-6 md:gap-7 lg:gap-8',
         icon: Eye,
         label: 'Espaçoso'
     },

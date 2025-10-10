@@ -1,0 +1,65 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "LightsailInstanceAccess",
+      "Effect": "Allow",
+      "Action": [
+        "lightsail:GetInstances",
+        "lightsail:GetInstance",
+        "lightsail:GetInstanceState",
+        "lightsail:GetInstanceAccessDetails",
+        "lightsail:GetInstancePortStates",
+        "lightsail:StartInstance",
+        "lightsail:StopInstance",
+        "lightsail:RebootInstance"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "LightsailNetworkAccess",
+      "Effect": "Allow",
+      "Action": [
+        "lightsail:GetStaticIps",
+        "lightsail:GetStaticIp",
+        "lightsail:AllocateStaticIp",
+        "lightsail:AttachStaticIp",
+        "lightsail:DetachStaticIp",
+        "lightsail:ReleaseStaticIp"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "LightsailSnapshotAccess",
+      "Effect": "Allow",
+      "Action": [
+        "lightsail:CreateInstanceSnapshot",
+        "lightsail:GetInstanceSnapshot",
+        "lightsail:GetInstanceSnapshots",
+        "lightsail:DeleteInstanceSnapshot"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "LightsailSSHAccess",
+      "Effect": "Allow",
+      "Action": [
+        "lightsail:GetInstanceAccessDetails",
+        "lightsail:DownloadDefaultKeyPair",
+        "lightsail:GetKeyPairs",
+        "lightsail:GetKeyPair"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "LightsailRegionAccess",
+      "Effect": "Allow",
+      "Action": [
+        "lightsail:GetRegions",
+        "lightsail:GetBlueprints",
+        "lightsail:GetBundles"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

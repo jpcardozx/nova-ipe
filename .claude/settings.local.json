@@ -31,7 +31,14 @@
       "Bash(del:*)",
       "Bash(npm run type-check:*)",
       "Bash(nslookup:*)",
-      "Bash(curl -s -H \"Host: portal.imobiliariaipe.com.br\" http://187.45.193.173/wp-includes/js/jquery/jquery.js)"
+      "Bash(curl -s -H \"Host: portal.imobiliariaipe.com.br\" http://187.45.193.173/wp-includes/js/jquery/jquery.js)",
+      "Bash(timeout 10 bash -c \"cat < /dev/null > /dev/tcp/187.45.193.173/21\")",
+      "Bash(telnet 187.45.193.173 21)",
+      "Bash(timeout 10 cat)",
+      "Bash(curl:*)",
+      "Bash(host:*)",
+      "Bash(timeout:*)",
+      "Bash(pkill:*)"
     ],
     "deny": []
   },

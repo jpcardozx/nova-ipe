@@ -10,6 +10,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Bed, Bath, Square, Heart, Share2, MessageCircle, Phone, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getImovelImageUrl, useImovelImage } from '@/lib/helpers/imageHelpers';
 import type { ViewMode } from './PropertyGrid';
 
 interface PropertyCardProps {
@@ -43,6 +44,36 @@ export default function PropertyCard({
     onContactClick
 }: PropertyCardProps) {
 
+    // 🔧 PRIORIDADE: Imagem do Sanity > Lightsail > Placeholder
+    // Se property tem imagem do Sanity, usa ela. Senão, tenta Lightsail.
+    const sanityImageUrl = property.imagemPrincipal || property.imagem?.imagemUrl || property.imagem?.asset?.url
+
+    // Hook para gerenciar imagens do Lightsail com fallback (só usado se não tiver imagem Sanity)
+    const { primaryUrl: lightsailUrl, handleImageError } = useImovelImage(
+        property.codigo || property.id || property._id,
+        {
+            size: viewMode === 'list' ? '285x140' : '640x480',
+            fotoNumero: 1
+        }
+    )
+
+    // URL final: Sanity (se existir) > Lightsail > Fallback
+    const primaryUrl = sanityImageUrl || lightsailUrl
+
+    // 🐛 DEBUG: Log apenas do primeiro card (index 0) em desenvolvimento
+    React.useEffect(() => {
+        if (typeof window !== 'undefined' && window.location.hostname === 'localhost' && index === 0) {
+            console.log('🖼️ PropertyCard Debug (primeiro card):', {
+                propertyId: property._id || property.id,
+                titulo: property.titulo,
+                sanityImageUrl,
+                lightsailUrl,
+                primaryUrl_usado: primaryUrl,
+                fonte: sanityImageUrl ? '✅ Sanity' : lightsailUrl ? '⚠️ Lightsail (fallback)' : '❌ Placeholder'
+            })
+        }
+    }, [index, property._id, property.id, property.titulo, sanityImageUrl, lightsailUrl, primaryUrl])
+
     const handleShare = async (e: React.MouseEvent) => {
         e.stopPropagation();
         try {
@@ -58,16 +89,16 @@ export default function PropertyCard({
 
     // Configurações de altura baseadas no viewMode
     const heightConfig = {
-        compact: 'h-[350px]',
-        comfortable: 'h-[420px]',
-        spacious: 'h-[480px]',
+        compact: 'h-[360px] md:h-[380px]',
+        comfortable: 'h-[440px] md:h-[460px]',
+        spacious: 'h-[500px] md:h-[520px]',
         list: 'h-auto'
     };
 
     const imageHeight = {
-        compact: 'h-36',
-        comfortable: 'h-48',
-        spacious: 'h-56',
+        compact: 'h-40 md:h-44',
+        comfortable: 'h-52 md:h-56',
+        spacious: 'h-60 md:h-64',
         list: 'h-auto'
     };
 
@@ -76,34 +107,20 @@ export default function PropertyCard({
             variants={cardVariants}
             whileHover={{ y: -8, scale: 1.02 }}
             className={cn(
-                "group relative bg-white rounded-2xl shadow-sm hover:shadow-2xl border border-gray-200 hover:border-amber-300 transition-all duration-300 overflow-hidden cursor-pointer flex flex-col",
+                "group relative bg-white rounded-2xl shadow-md hover:shadow-2xl border border-gray-100 hover:border-amber-400 transition-all duration-300 overflow-hidden cursor-pointer flex flex-col",
                 heightConfig[viewMode]
             )}
             onClick={() => onPropertyClick?.(property)}
         >
             {/* Imagem */}
             <div className={cn("relative overflow-hidden flex-shrink-0", imageHeight[viewMode])}>
-                {property.imagemPrincipal ? (
-                    <img
-                        src={property.imagemPrincipal}
-                        alt={property.titulo}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                        loading="lazy"
-                        onError={(e) => {
-                            // Fallback para imagem quebrada
-                            (e.target as HTMLImageElement).style.display = 'none';
-                        }}
-                    />
-                ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                        <div className="text-center text-gray-400">
-                            <svg className="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                            </svg>
-                            <span className="text-xs">Sem imagem</span>
-                        </div>
-                    </div>
-                )}
+                <img
+                    src={primaryUrl}
+                    alt={property.titulo || 'Imóvel'}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    loading="lazy"
+                    onError={handleImageError}
+                />
                 
                 {/* Overlay com ações */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -178,14 +195,14 @@ export default function PropertyCard({
             </div>
 
             {/* Conteúdo do card */}
-            <div className="p-4 md:p-5 flex-1 flex flex-col justify-between">
-                <div className="space-y-2 md:space-y-3">
-                    <h3 className="font-bold text-gray-900 line-clamp-2 group-hover:text-amber-600 transition-colors text-base md:text-lg">
+            <div className="p-5 md:p-6 flex-1 flex flex-col justify-between">
+                <div className="space-y-2.5 md:space-y-3">
+                    <h3 className="font-bold text-gray-900 line-clamp-2 group-hover:text-amber-600 transition-colors text-lg md:text-xl leading-tight">
                         {property.titulo}
                     </h3>
                     <div className="flex items-center gap-2 text-gray-600">
-                        <MapPin className="w-4 h-4 flex-shrink-0" />
-                        <span className="text-sm truncate">{property.bairro}, {property.cidade || 'Guararema'}</span>
+                        <MapPin className="w-4 h-4 flex-shrink-0 text-amber-500" />
+                        <span className="text-sm md:text-base truncate font-medium">{property.bairro}, {property.cidade || 'Guararema'}</span>
                     </div>
                 </div>
 
@@ -193,33 +210,35 @@ export default function PropertyCard({
                     {/* Preço */}
                     <div className="text-2xl md:text-3xl font-bold text-amber-600">
                         {property.preco ? (
-                            <>
-                                R$ {(property.preco / 1000).toFixed(0)}
-                                <span className="text-lg">k</span>
-                            </>
+                            new Intl.NumberFormat('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL',
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 0
+                            }).format(property.preco)
                         ) : (
-                            <span className="text-lg">Consulte</span>
+                            <span className="text-lg text-gray-600">Sob consulta</span>
                         )}
                     </div>
 
                     {/* Características */}
-                    <div className="flex items-center gap-3 md:gap-4 text-sm text-gray-600 flex-wrap">
+                    <div className="flex items-center gap-4 md:gap-5 text-sm text-gray-700">
                         {property.quartos && (
-                            <div className="flex items-center gap-1">
-                                <Bed className="w-4 h-4" />
-                                <span className="font-medium">{property.quartos}</span>
+                            <div className="flex items-center gap-1.5">
+                                <Bed className="w-4 h-4 text-gray-500" />
+                                <span className="font-semibold">{property.quartos}</span>
                             </div>
                         )}
                         {property.banheiros && (
-                            <div className="flex items-center gap-1">
-                                <Bath className="w-4 h-4" />
-                                <span className="font-medium">{property.banheiros}</span>
+                            <div className="flex items-center gap-1.5">
+                                <Bath className="w-4 h-4 text-gray-500" />
+                                <span className="font-semibold">{property.banheiros}</span>
                             </div>
                         )}
                         {property.area && (
-                            <div className="flex items-center gap-1">
-                                <Square className="w-4 h-4" />
-                                <span className="font-medium">{property.area}m²</span>
+                            <div className="flex items-center gap-1.5">
+                                <Square className="w-4 h-4 text-gray-500" />
+                                <span className="font-semibold">{property.area.toLocaleString('pt-BR')}m²</span>
                             </div>
                         )}
                     </div>

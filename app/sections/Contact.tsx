@@ -57,8 +57,8 @@ const ContactSection = () => {
                                 <div>
                                     <h3 className="font-semibold text-lg mb-1">Horário de Atendimento</h3>
                                     <p className="text-neutral-600">
-                                        Segunda a Sexta: 9h às 18h<br />
-                                        Sábados: 9h às 13h
+                                        Segunda a Sexta: 9h às 17h<br />
+                                        Sábados: 9h às 12h
                                     </p>
                                 </div>
                             </div>

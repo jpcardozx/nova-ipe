@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { supabase } from '@/lib/supabase'
 import { useRouter, useSearchParams } from 'next/navigation'
-import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -134,7 +133,7 @@ function LoginPageContent() {
         
         // Sincronizar com perfil estendido (async, não bloquear login)
         import('@/lib/services/user-profile-service').then(({ UserProfileService }) => {
-          UserProfileService.syncZohoUser(userData).catch(error => {
+          UserProfileService.syncUser(userData).catch(error => {
             console.warn('⚠️ Sincronização Supabase falhou, mas login continua:', error)
           })
         })
@@ -293,16 +292,16 @@ function LoginPageContent() {
   const watchedSignupFields = signupForm.watch()
 
   return (
-    <div className="relative min-h-screen w-full font-lexend">
-      {/* Background com overlay - sempre presente */}
-      <Image
-        src="/images/login.png"
-        alt="Ipê Imóveis"
-        fill
-        style={{ objectFit: 'cover' }}
-        className="z-0"
-        priority
-      />
+    <div 
+      className="relative min-h-screen w-full font-lexend bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900"
+      style={{
+        backgroundImage: "url('/images/login.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      {/* Overlay escuro */}
       <div className="absolute inset-0 bg-black bg-opacity-60 bg-gradient-to-t from-black via-transparent to-black" />
 
       {/* Container principal */}

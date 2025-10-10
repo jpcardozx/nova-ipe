@@ -94,7 +94,7 @@ export default function BlocoExploracaoGuararema() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-x-8 lg:gap-y-16">
                     {cenariosDeMoradia.map((cenario) => (
                         <Link
                             key={cenario.label}

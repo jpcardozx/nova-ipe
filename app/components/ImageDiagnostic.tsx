@@ -24,10 +24,14 @@ export default function ImageDiagnostic({ properties }: ImageDiagnosticProps) {
                 let missingImages = 0;
                 
                 const detailedReport = properties.map((property, index) => {
+                    // Testar URL do Lightsail
+                    const lightsailUrl = `${process.env.NEXT_PUBLIC_WP_UPLOADS_URL || 'http://13.223.237.99/wp-content/uploads/WPL'}/${property._id || property.id}/img_foto01.jpg`
+                    
                     const diagnosis = {
                         index: index + 1,
-                        id: property._id?.slice(-8) || 'unknown',
+                        id: property._id?.slice(-8) || property.id?.toString().slice(-8) || 'unknown',
                         title: property.titulo?.slice(0, 30) || 'Sem título',
+                        lightsailUrl,
                         mainImage: null as string | null,
                         gallery: 0,
                         issues: [] as string[]

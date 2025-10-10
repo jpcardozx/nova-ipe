@@ -87,7 +87,7 @@ export function ImovelHero({
                         </div>
 
                         {/* Características */}
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                             {imovelFormatado.caracteristicas.dormitorios !== undefined && (
                                 <div className={`flex items-center ${cores.light} p-3 rounded-lg`}>
                                     <BedDouble className={`${cores.text} mr-2`} />

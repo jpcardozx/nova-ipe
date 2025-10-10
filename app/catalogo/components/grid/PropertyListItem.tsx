@@ -40,19 +40,23 @@ export default function PropertyListItem({
     onContactClick
 }: PropertyListItemProps) {
 
+    // 🔧 PRIORIDADE: Imagem do Sanity > Lightsail > Placeholder
+    const sanityImageUrl = property.imagemPrincipal || property.imagem?.imagemUrl || property.imagem?.asset?.url
+    const hasImage = !!sanityImageUrl
+
     return (
         <motion.div
             variants={itemVariants}
-            whileHover={{ scale: 1.01 }}
-            className="group bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-200 hover:border-amber-300 transition-all duration-300 overflow-hidden cursor-pointer"
+            whileHover={{ scale: 1.005 }}
+            className="group bg-white rounded-2xl shadow-md hover:shadow-2xl border border-gray-100 hover:border-amber-400 transition-all duration-300 overflow-hidden cursor-pointer"
             onClick={() => onPropertyClick?.(property)}
         >
             <div className="flex flex-col sm:flex-row">
                 {/* Imagem */}
-                <div className="relative h-56 sm:h-48 sm:w-80 lg:w-96 flex-shrink-0 overflow-hidden">
-                    {property.imagemPrincipal ? (
+                <div className="relative h-64 sm:h-56 sm:w-96 lg:w-[420px] flex-shrink-0 overflow-hidden">
+                    {hasImage ? (
                         <img
-                            src={property.imagemPrincipal}
+                            src={sanityImageUrl}
                             alt={property.titulo}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             loading="lazy"
@@ -95,33 +99,33 @@ export default function PropertyListItem({
                 <div className="flex-1 p-6 lg:p-8 flex flex-col justify-between">
                     <div className="space-y-4">
                         <div>
-                            <h3 className="font-bold text-xl lg:text-2xl text-gray-900 mb-3 group-hover:text-amber-600 transition-colors line-clamp-2">
+                            <h3 className="font-bold text-xl lg:text-2xl text-gray-900 mb-3 group-hover:text-amber-600 transition-colors line-clamp-2 leading-tight">
                                 {property.titulo}
                             </h3>
                             <div className="flex items-center gap-2 text-gray-600">
-                                <MapPin className="w-5 h-5 flex-shrink-0" />
-                                <span className="text-base">{property.bairro}, {property.cidade || 'Guararema'}</span>
+                                <MapPin className="w-5 h-5 flex-shrink-0 text-amber-500" />
+                                <span className="text-base font-medium">{property.bairro}, {property.cidade || 'Guararema'}</span>
                             </div>
                         </div>
                         
                         {/* Características */}
-                        <div className="flex items-center flex-wrap gap-4 lg:gap-6 text-gray-600">
+                        <div className="flex items-center flex-wrap gap-4 lg:gap-6 text-gray-700">
                             {property.quartos && (
                                 <div className="flex items-center gap-2">
-                                    <Bed className="w-5 h-5" />
-                                    <span className="font-medium">{property.quartos} {property.quartos === 1 ? 'quarto' : 'quartos'}</span>
+                                    <Bed className="w-5 h-5 text-gray-500" />
+                                    <span className="font-semibold">{property.quartos} {property.quartos === 1 ? 'quarto' : 'quartos'}</span>
                                 </div>
                             )}
                             {property.banheiros && (
                                 <div className="flex items-center gap-2">
-                                    <Bath className="w-5 h-5" />
-                                    <span className="font-medium">{property.banheiros} {property.banheiros === 1 ? 'banheiro' : 'banheiros'}</span>
+                                    <Bath className="w-5 h-5 text-gray-500" />
+                                    <span className="font-semibold">{property.banheiros} {property.banheiros === 1 ? 'banheiro' : 'banheiros'}</span>
                                 </div>
                             )}
                             {property.area && (
                                 <div className="flex items-center gap-2">
-                                    <Square className="w-5 h-5" />
-                                    <span className="font-medium">{property.area}m²</span>
+                                    <Square className="w-5 h-5 text-gray-500" />
+                                    <span className="font-semibold">{property.area.toLocaleString('pt-BR')}m²</span>
                                 </div>
                             )}
                         </div>
@@ -135,21 +139,28 @@ export default function PropertyListItem({
                     </div>
 
                     {/* Footer com preço e ações */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-6 pt-4 border-t border-gray-200">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-6 pt-4 border-t border-gray-100">
                         <div className="flex items-baseline gap-2">
                             <span className="text-3xl lg:text-4xl font-bold text-amber-600">
                                 {property.preco ? (
-                                    <>
-                                        R$ {(property.preco / 1000).toFixed(0)}
-                                        <span className="text-lg">k</span>
-                                    </>
+                                    new Intl.NumberFormat('pt-BR', {
+                                        style: 'currency',
+                                        currency: 'BRL',
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0
+                                    }).format(property.preco)
                                 ) : (
-                                    <span className="text-2xl">Consulte</span>
+                                    <span className="text-2xl text-gray-600">Sob consulta</span>
                                 )}
                             </span>
                             {property.precoM2 && (
                                 <span className="text-sm text-gray-500">
-                                    (R$ {property.precoM2}/m²)
+                                    ({new Intl.NumberFormat('pt-BR', {
+                                        style: 'currency',
+                                        currency: 'BRL',
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0
+                                    }).format(property.precoM2)}/m²)
                                 </span>
                             )}
                         </div>

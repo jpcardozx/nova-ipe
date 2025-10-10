@@ -81,10 +81,10 @@ const menuItems: MenuCategory[] = [
     {
         category: 'Principal',
         items: [
+            { icon: Calendar, label: 'Agenda', href: '/dashboard/agenda', color: 'text-indigo-600' },
             { icon: CheckSquare, label: 'Tarefas', href: '/dashboard/tasks', color: 'text-red-600' },
             { icon: Building2, label: 'Estúdio', href: '/studio', color: 'text-green-600' },
-            { icon: Users, label: 'Clientes (CRM)', href: '/dashboard/clients', color: 'text-purple-600' },
-            { icon: Calendar, label: 'Agendamentos', href: '/dashboard/appointments', color: 'text-orange-600' }
+            { icon: Users, label: 'Clientes (CRM)', href: '/dashboard/clients', color: 'text-purple-600' }
         ]
     },
     {

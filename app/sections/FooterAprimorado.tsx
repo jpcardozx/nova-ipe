@@ -166,8 +166,8 @@ export default function FooterAprimorado() {
                                         <Clock className="w-5 h-5 text-amber-400 mr-3 mt-0.5" />
                                         <div>                                            <h4 className="medium-text text-white text-body">Horário de Atendimento</h4>
                                             <p className="text-gray-300 text-body-small">
-                                                Segunda a Sexta: 8:30 - 18:00<br />
-                                                Sábado: 9:00 - 13:00
+                                                Segunda a Sexta: 9h às 17h<br />
+                                                Sábado: 9h às 12h
                                             </p>
                                         </div>
                                     </div>
@@ -287,7 +287,7 @@ export default function FooterAprimorado() {
                     <div className="mt-8 pt-6 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
                         <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
                             <p className="text-gray-400 text-sm text-center md:text-left">
-                                © {year} Ipê Imóveis. Todos os direitos reservados. CRECI-SP 12.345-J.
+                                © {year} Ipê Imóveis. Todos os direitos reservados. CRECI-SP 32.933-J.
                             </p>
                             {/* Developer Credit - S-Tier Elegant Design */}
                             <div className="group relative flex items-center gap-1.5 opacity-50 hover:opacity-100 transition-all duration-700 ease-out">

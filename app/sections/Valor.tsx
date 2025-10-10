@@ -360,7 +360,7 @@ export default function ApresentacaoInstitucional() {
 
                         <div className="mt-8 pt-8 border-t border-white/20">
                             <p className="text-sm text-gray-400">
-                                Atendimento: Segunda a Sexta das 9h às 18h | Sábado das 9h às 13h<br />
+                                Atendimento: Segunda a Sexta das 9h às 17h | Sábado das 9h às 12h<br />
                                 Rua Dona Laurinda, 65 - Centro, Guararema/SP
                             </p>
                         </div>

@@ -157,7 +157,7 @@ export default function DestaquesVendaPremium({ properties }: DestaquesVendaPrem
                     <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-200/50 text-amber-800 px-5 py-2.5 rounded-full text-sm font-semibold mb-6 shadow-sm">
                         <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
                         <Star className="w-4 h-4" />
-                        Seleçionados pela nossa equipe
+                        Selecionados pela nossa equipe
                         <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
                     </div>
 

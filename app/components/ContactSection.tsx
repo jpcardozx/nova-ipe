@@ -236,13 +236,13 @@ const ContactSection = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                         <h4 className="font-semibold text-white mb-2">Segunda a Sexta</h4>
-                        <p className="text-white/80 text-sm">9h às 18h</p>
+                        <p className="text-white/80 text-sm">9h às 17h</p>
                         <p className="text-green-300 text-xs mt-1">● Online</p>
                     </div>
 
                     <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                         <h4 className="font-semibold text-white mb-2">Sábados</h4>
-                        <p className="text-white/80 text-sm">9h às 13h</p>
+                        <p className="text-white/80 text-sm">9h às 12h</p>
                         <p className="text-green-300 text-xs mt-1">● Online</p>
                     </div>
 

@@ -220,7 +220,7 @@ const ImovelDetalhes: FC<ImovelDetalhesProps> = ({ imovel, relacionados = [], pr
                                 </div>
 
                                 {/* Características principais */}
-                                <div className="grid grid-cols-3 sm:grid-cols-4 gap-4 p-4 bg-white rounded-xl shadow-sm">
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 bg-white rounded-xl shadow-sm">
                                     {imovel.dormitorios && (
                                         <div className="flex flex-col items-center">
                                             <span className="text-lg font-semibold">{imovel.dormitorios}</span>

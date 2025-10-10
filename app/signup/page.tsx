@@ -178,7 +178,7 @@ export default function SignupPage() {
             {/* Setor */}
             <div className="space-y-2">
               <Label className="text-slate-400">Setor de Interesse</Label>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
                 {departments.map((dept) => {
                   const Icon = dept.icon
                   return (

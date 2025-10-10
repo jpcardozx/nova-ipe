@@ -63,7 +63,7 @@ export function useCurrentUserExtended(): UseCurrentUserExtended {
         console.log('👤 Inicializando usuário:', zohoData.email)
 
         // Sync with extended profile in database
-        const profile = await UserProfileService.syncZohoUser(zohoData)
+        const profile = await UserProfileService.syncUser(zohoData)
         setUser(profile)
 
         // Load initial data

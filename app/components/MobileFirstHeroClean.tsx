@@ -877,7 +877,7 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
                                         </div>
 
                                         {/* Segunda linha - Filtros complementares */}
-                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                             <select
                                                 value={searchState.areaMin}
                                                 onChange={(e) => updateSearchField('areaMin', e.target.value)}
@@ -1010,8 +1010,8 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
                             </p>
                         </div>
 
-                        {/* Cards de Navegação com Imagens Reais */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                        {/* Cards de Navegação com Imagens Reais - Mobile First */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                             {/* Card Casas */}
                             <Link
                                 href="/catalogo?tipo=casa"

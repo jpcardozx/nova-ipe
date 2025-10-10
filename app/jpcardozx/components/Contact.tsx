@@ -43,7 +43,7 @@ export function Contact() {
             {/* Project Type Selection */}
             <div>
               <label className="block text-lg font-semibold text-gray-900 mb-4">Que tipo de projeto você tem em mente?</label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[
                   { value: 'website', label: 'Website/Landing Page', icon: '💻' },
                   { value: 'webapp', label: 'Aplicação Web', icon: '⚙️' },

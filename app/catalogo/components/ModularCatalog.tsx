@@ -15,10 +15,9 @@ import { useUserAnalytics } from '@/app/hooks/useUserAnalytics';
 
 interface ModularCatalogProps {
     properties: any[];
-    onSearch?: (query: string) => void;
 }
 
-export default function ModularCatalog({ properties, onSearch }: ModularCatalogProps) {
+export default function ModularCatalog({ properties }: ModularCatalogProps) {
     // Estados locais
     const [viewMode, setViewMode] = useState<ViewMode>('comfortable');
     const [sortMode, setSortMode] = useState<SortMode>('relevance');
@@ -55,14 +54,23 @@ export default function ModularCatalog({ properties, onSearch }: ModularCatalogP
             };
         });
         
-        // Debug apenas em desenvolvimento
+        // Debug apenas em desenvolvimento  
         if (process.env.NODE_ENV === 'development' && prepared.length > 0) {
             const withImages = prepared.filter(p => p.imagemPrincipal).length;
+            const firstProperty = prepared[0];
+            
             console.log('📦 ModularCatalog preparou propriedades:', {
                 total: prepared.length,
                 comImagens: withImages,
                 semImagens: prepared.length - withImages,
-                percentual: `${Math.round((withImages / prepared.length) * 100)}%`
+                percentual: `${Math.round((withImages / prepared.length) * 100)}%`,
+                exemploPropriedade: {
+                    id: firstProperty._id || firstProperty.id,
+                    titulo: firstProperty.titulo,
+                    imagemPrincipal: firstProperty.imagemPrincipal ? 'Presente' : 'Ausente',
+                    imagemSanity: firstProperty.imagem?.imagemUrl ? 'Presente' : 'Ausente',
+                    lightsailUrl: `${process.env.NEXT_PUBLIC_WP_UPLOADS_URL}/${firstProperty._id || firstProperty.id}/img_foto01.jpg`
+                }
             });
         }
         
@@ -157,8 +165,8 @@ export default function ModularCatalog({ properties, onSearch }: ModularCatalogP
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50 py-6 md:py-8 lg:py-10">
+            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 space-y-6 md:space-y-8">
                 
                 {/* Filtros Horizontais */}
                 <HorizontalFilters
@@ -188,10 +196,10 @@ export default function ModularCatalog({ properties, onSearch }: ModularCatalogP
                 />
 
                 {/* Footer de resultados (mobile) */}
-                <div className="lg:hidden sticky bottom-4 left-0 right-0 px-4">
-                    <div className="bg-amber-500 text-white rounded-2xl shadow-2xl p-4 text-center">
-                        <p className="font-bold text-lg">
-                            {filteredProperties.length} {filteredProperties.length === 1 ? 'imóvel' : 'imóveis'} encontrado{filteredProperties.length !== 1 ? 's' : ''}
+                <div className="lg:hidden sticky bottom-4 left-0 right-0 px-4 z-10">
+                    <div className="bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-2xl shadow-2xl p-4 text-center border border-amber-400/50">
+                        <p className="font-bold text-base md:text-lg">
+                            {filteredProperties.length.toLocaleString('pt-BR')} {filteredProperties.length === 1 ? 'imóvel encontrado' : 'imóveis encontrados'}
                         </p>
                     </div>
                 </div>

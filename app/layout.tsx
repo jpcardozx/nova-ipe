@@ -3,6 +3,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { Providers } from './providers/QueryProvider';
 import ReactQueryProvider from './providers/ReactQueryProvider';
 import ConditionalLayout from './components/ConditionalLayout';
+import { NotificationProvider } from '@/app/providers/NotificationProvider';
 import './globals.css';
 
 // CSS variables para fontes usando fallbacks
@@ -141,9 +142,11 @@ export default function RootLayout({
         <style dangerouslySetInnerHTML={{ __html: `:root { ${fontVariables} }` }} />
         <Providers>
           <ReactQueryProvider>
-            <ConditionalLayout>
-              {children}
-            </ConditionalLayout>
+            <NotificationProvider>
+              <ConditionalLayout>
+                {children}
+              </ConditionalLayout>
+            </NotificationProvider>
           </ReactQueryProvider>
         </Providers>
         <Analytics />

@@ -520,7 +520,7 @@ function MainDashboardContent() {
         {/* Acesso Rápido - Reformulado */}
         <Card padding="md">
           <h3 className="text-lg font-semibold text-neutral-900 mb-4">Ferramentas Disponíveis</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
               { label: 'Jetimob', description: 'Portais', href: '/dashboard/jetimob', icon: Globe },
               { label: 'CRM', description: 'Leads', href: '/dashboard/leads', icon: Users },

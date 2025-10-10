@@ -32,6 +32,26 @@ const supabaseOptions = {
 // Create a single supabase client for interacting with your database
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, supabaseOptions)
 
+// Cliente administrativo (bypassa RLS) - Para WordPress Catalog Dashboard
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY
+export const supabaseAdmin = supabaseServiceKey 
+  ? createClient(supabaseUrl, supabaseServiceKey, {
+      ...supabaseOptions,
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+        detectSessionInUrl: false
+      }
+    })
+  : supabase // Fallback para cliente normal se não houver service key
+
+console.log('[Supabase] Clients initialized:', {
+  url: supabaseUrl,
+  hasAnonKey: !!supabaseAnonKey,
+  hasServiceKey: !!supabaseServiceKey,
+  usingAdminClient: !!supabaseServiceKey
+})
+
 // Função para testar conectividade
 export async function testSupabaseConnection() {
   try {

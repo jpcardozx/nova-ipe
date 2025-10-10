@@ -1,21 +1,28 @@
 // lib/services/user-profile-service.ts
 import { supabase } from '@/lib/supabase'
-import { UserProfileExtended, ZohoUserData, UserEvent, UserNote } from '@/types/user-profile'
+import { UserProfileExtended, UserEvent, UserNote } from '@/types/user-profile'
+
+export interface SupabaseUserData {
+  email: string
+  full_name?: string
+  organization?: string
+  provider?: string
+}
 
 export class UserProfileService {
   
   /**
-   * Sincroniza usuário do Zoho com perfil local estendido
+   * Sincroniza usuário do Supabase com perfil local estendido
    */
-  static async syncZohoUser(zohoData: ZohoUserData): Promise<UserProfileExtended> {
+  static async syncUser(userData: SupabaseUserData): Promise<UserProfileExtended | null> {
     try {
-      console.log('🔄 Sincronizando usuário Zoho:', zohoData.email)
+      console.log('🔄 Sincronizando usuário no Supabase:', userData.email)
       
       // Verificar se usuário já existe
       const { data: existingUser, error: fetchError } = await supabase
         .from('user_profiles')
         .select('*')
-        .eq('email', zohoData.email)
+        .eq('email', userData.email)
         .single()
 
       if (fetchError && fetchError.code !== 'PGRST116') {
@@ -35,26 +42,26 @@ export class UserProfileService {
         const { data, error } = await supabase
           .from('user_profiles')
           .update({
-            full_name: zohoData.name,
-            organization: zohoData.organization,
+            full_name: userData.full_name,
+            organization: userData.organization,
             stats: updatedStats,
             updated_at: now
           })
-          .eq('email', zohoData.email)
+          .eq('email', userData.email)
           .select()
           .single()
 
         if (error) throw error
         
-        console.log('✅ Usuário Zoho atualizado:', data.email)
+        console.log('✅ Usuário atualizado no Supabase:', data.email)
         return data
       } else {
         // Criar novo usuário
         const newUser: Partial<UserProfileExtended> = {
-          email: zohoData.email,
-          full_name: zohoData.name,
-          organization: zohoData.organization,
-          provider: zohoData.provider,
+          email: userData.email,
+          full_name: userData.full_name,
+          organization: userData.organization,
+          provider: userData.provider || 'supabase',
           status: 'active',
           role: {
             id: 'user',
@@ -96,11 +103,11 @@ export class UserProfileService {
 
         if (error) throw error
         
-        console.log('✅ Novo usuário Zoho criado:', data.email)
+        console.log('✅ Novo usuário criado no Supabase:', data.email)
         return data
       }
     } catch (error) {
-      console.error('❌ Erro ao sincronizar usuário Zoho:', error)
+      console.error('❌ Erro ao sincronizar usuário no Supabase:', error)
       
       // Em caso de erro de conectividade, não bloquear o login
       // O usuário ainda pode acessar o sistema mesmo sem sincronização

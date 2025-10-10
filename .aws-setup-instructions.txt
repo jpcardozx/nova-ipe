@@ -1,0 +1,55 @@
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║          🔐 CONFIGURAÇÃO AWS CLI - CREDENCIAIS               ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
+
+✅ AWS CLI instalado com sucesso! (versão 2.31.9)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 PRÓXIMO PASSO: Configurar credenciais
+
+Você precisa de:
+  1. AWS Access Key ID
+  2. AWS Secret Access Key  
+  3. Default region (recomendado: us-east-1)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔍 COMO OBTER CREDENCIAIS AWS:
+
+1. Acesse: https://console.aws.amazon.com/
+2. No canto superior direito, clique no seu nome de usuário
+3. Vá em: Security Credentials (Credenciais de segurança)
+4. Role até "Access keys" (Chaves de acesso)
+5. Clique em "Create access key" (Criar chave de acesso)
+6. Escolha: "Command Line Interface (CLI)"
+7. Marque o checkbox de confirmação
+8. Clique em "Create access key"
+9. **IMPORTANTE**: Copie e salve a chave AGORA (não dá pra ver depois!)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ CONFIGURAR AGORA:
+
+Execute no terminal:
+
+    aws configure
+
+Você será perguntado:
+
+  AWS Access Key ID [None]: AKIAXXXXXXXXXXXXXXXX
+  AWS Secret Access Key [None]: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+  Default region name [None]: us-east-1
+  Default output format [None]: json
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ APÓS CONFIGURAR, EXECUTE:
+
+    ./scripts/lightsail-access.sh
+
+Para obter a senha do WordPress automaticamente!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
