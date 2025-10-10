@@ -15,8 +15,8 @@ import { ArrowRight, Building2, User, AlertTriangle, Eye, EyeOff, UserPlus, Arro
 import { LegacyPortalAccess } from '@/components/ui/legacy-portal-access'
 import { SimpleAuthManager } from '@/lib/auth-simple'
 import { EnhancedAuthManager, type LoginMode } from '@/lib/auth/enhanced-auth-manager'
-import { zohoMail360 } from '@/lib/zoho-mail360'
 import { usePortalDiagnostic } from '@/lib/services/portal-diagnostic'
+import { useSupabaseAuth } from '@/lib/hooks/useSupabaseAuth'
 
 
 
@@ -59,6 +59,7 @@ function LoginPageContent() {
   const searchParams = useSearchParams()
   const authManager = new SimpleAuthManager()
   const { isRunning: isDiagnosticRunning, result: diagnosticResult, runDiagnostic } = usePortalDiagnostic()
+  const { signIn: supabaseSignIn, loading: authLoading } = useSupabaseAuth()
 
   // Handle URL parameters
   useEffect(() => {
@@ -108,74 +109,57 @@ function LoginPageContent() {
     setErrorMessage('')
 
     try {
-      console.log('🔄 === INÍCIO DO PROCESSO DE LOGIN ===')
-      console.log('🔄 Modo de login:', loginMode)
-      console.log('📧 Email completo:', fullEmail)
-      console.log('🔒 Senha fornecida:', data.password ? `${data.password.length} caracteres` : 'não fornecida')
-      console.log('🌐 URL atual:', window.location.href)
+      console.log('🔄 === LOGIN VIA SUPABASE AUTH ===')
+      console.log('🔄 Modo:', loginMode)
+      console.log('📧 Email:', fullEmail)
+      console.log('🌐 URL:', window.location.href)
       
-      const zohoUser = await zohoMail360.verifyUser(fullEmail, data.password)
+      // ============================================================
+      // AUTENTICAÇÃO VIA SUPABASE AUTH (Sistema Único)
+      // ============================================================
       
-      if (zohoUser) {
-        console.log('✅ Usuário Zoho autenticado:', zohoUser.emailAddress)
+      console.log('🔐 Autenticando via Supabase...')
+      const { error } = await supabaseSignIn(fullEmail, data.password)
+      
+      if (error) {
+        console.error('❌ Erro de autenticação:', error.message)
         
-        // Salvar dados do usuário para ambos os modos
-        const userData = {
-          email: zohoUser.emailAddress,
-          name: zohoUser.displayName,
-          organization: zohoUser.organizationName,
-          provider: 'zoho_mail360' as const,
-          mode: loginMode,
-          timestamp: new Date().toISOString()
-        }
-        
-        localStorage.setItem('currentUser', JSON.stringify(userData))
-        
-        // Sincronizar com perfil estendido (async, não bloquear login)
-        import('@/lib/services/user-profile-service').then(({ UserProfileService }) => {
-          UserProfileService.syncUser(userData).catch(error => {
-            console.warn('⚠️ Sincronização Supabase falhou, mas login continua:', error)
-          })
-        })
-        
-        // Para Studio, também criar um cookie de sessão simples
-        if (loginMode === 'studio') {
-          try {
-            console.log('🎬 Criando sessão do Studio...')
-            const sessionResponse = await fetch('/api/studio/session', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ user: userData })
-            })
-            
-            const sessionResult = await sessionResponse.json()
-            console.log('🎬 Resultado da criação de sessão:', sessionResult)
-            
-            if (!sessionResponse.ok) {
-              throw new Error(`Erro ao criar sessão: ${sessionResult.error}`)
-            }
-            
-            console.log('🎬 Sessão criada com sucesso, redirecionando para Studio...')
-            router.push('/studio')
-          } catch (error) {
-            console.error('❌ Erro ao criar sessão do Studio:', error)
-            setErrorMessage('Erro ao criar sessão do Studio. Tente novamente.')
-            return
-          }
+        // Mensagens de erro amigáveis
+        if (error.message.includes('Invalid login credentials')) {
+          setErrorMessage('Email ou senha incorretos. Verifique suas credenciais.')
+        } else if (error.message.includes('Email not confirmed')) {
+          setErrorMessage('Email não confirmado. Verifique sua caixa de entrada.')
+        } else if (error.message.includes('User not found')) {
+          setErrorMessage('Usuário não encontrado. Solicite acesso ao administrador.')
         } else {
-          console.log('📊 Redirecionando para Dashboard...')
-          router.push('/dashboard')
+          setErrorMessage(`Erro na autenticação: ${error.message}`)
         }
         
-        return
-      } else {
-        setErrorMessage('❌ Usuário ou senha inválidos no sistema Zoho.')
         return
       }
+      
+      // ✅ SUCESSO - Autenticação bem-sucedida
+      console.log('✅ Login bem-sucedido!')
+      console.log('� Sessão Supabase criada automaticamente')
+      
+      // Sincronizar perfil (async, não bloquear redirecionamento)
+      import('@/lib/services/user-profile-service').then(({ UserProfileService }) => {
+        UserProfileService.syncUser({
+          email: fullEmail,
+          provider: 'supabase_auth' as const
+        }).catch(error => {
+          console.warn('⚠️ Sincronização de perfil falhou (não crítico):', error)
+        })
+      })
+      
+      // Redirecionar baseado no modo
+      const redirectPath = loginMode === 'studio' ? '/studio' : '/dashboard'
+      console.log(`� Redirecionando para ${redirectPath}...`)
+      router.push(redirectPath)
 
     } catch (error) {
-      console.error('❌ Erro no processo de login:', error)
-      setErrorMessage('❌ Erro na autenticação. Verifique suas credenciais.')
+      console.error('❌ Erro crítico:', error)
+      setErrorMessage('Erro inesperado na autenticação. Tente novamente.')
     } finally {
       setIsLoading(false)
     }
@@ -409,7 +393,7 @@ function LoginPageContent() {
                         <div className="absolute bottom-full right-0 mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                           <div className="font-medium text-amber-300 mb-1">Recomendação</div>
                           <div className="mb-2">Use <span className="text-amber-200">@imobiliariaipe.com.br</span> como padrão.</div>
-                          <div className="text-green-400 text-xs">✅ Zoho API validada</div>
+                          <div className="text-green-400 text-xs">✅ Supabase Auth</div>
                           
                           <div className="absolute top-full right-3 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                         </div>
