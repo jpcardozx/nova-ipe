@@ -1,102 +1,49 @@
 // app/api/studio/session/route.ts
-import { NextRequest, NextResponse } from 'next/server'
-
-const STUDIO_COOKIE_NAME = 'studio-session'
+import { NextResponse } from 'next/server'
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
 
 /**
- * Create a simple studio session after Zoho authentication
+ * Check studio session status using Supabase Auth
  */
-export async function POST(request: NextRequest) {
+export async function GET() {
     try {
-        console.log('🎬 === CRIAÇÃO DE SESSÃO STUDIO ===')
-        const { user } = await request.json()
-        console.log('🎬 Dados recebidos:', JSON.stringify(user, null, 2))
-        
-        if (!user || !user.email) {
-            console.error('❌ Dados do usuário inválidos:', user)
+        console.log('🔍 === VERIFICAÇÃO DE SESSÃO STUDIO (Supabase) ===')
+
+        const supabase = createRouteHandlerClient({ cookies })
+
+        // Verificar sessão do Supabase
+        const { data: { session }, error } = await supabase.auth.getSession()
+
+        if (error) {
+            console.error('❌ Erro ao verificar sessão:', error.message)
             return NextResponse.json({
-                success: false,
-                error: 'Dados do usuário inválidos'
-            }, { status: 400 })
+                authenticated: false,
+                error: 'Erro ao verificar sessão'
+            })
         }
 
-        console.log('🎬 Criando sessão do Studio para:', user.email)
-
-        // Create simple session data
-        const sessionData = {
-            email: user.email,
-            name: user.name,
-            provider: 'zoho_mail360',
-            timestamp: new Date().toISOString()
-        }
-
-        const response = NextResponse.json({
-            success: true,
-            message: 'Sessão do Studio criada com sucesso'
-        })
-
-        // Set a simple session cookie
-        response.cookies.set(STUDIO_COOKIE_NAME, JSON.stringify(sessionData), {
-            path: '/',  // Alterar para root path para acessibilidade
-            maxAge: 60 * 60 * 8, // 8 hours
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-        })
-
-        return response
-
-    } catch (error) {
-        console.error('Erro ao criar sessão do Studio:', error)
-        return NextResponse.json({
-            success: false,
-            error: 'Erro interno do servidor'
-        }, { status: 500 })
-    }
-}
-
-/**
- * Check studio session status
- */
-export async function GET(request: NextRequest) {
-    try {
-        console.log('🔍 === VERIFICAÇÃO DE SESSÃO STUDIO ===')
-        const sessionCookie = request.cookies.get(STUDIO_COOKIE_NAME)
-        console.log('🔍 Cookie encontrado:', !!sessionCookie?.value)
-
-        if (!sessionCookie?.value) {
-            console.log('❌ Nenhuma sessão encontrada')
+        if (!session || !session.user) {
+            console.log('❌ Nenhuma sessão Supabase encontrada')
             return NextResponse.json({
                 authenticated: false,
                 error: 'Nenhuma sessão encontrada'
             })
         }
 
-        const sessionData = JSON.parse(sessionCookie.value)
-        
-        // Check if session is still valid (8 hours)
-        const sessionTime = new Date(sessionData.timestamp).getTime()
-        const now = new Date().getTime()
-        const eightHours = 8 * 60 * 60 * 1000
-
-        if (now - sessionTime > eightHours) {
-            return NextResponse.json({
-                authenticated: false,
-                error: 'Sessão expirada'
-            })
-        }
+        console.log('✅ Sessão Supabase válida encontrada:', session.user.email)
 
         return NextResponse.json({
             authenticated: true,
             user: {
-                email: sessionData.email,
-                name: sessionData.name,
-                provider: sessionData.provider
+                email: session.user.email,
+                name: session.user.user_metadata?.name || session.user.email?.split('@')[0],
+                provider: 'supabase_auth'
             }
         })
 
     } catch (error) {
-        console.error('Erro ao verificar sessão do Studio:', error)
+        console.error('❌ Erro ao verificar sessão do Studio:', error)
         return NextResponse.json({
             authenticated: false,
             error: 'Erro ao verificar sessão'
@@ -105,28 +52,34 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * Clear studio session (logout)
+ * Clear studio session (logout) - usa Supabase Auth
  */
-export async function DELETE(request: NextRequest) {
+export async function DELETE() {
     try {
-        const response = NextResponse.json({
+        console.log('🚪 === LOGOUT STUDIO (Supabase) ===')
+
+        const supabase = createRouteHandlerClient({ cookies })
+
+        // Fazer logout no Supabase
+        const { error } = await supabase.auth.signOut()
+
+        if (error) {
+            console.error('❌ Erro ao fazer logout:', error.message)
+            return NextResponse.json({
+                success: false,
+                error: 'Erro ao fazer logout'
+            }, { status: 500 })
+        }
+
+        console.log('✅ Logout realizado com sucesso')
+
+        return NextResponse.json({
             success: true,
             message: 'Sessão do Studio removida'
         })
 
-        // Clear the session cookie
-        response.cookies.set(STUDIO_COOKIE_NAME, '', {
-            path: '/studio',
-            maxAge: 0,
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-        })
-
-        return response
-
     } catch (error) {
-        console.error('Erro ao remover sessão do Studio:', error)
+        console.error('❌ Erro ao remover sessão do Studio:', error)
         return NextResponse.json({
             success: false,
             error: 'Erro interno do servidor'

@@ -147,69 +147,9 @@ function LoginPageContent() {
       console.log('🔐 Rate Limit - Tentativas restantes:', rateLimit.attemptsLeft)
       
       // ============================================================
-      // MODO STUDIO - Autenticação via Admin Password
+      // AUTENTICAÇÃO UNIFICADA - Supabase Auth para ambos os modos
       // ============================================================
-      if (loginMode === 'studio') {
-        console.log('🎬 Autenticando para Studio...')
-        
-        // Autenticar via API de login do Studio
-        const loginResponse = await fetch('/api/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: fullEmail,
-            senha: data.password
-          })
-        })
-
-        const loginData = await loginResponse.json()
-
-        if (!loginResponse.ok) {
-          console.error('❌ Erro de autenticação Studio:', loginData.error)
-          setErrorMessage(loginData.error || 'Credenciais inválidas para o estúdio.')
-          setIsLoading(false)
-          return
-        }
-
-        console.log('✅ Autenticação Studio bem-sucedida!')
-        
-        // Criar sessão do Studio
-        const sessionResponse = await fetch('/api/studio/session', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            user: {
-              email: fullEmail,
-              name: data.username,
-            }
-          })
-        })
-
-        if (!sessionResponse.ok) {
-          console.error('❌ Erro ao criar sessão Studio')
-          setErrorMessage('Erro ao criar sessão. Tente novamente.')
-          setIsLoading(false)
-          return
-        }
-
-        console.log('✅ Sessão Studio criada!')
-        console.log('🚀 Redirecionando para /studio...')
-        
-        // Redirect to studio
-        setTimeout(() => {
-          router.push('/studio')
-        }, 100)
-        return
-      }
-      
-      // ============================================================
-      // MODO DASHBOARD - Autenticação via Supabase Auth
-      // ============================================================
-      console.log('🔐 Autenticando via Supabase para Dashboard...')
+      console.log(`🔐 Autenticando via Supabase para ${loginMode === 'studio' ? 'Studio' : 'Dashboard'}...`)
 
       // Tentar login (sem retry - rate limit já controlado)
       const { error: authError } = await supabaseSignIn(fullEmail, data.password)
@@ -242,9 +182,9 @@ function LoginPageContent() {
 
       // ✅ SUCESSO - Registrar tentativa bem-sucedida
       LoginRateLimiter.recordAttempt(fullEmail, true)
-      console.log('✅ Login Dashboard bem-sucedido!')
+      console.log(`✅ Login ${loginMode === 'studio' ? 'Studio' : 'Dashboard'} bem-sucedido!`)
       console.log('🔐 Sessão Supabase criada automaticamente')
-      
+
       // Sincronizar perfil (async, não bloquear redirecionamento)
       import('@/lib/services/user-profile-service').then(({ UserProfileService }) => {
         UserProfileService.syncUser({
@@ -254,12 +194,13 @@ function LoginPageContent() {
           console.warn('⚠️ Sincronização de perfil falhou (não crítico):', error)
         })
       })
-      
-      console.log('🚀 Redirecionando para /dashboard...')
-      
-      // Redirect to dashboard
+
+      // Redirecionar baseado no modo de login
+      const redirectPath = loginMode === 'studio' ? '/studio' : '/dashboard'
+      console.log(`🚀 Redirecionando para ${redirectPath}...`)
+
       setTimeout(() => {
-        router.push('/dashboard')
+        router.push(redirectPath)
       }, 100)
 
     } catch (error) {

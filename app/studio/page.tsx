@@ -4,7 +4,6 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
-import { authManager } from '@/lib/auth/enhanced-auth-manager'
 import { EnvironmentManager } from '@/lib/environment-config'
 import { AlertCircle, Loader2, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'

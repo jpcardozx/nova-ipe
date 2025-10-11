@@ -1,10 +1,11 @@
 import { MetadataRoute } from 'next';
+import { getTodosImoveis } from '@/lib/sanity/fetchImoveis';
 
 /**
  * Sitemap dinâmico gerado pelo Next.js
  * Importante para SEO: Ajuda search engines a descobrir todas as páginas
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.imobiliariaipe.com.br';
   const currentDate = new Date().toISOString();
 
@@ -40,16 +41,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // todas as entradas das páginas de imóveis com lastModified
   // apropriado baseado na data de atualização no banco de dados
   
-  // Exemplo fictício de como adicionar imóveis dinâmicos gerados do banco
-  // const imoveisEntries = [...imoveisData].map((imovel) => ({
-  //   url: `${baseUrl}/imovel/${imovel.slug}`,
-  //   lastModified: imovel.updatedAt || currentDate,
-  //   changeFrequency: 'weekly' as const,
-  //   priority: imovel.destaque ? 0.9 : 0.7,
-  // }));
+  const imoveis = await getTodosImoveis();
+  const imoveisEntries = imoveis.map((imovel) => ({
+    url: `${baseUrl}/imovel/${imovel.slug}`,
+    lastModified: new Date().toISOString(), // Replace with actual lastModified date from imovel
+    changeFrequency: 'weekly' as const,
+    priority: imovel.destaque ? 0.9 : 0.7,
+  }));
   
   // Retornar o sitemap completo (estáticos + dinâmicos)
-  return [...staticPages]; 
-  
-  // Em produção: return [...staticPages, ...imoveisEntries];
+  return [...staticPages, ...imoveisEntries];
 }

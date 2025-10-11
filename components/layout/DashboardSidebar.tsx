@@ -28,6 +28,7 @@ import {
     Mail,
     MessageCircle,
     Database,
+    Key,
     type LucideIcon
 } from 'lucide-react'
 
@@ -93,6 +94,13 @@ const menuCategories: MenuCategory[] = [
                 href: '/dashboard/leads',
                 color: 'text-green-600',
                 description: 'Captação de leads'
+            },
+            {
+                icon: Key,
+                label: 'Chaves',
+                href: '/dashboard/keys',
+                color: 'text-cyan-600',
+                description: 'Gestão de entregas e devoluções'
             }
         ]
     },

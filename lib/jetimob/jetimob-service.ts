@@ -4,10 +4,10 @@
  */
 
 interface JetimobConfig {
-    apiKey: string
+    webserviceKey: string
+    publicKey: string
+    privateKey: string
     baseUrl: string
-    userId: string
-    password: string
 }
 
 interface JetimobProperty {
@@ -70,20 +70,21 @@ export class JetimobService {
     }
 
     /**
-     * Autenticação com a API Jetimob
+     * Autenticação com a API Jetimob V2
+     * Usa webservice key para autenticação
      */
     async authenticate(): Promise<boolean> {
         try {
-            const response = await fetch(`${this.config.baseUrl}/auth/login`, {
-                method: 'POST',
+            // Jetimob V2 usa webservice key diretamente nos headers
+            this.authToken = this.config.webserviceKey
+            
+            // Testar autenticação fazendo uma request simples
+            const response = await fetch(`${this.config.baseUrl}/imoveis`, {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-API-Key': this.config.apiKey
-                },
-                body: JSON.stringify({
-                    user_id: this.config.userId,
-                    password: this.config.password
-                })
+                    'Authorization': `Bearer ${this.authToken}`
+                }
             })
 
             if (!response.ok) {
@@ -107,13 +108,13 @@ export class JetimobService {
     }
 
     /**
-     * Headers padrão para requisições autenticadas
+     * Headers padrão para requisições autenticadas Jetimob V2
      */
     private getAuthHeaders(): HeadersInit {
         return {
             'Content-Type': 'application/json',
-            'X-API-Key': this.config.apiKey,
-            'Authorization': `Bearer ${this.authToken}`
+            'Authorization': `Bearer ${this.authToken || this.config.webserviceKey}`,
+            'X-Public-Key': this.config.publicKey
         }
     }
 
@@ -407,8 +408,8 @@ export class JetimobService {
             const response = await fetch(`${this.config.baseUrl}/properties/${propertyId}/images`, {
                 method: 'POST',
                 headers: {
-                    'X-API-Key': this.config.apiKey,
-                    'Authorization': `Bearer ${this.authToken}`
+                    'Authorization': `Bearer ${this.authToken || this.config.webserviceKey}`,
+                    'X-Public-Key': this.config.publicKey
                 },
                 body: formData
             })
@@ -485,12 +486,12 @@ export class JetimobService {
     }
 }
 
-// Configuração padrão para desenvolvimento
+// Configuração padrão para desenvolvimento (Jetimob V2)
 export const jetimobConfig: JetimobConfig = {
-    apiKey: process.env.JETIMOB_API_KEY || '',
-    baseUrl: process.env.JETIMOB_BASE_URL || 'https://api.jetimob.com/v1',
-    userId: process.env.JETIMOB_USER_ID || '',
-    password: process.env.JETIMOB_PASSWORD || ''
+    webserviceKey: process.env.JETIMOB_WEBSERVICE_KEY || '',
+    publicKey: process.env.JETIMOB_PUBLIC_KEY || '',
+    privateKey: process.env.JETIMOB_PRIVATE_KEY || '',
+    baseUrl: process.env.JETIMOB_BASE_URL || 'https://api.jetimob.com/v2'
 }
 
 // Instância global do serviço
