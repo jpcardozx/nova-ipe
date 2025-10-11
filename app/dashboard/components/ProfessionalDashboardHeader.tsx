@@ -145,19 +145,22 @@ export default function ProfessionalDashboardHeader({
   const loadNotifications = async () => {
     try {
       if (!user?.id) {
-        console.warn('⚠️ loadNotifications: user.id não disponível')
+        // Silenciosamente retornar - é normal não ter user no primeiro render
+        setNotifications([])
+        setUnreadCount(0)
         return
       }
-      
-      console.log('📡 loadNotifications: Carregando para user:', user.id)
-      
-      // Verificar sessão ativa
+
+      // Verificar se temos sessão autenticada antes de fazer query
       const { data: { session } } = await supabase.auth.getSession()
-      console.log('🔐 Sessão ativa:', session ? 'Sim' : 'Não')
-      if (session) {
-        console.log('👤 Sessão user_id:', session.user.id)
+
+      if (!session) {
+        // Sem sessão ativa, não tentar carregar
+        setNotifications([])
+        setUnreadCount(0)
+        return
       }
-      
+
       // Conectar com Supabase para notificações reais
       const { data, error } = await supabase
         .from('notifications')
@@ -167,9 +170,15 @@ export default function ProfessionalDashboardHeader({
         .limit(10)
 
       if (error) {
-        console.error('❌ Erro ao carregar notifications:', error)
-        console.error('❌ Error details:', JSON.stringify(error, null, 2))
-        // Se tabela não existe ainda, usar array vazio
+        // Erro esperado se tabela não existe - silenciosamente ignorar
+        if (error.message?.includes('relation') || error.message?.includes('does not exist')) {
+          setNotifications([])
+          setUnreadCount(0)
+          return
+        }
+
+        // Outros erros - apenas log
+        console.warn('⚠️ Aviso ao carregar notifications:', error.message)
         setNotifications([])
         setUnreadCount(0)
         return
@@ -184,12 +193,11 @@ export default function ProfessionalDashboardHeader({
         is_read: n.is_read,
         actionUrl: n.action_url
       }))
-      
+
       setNotifications(notifications)
       setUnreadCount(notifications.filter(n => !n.is_read).length)
     } catch (error) {
-      console.error('Erro ao carregar notificações:', error)
-      // Em caso de erro, usar valores padrão
+      // Erro silencioso - não bloquear UI
       setNotifications([])
       setUnreadCount(0)
     }
@@ -274,53 +282,51 @@ export default function ProfessionalDashboardHeader({
 
   return (
     <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm sticky top-0 z-40 transition-colors duration-200">
-      <div className="flex items-center justify-between h-16 px-4 lg:px-6">
+      <div className="flex items-center justify-between h-16 px-3 sm:px-4 lg:px-6 gap-2">
         {/* Left Section */}
-        <div className="flex items-center flex-1 min-w-0">
+        <div className="flex items-center flex-1 min-w-0 gap-2">
           {/* Mobile Menu Button */}
           {onToggleSidebar && (
             <button
               onClick={onToggleSidebar}
-              className="lg:hidden p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors mr-3"
+              className="lg:hidden p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors shrink-0"
             >
               <Menu className="h-5 w-5" />
             </button>
           )}
 
-          {/* Page Title & Breadcrumb */}
-          <div className="flex items-center min-w-0 flex-1">
-            <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg ${userBadge.bg} dark:bg-opacity-20`}>
-                <pageInfo.icon className={`h-5 w-5 ${userBadge.color} dark:opacity-90`} />
-              </div>
-              <div className="min-w-0">
-                <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100 truncate">
-                  {pageInfo.title}
-                </h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400 truncate hidden md:block">
-                  {pageInfo.subtitle}
-                </p>
-              </div>
+          {/* Page Title & Icon */}
+          <div className="flex items-center min-w-0 flex-1 gap-2 sm:gap-3">
+            <div className={`p-1.5 sm:p-2 rounded-lg ${userBadge.bg} dark:bg-opacity-20 shrink-0`}>
+              <pageInfo.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${userBadge.color} dark:opacity-90`} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 dark:text-gray-100 truncate">
+                {pageInfo.title}
+              </h1>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate hidden sm:block">
+                {pageInfo.subtitle}
+              </p>
             </div>
           </div>
 
           {/* Search Bar - Desktop */}
-          <form onSubmit={handleSearch} className="hidden lg:block ml-8">
+          <form onSubmit={handleSearch} className="hidden xl:block shrink-0">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 h-4 w-4" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Buscar clientes, imóveis..."
-                className="pl-10 pr-4 py-2 w-80 
-                          border border-gray-200 dark:border-gray-800 
-                          bg-white dark:bg-gray-800 
+                placeholder="Buscar..."
+                className="pl-10 pr-4 py-2 w-64
+                          border border-gray-200 dark:border-gray-800
+                          bg-white dark:bg-gray-800
                           text-gray-900 dark:text-gray-100
                           placeholder:text-gray-400 dark:placeholder:text-gray-500
-                          rounded-lg 
-                          focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 
-                          focus:border-transparent 
+                          rounded-lg
+                          focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400
+                          focus:border-transparent
                           text-sm transition-all duration-200
                           hover:border-gray-300 dark:hover:border-gray-700"
               />
@@ -329,7 +335,7 @@ export default function ProfessionalDashboardHeader({
         </div>
 
         {/* Right Section */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {/* Current Time */}
           <div className="hidden md:flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mr-4">
             <Clock className="h-4 w-4" />
@@ -357,10 +363,11 @@ export default function ProfessionalDashboardHeader({
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: -10 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-full mt-2 w-80 
-                            bg-white dark:bg-gray-900 
-                            border border-gray-200 dark:border-gray-800 
-                            rounded-lg shadow-xl z-50"
+                  className="absolute right-0 top-full mt-2 w-72 sm:w-80
+                            bg-white dark:bg-gray-900
+                            border border-gray-200 dark:border-gray-800
+                            rounded-lg shadow-xl z-50
+                            max-w-[calc(100vw-2rem)]"
                 >
                   <div className="p-4 border-b border-gray-100 dark:border-gray-800">
                     <h3 className="font-semibold text-gray-900 dark:text-gray-100">Lembretes de Hoje</h3>
@@ -424,10 +431,11 @@ export default function ProfessionalDashboardHeader({
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: -10 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-full mt-2 w-80 
-                            bg-white dark:bg-gray-900 
-                            border border-gray-200 dark:border-gray-800 
-                            rounded-lg shadow-xl z-50"
+                  className="absolute right-0 top-full mt-2 w-72 sm:w-80
+                            bg-white dark:bg-gray-900
+                            border border-gray-200 dark:border-gray-800
+                            rounded-lg shadow-xl z-50
+                            max-w-[calc(100vw-2rem)]"
                 >
                   <div className="p-4 border-b border-gray-100 dark:border-gray-800">
                     <h3 className="font-semibold text-gray-900 dark:text-gray-100">Notificações</h3>
@@ -517,10 +525,11 @@ export default function ProfessionalDashboardHeader({
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: -10 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-full mt-2 w-64 
-                            bg-white dark:bg-gray-900 
-                            border border-gray-200 dark:border-gray-800 
-                            rounded-lg shadow-xl z-50"
+                  className="absolute right-0 top-full mt-2 w-56 sm:w-64
+                            bg-white dark:bg-gray-900
+                            border border-gray-200 dark:border-gray-800
+                            rounded-lg shadow-xl z-50
+                            max-w-[calc(100vw-2rem)]"
                 >
                   {/* User Info */}
                   <div className="p-4 border-b border-gray-100 dark:border-gray-800">

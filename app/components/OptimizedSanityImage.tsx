@@ -93,7 +93,8 @@ const OptimizedSanityImage = memo(({
             analytics.trackComplete(trackingIdRef.current, false);
         }
 
-        console.error('[OptimizedSanityImage] Erro ao carregar imagem:', imageUrl);
+        // ✅ Log silencioso - imagem indisponível é esperado
+        console.warn('⚠️ [OptimizedSanityImage] Imagem indisponível:', imageUrl);
     };
 
     // Confirmar carregamento bem-sucedido

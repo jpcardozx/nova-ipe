@@ -12,6 +12,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { type User } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase' // ✅ Usar singleton compartilhado
+import { storageManager } from '@/lib/utils/storage-manager' // ✅ Gerenciador de storage
 
 interface UseSupabaseAuthReturn {
   user: User | null
@@ -69,6 +70,14 @@ export function useSupabaseAuth(): UseSupabaseAuthReturn {
       setLoading(true)
       console.log('🔐 useSupabaseAuth.signIn - Tentando login...')
       
+      // ✅ PREVENIR QUOTA EXCEEDED - Preparar storage antes do login
+      try {
+        storageManager.prepareForAuth()
+      } catch (prepError) {
+        console.warn('⚠️ Aviso na preparação do storage:', prepError)
+        // Continuar mesmo se a preparação falhar
+      }
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -76,6 +85,32 @@ export function useSupabaseAuth(): UseSupabaseAuthReturn {
 
       if (error) {
         console.error('❌ useSupabaseAuth.signIn - Erro:', error)
+        
+        // ✅ TRATAMENTO ESPECÍFICO DE QUOTA EXCEEDED
+        if (error.message && error.message.includes('quota')) {
+          console.error('🚨 Erro de quota detectado - tentando limpeza de emergência...')
+          
+          try {
+            storageManager.emergencyCleanup()
+            
+            // Tentar login novamente após limpeza
+            const { data: retryData, error: retryError } = await supabase.auth.signInWithPassword({
+              email,
+              password,
+            })
+            
+            if (retryError) {
+              return { error: new Error('Erro de armazenamento. Por favor, limpe o cache do navegador e tente novamente.') }
+            }
+            
+            console.log('✅ Login bem-sucedido após limpeza de emergência!')
+            return { error: null }
+          } catch (cleanupError) {
+            console.error('❌ Limpeza de emergência falhou:', cleanupError)
+            return { error: new Error('Erro crítico de armazenamento. Por favor, limpe o cache do navegador manualmente.') }
+          }
+        }
+        
         return { error }
       }
 
@@ -86,6 +121,19 @@ export function useSupabaseAuth(): UseSupabaseAuthReturn {
       return { error: null }
     } catch (error) {
       console.error('❌ useSupabaseAuth.signIn - Exceção:', error)
+      
+      // ✅ TRATAMENTO DE DOMEXCEPTION (QUOTA EXCEEDED)
+      if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+        console.error('🚨 DOMException: QuotaExceededError detectado')
+        
+        try {
+          storageManager.emergencyCleanup()
+          return { error: new Error('Armazenamento cheio. Cache foi limpo. Por favor, tente fazer login novamente.') }
+        } catch {
+          return { error: new Error('Erro crítico de armazenamento. Por favor, limpe o cache do navegador e recarregue a página.') }
+        }
+      }
+      
       return { error: error as Error }
     } finally {
       setLoading(false)

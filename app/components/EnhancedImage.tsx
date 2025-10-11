@@ -84,11 +84,15 @@ export default function EnhancedImage({
                 // Rastrear uso para monitoramento
                 trackImageUsage('EnhancedImage', validImage, 'loading');
             } catch (error) {
-                console.error('[EnhancedImage] Erro ao processar imagem:', error);
+                // ✅ Log silencioso - erro ao processar imagem
+                const errorMsg = error instanceof Error ? error.message : 'Erro desconhecido';
+                console.warn('⚠️ [EnhancedImage] Erro ao processar imagem:', errorMsg);
                 setImageUrl(fallbackUrl);
             }
         }).catch(err => {
-            console.error('[EnhancedImage] Falha ao importar monitoria:', err);
+            // ✅ Log silencioso - sistema de monitoria é opcional
+            const errorMsg = err instanceof Error ? err.message : 'Erro desconhecido';
+            console.warn('⚠️ [EnhancedImage] Sistema de monitoria não disponível:', errorMsg);
             // Fallback direto sem o sistema de monitoramento
             const url = getImageUrlFixed(image);
             setImageUrl(url || fallbackUrl);
@@ -151,7 +155,8 @@ export default function EnhancedImage({
                     if (onLoad) onLoad();
                 }}
                 onError={() => {
-                    console.error(`[EnhancedImage] Erro ao carregar imagem: ${imageUrl}`);
+                    // ✅ Log silencioso - imagem indisponível é esperado
+                    console.warn(`⚠️ [EnhancedImage] Imagem indisponível: ${imageUrl}`);
                     setLoadState('error');
                 }}
             />

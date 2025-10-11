@@ -137,7 +137,8 @@ export function PropertyCard({ property, index, onClick }: PropertyCardProps) {
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 loading="lazy"
                 onError={() => {
-                  console.error('Erro ao carregar imagem:', imageUrl)
+                  // ✅ Log silencioso - imagem indisponível é esperado durante migração
+                  console.warn('⚠️ Imagem indisponível (servidor WordPress pode estar offline):', imageUrl)
                   setImageError(true)
                 }}
               />

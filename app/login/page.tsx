@@ -17,6 +17,7 @@ import { SimpleAuthManager } from '@/lib/auth-simple'
 import { EnhancedAuthManager, type LoginMode } from '@/lib/auth/enhanced-auth-manager'
 import { usePortalDiagnostic } from '@/lib/services/portal-diagnostic'
 import { useSupabaseAuth } from '@/lib/hooks/useSupabaseAuth'
+import { LoginRateLimiter } from '@/lib/auth/login-rate-limiter'
 
 
 
@@ -55,11 +56,29 @@ function LoginPageContent() {
   const [selectedDepartment, setSelectedDepartment] = useState('')
   const [portfolioClicks, setPortfolioClicks] = useState(0)
   const [selectedDomain, setSelectedDomain] = useState('@imobiliariaipe.com.br')
+  const [rateLimitCountdown, setRateLimitCountdown] = useState<number | null>(null)
   const router = useRouter()
   const searchParams = useSearchParams()
   const authManager = new SimpleAuthManager()
   const { isRunning: isDiagnosticRunning, result: diagnosticResult, runDiagnostic } = usePortalDiagnostic()
   const { signIn: supabaseSignIn, loading: authLoading } = useSupabaseAuth()
+
+  // Countdown timer para rate limit
+  useEffect(() => {
+    if (rateLimitCountdown === null || rateLimitCountdown <= 0) return
+
+    const timer = setInterval(() => {
+      setRateLimitCountdown((prev) => {
+        if (prev === null || prev <= 1) {
+          setErrorMessage('')
+          return null
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [rateLimitCountdown])
 
   // Handle URL parameters
   useEffect(() => {
@@ -105,6 +124,18 @@ function LoginPageContent() {
 
   const onLoginSubmit = async (data: LoginFormValues) => {
     const fullEmail = `${data.username}${selectedDomain}`
+
+    // ============================================================
+    // VERIFICAR RATE LIMIT (CLIENTE)
+    // ============================================================
+    const rateLimit = LoginRateLimiter.checkRateLimit(fullEmail)
+
+    if (!rateLimit.canAttempt) {
+      setErrorMessage(rateLimit.message)
+      setRateLimitCountdown(Math.ceil(rateLimit.waitTimeMs / 1000))
+      return
+    }
+
     setIsLoading(true)
     setErrorMessage('')
 
@@ -113,6 +144,7 @@ function LoginPageContent() {
       console.log('🔄 Modo:', loginMode)
       console.log('📧 Email:', fullEmail)
       console.log('🌐 URL:', window.location.href)
+      console.log('🔐 Rate Limit - Tentativas restantes:', rateLimit.attemptsLeft)
       
       // ============================================================
       // MODO STUDIO - Autenticação via Admin Password
@@ -178,27 +210,38 @@ function LoginPageContent() {
       // MODO DASHBOARD - Autenticação via Supabase Auth
       // ============================================================
       console.log('🔐 Autenticando via Supabase para Dashboard...')
-      const { error } = await supabaseSignIn(fullEmail, data.password)
-      
-      if (error) {
-        console.error('❌ Erro de autenticação Supabase:', error.message)
+
+      // Tentar login (sem retry - rate limit já controlado)
+      const { error: authError } = await supabaseSignIn(fullEmail, data.password)
+
+      if (authError) {
+        console.error('❌ Erro de autenticação Supabase:', authError.message)
+
+        // Registrar tentativa falhada
+        LoginRateLimiter.recordAttempt(fullEmail, false)
+
         setIsLoading(false)
-        
+
         // Mensagens de erro amigáveis
-        if (error.message.includes('Invalid login credentials')) {
-          setErrorMessage('Email ou senha incorretos. Verifique suas credenciais.')
-        } else if (error.message.includes('Email not confirmed')) {
+        if (authError.message.includes('quota has been exceeded')) {
+          setErrorMessage('⚠️ Limite de tentativas do servidor excedido. Aguarde 5 minutos antes de tentar novamente.')
+        } else if (authError.message.includes('Invalid login credentials')) {
+          const stats = LoginRateLimiter.getStats(fullEmail)
+          const attemptsLeft = Math.max(0, 5 - stats.failedAttempts)
+          setErrorMessage(`Email ou senha incorretos. ${attemptsLeft} tentativa(s) restante(s).`)
+        } else if (authError.message.includes('Email not confirmed')) {
           setErrorMessage('Email não confirmado. Verifique sua caixa de entrada.')
-        } else if (error.message.includes('User not found')) {
+        } else if (authError.message.includes('User not found')) {
           setErrorMessage('Usuário não encontrado. Solicite acesso ao administrador.')
         } else {
-          setErrorMessage(`Erro na autenticação: ${error.message}`)
+          setErrorMessage(`Erro na autenticação: ${authError.message}`)
         }
-        
+
         return
       }
-      
-      // ✅ SUCESSO - Autenticação bem-sucedida
+
+      // ✅ SUCESSO - Registrar tentativa bem-sucedida
+      LoginRateLimiter.recordAttempt(fullEmail, true)
       console.log('✅ Login Dashboard bem-sucedido!')
       console.log('🔐 Sessão Supabase criada automaticamente')
       
@@ -494,10 +537,29 @@ function LoginPageContent() {
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-red-500/20 border border-red-500/30 rounded-lg p-3 flex items-center gap-2"
+                    className="bg-red-500/20 border border-red-500/30 rounded-lg p-3"
                   >
-                    <AlertTriangle className="h-4 w-4 text-red-400" />
-                    <span className="text-red-300 text-sm">{errorMessage}</span>
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0" />
+                      <div className="flex-1">
+                        <span className="text-red-300 text-sm">{errorMessage}</span>
+                        {rateLimitCountdown !== null && rateLimitCountdown > 0 && (
+                          <div className="mt-2 flex items-center gap-2">
+                            <div className="flex-1 bg-red-900/50 rounded-full h-1.5">
+                              <motion.div
+                                className="bg-red-400 h-full rounded-full"
+                                initial={{ width: '100%' }}
+                                animate={{ width: '0%' }}
+                                transition={{ duration: rateLimitCountdown, ease: 'linear' }}
+                              />
+                            </div>
+                            <span className="text-red-200 text-xs font-mono">
+                              {Math.floor(rateLimitCountdown / 60)}:{String(rateLimitCountdown % 60).padStart(2, '0')}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </motion.div>
                 )}
 

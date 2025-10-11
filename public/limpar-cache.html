@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧹 Limpar Cache de Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .status {
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .status.info {
+            background: #fef3c7;
+            color: #92400e;
+            border: 2px solid #f59e0b;
+        }
+
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+
+        button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px 0;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        button.secondary:hover {
+            background: #d1d5db;
+        }
+
+        .attempts {
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .attempts h3 {
+            color: #374151;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .attempt-item {
+            padding: 10px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+            color: #6b7280;
+            font-family: monospace;
+        }
+
+        .attempt-item:last-child {
+            border-bottom: none;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .instructions {
+            background: #f0f7ff;
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+            border-radius: 8px;
+        }
+
+        .instructions strong {
+            color: #1e40af;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            color: #1e40af;
+        }
+
+        .instructions li {
+            margin: 8px 0;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Limpar Cache de Login</h1>
+        <p class="subtitle">Ferramenta de diagnóstico e limpeza rápida</p>
+
+        <div id="status" class="status info">
+            ⏳ Analisando localStorage...
+        </div>
+
+        <div id="stats" class="stats" style="display: none;">
+            <div class="stat-card">
+                <div class="stat-value" id="totalAttempts">0</div>
+                <div class="stat-label">Tentativas registradas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="blockedEmails">0</div>
+                <div class="stat-label">Emails bloqueados</div>
+            </div>
+        </div>
+
+        <div id="attemptsList" class="attempts" style="display: none;"></div>
+
+        <div class="instructions">
+            <strong>🎯 O que esta ferramenta faz?</strong>
+            <ol>
+                <li>Analisa o cache de tentativas de login</li>
+                <li>Mostra quantos bloqueios existem</li>
+                <li>Limpa TUDO com um clique</li>
+                <li>Permite você tentar login novamente</li>
+            </ol>
+        </div>
+
+        <button onclick="clearAll()" id="clearBtn">
+            🧹 LIMPAR TUDO AGORA
+        </button>
+
+        <button onclick="diagnose()" class="secondary">
+            🔍 Diagnosticar Novamente
+        </button>
+
+        <button onclick="window.location.href='/login'" class="secondary">
+            ← Voltar ao Login
+        </button>
+
+        <div class="footer">
+            💡 <strong>Dica:</strong> Após limpar, volte ao /login e tente novamente<br>
+            <small>Desenvolvido por @jpcardozx com Claude Code</small>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'login_attempts'
+        const SUPABASE_AUTH_KEY = 'sb-ifhfpaehnjpdwdocdzwd-auth-token'
+
+        function getAllAttempts() {
+            const attempts = []
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i)
+                if (key && key.startsWith(STORAGE_KEY)) {
+                    try {
+                        const data = JSON.parse(localStorage.getItem(key))
+                        attempts.push({ key, data })
+                    } catch (e) {
+                        console.error('Erro ao ler:', key, e)
+                    }
+                }
+            }
+            return attempts
+        }
+
+        function clearAll() {
+            const btn = document.getElementById('clearBtn')
+            const statusDiv = document.getElementById('status')
+
+            btn.disabled = true
+            btn.innerHTML = '<span class="loading">⏳</span> Limpando...'
+
+            setTimeout(() => {
+                let cleared = 0
+                let supabaseCleared = 0
+
+                // Limpar todos os login_attempts
+                for (let i = localStorage.length - 1; i >= 0; i--) {
+                    const key = localStorage.key(i)
+                    if (key && key.startsWith(STORAGE_KEY)) {
+                        localStorage.removeItem(key)
+                        cleared++
+                    }
+                    // Limpar também sessões Supabase
+                    if (key && (key.includes('supabase') || key.includes('auth-token'))) {
+                        localStorage.removeItem(key)
+                        supabaseCleared++
+                    }
+                }
+
+                // Limpar sessionStorage completo
+                sessionStorage.clear()
+
+                statusDiv.className = 'status success'
+                statusDiv.innerHTML = `✅ TUDO LIMPO!<br>
+                    <small>• ${cleared} bloqueio(s) removido(s)<br>
+                    • ${supabaseCleared} sessão(ões) Supabase limpas<br>
+                    • sessionStorage resetado</small>`
+
+                btn.disabled = false
+                btn.innerHTML = '✓ Cache Limpo!'
+                btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+
+                setTimeout(() => {
+                    btn.innerHTML = '🧹 LIMPAR TUDO NOVAMENTE'
+                    btn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                    diagnose()
+                }, 2000)
+            }, 500)
+        }
+
+        function diagnose() {
+            const attempts = getAllAttempts()
+            const statusDiv = document.getElementById('status')
+            const statsDiv = document.getElementById('stats')
+            const attemptsListDiv = document.getElementById('attemptsList')
+
+            document.getElementById('totalAttempts').textContent = attempts.length
+            document.getElementById('blockedEmails').textContent = attempts.length
+
+            if (attempts.length === 0) {
+                statusDiv.className = 'status success'
+                statusDiv.innerHTML = '✅ Sistema limpo! Nenhum bloqueio ativo.<br><small>Você pode fazer login normalmente.</small>'
+                statsDiv.style.display = 'none'
+                attemptsListDiv.style.display = 'none'
+            } else {
+                statusDiv.className = 'status error'
+                statusDiv.innerHTML = `⚠️ BLOQUEIO ATIVO! ${attempts.length} registro(s) encontrado(s).<br><small>Clique em "LIMPAR TUDO AGORA" para desbloquear.</small>`
+                statsDiv.style.display = 'grid'
+                attemptsListDiv.style.display = 'block'
+
+                attemptsListDiv.innerHTML = '<h3>📋 Registros encontrados:</h3>'
+                attempts.forEach((attempt, index) => {
+                    const item = document.createElement('div')
+                    item.className = 'attempt-item'
+                    const failedCount = attempt.data.filter(a => !a.success).length
+                    const lastAttempt = new Date(attempt.data[attempt.data.length - 1].timestamp)
+                    item.innerHTML = `
+                        <strong>Registro ${index + 1}</strong><br>
+                        Falhas: ${failedCount} | Última: ${lastAttempt.toLocaleString('pt-BR')}
+                    `
+                    attemptsListDiv.appendChild(item)
+                })
+            }
+        }
+
+        // Auto-diagnóstico ao carregar
+        window.onload = () => {
+            setTimeout(diagnose, 300)
+        }
+    </script>
+</body>
+</html>

@@ -51,6 +51,12 @@ export function useCalendar(options: UseCalendarOptions): UseCalendarReturn {
   const channelRef = useRef<RealtimeChannel | null>(null)
 
   const loadEvents = useCallback(async () => {
+    // Não carregar eventos sem userId válido
+    if (!options.userId) {
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
     setError(null)
 
@@ -243,10 +249,19 @@ export function useNotifications(options: UseNotificationsOptions): UseNotificat
   useEffect(() => {
     if (options.playSound && typeof window !== 'undefined') {
       audioRef.current = new Audio('/sounds/notification.mp3')
+      audioRef.current.addEventListener('error', () => {
+        console.warn('⚠️ Som de notificação não encontrado. Adicione notification.mp3 em public/sounds/')
+      })
     }
   }, [options.playSound])
 
   const loadNotifications = useCallback(async () => {
+    // Não carregar notificações sem userId válido
+    if (!options.userId) {
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
     setError(null)
 
@@ -263,8 +278,19 @@ export function useNotifications(options: UseNotificationsOptions): UseNotificat
       const { data: count } = await NotificationService.getUnreadCount(options.userId)
       setUnreadCount(count)
     } catch (err) {
-      console.error('❌ Error loading notifications:', err)
-      setError(err)
+      // ✅ Log silencioso - não bloquear UI por falta de tabela
+      const errorMsg = err instanceof Error ? err.message : 'Erro desconhecido'
+
+      // Se a tabela não existe, apenas avisar (não é crítico)
+      if (errorMsg.includes('relation') || errorMsg.includes('does not exist')) {
+        console.warn('⚠️ Tabela de notificações não existe ainda (não crítico)')
+        setNotifications([])
+        setUnreadCount(0)
+        setError(null) // Não considerar erro crítico
+      } else {
+        console.warn('⚠️ Aviso ao carregar notificações:', errorMsg)
+        setError(err)
+      }
     } finally {
       setLoading(false)
     }

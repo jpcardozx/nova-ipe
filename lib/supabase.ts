@@ -1,15 +1,21 @@
 import { createClient } from '@supabase/supabase-js'
+import { getStorageAdapter } from './utils/supabase-storage-adapter'
 
 // Configuração direta do Supabase - evitando EnvironmentManager problemático
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://dummy.supabase.co'
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'dummy-key'
+
+// ✅ Storage adapter customizado com proteção contra quota exceeded
+const customStorage = typeof window !== 'undefined' ? getStorageAdapter() : undefined
 
 // Configurações para produção - tratamento de timeout e retry
 const supabaseOptions = {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true
+    detectSessionInUrl: true,
+    // ✅ Usar storage customizado com fallback automático
+    storage: customStorage,
   },
   global: {
     fetch: (url: RequestInfo | URL, init?: RequestInit) => {

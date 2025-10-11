@@ -107,11 +107,12 @@ export class UserProfileService {
         return data
       }
     } catch (error) {
-      console.error('❌ Erro ao sincronizar usuário no Supabase:', error)
-      
+      // Log silencioso - não bloquear login por erro de sincronização
+      const errorMsg = error instanceof Error ? error.message : 'Erro desconhecido'
+      console.warn('⚠️ Sincronização Supabase falhou (não crítico):', errorMsg)
+
       // Em caso de erro de conectividade, não bloquear o login
       // O usuário ainda pode acessar o sistema mesmo sem sincronização
-      console.warn('⚠️ Continuando sem sincronização Supabase devido a erro de conectividade')
       return null
     }
   }

@@ -491,7 +491,16 @@ export class NotificationService {
       if (error) throw error
       return { data, error: null }
     } catch (error) {
-      console.error('❌ Error in getNotifications:', error)
+      // ✅ Log silencioso - não bloquear UI por falta de tabela
+      const errorMsg = error instanceof Error ? error.message : 'Erro desconhecido'
+
+      // Se a tabela não existe, apenas avisar (não é crítico)
+      if (errorMsg.includes('relation') || errorMsg.includes('does not exist')) {
+        console.warn('⚠️ Tabela de notificações não existe ainda (não crítico)')
+        return { data: [], error: null }
+      }
+
+      console.warn('⚠️ Aviso ao carregar notificações:', errorMsg)
       return { data: null, error }
     }
   }
