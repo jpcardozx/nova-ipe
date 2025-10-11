@@ -149,20 +149,26 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header de Boas-vindas */}
+      {/* Header de Boas-vindas - Melhorado com melhor legibilidade */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="bg-gradient-to-r from-blue-600 to-purple-700 dark:from-blue-700 dark:to-purple-800 rounded-xl p-6 text-white shadow-lg"
+        className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700 dark:from-blue-900/90 dark:via-blue-800/90 dark:to-purple-900/90 rounded-2xl p-8 text-white shadow-2xl border border-blue-400/20 dark:border-blue-700/30"
       >
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-          <div>
+        {/* Padrão de fundo decorativo */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 dark:via-white/3 dark:to-white/5" />
+        <div 
+          className="absolute -right-20 -top-20 w-80 h-80 bg-white/10 dark:bg-white/5 rounded-full blur-3xl"
+        />
+        
+        <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+          <div className="flex-1">
             <motion.h1 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1, duration: 0.4 }}
-              className="text-2xl font-bold mb-2"
+              className="text-3xl lg:text-4xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-100 dark:from-white dark:to-blue-200"
             >
               {greeting()}, {firstName}! 👋
             </motion.h1>
@@ -170,46 +176,56 @@ export default function DashboardPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.4 }}
-              className="text-blue-100 dark:text-blue-200"
+              className="text-blue-50 dark:text-blue-100 font-medium text-lg"
             >
               {format(currentTime, 'EEEE, dd \'de\' MMMM \'de\' yyyy', { locale: ptBR })}
             </motion.p>
-            <motion.p 
+            <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.4 }}
-              className="text-blue-100 dark:text-blue-200 text-sm mt-1"
+              className="flex items-center gap-2 mt-2"
             >
-              {format(currentTime, 'HH:mm:ss')}
-            </motion.p>
+              <Clock className="h-4 w-4 text-blue-200 dark:text-blue-300" />
+              <span className="text-blue-100 dark:text-blue-200 text-sm font-mono">
+                {format(currentTime, 'HH:mm:ss')}
+              </span>
+            </motion.div>
           </div>
           
-          <div className="text-left lg:text-right w-full lg:w-auto">
-            <div className="flex flex-row lg:items-center gap-3">
-              {unreadCount > 0 && (
-                <motion.div 
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.4, type: 'spring' }}
-                  className="flex items-center gap-2 bg-white/20 dark:bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2"
-                >
-                  <Bell className="h-4 w-4" />
-                  <span className="text-sm font-medium">{unreadCount} notificações</span>
-                </motion.div>
-              )}
-              
+          <div className="flex flex-col sm:flex-row gap-3">
+            {unreadCount > 0 && (
               <motion.div 
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.5, type: 'spring' }}
-                className="bg-white/20 dark:bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2"
+                transition={{ delay: 0.4, type: 'spring' }}
+                className="relative flex items-center gap-3 bg-white/15 dark:bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 border border-white/20 dark:border-white/10 shadow-lg"
               >
-                <div className="text-sm opacity-90">Meta do Mês</div>
+                <div className="relative">
+                  <Bell className="h-5 w-5 text-blue-100" />
+                  <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-400 rounded-full animate-pulse" />
+                </div>
+                <div>
+                  <div className="text-xs text-blue-100 opacity-80">Notificações</div>
+                  <div className="text-lg font-bold">{unreadCount}</div>
+                </div>
+              </motion.div>
+            )}
+            
+            <motion.div 
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.5, type: 'spring' }}
+              className="flex items-center gap-3 bg-white/15 dark:bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 border border-white/20 dark:border-white/10 shadow-lg"
+            >
+              <Target className="h-5 w-5 text-blue-100" />
+              <div>
+                <div className="text-xs text-blue-100 opacity-80">Meta do Mês</div>
                 <div className="text-2xl font-bold">
                   {stats?.targetAchievement.toFixed(1)}%
                 </div>
-              </motion.div>
-            </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </motion.div>
@@ -226,17 +242,20 @@ export default function DashboardPage() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Ações Rápidas */}
+        {/* Ações Rápidas - Design Melhorado */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className="lg:col-span-2"
         >
-          <div className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-800">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              Ações Rápidas
-            </h2>
+          <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-gray-200/50 dark:border-gray-700/50">
+            <div className="flex items-center gap-2 mb-5">
+              <div className="w-1 h-6 bg-gradient-to-b from-blue-600 to-purple-600 rounded-full" />
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-50">
+                Ações Rápidas
+              </h2>
+            </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {quickActions.map((action, index) => (
@@ -246,23 +265,27 @@ export default function DashboardPage() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.3 + index * 0.1 }}
-                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileHover={{ scale: 1.02, y: -4 }}
                   whileTap={{ scale: 0.98 }}
                   className="group block"
                 >
-                  <div className="border border-gray-200 dark:border-gray-800 rounded-xl p-4 hover:shadow-md dark:hover:shadow-gray-900/50 transition-all duration-200 hover:border-gray-300 dark:hover:border-gray-700 bg-gradient-to-br from-gray-50 to-transparent dark:from-gray-800/50 dark:to-transparent">
-                    <div className="flex items-center gap-3">
+                  <div className="relative overflow-hidden border border-gray-200 dark:border-gray-700 rounded-xl p-5 hover:shadow-xl dark:hover:shadow-black/30 transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-600 bg-gradient-to-br from-white via-gray-50 to-gray-100/50 dark:from-gray-800 dark:via-gray-800/80 dark:to-gray-900">
+                    {/* Efeito hover gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-purple-500/0 group-hover:from-blue-500/5 group-hover:to-purple-500/5 dark:group-hover:from-blue-500/10 dark:group-hover:to-purple-500/10 transition-all duration-300" />
+                    
+                    <div className="relative flex items-center gap-4">
                       <motion.div 
-                        whileHover={{ rotate: 5 }}
-                        className={`p-3 rounded-lg ${getActionColors(action.color)} shadow-sm`}
+                        whileHover={{ rotate: 8, scale: 1.1 }}
+                        transition={{ type: 'spring', stiffness: 300 }}
+                        className={`p-3.5 rounded-xl ${getActionColors(action.color)} shadow-lg group-hover:shadow-xl transition-shadow duration-300`}
                       >
                         <action.icon className="h-5 w-5" />
                       </motion.div>
-                      <div>
-                        <h3 className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-base text-gray-900 dark:text-gray-50 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                           {action.title}
                         </h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
                           {action.description}
                         </p>
                       </div>
@@ -274,13 +297,19 @@ export default function DashboardPage() {
           </div>
         </motion.div>
 
-        {/* Performance e Métricas */}
+        {/* Performance e Métricas - Design Melhorado */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
+          <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-600/10 to-purple-600/10 dark:from-blue-900/30 dark:to-purple-900/30 p-4 border-b border-gray-200/50 dark:border-gray-700/50">
+              <div className="flex items-center gap-2">
+                <Activity className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <h3 className="font-bold text-gray-900 dark:text-gray-50">Performance</h3>
+              </div>
+            </div>
             {stats && <PerformanceMetrics stats={stats} />}
           </div>
         </motion.div>
@@ -288,16 +317,19 @@ export default function DashboardPage() {
 
       {/* Próximas Tarefas e Atividade Recente */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Próximas Tarefas */}
+        {/* Próximas Tarefas - Design Melhorado */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-800"
+          className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-gray-200/50 dark:border-gray-700/50"
         >
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-            Próximas Tarefas
-          </h2>
+          <div className="flex items-center gap-2 mb-5">
+            <div className="w-1 h-6 bg-gradient-to-b from-green-600 to-emerald-600 rounded-full" />
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-50">
+              Próximas Tarefas
+            </h2>
+          </div>
           
           {upcomingTasks.length === 0 ? (
             <div className="text-center py-8 text-gray-500 dark:text-gray-400">
@@ -346,16 +378,19 @@ export default function DashboardPage() {
           </div>
         </motion.div>
 
-        {/* Atividade Recente */}
+        {/* Atividade Recente - Design Melhorado */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-800"
+          className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-gray-200/50 dark:border-gray-700/50"
         >
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-            Atividade Recente
-          </h2>
+          <div className="flex items-center gap-2 mb-5">
+            <div className="w-1 h-6 bg-gradient-to-b from-purple-600 to-pink-600 rounded-full" />
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-50">
+              Atividade Recente
+            </h2>
+          </div>
           
           {recentActivity.length === 0 ? (
             <div className="text-center py-8 text-gray-500 dark:text-gray-400">
@@ -400,18 +435,27 @@ export default function DashboardPage() {
         </motion.div>
       </div>
 
-      {/* Lembretes do Sistema */}
+      {/* Lembretes do Sistema - Design Melhorado */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
-        className="bg-gradient-to-r from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 border border-yellow-200 dark:border-yellow-800/50 rounded-xl p-6 shadow-sm"
+        className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-900/30 dark:via-yellow-900/20 dark:to-orange-900/30 border-2 border-amber-200 dark:border-amber-800/50 rounded-2xl p-6 shadow-xl"
       >
-        <div className="flex items-start gap-4">
-          <AlertCircle className="h-6 w-6 text-yellow-600 dark:text-yellow-500 flex-shrink-0" />
+        {/* Padrão de fundo */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(251,191,36,0.1),transparent_50%)] dark:bg-[radial-gradient(circle_at_30%_50%,rgba(251,191,36,0.05),transparent_50%)]" />
+        
+        <div className="relative flex items-start gap-5">
+          <div className="flex-shrink-0">
+            <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 dark:from-amber-600 dark:to-orange-700 rounded-xl flex items-center justify-center shadow-lg">
+              <AlertCircle className="h-6 w-6 text-white" />
+            </div>
+          </div>
           <div className="flex-1">
-            <h3 className="font-semibold text-yellow-800 dark:text-yellow-400 mb-2">Lembrete Importante</h3>
-            <p className="text-yellow-700 dark:text-yellow-300 text-sm leading-relaxed">
+            <h3 className="text-lg font-bold text-amber-900 dark:text-amber-300 mb-2">
+              💡 Lembrete Importante
+            </h3>
+            <p className="text-amber-800 dark:text-amber-200 text-sm leading-relaxed">
               Execute a migração do banco de dados para ativar o sistema completo de notificações. 
               Acesse o painel do Supabase e execute o arquivo migration disponível na documentação.
             </p>
@@ -419,7 +463,7 @@ export default function DashboardPage() {
               href="/dashboard/documentation" 
               whileHover={{ x: 4 }}
               transition={{ duration: 0.2 }}
-              className="inline-flex items-center gap-2 mt-4 text-sm text-yellow-700 dark:text-yellow-400 hover:text-yellow-800 dark:hover:text-yellow-300 font-medium transition-colors duration-200"
+              className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-amber-600 dark:bg-amber-700 text-white rounded-lg hover:bg-amber-700 dark:hover:bg-amber-600 font-medium transition-all duration-200 shadow-md hover:shadow-lg"
             >
               Ver documentação
               <Activity className="h-4 w-4" />

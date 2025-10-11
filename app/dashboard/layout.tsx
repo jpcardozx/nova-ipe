@@ -50,12 +50,16 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-950 flex relative rounded-xl shadow-md transition-colors duration-200">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 flex relative transition-colors duration-300">
+      {/* Padrão de fundo sutil */}
       <div
-        className="absolute inset-0 bg-repeat opacity-30 dark:opacity-10 pointer-events-none"
+        className="absolute inset-0 opacity-[0.03] dark:opacity-[0.02] pointer-events-none"
         style={{
-          backgroundImage: 'url(/images/dashboard/texture.png)',
-          backgroundSize: '400px 400px'
+          backgroundImage: `
+            linear-gradient(to right, rgb(0 0 0 / 0.05) 1px, transparent 1px),
+            linear-gradient(to bottom, rgb(0 0 0 / 0.05) 1px, transparent 1px)
+          `,
+          backgroundSize: '20px 20px'
         }}
       />
 
@@ -77,9 +81,11 @@ export default function DashboardLayout({
           sidebarCollapsed={sidebarCollapsed}
           onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
         />
-        <main className="flex-1 overflow-y-auto p-2 md:p-4 lg:p-6 xl:p-8 rounded-lg">
-          <UserStatsService />
-          {children}
+        <main className="flex-1 overflow-y-auto p-3 md:p-5 lg:p-6 xl:p-8 bg-transparent">
+          <div className="max-w-[1600px] mx-auto">
+            <UserStatsService />
+            {children}
+          </div>
         </main>
         <QuickActions />
       </div>
