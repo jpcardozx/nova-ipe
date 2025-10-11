@@ -109,20 +109,80 @@ function LoginPageContent() {
     setErrorMessage('')
 
     try {
-      console.log('🔄 === LOGIN VIA SUPABASE AUTH ===')
+      console.log('🔄 === INICIANDO LOGIN ===')
       console.log('🔄 Modo:', loginMode)
       console.log('📧 Email:', fullEmail)
       console.log('🌐 URL:', window.location.href)
       
       // ============================================================
-      // AUTENTICAÇÃO VIA SUPABASE AUTH (Sistema Único)
+      // MODO STUDIO - Autenticação via Admin Password
       // ============================================================
+      if (loginMode === 'studio') {
+        console.log('🎬 Autenticando para Studio...')
+        
+        // Autenticar via API de login do Studio
+        const loginResponse = await fetch('/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: fullEmail,
+            senha: data.password
+          })
+        })
+
+        const loginData = await loginResponse.json()
+
+        if (!loginResponse.ok) {
+          console.error('❌ Erro de autenticação Studio:', loginData.error)
+          setErrorMessage(loginData.error || 'Credenciais inválidas para o estúdio.')
+          setIsLoading(false)
+          return
+        }
+
+        console.log('✅ Autenticação Studio bem-sucedida!')
+        
+        // Criar sessão do Studio
+        const sessionResponse = await fetch('/api/studio/session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user: {
+              email: fullEmail,
+              name: data.username,
+            }
+          })
+        })
+
+        if (!sessionResponse.ok) {
+          console.error('❌ Erro ao criar sessão Studio')
+          setErrorMessage('Erro ao criar sessão. Tente novamente.')
+          setIsLoading(false)
+          return
+        }
+
+        console.log('✅ Sessão Studio criada!')
+        console.log('🚀 Redirecionando para /studio...')
+        
+        // Redirect to studio
+        setTimeout(() => {
+          router.push('/studio')
+        }, 100)
+        return
+      }
       
-      console.log('🔐 Autenticando via Supabase...')
+      // ============================================================
+      // MODO DASHBOARD - Autenticação via Supabase Auth
+      // ============================================================
+      console.log('🔐 Autenticando via Supabase para Dashboard...')
       const { error } = await supabaseSignIn(fullEmail, data.password)
       
       if (error) {
-        console.error('❌ Erro de autenticação:', error.message)
+        console.error('❌ Erro de autenticação Supabase:', error.message)
+        setIsLoading(false)
         
         // Mensagens de erro amigáveis
         if (error.message.includes('Invalid login credentials')) {
@@ -139,8 +199,8 @@ function LoginPageContent() {
       }
       
       // ✅ SUCESSO - Autenticação bem-sucedida
-      console.log('✅ Login bem-sucedido!')
-      console.log('� Sessão Supabase criada automaticamente')
+      console.log('✅ Login Dashboard bem-sucedido!')
+      console.log('🔐 Sessão Supabase criada automaticamente')
       
       // Sincronizar perfil (async, não bloquear redirecionamento)
       import('@/lib/services/user-profile-service').then(({ UserProfileService }) => {
@@ -152,15 +212,16 @@ function LoginPageContent() {
         })
       })
       
-      // Redirecionar baseado no modo
-      const redirectPath = loginMode === 'studio' ? '/studio' : '/dashboard'
-      console.log(`� Redirecionando para ${redirectPath}...`)
-      router.push(redirectPath)
+      console.log('🚀 Redirecionando para /dashboard...')
+      
+      // Redirect to dashboard
+      setTimeout(() => {
+        router.push('/dashboard')
+      }, 100)
 
     } catch (error) {
       console.error('❌ Erro crítico:', error)
       setErrorMessage('Erro inesperado na autenticação. Tente novamente.')
-    } finally {
       setIsLoading(false)
     }
   }
