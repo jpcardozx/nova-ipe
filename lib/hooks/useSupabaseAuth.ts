@@ -47,10 +47,15 @@ export function useSupabaseAuth(): UseSupabaseAuthReturn {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('🔄 Auth state change:', event)
       setUser(session?.user ?? null)
       setLoading(false)
-      router.refresh()
+      
+      // Only refresh on SIGN_OUT to avoid interfering with redirects during SIGN_IN
+      if (event === 'SIGNED_OUT') {
+        router.refresh()
+      }
     })
 
     return () => {
