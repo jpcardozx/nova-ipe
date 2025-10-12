@@ -1,3 +1,4 @@
+
 # Relatório de Debug - Login Page
 
 **Data:** 2025-10-11

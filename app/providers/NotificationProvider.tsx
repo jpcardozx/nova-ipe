@@ -6,35 +6,41 @@
 'use client'
 
 import { useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import { useNotifications } from '@/hooks/useAgendaSystem'
 import { useCurrentUser } from '@/lib/hooks/useCurrentUser'
 import { toast, Toaster } from 'sonner'
-import { Bell, Check, X, Info, AlertTriangle, AlertCircle } from 'lucide-react'
 
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
   const { user } = useCurrentUser()
 
+  // Não carregar notificações no Studio ou páginas públicas
+  const isStudioRoute = pathname?.startsWith('/studio')
+  const isPublicRoute = !pathname?.startsWith('/dashboard') && !isStudioRoute
+  const shouldLoadNotifications = !isStudioRoute && !isPublicRoute && !!user
+
+  // SEMPRE chamar o hook, mas com userId vazio quando desabilitado (React rules of hooks)
   const {
     notifications,
-    unreadCount,
     markAsRead
   } = useNotifications({
-    userId: user?.id || '',
-    enableRealtime: true,
-    playSound: true,
-    showBrowserNotification: true
+    userId: shouldLoadNotifications ? user.id : '',
+    enableRealtime: shouldLoadNotifications,
+    playSound: shouldLoadNotifications,
+    showBrowserNotification: shouldLoadNotifications
   })
 
   // Listen for realtime notifications and show toast
   useEffect(() => {
-    if (!user) return
+    if (!shouldLoadNotifications) return
 
     // Mostrar toast para novas notificações não lidas
     const latestUnread = notifications.find(n => !n.is_read && !n.is_sent)
     if (latestUnread) {
       showNotificationToast(latestUnread, () => markAsRead(latestUnread.id))
     }
-  }, [notifications, user, markAsRead])
+  }, [notifications, shouldLoadNotifications, markAsRead])
 
   return (
     <>

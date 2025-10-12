@@ -49,6 +49,7 @@ export default function ValorAprimoradoModerno() {
         interest: 'compra'
     });
     const [hoveredMetric, setHoveredMetric] = useState<string | null>(null);
+    const [showMetrics, setShowMetrics] = useState(false);
 
     const handleLeadSubmit = () => {
         if (!leadForm.name.trim() || !leadForm.email.trim()) {
@@ -98,7 +99,7 @@ export default function ValorAprimoradoModerno() {
     const faqItems: FaqItem[] = [
         {
             question: "Quais são os principais custos ao vender um imóvel?",
-            answer: "Os custos mais comuns incluem a comissão de corretagem, que geralmente fica entre 5% e 6% do valor de venda. Além disso, há despesas com documentação, certidões e registro de escritura. Dependendo da situação, pode haver incidência de imposto de renda sobre o ganho de capital. Nossos consultores fornecem uma estimativa completa personalizada para o seu caso."
+            answer: "Os custos mais comuns incluem a comissão de corretagem (geralmente entre 5% e 6% do valor de venda), despesas com documentação, certidões e registro de escritura. Dependendo da situação, pode haver incidência de imposto de renda sobre o ganho de capital. Para imóveis que intermediamos, fornecemos estimativa detalhada dos custos envolvidos."
         },
         {
             question: "Quanto tempo leva para vender um imóvel em Guararema?",
@@ -110,7 +111,7 @@ export default function ValorAprimoradoModerno() {
         },
         {
             question: "Vocês trabalham com financiamento imobiliário?",
-            answer: "Sim, temos parcerias com as principais instituições financeiras da região. Auxiliamos nossos clientes em todo processo: pré-aprovação de crédito, documentação necessária, acompanhamento na avaliação do imóvel e liberação dos recursos. Nossa equipe especializada orienta sobre as melhores condições disponíveis no mercado."
+            answer: "Sim, temos parcerias com instituições financeiras da região. Para clientes em negociações conosco, auxiliamos com orientações sobre documentação, processo de aprovação e avaliação do imóvel. Nossa experiência ajuda a tornar o processo de financiamento mais fluido."
         },
         {
             question: "Como é feita a avaliação e precificação de um imóvel?",
@@ -118,7 +119,7 @@ export default function ValorAprimoradoModerno() {
         },
         {
             question: "Quais documentos são necessários para vender meu imóvel?",
-            answer: "Documentação essencial: escritura ou registro de imóvel, certidões negativas (federal, estadual, municipal), IPTU quitado, declaração de confrontantes, planta baixa aprovada, habite-se (quando aplicável) e documentos pessoais. Nossa equipe jurídica verifica toda documentação e orienta sobre eventuais regularizações necessárias."
+            answer: "Documentação essencial: escritura ou registro de imóvel, certidões negativas (federal, estadual, municipal), IPTU quitado, declaração de confrontantes, planta baixa aprovada, habite-se (quando aplicável) e documentos pessoais. Para imóveis anunciados conosco, auxiliamos na verificação documental e orientamos sobre regularizações quando necessário."
         },
         {
             question: "Como é calculada a comissão de corretagem?",
@@ -126,11 +127,11 @@ export default function ValorAprimoradoModerno() {
         },
         {
             question: "Vocês oferecem consultoria para investidores?",
-            answer: "Sim, oferecemos consultoria especializada para investidores imobiliários, incluindo: análise de potencial de valorização, estudo de rentabilidade, identificação de oportunidades no mercado local, orientação sobre estratégias de investimento e acompanhamento pós-compra."
+            answer: "Sim, atendemos investidores interessados no mercado imobiliário de Guararema e região. Compartilhamos nossa expertise local sobre potencial de valorização, características do mercado e oportunidades disponíveis. Nosso conhecimento da região ajuda investidores a tomar decisões mais informadas."
         },
         {
             question: "Como garantem a segurança jurídica das transações?",
-            answer: "Mantemos parceria com escritório jurídico especializado em direito imobiliário, realizamos due diligence completa da documentação, verificamos registros cartoriais, analisamos ônus e gravames, e acompanhamos todo processo até a escrituração final, garantindo máxima segurança jurídica."
+            answer: "Orientamos sobre todas as verificações documentais importantes e acompanhamos o processo de perto. Para transações intermediadas por nós, auxiliamos na identificação de possíveis pendências, sempre trabalhando com transparência e atenção aos detalhes para sua segurança."
         },
         {
             question: "Atendem imóveis em outras cidades da região?",
@@ -138,11 +139,11 @@ export default function ValorAprimoradoModerno() {
         },
         {
             question: "Qual o suporte oferecido pós-venda?",
-            answer: "Nosso relacionamento não termina com a venda. Oferecemos suporte contínuo incluindo: orientações sobre escrituração, acompanhamento em cartório, esclarecimento sobre documentação, indicação de profissionais especializados (advogados, engenheiros, arquitetos) e assessoria para futuras transações imobiliárias."
+            answer: "Mantemos relacionamento de longo prazo com nossos clientes. Oferecemos orientações sobre o processo de escrituração, esclarecimentos sobre documentação quando necessário e indicação de profissionais qualificados da região. Estamos disponíveis para futuras consultorias imobiliárias."
         },
         {
-            question: "Como funciona a avaliação gratuita do meu imóvel?",
-            answer: "Nossa avaliação gratuita inclui: visita técnica presencial, análise comparativa de mercado, verificação documental prévia, relatório detalhado com precificação sugerida e apresentação de estratégia de marketing personalizada. O processo é realizado por corretor qualificado e sem compromisso de exclusividade."
+            question: "Como funciona a avaliação do meu imóvel?",
+            answer: "Para imóveis anunciados conosco, oferecemos avaliação completa incluindo análise de mercado e precificação estratégica. Nossa consultoria ajuda a posicionar seu imóvel de forma competitiva, considerando características, localização e momento do mercado regional."
         }
     ];
 
@@ -254,7 +255,7 @@ export default function ValorAprimoradoModerno() {
             </section>
 
             {/* Company Section - Strategic Implementation */}
-            <section className="py-20 lg:py-24 bg-white relative overflow-hidden isolate">
+            <section className="py-12 md:py-20 lg:py-24 bg-white relative overflow-hidden isolate">
                 {/* Advanced Background System */}
                 <div className="absolute inset-0 -z-10">
                     {/* Gradient mesh */}
@@ -263,10 +264,10 @@ export default function ValorAprimoradoModerno() {
                     <div className="absolute inset-0 opacity-[0.015] mix-blend-overlay bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0wIDBoMzAwdjMwMEgweiIgZmlsdGVyPSJ1cmwoI2EpIiBvcGFjaXR5PSIuMDUiLz48L3N2Zz4=')]" />
                 </div>
                 
-                <div className="container mx-auto px-6 lg:px-8 relative">
+                <div className="container mx-auto px-4 md:px-6 lg:px-8 relative">
                     <div className="max-w-7xl mx-auto">
                         {/* Grid with aspect ratio preservation */}
-                        <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+                        <div className="grid lg:grid-cols-12 gap-8 md:gap-10 lg:gap-14 items-center">
                             {/* Image Container - 7 columns */}
                             <motion.div
                                 initial={{ opacity: 0, x: -30 }}
@@ -394,7 +395,7 @@ export default function ValorAprimoradoModerno() {
                                     ease: [0.25, 0.46, 0.45, 0.94],
                                     delay: 0.15
                                 }}
-                                className="lg:col-span-5 space-y-8"
+                                className="lg:col-span-5 space-y-6 md:space-y-8"
                             >
                                 {/* Eyebrow with icon */}
                                 <motion.div
@@ -402,28 +403,28 @@ export default function ValorAprimoradoModerno() {
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ delay: 0.35, duration: 0.5 }}
-                                    className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-amber-50 border border-amber-200/50"
+                                    className="inline-flex items-center gap-2 md:gap-2.5 px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-amber-50 border border-amber-200/50"
                                 >
                                     <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
                                     <span className="text-xs font-semibold text-amber-900 tracking-wider uppercase">Infraestrutura Local</span>
                                 </motion.div>
 
                                 {/* Title with gradient */}
-                                <div className="space-y-4">
-                                    <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 leading-[1.15] tracking-tight">
+                                <div className="space-y-3 md:space-y-4">
+                                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 leading-[1.15] tracking-tight">
                                         Escritório no coração de{' '}
                                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700">
                                             Guararema
                                         </span>
                                     </h2>
-                                    <p className="text-base text-slate-600 leading-relaxed">
+                                    <p className="text-sm md:text-base text-slate-600 leading-relaxed">
                                         Visite nosso escritório no centro de Guararema para atendimento presencial 
                                         com consultores especializados no mercado imobiliário local.
                                     </p>
                                 </div>
 
-                                {/* Enhanced metrics grid */}
-                                <div className="grid grid-cols-2 gap-5 pt-2">
+                                {/* Enhanced metrics grid - Collapsible on Mobile */}
+                                <div className="hidden md:grid grid-cols-2 gap-5 pt-2">
                                     {[
                                         {
                                             id: 'experience',
@@ -517,17 +518,101 @@ export default function ValorAprimoradoModerno() {
                                     )}
                                 </div>
 
+                                {/* Mobile Collapsible Metrics */}
+                                <div className="md:hidden">
+                                    <button
+                                        onClick={() => setShowMetrics(!showMetrics)}
+                                        className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-xl hover:border-amber-300 transition-all duration-300 group"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
+                                                <TrendingUp className="w-5 h-5 text-white" />
+                                            </div>
+                                            <div className="text-left">
+                                                <p className="text-sm font-bold text-slate-900">Indicadores</p>
+                                                <p className="text-xs text-slate-600">Toque para ver detalhes</p>
+                                            </div>
+                                        </div>
+                                        <motion.div
+                                            animate={{ rotate: showMetrics ? 180 : 0 }}
+                                            transition={{ duration: 0.3 }}
+                                        >
+                                            <ChevronDown className="w-5 h-5 text-amber-600" />
+                                        </motion.div>
+                                    </button>
+
+                                    <AnimatePresence>
+                                        {showMetrics && (
+                                            <motion.div
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: "auto", opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] as any }}
+                                                className="overflow-hidden"
+                                            >
+                                                <div className="grid grid-cols-2 gap-3 pt-4">
+                                                    {[
+                                                        {
+                                                            id: 'experience',
+                                                            icon: <Calendar className="w-4 h-4" />,
+                                                            value: "15",
+                                                            unit: "anos",
+                                                            label: "De atuação local",
+                                                            gradient: "from-blue-500 to-cyan-500"
+                                                        },
+                                                        {
+                                                            id: 'focus',
+                                                            icon: <MapPin className="w-4 h-4" />,
+                                                            value: "Guararema",
+                                                            unit: "",
+                                                            label: "Foco regional",
+                                                            gradient: "from-amber-500 to-orange-500"
+                                                        }
+                                                    ].map((metric, index) => (
+                                                        <motion.div
+                                                            key={metric.id}
+                                                            initial={{ opacity: 0, scale: 0.9 }}
+                                                            animate={{ opacity: 1, scale: 1 }}
+                                                            transition={{ delay: index * 0.1 }}
+                                                            className="relative"
+                                                        >
+                                                            <div className="relative p-4 rounded-xl bg-white border-2 border-slate-100 shadow-sm">
+                                                                <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${metric.gradient} text-white flex items-center justify-center mb-3`}>
+                                                                    {metric.icon}
+                                                                </div>
+                                                                <div className="flex items-baseline gap-1 mb-1">
+                                                                    <span className="text-xl font-bold text-slate-900 tracking-tight">
+                                                                        {metric.value}
+                                                                    </span>
+                                                                    {metric.unit && (
+                                                                        <span className="text-xs font-medium text-slate-500">
+                                                                            {metric.unit}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <p className="text-xs font-medium text-slate-600 leading-tight">
+                                                                    {metric.label}
+                                                                </p>
+                                                            </div>
+                                                        </motion.div>
+                                                    ))}
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+
                                 {/* Enhanced CTA */}
                                 <motion.div
                                     initial={{ opacity: 0, y: 10 }}
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ delay: 0.8, duration: 0.5 }}
-                                    className="pt-4 flex items-center gap-4"
+                                    className="pt-2 md:pt-4 flex items-center gap-3 md:gap-4"
                                 >
                                     <a
                                         href="/contato"
-                                        className="group/cta inline-flex items-center gap-2.5 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold text-sm shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/30 transition-all duration-300"
+                                        className="group/cta inline-flex items-center gap-2 md:gap-2.5 px-5 md:px-6 py-2.5 md:py-3 rounded-lg md:rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold text-sm shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/30 transition-all duration-300"
                                         onClick={() => {
                                             if (typeof window !== 'undefined') {
                                                 window.dataLayer = window.dataLayer || [];
@@ -581,19 +666,19 @@ export default function ValorAprimoradoModerno() {
                 </div>
             </section>
 
-            {/* FAQ Section */}
-            <section className="py-24 bg-gradient-to-br from-slate-50 via-white to-amber-50/20 relative overflow-hidden">
+            {/* FAQ Section - Modern Grid Layout */}
+            <section className="py-16 md:py-24 bg-gradient-to-br from-slate-50 via-white to-amber-50/20 relative overflow-hidden">
                 {/* Decorative Elements */}
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
                 
-                <div className="container mx-auto px-6 relative">
-                    <div className="max-w-4xl mx-auto">
+                <div className="container mx-auto px-4 md:px-6 relative">
+                    <div className="max-w-7xl mx-auto">
                         <motion.div
                             initial={{ opacity: 0, y: -20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                            className="text-center mb-16"
+                            className="text-center mb-12 md:mb-16"
                         >
                             {/* Professional Badge */}
                             <motion.div 
@@ -601,69 +686,63 @@ export default function ValorAprimoradoModerno() {
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.5, delay: 0.2 }}
-                                className="inline-flex items-center gap-2.5 px-6 py-3 mb-8 bg-white border-2 border-slate-200 rounded-full shadow-lg hover:shadow-xl hover:border-amber-300 transition-all duration-300 group"
+                                className="inline-flex items-center gap-2 md:gap-2.5 px-4 md:px-6 py-2 md:py-3 mb-6 md:mb-8 bg-white border-2 border-slate-200 rounded-full shadow-lg hover:shadow-xl hover:border-amber-300 transition-all duration-300 group"
                             >
-                                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 animate-pulse" />
-                                <Shield className="w-4.5 h-4.5 text-slate-700 group-hover:text-amber-600 transition-colors" />
-                                <span className="text-sm font-semibold text-slate-700 tracking-wide uppercase letter-spacing-widest">
-                                    garantias de segurança
+                                <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 animate-pulse" />
+                                <Shield className="w-4 h-4 md:w-4.5 md:h-4.5 text-slate-700 group-hover:text-amber-600 transition-colors" />
+                                <span className="text-xs md:text-sm font-semibold text-slate-700 tracking-wide uppercase">
+                                    Dúvidas Frequentes
                                 </span>
-                                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 animate-pulse" />
+                                <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 animate-pulse" />
                             </motion.div>
 
                             {/* Main Title */}
-                            <h2 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-slate-900 mb-6 leading-[1.1] tracking-tight">
-                                Perguntas Frequentes e
-                                <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700">
-                                    Orientações Especializadas
+                            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-4 md:mb-6 leading-[1.1] tracking-tight px-4">
+                                Orientações
+                                <span className="block mt-1 md:mt-2 text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700">
+                                    Especializadas
                                 </span>
                             </h2>
 
                             {/* Subtitle with Institutional Tone */}
-                            <p className="text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed font-light">
-                                Informações precisas e transparentes para suas decisões imobiliárias.
-                                <span className="block mt-3 text-base">
-                                    Expertise consolidada de <strong className="font-semibold text-slate-800">15 anos</strong> atendendo o mercado de Guararema e região
+                            <p className="text-base md:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed font-light px-4">
+                                Informações precisas e transparentes para suas decisões imobiliárias
+                                <span className="hidden md:block mt-2 md:mt-3 text-sm md:text-base">
+                                    Expertise consolidada de <strong className="font-semibold text-slate-800">15 anos</strong> em Guararema e região
                                 </span>
                             </p>
-
-                            {/* Decorative Line */}
-                            <div className="flex items-center justify-center gap-3 mt-8">
-                                <div className="h-px w-20 bg-gradient-to-r from-transparent via-amber-300 to-transparent" />
-                                <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                                <div className="h-px w-20 bg-gradient-to-r from-transparent via-amber-300 to-transparent" />
-                            </div>
                         </motion.div>
 
-                        <div className="grid gap-6">
+                        {/* Modern Masonry Grid - 2 columns on desktop, 1 on mobile */}
+                        <div className="grid md:grid-cols-2 gap-4 md:gap-6">
                             {faqItems.map((item, index) => (
                                 <motion.div
                                     key={index}
                                     initial={{ opacity: 0, y: 20 }}
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true, margin: "-50px" }}
-                                    transition={{ duration: 0.5, delay: index * 0.05 }}
-                                    className="bg-white rounded-2xl border-2 border-gray-200 shadow-lg hover:shadow-xl hover:border-amber-300 transition-all duration-300 overflow-hidden group"
+                                    transition={{ duration: 0.5, delay: index * 0.03 }}
+                                    className="bg-white rounded-xl md:rounded-2xl border border-gray-200 shadow-md hover:shadow-xl hover:border-amber-300 transition-all duration-300 overflow-hidden group"
                                 >
                                     <button
-                                        className="flex justify-between items-start w-full p-6 lg:p-8 text-left hover:bg-gradient-to-r hover:from-amber-50/50 hover:to-orange-50/30 transition-all duration-300"
+                                        className="flex justify-between items-start w-full p-4 md:p-6 text-left hover:bg-gradient-to-r hover:from-amber-50/50 hover:to-orange-50/30 transition-all duration-300"
                                         onClick={() => setActiveQuestion(activeQuestion === index ? null : index)}
                                     >
-                                        <div className="flex items-start gap-4 flex-1">
-                                            <div className="w-10 h-10 bg-gradient-to-br from-amber-100 to-orange-100 rounded-xl flex items-center justify-center flex-shrink-0 mt-1 group-hover:scale-110 transition-transform">
-                                                <span className="text-amber-700 font-bold text-base">{index + 1}</span>
+                                        <div className="flex items-start gap-3 flex-1">
+                                            <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
+                                                <span className="text-amber-700 font-bold text-sm md:text-base">{index + 1}</span>
                                             </div>
-                                            <span className="font-bold text-gray-900 text-lg leading-relaxed group-hover:text-amber-700 transition-colors duration-300">
+                                            <span className="font-bold text-gray-900 text-sm md:text-base lg:text-lg leading-snug md:leading-relaxed group-hover:text-amber-700 transition-colors duration-300">
                                                 {item.question}
                                             </span>
                                         </div>
                                         <motion.div
                                             animate={{ rotate: activeQuestion === index ? 180 : 0 }}
                                             transition={{ duration: 0.3 }}
-                                            className="flex-shrink-0 ml-4"
+                                            className="flex-shrink-0 ml-3"
                                         >
-                                            <div className="w-10 h-10 bg-gradient-to-br from-amber-100 to-orange-100 rounded-xl flex items-center justify-center group-hover:from-amber-200 group-hover:to-orange-200 transition-colors duration-300">
-                                                <ChevronDown className="w-5 h-5 text-amber-700" />
+                                            <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg md:rounded-xl flex items-center justify-center group-hover:from-amber-200 group-hover:to-orange-200 transition-colors duration-300">
+                                                <ChevronDown className="w-4 h-4 md:w-5 md:h-5 text-amber-700" />
                                             </div>
                                         </motion.div>
                                     </button>
@@ -676,22 +755,11 @@ export default function ValorAprimoradoModerno() {
                                                 transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] as any }}
                                                 className="overflow-hidden"
                                             >
-                                                <div className="px-6 lg:px-8 pb-6 lg:pb-8">
-                                                    <div className="ml-14 border-t-2 border-amber-200 pt-6">
-                                                        <p className="text-gray-800 text-base leading-relaxed font-medium">
+                                                <div className="px-4 md:px-6 pb-4 md:pb-6">
+                                                    <div className="ml-0 md:ml-13 border-t border-amber-200 pt-4">
+                                                        <p className="text-gray-700 text-sm md:text-base leading-relaxed">
                                                             {item.answer}
                                                         </p>
-                                                        <motion.div
-                                                            initial={{ opacity: 0, y: 10 }}
-                                                            animate={{ opacity: 1, y: 0 }}
-                                                            transition={{ delay: 0.2 }}
-                                                            className="mt-5 flex items-center gap-2 text-amber-600"
-                                                        >
-                                                            <Clock className="w-4 h-4" />
-                                                            <span className="text-sm font-semibold">
-                                                                Precisa de mais detalhes? Fale com um especialista
-                                                            </span>
-                                                        </motion.div>
                                                     </div>
                                                 </div>
                                             </motion.div>
@@ -701,35 +769,39 @@ export default function ValorAprimoradoModerno() {
                             ))}
                         </div>
 
-                        {/* Call to action para mais informações */}
-                        <div
-                            className="text-center mt-12"
+                        {/* Call to action - Mobile Optimized */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.4 }}
+                            className="text-center mt-8 md:mt-12"
                         >
-                            <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-8 text-white">
-                                <h3 className="text-2xl font-bold mb-4">
+                            <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl md:rounded-2xl p-6 md:p-8 text-white">
+                                <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">
                                     Não encontrou sua resposta?
                                 </h3>
-                                <p className="text-amber-100 mb-6 text-lg">
+                                <p className="text-amber-50 mb-5 md:mb-6 text-sm md:text-lg">
                                     Nossa equipe está pronta para esclarecer todas as suas dúvidas
                                 </p>
-                                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
                                     <a
                                         href="tel:+5511981845016"
-                                        className="inline-flex items-center px-6 py-3 bg-white text-amber-700 font-semibold rounded-lg hover:bg-amber-50 transition-all duration-200 shadow-lg hover:scale-[1.05] active:scale-[0.95]"
+                                        className="inline-flex items-center justify-center px-5 md:px-6 py-2.5 md:py-3 bg-white text-amber-700 font-semibold rounded-lg hover:bg-amber-50 transition-all duration-200 shadow-lg hover:scale-[1.05] active:scale-[0.95] text-sm md:text-base"
                                     >
-                                        <Phone className="w-5 h-5 mr-2" />
+                                        <Phone className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                                         Ligar Agora
                                     </a>
                                     <a
                                         href="/contato"
-                                        className="inline-flex items-center px-6 py-3 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 transition-all duration-200 shadow-lg border-2 border-white/20 hover:scale-[1.05] active:scale-[0.95]"
+                                        className="inline-flex items-center justify-center px-5 md:px-6 py-2.5 md:py-3 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 transition-all duration-200 shadow-lg border-2 border-white/20 hover:scale-[1.05] active:scale-[0.95] text-sm md:text-base"
                                     >
-                                        <Mail className="w-5 h-5 mr-2" />
+                                        <Mail className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                                         Enviar Mensagem
                                     </a>
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
                     </div>
                 </div>
             </section>

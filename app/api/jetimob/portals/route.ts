@@ -44,11 +44,13 @@ export async function POST(request: NextRequest) {
         let message = ''
 
         if (action === 'sync') {
-            success = await jetimobService.syncPropertyToPortals(propertyId, portalIds)
-            message = success ? 'Imóvel sincronizado com sucesso' : 'Erro ao sincronizar imóvel'
+            await jetimobService.syncPropertyToPortals(propertyId, portalIds)
+            success = true
+            message = 'Operação de sincronização concluída com sucesso'
         } else if (action === 'unsync') {
-            success = await jetimobService.unsyncPropertyFromPortals(propertyId, portalIds)
-            message = success ? 'Imóvel removido dos portais com sucesso' : 'Erro ao remover imóvel dos portais'
+            await jetimobService.unsyncPropertyFromPortals(propertyId, portalIds)
+            success = true
+            message = 'Operação de remoção de sincronização concluída com sucesso'
         } else {
             return NextResponse.json(
                 { success: false, error: 'Action deve ser "sync" ou "unsync"' },

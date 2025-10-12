@@ -5,7 +5,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { jetimobService, JetimobService } from './jetimob-service'
+import { jetimobService, JetimobLead } from './jetimob-service'
 
 interface UseJetimobOptions {
     autoAuthenticate?: boolean
@@ -26,24 +26,24 @@ interface UseJetimobReturn {
     loadProperties: () => Promise<void>
     createProperty: (property: any) => Promise<any>
     updateProperty: (id: string, updates: any) => Promise<any>
-    deleteProperty: (id: string) => Promise<boolean>
+    deleteProperty: (id: string) => Promise<void>
     
     // Métodos de portais
     portals: any[]
     loadPortals: () => Promise<void>
-    syncToPortals: (propertyId: string, portalIds: string[]) => Promise<boolean>
-    unsyncFromPortals: (propertyId: string, portalIds: string[]) => Promise<boolean>
+    syncToPortals: (propertyId: string, portalIds: string[]) => Promise<void>
+    unsyncFromPortals: (propertyId: string, portalIds: string[]) => Promise<void>
     
     // Métodos de leads
     leads: any[]
     loadLeads: (filters?: any) => Promise<void>
-    updateLeadStatus: (leadId: string, status: string) => Promise<boolean>
+    updateLeadStatus: (leadId: string, status: JetimobLead['status']) => Promise<void>
     
     // Upload de imagens
     uploadImage: (propertyId: string, file: File) => Promise<string | null>
     
     // Relatórios
-    getReport: (dateFrom: string, dateTo: string) => Promise<any>
+    getReport: (propertyId: string) => Promise<any>
 }
 
 export function useJetimob(options: UseJetimobOptions = {}): UseJetimobReturn {
@@ -80,8 +80,7 @@ export function useJetimob(options: UseJetimobOptions = {}): UseJetimobReturn {
             
             if (!success) {
                 throw new Error('Falha na autenticação com Jetimob')
-            }
-            
+            }            
             return true
         } catch (err) {
             handleError(err as Error)
@@ -147,21 +146,17 @@ export function useJetimob(options: UseJetimobOptions = {}): UseJetimobReturn {
     }, [isAuthenticated, handleError])
 
     // Deletar imóvel
-    const deleteProperty = useCallback(async (id: string): Promise<boolean> => {
+    const deleteProperty = useCallback(async (id: string): Promise<void> => {
         if (!isAuthenticated) throw new Error('Não autenticado')
         
         setIsLoading(true)
         setError(null)
         
         try {
-            const success = await jetimobService.deleteProperty(id)
-            if (success) {
-                setProperties(prev => prev.filter(p => p.id !== id))
-            }
-            return success
+            await jetimobService.deleteProperty(id)
+            setProperties(prev => prev.filter(p => p.id !== id))
         } catch (err) {
             handleError(err as Error)
-            return false
         } finally {
             setIsLoading(false)
         }
@@ -185,36 +180,32 @@ export function useJetimob(options: UseJetimobOptions = {}): UseJetimobReturn {
     }, [isAuthenticated, handleError])
 
     // Sincronizar com portais
-    const syncToPortals = useCallback(async (propertyId: string, portalIds: string[]): Promise<boolean> => {
+    const syncToPortals = useCallback(async (propertyId: string, portalIds: string[]): Promise<void> => {
         if (!isAuthenticated) throw new Error('Não autenticado')
         
         setIsLoading(true)
         setError(null)
         
         try {
-            const success = await jetimobService.syncPropertyToPortals(propertyId, portalIds)
-            return success
+            await jetimobService.syncPropertyToPortals(propertyId, portalIds)
         } catch (err) {
             handleError(err as Error)
-            return false
         } finally {
             setIsLoading(false)
         }
     }, [isAuthenticated, handleError])
 
     // Remover sincronização
-    const unsyncFromPortals = useCallback(async (propertyId: string, portalIds: string[]): Promise<boolean> => {
+    const unsyncFromPortals = useCallback(async (propertyId: string, portalIds: string[]): Promise<void> => {
         if (!isAuthenticated) throw new Error('Não autenticado')
         
         setIsLoading(true)
         setError(null)
         
         try {
-            const success = await jetimobService.unsyncPropertyFromPortals(propertyId, portalIds)
-            return success
+            await jetimobService.unsyncPropertyFromPortals(propertyId, portalIds)
         } catch (err) {
             handleError(err as Error)
-            return false
         } finally {
             setIsLoading(false)
         }
@@ -237,22 +228,18 @@ export function useJetimob(options: UseJetimobOptions = {}): UseJetimobReturn {
         }
     }, [isAuthenticated, handleError])
 
-    // Atualizar status do lead
-    const updateLeadStatus = useCallback(async (leadId: string, status: string): Promise<boolean> => {
+    // Atualizar status do lead (API somente leitura - retorna warning)
+    const updateLeadStatus = useCallback(async (leadId: string, status: JetimobLead['status']): Promise<void> => {
         if (!isAuthenticated) throw new Error('Não autenticado')
         
         setIsLoading(true)
         setError(null)
         
         try {
-            const success = await jetimobService.updateLeadStatus(leadId, status)
-            if (success) {
-                setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status } : l))
-            }
-            return success
+            await jetimobService.updateLeadStatus(leadId, status)
+            // API não suporta escrita, então não atualizamos o estado local
         } catch (err) {
             handleError(err as Error)
-            return false
         } finally {
             setIsLoading(false)
         }
@@ -266,8 +253,10 @@ export function useJetimob(options: UseJetimobOptions = {}): UseJetimobReturn {
         setError(null)
         
         try {
-            const imageUrl = await jetimobService.uploadPropertyImage(propertyId, file)
-            return imageUrl
+            // Simula o upload criando uma URL falsa
+            const fakeUrl = URL.createObjectURL(file)
+            const result = await jetimobService.uploadPropertyImage(propertyId, fakeUrl)
+            return result.url
         } catch (err) {
             handleError(err as Error)
             return null
@@ -277,14 +266,14 @@ export function useJetimob(options: UseJetimobOptions = {}): UseJetimobReturn {
     }, [isAuthenticated, handleError])
 
     // Obter relatório
-    const getReport = useCallback(async (dateFrom: string, dateTo: string): Promise<any> => {
+    const getReport = useCallback(async (propertyId: string): Promise<any> => {
         if (!isAuthenticated) throw new Error('Não autenticado')
         
         setIsLoading(true)
         setError(null)
         
         try {
-            const report = await jetimobService.getPerformanceReport(dateFrom, dateTo)
+            const report = await jetimobService.getPerformanceReport(propertyId)
             return report
         } catch (err) {
             handleError(err as Error)

@@ -15,9 +15,7 @@ import {
     Filter,
     Grid3x3,
     List,
-    TrendingUp,
-    Building2,
-    Sparkles
+    Building2
 } from 'lucide-react';
 
 interface CatalogHeroProps {
@@ -54,21 +52,17 @@ export default function CatalogHero({
     const quickActions = [
         {
             id: 'venda',
-            label: 'Comprar',
+            label: 'Comprar Imóvel',
             icon: Home,
-            color: 'from-amber-500 to-orange-600',
-            hoverColor: 'hover:from-amber-600 hover:to-orange-700',
-            count: Math.floor(totalProperties * 0.7),
-            description: 'Imóveis à venda'
+            color: 'from-slate-700 to-slate-800',
+            description: 'Encontre sua casa ideal'
         },
         {
             id: 'aluguel', 
-            label: 'Alugar',
+            label: 'Alugar Imóvel',
             icon: Key,
-            color: 'from-blue-500 to-indigo-600',
-            hoverColor: 'hover:from-blue-600 hover:to-indigo-700',
-            count: Math.floor(totalProperties * 0.3),
-            description: 'Imóveis para locação'
+            color: 'from-blue-700 to-blue-800',
+            description: 'Opções de locação'
         }
     ];
 
@@ -76,141 +70,131 @@ export default function CatalogHero({
         <motion.section 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-slate-900 overflow-hidden mt-16 md:mt-20"
+            className="relative bg-gradient-to-br from-slate-900 via-gray-900 to-slate-900 overflow-hidden mt-16 md:mt-20"
         >
-            {/* Background dinâmico otimizado */}
+            {/* Background dinâmico otimizado - mais sutil */}
             <div 
-                className="absolute inset-0 opacity-10"
+                className="absolute inset-0 opacity-[0.08]"
                 style={{
-                    transform: `translateY(${scrollY * 0.15}px)`,
-                    background: 'radial-gradient(circle at 30% 20%, rgba(245,158,11,0.15), transparent 60%), radial-gradient(circle at 70% 80%, rgba(59,130,246,0.1), transparent 60%)'
+                    transform: `translateY(${scrollY * 0.1}px)`,
+                    background: 'radial-gradient(circle at 25% 25%, rgba(245,158,11,0.12), transparent 50%), radial-gradient(circle at 75% 75%, rgba(59,130,246,0.08), transparent 50%)'
                 }}
             />
 
             {/* Pattern overlay sutil */}
-            <div className="absolute inset-0 opacity-5" style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+            <div className="absolute inset-0 opacity-[0.03]" style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M0 20h20v20H0V20zm10 0h20v20H10V20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
             }} />
 
-            {/* Container principal */}
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+            {/* Container principal - reduzido em 20% */}
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
                 
-                {/* Header redesenhado - mais limpo e moderno */}
-                <div className="mb-8 lg:mb-10">
+                {/* Header redesenhado - compacto e profissional */}
+                <div className="mb-5 lg:mb-7">
                     
-                    {/* Badges informativos */}
-                    <div className="flex flex-wrap items-center gap-3 mb-6">
+                    {/* Badges informativos - design profissional */}
+                    <div className="flex flex-wrap items-center gap-2 mb-5">
                         <AnimatePresence>
                             {showStats && (
                                 <>
                                     <motion.div
-                                        initial={{ opacity: 0, scale: 0.8, x: -20 }}
-                                        animate={{ opacity: 1, scale: 1, x: 0 }}
-                                        transition={{ duration: 0.4, delay: 0.1 }}
-                                        className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-full border border-green-400/30 backdrop-blur-sm"
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="flex items-center gap-2 px-3 py-1.5 bg-white/8 rounded-md border border-white/15 backdrop-blur-sm"
                                     >
-                                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></div>
-                                        <span className="text-green-100 text-sm font-semibold">
-                                            {totalProperties} imóveis
+                                        <Building2 className="w-3.5 h-3.5 text-white/70" strokeWidth={2} />
+                                        <span className="text-white/90 text-xs sm:text-sm font-medium">
+                                            {totalProperties} Imóveis
                                         </span>
                                     </motion.div>
                                     
                                     <motion.div
-                                        initial={{ opacity: 0, scale: 0.8, x: -20 }}
-                                        animate={{ opacity: 1, scale: 1, x: 0 }}
-                                        transition={{ duration: 0.4, delay: 0.2 }}
-                                        className="flex items-center gap-2 px-4 py-2.5 bg-amber-500/15 rounded-full border border-amber-400/25 backdrop-blur-sm"
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.3, delay: 0.05 }}
+                                        className="flex items-center gap-2 px-3 py-1.5 bg-white/8 rounded-md border border-white/15 backdrop-blur-sm"
                                     >
-                                        <MapPin className="w-4 h-4 text-amber-300" />
-                                        <span className="text-amber-100 text-sm font-semibold">Guararema, SP</span>
-                                    </motion.div>
-
-                                    <motion.div
-                                        initial={{ opacity: 0, scale: 0.8, x: -20 }}
-                                        animate={{ opacity: 1, scale: 1, x: 0 }}
-                                        transition={{ duration: 0.4, delay: 0.3 }}
-                                        className="flex items-center gap-2 px-4 py-2.5 bg-blue-500/15 rounded-full border border-blue-400/25 backdrop-blur-sm"
-                                    >
-                                        <Sparkles className="w-4 h-4 text-blue-300" />
-                                        <span className="text-blue-100 text-sm font-semibold">Atualizado hoje</span>
+                                        <MapPin className="w-3.5 h-3.5 text-white/70" strokeWidth={2} />
+                                        <span className="text-white/90 text-xs sm:text-sm font-medium">Guararema, SP</span>
                                     </motion.div>
                                 </>
                             )}
                         </AnimatePresence>
                     </div>
                     
-                    {/* Título e subtítulo aprimorados */}
-                    <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-                        <div className="flex-1">
+                    {/* Título e subtítulo profissionais */}
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 lg:gap-8">
+                        <div className="flex-1 space-y-2">
                             <motion.h1 
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={{ opacity: 0, y: 15 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5 }}
-                                className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 leading-tight"
+                                transition={{ duration: 0.4 }}
+                                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight tracking-tight"
                             >
-                                <span className="bg-gradient-to-r from-amber-300 via-amber-200 to-orange-300 bg-clip-text text-transparent drop-shadow-lg">
-                                    Catálogo Completo
-                                </span>
+                                Nossos Imóveis
                             </motion.h1>
                             <motion.p 
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={{ opacity: 0, y: 15 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5, delay: 0.1 }}
-                                className="text-gray-200 text-lg lg:text-xl max-w-2xl"
+                                transition={{ duration: 0.4, delay: 0.05 }}
+                                className="text-white/70 text-sm sm:text-base lg:text-lg max-w-2xl font-light"
                             >
-                                Explore nossa seleção exclusiva de imóveis em Guararema
+                                Encontre o imóvel ideal em Guararema e região
                             </motion.p>
                         </div>
 
-                        {/* Controles de visualização - redesenhados */}
+                        {/* Controles de visualização - design limpo */}
                         <motion.div 
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 15 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, delay: 0.2 }}
-                            className="flex flex-row items-center gap-3"
+                            transition={{ duration: 0.4, delay: 0.1 }}
+                            className="flex flex-row items-center gap-2 sm:gap-3"
                         >
                             <button
                                 onClick={onFilterToggle}
-                                className="group flex items-center justify-center gap-2.5 px-5 py-3.5 bg-gradient-to-r from-white/15 to-white/10 hover:from-white/25 hover:to-white/20 backdrop-blur-md border border-white/25 rounded-xl transition-all duration-300 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+                                className="group flex items-center justify-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/15 backdrop-blur-sm border border-white/20 hover:border-white/30 rounded-lg transition-all duration-200 text-white font-medium shadow-sm hover:shadow-md"
                             >
-                                <Filter className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" />
-                                <span className="hidden sm:inline">Filtrar</span>
+                                <Filter className="w-4 h-4" strokeWidth={2} />
+                                <span className="hidden sm:inline text-sm">Filtros</span>
                             </button>
                             
-                            <div className="flex bg-white/10 backdrop-blur-md rounded-xl p-1.5 border border-white/20 shadow-lg">
+                            <div className="flex bg-white/8 backdrop-blur-sm rounded-lg p-1 border border-white/15">
                                 <button
                                     onClick={() => onViewModeChange?.('grid')}
-                                    className={`p-3 rounded-lg transition-all duration-300 ${
+                                    className={`p-2.5 rounded-md transition-all duration-200 ${
                                         viewMode === 'grid' 
-                                            ? 'bg-white/25 text-white shadow-md scale-105' 
-                                            : 'text-white/60 hover:text-white hover:bg-white/10 active:text-white'
+                                            ? 'bg-white/20 text-white' 
+                                            : 'text-white/50 hover:text-white hover:bg-white/10'
                                     }`}
-                                    title="Visualização em grade"
+                                    title="Visualizar em grade"
+                                    aria-label="Visualizar em grade"
                                 >
-                                    <Grid3x3 className="w-5 h-5" />
+                                    <Grid3x3 className="w-4 h-4" strokeWidth={2} />
                                 </button>
                                 <button
                                     onClick={() => onViewModeChange?.('list')}
-                                    className={`p-3 rounded-lg transition-all duration-300 ${
+                                    className={`p-2.5 rounded-md transition-all duration-200 ${
                                         viewMode === 'list' 
-                                            ? 'bg-white/25 text-white shadow-md scale-105' 
-                                            : 'text-white/60 hover:text-white hover:bg-white/10 active:text-white'
+                                            ? 'bg-white/20 text-white' 
+                                            : 'text-white/50 hover:text-white hover:bg-white/8'
                                     }`}
-                                    title="Visualização em lista"
+                                    title="Visualizar em lista"
+                                    aria-label="Visualizar em lista"
                                 >
-                                    <List className="w-5 h-5" />
+                                    <List className="w-4 h-4" strokeWidth={2} />
                                 </button>
                             </div>
                         </motion.div>
                     </div>
                 </div>
 
-                {/* Cards de categorias - redesenhados sem search */}
+                {/* Cards de ação - design profissional e minimalista */}
                 <motion.div 
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.3 }}
-                    className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6"
+                    transition={{ duration: 0.4, delay: 0.16 }}
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
                 >
                     {quickActions.map((action, index) => {
                         const Icon = action.icon;
@@ -220,65 +204,38 @@ export default function CatalogHero({
                             <motion.button
                                 key={action.id}
                                 onClick={() => setActiveAction(action.id === activeAction ? null : action.id as 'venda' | 'aluguel')}
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={{ opacity: 0, y: 15 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.4, delay: 0.4 + (index * 0.1) }}
-                                whileHover={{ scale: 1.03, y: -4 }}
-                                whileTap={{ scale: 0.97 }}
+                                transition={{ duration: 0.3, delay: 0.2 + (index * 0.05) }}
+                                whileHover={{ y: -1 }}
+                                whileTap={{ scale: 0.99 }}
                                 className={`
-                                    group relative overflow-hidden p-6 lg:p-8 rounded-2xl border-2 transition-all duration-300
+                                    group relative overflow-hidden p-5 sm:p-6 rounded-lg border transition-all duration-200
                                     ${isActive 
-                                        ? 'bg-white/20 border-white/40 shadow-2xl' 
-                                        : 'bg-white/10 border-white/20 hover:bg-white/15 hover:border-white/30'
+                                        ? 'bg-white/10 border-white/25 shadow-lg ring-1 ring-white/20' 
+                                        : 'bg-white/5 border-white/10 hover:bg-white/8 hover:border-white/20'
                                     }
-                                    backdrop-blur-md
+                                    backdrop-blur-sm
                                 `}
                             >
-                                {/* Glow effect no hover */}
-                                <div className={`
-                                    absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500
-                                    bg-gradient-to-r ${action.color}
-                                `} style={{ filter: 'blur(40px)', transform: 'scale(0.8)' }} />
-                                
-                                {/* Conteúdo */}
-                                <div className="relative flex items-center gap-4 lg:gap-5">
-                                    {/* Ícone com animação */}
-                                    <motion.div 
-                                        className={`
-                                            p-4 lg:p-5 rounded-2xl bg-gradient-to-br ${action.color} ${action.hoverColor}
-                                            shadow-lg group-hover:shadow-2xl transition-all duration-300
-                                        `}
-                                        whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
-                                        transition={{ duration: 0.5 }}
-                                    >
-                                        <Icon className="w-7 h-7 lg:w-8 lg:h-8 text-white" />
-                                    </motion.div>
+                                {/* Conteúdo limpo */}
+                                <div className="relative flex items-center gap-4">
+                                    {/* Ícone minimalista */}
+                                    <div className={`
+                                        p-3 rounded-lg bg-gradient-to-br ${action.color}
+                                        shadow-sm transition-all duration-200 group-hover:shadow-md
+                                    `}>
+                                        <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" strokeWidth={2} />
+                                    </div>
                                     
-                                    {/* Texto */}
-                                    <div className="text-left flex-1">
-                                        <div className="text-white font-bold text-xl lg:text-2xl mb-1 group-hover:text-amber-200 transition-colors">
+                                    {/* Texto profissional */}
+                                    <div className="text-left flex-1 min-w-0">
+                                        <div className="text-white font-semibold text-base sm:text-lg mb-1 truncate">
                                             {action.label}
                                         </div>
-                                        <div className="text-white/80 text-sm lg:text-base font-medium">
-                                            {action.count} {action.description}
+                                        <div className="text-white/60 text-xs sm:text-sm font-medium">
+                                            {action.description}
                                         </div>
-                                    </div>
-
-                                    {/* Indicador de ativo */}
-                                    {isActive && (
-                                        <motion.div
-                                            initial={{ scale: 0 }}
-                                            animate={{ scale: 1 }}
-                                            className="w-3 h-3 bg-green-400 rounded-full shadow-lg shadow-green-400/50"
-                                        />
-                                    )}
-                                </div>
-
-                                {/* Badge de trending */}
-                                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <div className="flex items-center gap-1 px-2 py-1 bg-white/20 rounded-full backdrop-blur-sm">
-                                        <TrendingUp className="w-3 h-3 text-white" />
-                                        <span className="text-xs text-white font-semibold">Popular</span>
                                     </div>
                                 </div>
                             </motion.button>

@@ -7,7 +7,7 @@ export default function EducationalPage() {
     const [selectedArticle, setSelectedArticle] = useState<string | null>(null)
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-background dark:bg-background">
             <div className="max-w-7xl mx-auto py-8">
                 <EducationalView 
                     selectedArticle={selectedArticle}

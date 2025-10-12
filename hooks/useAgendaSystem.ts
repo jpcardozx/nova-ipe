@@ -245,16 +245,7 @@ export function useNotifications(options: UseNotificationsOptions): UseNotificat
   const channelRef = useRef<RealtimeChannel | null>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
-  // Initialize notification sound
-  useEffect(() => {
-    if (options.playSound && typeof window !== 'undefined') {
-      audioRef.current = new Audio('/sounds/notification.mp3')
-      audioRef.current.addEventListener('error', () => {
-        console.warn('⚠️ Som de notificação não encontrado. Adicione notification.mp3 em public/sounds/')
-      })
-    }
-  }, [options.playSound])
-
+  // ✅ Define loadNotifications ANTES dos useEffect que dependem dele
   const loadNotifications = useCallback(async () => {
     // Não carregar notificações sem userId válido
     if (!options.userId) {
@@ -295,6 +286,16 @@ export function useNotifications(options: UseNotificationsOptions): UseNotificat
       setLoading(false)
     }
   }, [options.userId])
+
+  // Initialize notification sound
+  useEffect(() => {
+    if (options.playSound && typeof window !== 'undefined') {
+      audioRef.current = new Audio('/sounds/notification.mp3')
+      audioRef.current.addEventListener('error', () => {
+        console.warn('⚠️ Som de notificação não encontrado. Adicione notification.mp3 em public/sounds/')
+      })
+    }
+  }, [options.playSound])
 
   // Initial load
   useEffect(() => {

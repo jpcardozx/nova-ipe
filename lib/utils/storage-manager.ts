@@ -1,3 +1,4 @@
+
 /**
  * Gerenciador de Storage com Proteção Contra Quota Exceeded
  * 

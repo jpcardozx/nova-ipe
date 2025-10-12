@@ -82,14 +82,7 @@ export async function DELETE(
     try {
         const params = await context.params
         const propertyId = params.id
-        const success = await jetimobService.deleteProperty(propertyId)
-        
-        if (!success) {
-            return NextResponse.json(
-                { success: false, error: 'Erro ao deletar imóvel' },
-                { status: 500 }
-            )
-        }
+        await jetimobService.deleteProperty(propertyId)
 
         return NextResponse.json({
             success: true,

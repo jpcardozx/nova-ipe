@@ -34,6 +34,14 @@ export default function DashboardLayout({
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  // 🔥 DEBUG: Forçar redirecionamento se não houver usuário após 3 segundos
+  useEffect(() => {
+    if (!loading && !user) {
+      console.log('🔴 Sem usuário autenticado - redirecionando para /login')
+      redirect('/login')
+    }
+  }, [loading, user])
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">

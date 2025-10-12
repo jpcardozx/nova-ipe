@@ -77,8 +77,8 @@ export default function AnalyticsPage() {
             <div className="p-6">
                 <div className="flex items-center justify-center min-h-[400px]">
                     <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto"></div>
-                        <p className="mt-4 text-gray-600">Carregando analytics...</p>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary dark:border-primary mx-auto"></div>
+                        <p className="mt-4 text-muted-foreground dark:text-muted-foreground">Carregando analytics...</p>
                     </div>
                 </div>
             </div>
@@ -91,11 +91,11 @@ export default function AnalyticsPage() {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                            <Activity className="h-7 w-7 text-amber-600" />
+                        <h1 className="text-2xl font-bold text-foreground dark:text-foreground flex items-center gap-3">
+                            <Activity className="h-7 w-7 text-primary dark:text-primary" />
                             Performance & Analytics
                         </h1>
-                        <p className="text-gray-600 mt-2">
+                        <p className="text-muted-foreground dark:text-muted-foreground mt-2">
                             Acompanhe o desempenho e métricas do seu negócio
                         </p>
                     </div>
@@ -104,7 +104,7 @@ export default function AnalyticsPage() {
                         <select
                             value={selectedPeriod}
                             onChange={(e) => setSelectedPeriod(e.target.value as any)}
-                            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                            className="px-3 py-2 bg-background dark:bg-surface border border-border dark:border-border rounded-lg focus:ring-2 focus:ring-primary dark:focus:ring-primary focus:border-primary dark:focus:border-primary text-foreground dark:text-foreground"
                         >
                             <option value="7d">Últimos 7 dias</option>
                             <option value="30d">Últimos 30 dias</option>
@@ -116,85 +116,85 @@ export default function AnalyticsPage() {
 
                 {/* Key Metrics */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
-                    <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                    <div className="bg-surface dark:bg-surface rounded-xl p-6 border border-border dark:border-border shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between mb-4">
-                            <Eye className="h-8 w-8 text-blue-600" />
-                            <TrendingUp className="h-4 w-4 text-green-500" />
+                            <Eye className="h-8 w-8 text-blue-600 dark:text-blue-500" />
+                            <TrendingUp className="h-4 w-4 text-green-500 dark:text-green-400" />
                         </div>
-                        <div className="text-2xl font-bold text-gray-900 mb-1">
+                        <div className="text-2xl font-bold text-foreground dark:text-foreground mb-1">
                             {metrics?.totalViews.toLocaleString()}
                         </div>
-                        <div className="text-sm text-gray-600">Total de Visualizações</div>
-                        <div className="text-xs text-green-600 mt-2">+12.5% vs período anterior</div>
+                        <div className="text-sm text-muted-foreground dark:text-muted-foreground">Total de Visualizações</div>
+                        <div className="text-xs text-green-600 dark:text-green-500 mt-2">+12.5% vs período anterior</div>
                     </div>
 
-                    <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                    <div className="bg-surface dark:bg-surface rounded-xl p-6 border border-border dark:border-border shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between mb-4">
-                            <Users className="h-8 w-8 text-purple-600" />
-                            <TrendingUp className="h-4 w-4 text-green-500" />
+                            <Users className="h-8 w-8 text-purple-600 dark:text-purple-500" />
+                            <TrendingUp className="h-4 w-4 text-green-500 dark:text-green-400" />
                         </div>
-                        <div className="text-2xl font-bold text-gray-900 mb-1">
+                        <div className="text-2xl font-bold text-foreground dark:text-foreground mb-1">
                             {metrics?.totalLeads}
                         </div>
-                        <div className="text-sm text-gray-600">Leads Gerados</div>
-                        <div className="text-xs text-green-600 mt-2">+8.3% vs período anterior</div>
+                        <div className="text-sm text-muted-foreground dark:text-muted-foreground">Leads Gerados</div>
+                        <div className="text-xs text-green-600 dark:text-green-500 mt-2">+8.3% vs período anterior</div>
                     </div>
 
-                    <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                    <div className="bg-surface dark:bg-surface rounded-xl p-6 border border-border dark:border-border shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between mb-4">
-                            <DollarSign className="h-8 w-8 text-green-600" />
-                            <TrendingUp className="h-4 w-4 text-green-500" />
+                            <DollarSign className="h-8 w-8 text-green-600 dark:text-green-500" />
+                            <TrendingUp className="h-4 w-4 text-green-500 dark:text-green-400" />
                         </div>
-                        <div className="text-2xl font-bold text-gray-900 mb-1">
+                        <div className="text-2xl font-bold text-foreground dark:text-foreground mb-1">
                             {metrics?.totalSales}
                         </div>
-                        <div className="text-sm text-gray-600">Vendas Fechadas</div>
-                        <div className="text-xs text-green-600 mt-2">+15.2% vs período anterior</div>
+                        <div className="text-sm text-muted-foreground dark:text-muted-foreground">Vendas Fechadas</div>
+                        <div className="text-xs text-green-600 dark:text-green-500 mt-2">+15.2% vs período anterior</div>
                     </div>
 
-                    <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                    <div className="bg-surface dark:bg-surface rounded-xl p-6 border border-border dark:border-border shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between mb-4">
-                            <Target className="h-8 w-8 text-orange-600" />
-                            <TrendingDown className="h-4 w-4 text-red-500" />
+                            <Target className="h-8 w-8 text-orange-600 dark:text-orange-500" />
+                            <TrendingDown className="h-4 w-4 text-red-500 dark:text-red-400" />
                         </div>
-                        <div className="text-2xl font-bold text-gray-900 mb-1">
+                        <div className="text-2xl font-bold text-foreground dark:text-foreground mb-1">
                             {metrics?.conversionRate}%
                         </div>
-                        <div className="text-sm text-gray-600">Taxa de Conversão</div>
-                        <div className="text-xs text-red-600 mt-2">-2.1% vs período anterior</div>
+                        <div className="text-sm text-muted-foreground dark:text-muted-foreground">Taxa de Conversão</div>
+                        <div className="text-xs text-red-600 dark:text-red-500 mt-2">-2.1% vs período anterior</div>
                     </div>
 
-                    <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                    <div className="bg-surface dark:bg-surface rounded-xl p-6 border border-border dark:border-border shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between mb-4">
-                            <Phone className="h-8 w-8 text-blue-600" />
-                            <TrendingUp className="h-4 w-4 text-green-500" />
+                            <Phone className="h-8 w-8 text-blue-600 dark:text-blue-500" />
+                            <TrendingUp className="h-4 w-4 text-green-500 dark:text-green-400" />
                         </div>
-                        <div className="text-2xl font-bold text-gray-900 mb-1">
+                        <div className="text-2xl font-bold text-foreground dark:text-foreground mb-1">
                             {metrics?.avgResponseTime}h
                         </div>
-                        <div className="text-sm text-gray-600">Tempo Médio Resposta</div>
-                        <div className="text-xs text-green-600 mt-2">-18% vs período anterior</div>
+                        <div className="text-sm text-muted-foreground dark:text-muted-foreground">Tempo Médio Resposta</div>
+                        <div className="text-xs text-green-600 dark:text-green-500 mt-2">-18% vs período anterior</div>
                     </div>
 
-                    <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                    <div className="bg-surface dark:bg-surface rounded-xl p-6 border border-border dark:border-border shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between mb-4">
-                            <Activity className="h-8 w-8 text-yellow-600" />
-                            <TrendingUp className="h-4 w-4 text-green-500" />
+                            <Activity className="h-8 w-8 text-yellow-600 dark:text-yellow-500" />
+                            <TrendingUp className="h-4 w-4 text-green-500 dark:text-green-400" />
                         </div>
-                        <div className="text-2xl font-bold text-gray-900 mb-1">
+                        <div className="text-2xl font-bold text-foreground dark:text-foreground mb-1">
                             {metrics?.satisfaction}/5
                         </div>
-                        <div className="text-sm text-gray-600">Satisfação Média</div>
-                        <div className="text-xs text-green-600 mt-2">+0.3 vs período anterior</div>
+                        <div className="text-sm text-muted-foreground dark:text-muted-foreground">Satisfação Média</div>
+                        <div className="text-xs text-green-600 dark:text-green-500 mt-2">+0.3 vs período anterior</div>
                     </div>
                 </div>
 
                 {/* Charts Row */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                     {/* Leads & Sales Chart */}
-                    <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
-                            <BarChart3 className="h-5 w-5 text-amber-600" />
+                    <div className="bg-surface dark:bg-surface rounded-xl p-6 border border-border dark:border-border shadow-sm">
+                        <h3 className="text-lg font-semibold text-foreground dark:text-foreground mb-6 flex items-center gap-2">
+                            <BarChart3 className="h-5 w-5 text-primary dark:text-primary" />
                             Leads vs Vendas
                         </h3>
 

@@ -51,6 +51,7 @@ function LoginPageContent() {
   const [viewMode, setViewMode] = useState<ViewMode>('login')
   const [loginMode, setLoginMode] = useState<LoginMode>('dashboard')
   const [isLoading, setIsLoading] = useState(false)
+  const [loadingPhase, setLoadingPhase] = useState<string>('')
   const [showPassword, setShowPassword] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [selectedDepartment, setSelectedDepartment] = useState('')
@@ -138,6 +139,7 @@ function LoginPageContent() {
 
     setIsLoading(true)
     setErrorMessage('')
+    setLoadingPhase('Verificando credenciais...')
 
     try {
       console.log('🔄 === INICIANDO LOGIN ===')
@@ -145,13 +147,14 @@ function LoginPageContent() {
       console.log('📧 Email:', fullEmail)
       console.log('🌐 URL:', window.location.href)
       console.log('🔐 Rate Limit - Tentativas restantes:', rateLimit.attemptsLeft)
-      
+
       // ============================================================
       // AUTENTICAÇÃO UNIFICADA - Supabase Auth para ambos os modos
       // ============================================================
       console.log(`🔐 Autenticando via Supabase para ${loginMode === 'studio' ? 'Studio' : 'Dashboard'}...`)
 
       // Tentar login (sem retry - rate limit já controlado)
+      setLoadingPhase('Autenticando no servidor...')
       const { error: authError } = await supabaseSignIn(fullEmail, data.password)
 
       if (authError) {
@@ -185,23 +188,45 @@ function LoginPageContent() {
       console.log(`✅ Login ${loginMode === 'studio' ? 'Studio' : 'Dashboard'} bem-sucedido!`)
       console.log('🔐 Sessão Supabase criada automaticamente')
 
+      // Aguardar sessão ser estabelecida completamente
+      setLoadingPhase('Estabelecendo sessão segura...')
+      console.log('⏳ Aguardando sessão ser propagada...')
+      await new Promise(resolve => setTimeout(resolve, 300))
+
+      // Verificar se sessão foi realmente criada
+      setLoadingPhase('Verificando autenticação...')
+      const { data: { session: verifySession } } = await supabase.auth.getSession()
+      if (!verifySession) {
+        console.error('❌ Sessão não foi criada após login!')
+        setErrorMessage('Erro ao criar sessão. Tente novamente.')
+        setIsLoading(false)
+        setLoadingPhase('')
+        return
+      }
+      console.log('✅ Sessão verificada:', verifySession.user.email)
+
       // Sincronizar perfil (async, não bloquear redirecionamento)
-      import('@/lib/services/user-profile-service').then(({ UserProfileService }) => {
-        UserProfileService.syncUser({
-          email: fullEmail,
-          provider: 'supabase_auth' as const
-        }).catch(error => {
-          console.warn('⚠️ Sincronização de perfil falhou (não crítico):', error)
+      if (loginMode === 'dashboard') {
+        setLoadingPhase('Sincronizando perfil...')
+        import('@/lib/services/user-profile-service').then(({ UserProfileService }) => {
+          UserProfileService.syncUser({
+            email: fullEmail,
+            provider: 'supabase_auth' as const
+          }).catch(error => {
+            console.warn('⚠️ Sincronização de perfil falhou (não crítico):', error)
+          })
         })
-      })
+      }
 
       // Redirecionar baseado no modo de login
       const redirectPath = loginMode === 'studio' ? '/studio' : '/dashboard'
+      const redirectLabel = loginMode === 'studio' ? 'Studio' : 'Dashboard'
+      setLoadingPhase(`Carregando ${redirectLabel}...`)
       console.log(`🚀 Redirecionando para ${redirectPath}...`)
 
-      setTimeout(() => {
-        router.push(redirectPath)
-      }, 100)
+      // Usar router.replace + refresh para garantir que sessão seja carregada
+      router.replace(redirectPath)
+      router.refresh()
 
     } catch (error) {
       console.error('❌ Erro crítico:', error)
@@ -505,13 +530,18 @@ function LoginPageContent() {
                 )}
 
                 <div className="space-y-4 mt-6">
-                  <Button 
-                    type="submit" 
-                    className="w-full h-12 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-base shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl" 
+                  <Button
+                    type="submit"
+                    className="w-full h-12 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-base shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl flex-col"
                     disabled={isLoading}
                   >
                     {isLoading ? (
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                      <div className="flex flex-col items-center justify-center gap-2 w-full">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                        {loadingPhase && (
+                          <span className="text-xs text-white/90 font-normal animate-pulse">{loadingPhase}</span>
+                        )}
+                      </div>
                     ) : (
                       <>
                         Acessar Plataforma

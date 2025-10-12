@@ -2,6 +2,7 @@
  * Card de Propriedade Individual
  * Componente modular e reutilizável para grid view
  * Responsivo e otimizado para performance
+ * ✅ Imagens otimizadas com Next.js Image
  */
 
 'use client';
@@ -11,6 +12,7 @@ import { motion } from 'framer-motion';
 import { MapPin, Bed, Bath, Square, Heart, Share2, MessageCircle, Phone, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getImovelImageUrl, useImovelImage } from '@/lib/helpers/imageHelpers';
+import { PropertyCardImage } from '@/app/components/ui/OptimizedImage';
 import type { ViewMode } from './PropertyGrid';
 
 interface PropertyCardProps {
@@ -112,14 +114,14 @@ export default function PropertyCard({
             )}
             onClick={() => onPropertyClick?.(property)}
         >
-            {/* Imagem */}
+            {/* Imagem otimizada */}
             <div className={cn("relative overflow-hidden flex-shrink-0", imageHeight[viewMode])}>
-                <img
+                <PropertyCardImage
                     src={primaryUrl}
                     alt={property.titulo || 'Imóvel'}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    loading="lazy"
-                    onError={handleImageError}
+                    priority={index < 6}
+                    className="group-hover:scale-110 transition-transform duration-700"
+                    onError={() => handleImageError({ target: null } as any)}
                 />
                 
                 {/* Overlay com ações */}

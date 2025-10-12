@@ -1,14 +1,24 @@
 'use client';
 
 /**
- * Performance monitoring utility
+ * Performance monitoring utility - ENHANCED VERSION
  * Helps track and analyze key performance metrics
+ * Inclui monitoramento de componentes React e Web Vitals
  */
 
 interface PerformanceMetric {
     name: string;
     value: number;
     timestamp: number;
+    metadata?: Record<string, any>;
+}
+
+interface ComponentMetric {
+    componentName: string;
+    renderTime: number;
+    renderCount: number;
+    propsSize?: number;
+    type: 'mount' | 'update' | 'unmount';
 }
 
 interface PageLoadInfo {
@@ -19,6 +29,14 @@ interface PageLoadInfo {
     ttfb: number | null;
     resourceLoads: Record<string, number>;
 }
+
+// Performance thresholds (em ms)
+const THRESHOLDS = {
+    GOOD_RENDER: 16.67, // 60fps
+    WARNING_RENDER: 33.33, // 30fps
+    SLOW_RENDER: 50,
+    VERY_SLOW_RENDER: 100,
+} as const;
 
 // Store performance metrics
 const metrics: PerformanceMetric[] = [];
@@ -213,4 +231,139 @@ export function getPerformanceData() {
                 return acc;
             }, {} as Record<string, number>)
     };
+}
+
+// ============================================
+// ENHANCED COMPONENT PERFORMANCE MONITORING
+// ============================================
+
+const componentMetrics = new Map<string, ComponentMetric[]>();
+const isDev = process.env.NODE_ENV === 'development';
+
+/**
+ * Monitora performance de um componente React
+ */
+export function monitorComponent(
+    componentName: string,
+    startTime: number,
+    type: 'mount' | 'update' | 'unmount' = 'update',
+    propsSize?: number
+): void {
+    if (!isDev) return;
+
+    const renderTime = performance.now() - startTime;
+    
+    if (!componentMetrics.has(componentName)) {
+        componentMetrics.set(componentName, []);
+    }
+
+    const metrics = componentMetrics.get(componentName)!;
+    const existingMetric = metrics.find(m => m.type === type);
+
+    if (existingMetric) {
+        existingMetric.renderTime = 
+            (existingMetric.renderTime * existingMetric.renderCount + renderTime) / 
+            (existingMetric.renderCount + 1);
+        existingMetric.renderCount++;
+        if (propsSize) existingMetric.propsSize = propsSize;
+    } else {
+        metrics.push({
+            componentName,
+            renderTime,
+            renderCount: 1,
+            propsSize,
+            type,
+        });
+    }
+
+    // Alerta para renders lentos
+    if (renderTime > THRESHOLDS.VERY_SLOW_RENDER) {
+        console.error(
+            `🔴 [Performance] ${componentName} MUITO LENTO: ${renderTime.toFixed(2)}ms (${type})`,
+            propsSize ? `Props size: ${propsSize} bytes` : ''
+        );
+    } else if (renderTime > THRESHOLDS.SLOW_RENDER) {
+        console.warn(
+            `⚠️ [Performance] ${componentName} lento: ${renderTime.toFixed(2)}ms (${type})`
+        );
+    }
+}
+
+/**
+ * Retorna estatísticas de performance de componentes
+ */
+export function getComponentStats(componentName?: string) {
+    if (componentName) {
+        return componentMetrics.get(componentName) || [];
+    }
+    return Array.from(componentMetrics.entries());
+}
+
+/**
+ * Imprime relatório detalhado de componentes
+ */
+export function printComponentReport(): void {
+    if (!isDev || componentMetrics.size === 0) return;
+
+    console.group('📊 Relatório de Performance - Componentes React');
+    
+    const allComponents = Array.from(componentMetrics.entries())
+        .flatMap(([name, metrics]) => 
+            metrics.map(m => ({ name, ...m }))
+        )
+        .sort((a, b) => b.renderTime - a.renderTime);
+
+    const slowComponents = allComponents.filter(c => c.renderTime > THRESHOLDS.WARNING_RENDER);
+    
+    if (slowComponents.length > 0) {
+        console.warn(`⚠️ ${slowComponents.length} componente(s) com performance abaixo do ideal:`);
+        console.table(
+            slowComponents.map(c => ({
+                'Componente': c.name,
+                'Tipo': c.type,
+                'Renders': c.renderCount,
+                'Tempo Médio (ms)': c.renderTime.toFixed(2),
+                'Props Size': c.propsSize ? `${c.propsSize} bytes` : 'N/A',
+                'Status': c.renderTime > THRESHOLDS.VERY_SLOW_RENDER ? '🔴 Crítico' :
+                         c.renderTime > THRESHOLDS.SLOW_RENDER ? '🟡 Atenção' : '🟢 OK'
+            }))
+        );
+    } else {
+        console.log('✅ Todos os componentes monitorados estão com boa performance!');
+    }
+
+    console.groupEnd();
+}
+
+/**
+ * Limpa métricas de componentes
+ */
+export function clearComponentMetrics(): void {
+    componentMetrics.clear();
+}
+
+/**
+ * Hook para monitoramento fácil de componentes
+ */
+export function useComponentMonitor(componentName: string) {
+    if (!isDev) return () => {};
+    
+    const startTime = performance.now();
+    
+    return (type: 'mount' | 'update' | 'unmount' = 'update', props?: any) => {
+        const propsSize = props ? JSON.stringify(props).length : undefined;
+        monitorComponent(componentName, startTime, type, propsSize);
+    };
+}
+
+// Expor globalmente em desenvolvimento
+if (typeof window !== 'undefined' && isDev) {
+    (window as any).__performanceMonitor = {
+        getComponentStats,
+        printComponentReport,
+        clearComponentMetrics,
+        getPerformanceData,
+    };
+    console.log('🔧 Performance Monitor disponível em: window.__performanceMonitor');
+    console.log('📊 Use __performanceMonitor.printComponentReport() para ver relatório');
 }
