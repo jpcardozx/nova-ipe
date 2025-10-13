@@ -66,7 +66,7 @@ export default function SignupPage() {
         justification: data.justification,
       }
 
-      const result = await authManager.submitAccessRequest(requestData)
+      const result = await SimpleAuthManager.submitAccessRequest(requestData)
 
       if (result.success) {
         setSubmitStatus('success')

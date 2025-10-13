@@ -51,23 +51,15 @@ export default function PasswordChangeForm({
         message: string
     } | null>(null)
 
-    const passwordManager = PasswordAuthorizationManager.getInstance()
     const isOwnPassword = !targetUserId || targetUserId === currentUser?.id
 
     // Validação em tempo real da senha
     const validatePassword = (password: string) => {
-        const validation = passwordManager.validatePasswordSecurity(password)
-        let strength = 0
-
-        if (password.length >= 8) strength += 20
-        if (/[A-Z]/.test(password)) strength += 20
-        if (/[a-z]/.test(password)) strength += 20
-        if (/\d/.test(password)) strength += 20
-        if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength += 20
-
+        const validation = PasswordAuthorizationManager.validatePassword(password)
+        
         setValidation({
             errors: validation.errors,
-            strength
+            strength: validation.strength
         })
     }
 
@@ -80,6 +72,15 @@ export default function PasswordChangeForm({
         e.preventDefault()
         if (!currentUser) return
 
+        // Validar se as senhas coincidem
+        if (formData.newPassword !== formData.confirmPassword) {
+            setResult({
+                type: 'error',
+                message: 'As senhas não coincidem'
+            })
+            return
+        }
+
         setLoading(true)
         setResult(null)
 
@@ -88,31 +89,29 @@ export default function PasswordChangeForm({
                 userId: targetUserId || currentUser.id,
                 currentPassword: formData.currentPassword,
                 newPassword: formData.newPassword,
-                confirmPassword: formData.confirmPassword,
-                requestedBy: currentUser.id,
-                reason: formData.reason
+                reason: formData.reason,
+                isAdminChange: isAdminChange,
+                adminId: currentUser.id
             }
 
-            const response = await passwordManager.processPasswordChange(request)
+            const response = await PasswordAuthorizationManager.changePassword(request)
 
             if (response.success) {
                 setResult({
-                    type: response.requiresApproval ? 'warning' : 'success',
+                    type: 'success',
                     message: response.message
                 })
 
-                if (!response.requiresApproval) {
-                    // Limpar formulário após sucesso
-                    setFormData({
-                        currentPassword: '',
-                        newPassword: '',
-                        confirmPassword: '',
-                        reason: ''
-                    })
+                // Limpar formulário após sucesso
+                setFormData({
+                    currentPassword: '',
+                    newPassword: '',
+                    confirmPassword: '',
+                    reason: ''
+                })
 
-                    if (onSuccess) {
-                        setTimeout(onSuccess, 2000)
-                    }
+                if (onSuccess) {
+                    setTimeout(onSuccess, 2000)
                 }
             } else {
                 setResult({

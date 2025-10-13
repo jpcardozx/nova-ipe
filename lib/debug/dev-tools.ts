@@ -101,57 +101,51 @@ __authDebug.help()           - Show this help message
 
             const debugInfo = await authDebugger.generateDebugInfo();
             const tokenInfo = await authDebugger.getTokenDebugInfo();
+            const snapshot = debugInfo.snapshot;
 
             console.group('🔍 Authentication Debug Report');
-            console.log('Generated at:', debugInfo.timestamp.toISOString());
+            console.log('Generated at:', snapshot.timestamp);
 
-            console.group('🌍 Environment');
-            console.log('Node Environment:', debugInfo.environment.nodeEnv);
-            console.log('Sanity Configured:', debugInfo.environment.sanityConfigured);
-            console.log('Supabase Configured:', debugInfo.environment.supabaseConfigured);
-            if (debugInfo.environment.missingVars.length > 0) {
-                console.warn('Missing Variables:', debugInfo.environment.missingVars);
+            console.group('👤 Authentication Snapshot');
+            console.log('Has Active Session:', snapshot.hasSession);
+            if (snapshot.userId) {
+                console.log('User ID:', snapshot.userId);
             }
-            console.groupEnd();
-
-            console.group('🎨 Sanity Status');
-            console.log('Project ID:', debugInfo.sanity.projectId);
-            console.log('Dataset:', debugInfo.sanity.dataset);
-            console.log('Has Token:', debugInfo.sanity.hasToken);
-            console.log('Connection Status:', debugInfo.sanity.connectionStatus);
-            if (debugInfo.sanity.lastError) {
-                console.error('Last Error:', debugInfo.sanity.lastError);
+            if (snapshot.email) {
+                console.log('Email:', snapshot.email);
             }
-            console.groupEnd();
-
-            console.group('🔐 Supabase Status');
-            console.log('Has URL:', debugInfo.supabase.hasUrl);
-            console.log('Has Anon Key:', debugInfo.supabase.hasAnonKey);
-            console.log('Connection Status:', debugInfo.supabase.connectionStatus);
-            if (debugInfo.supabase.lastError) {
-                console.error('Last Error:', debugInfo.supabase.lastError);
+            if (snapshot.role) {
+                console.log('Role:', snapshot.role);
             }
-            console.groupEnd();
-
-            console.group('👤 Authentication');
-            console.log('Has Active Session:', debugInfo.authentication.hasActiveSession);
-            console.log('Session Type:', debugInfo.authentication.sessionType);
-            if (debugInfo.authentication.userId) {
-                console.log('User ID:', debugInfo.authentication.userId);
+            if (snapshot.sessionExpiry) {
+                console.log('Session Expires:', snapshot.sessionExpiry);
             }
-            if (debugInfo.authentication.lastAuthError) {
-                console.error('Last Auth Error:', debugInfo.authentication.lastAuthError);
+            if (snapshot.error) {
+                console.error('Error:', snapshot.error);
             }
             console.groupEnd();
 
             console.group('🎫 Token Information');
-            console.log('Sanity Token Present:', tokenInfo.sanityToken.present);
-            console.log('Sanity Token Format:', tokenInfo.sanityToken.format);
-            console.log('Supabase Session Present:', tokenInfo.supabaseSession.present);
-            if (tokenInfo.supabaseSession.expiresAt) {
-                console.log('Session Expires:', tokenInfo.supabaseSession.expiresAt);
-                console.log('Session Expired:', tokenInfo.supabaseSession.isExpired);
+            if (tokenInfo.tokenInfo) {
+                console.log('Has Token:', tokenInfo.hasToken);
+                console.log('Access Token Preview:', tokenInfo.tokenInfo.accessToken);
+                console.log('Expires At:', tokenInfo.tokenInfo.expiresAt);
+                console.log('User ID:', tokenInfo.tokenInfo.userId);
+                console.log('Email:', tokenInfo.tokenInfo.email);
+            } else {
+                console.warn('No token info available:', tokenInfo.error);
             }
+            console.groupEnd();
+
+            console.group('📊 Diagnosis');
+            console.log(debugInfo.diagnosis);
+            console.groupEnd();
+
+            console.group('📜 Recent Logs');
+            console.log(`Total logs: ${debugInfo.logs.length}`);
+            debugInfo.logs.slice(-5).forEach((log, index) => {
+                console.log(`[${debugInfo.logs.length - 5 + index + 1}]`, log);
+            });
             console.groupEnd();
 
             console.groupEnd();

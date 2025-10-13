@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function PATCH(request: NextRequest) {
   try {
     // 🔐 Autenticação obrigatória - apenas admin pode atualizar status
-    const authError = await requireAuth(request, 'admin');
+    const authError = await requireAuth(request);
     if (authError) return authError;
     
     const body = await request.json();

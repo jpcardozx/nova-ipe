@@ -113,6 +113,7 @@
     "autoprefixer": "^10.4.16",
     "eslint": "^8.55.0",
     "eslint-config-next": "^14.0.4",
+    "knip": "5.64.3",
     "pdf-poppler": "0.2.3",
     "postcss": "^8.4.32",
     "sharp": "0.34.4",
