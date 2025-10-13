@@ -5,6 +5,7 @@ import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { EnvironmentManager } from '@/lib/environment-config'
+import { PerformanceMonitor } from '@/lib/utils/performance-monitor'
 import { AlertCircle, Loader2, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Card, { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -16,36 +17,25 @@ if (typeof window !== 'undefined') {
     (window as any).__SENTRY__ = undefined;
 }
 
-// Carrega o NextStudio apenas no client com isolamento de Sentry
-const NextStudio = dynamic(
-    // @ts-ignore - Sanity studio module doesn't have TypeScript declarations
-    () => import('../lib/sanity/studio.js').then((mod: any) => mod.NextStudio),
+// ⚡ Otimização: Wrapper com code splitting e performance monitoring
+const StudioComponent = dynamic(
+    () => import('../components/StudioWrapper'),
     {
         ssr: false,
-        loading: () => (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="text-center">
-                    <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-amber-600" />
-                    <p className="text-gray-600">Carregando Sanity Studio...</p>
+        loading: () => {
+            console.log('🔄 [Studio Dynamic] Mostrando loading state...')
+            return (
+                <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+                    <div className="text-center space-y-4">
+                        <Loader2 className="h-12 w-12 animate-spin mx-auto text-amber-600" />
+                        <div>
+                            <p className="text-lg font-semibold text-gray-900">Inicializando Studio</p>
+                            <p className="text-sm text-gray-600 mt-1">Carregando componentes...</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        )
-    }
-)
-
-// Import config dynamically to avoid Sentry conflicts during build
-const StudioConfig = dynamic(
-    () => import('../../sanity.config').then(mod => ({ default: () => <NextStudio config={mod.default} /> })),
-    {
-        ssr: false,
-        loading: () => (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="text-center">
-                    <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-amber-600" />
-                    <p className="text-gray-600">Carregando configuração do Studio...</p>
-                </div>
-            </div>
-        )
+            )
+        }
     }
 )
 
@@ -59,6 +49,8 @@ function StudioPageContent() {
     const searchParams = useSearchParams()
 
     useEffect(() => {
+        const timer = PerformanceMonitor.startTimer('Studio Page Mount', 'page_load')
+        
         // Teste das variáveis de ambiente no lado do cliente
         console.log('🔍 === TESTE DE VARIÁVEIS DE AMBIENTE ===')
         console.log('🔍 window.location.href:', window.location.href)
@@ -66,10 +58,26 @@ function StudioPageContent() {
         console.log('🔍 Todas as variáveis NEXT_PUBLIC:', Object.keys(process.env).filter(key => key.startsWith('NEXT_PUBLIC')))
         console.log('🔍 === FIM TESTE ===')
 
+        // Monitorar performance
+        PerformanceMonitor.logNavigationTiming()
+        PerformanceMonitor.monitorWebVitals()
+        
+        // Aguardar load completo para analisar módulos
+        if (document.readyState === 'complete') {
+            PerformanceMonitor.analyzeModules()
+        } else {
+            window.addEventListener('load', () => {
+                PerformanceMonitor.analyzeModules()
+            })
+        }
+        
         checkAuthenticationAndConfig()
+        timer.end()
     }, [])
 
     const checkAuthenticationAndConfig = async () => {
+        const timer = PerformanceMonitor.startTimer('Studio Auth Check', 'auth')
+        
         try {
             setState('loading')
             setError(null)
@@ -80,13 +88,18 @@ function StudioPageContent() {
             setState('checking-auth')
             
             // Verificar sessão do Studio via API
-            console.log('🔍 Studio: Verificando sessão via API...')
-            const sessionResponse = await fetch('/api/studio/session', {
-                method: 'GET',
-                credentials: 'include'
-            })
+            const sessionData = await PerformanceMonitor.measure(
+                'Studio Session API',
+                async () => {
+                    const response = await fetch('/api/studio/session', {
+                        method: 'GET',
+                        credentials: 'include'
+                    })
+                    return response.json()
+                },
+                'api_call'
+            )
             
-            const sessionData = await sessionResponse.json()
             console.log('🔍 Studio: Status da sessão:', sessionData)
 
             if (!sessionData.authenticated) {
@@ -256,7 +269,7 @@ function StudioPageContent() {
     if (state === 'authenticated') {
         return (
             <div className="min-h-screen">
-                <StudioConfig />
+                <StudioComponent />
             </div>
         )
     }

@@ -39,6 +39,61 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
+  
+  // ⚡ PERFORMANCE OPTIMIZATIONS
+  experimental: {
+    // Habilitar optimized package imports para Sanity
+    optimizePackageImports: ['@sanity/ui', '@sanity/icons', 'sanity'],
+  },
+  
+  // Cache agressivo para dev
+  onDemandEntries: {
+    // Período que as páginas ficam em cache (1 hora)
+    maxInactiveAge: 60 * 60 * 1000,
+    // Número de páginas simultâneas
+    pagesBufferLength: 5,
+  },
+  
+  // Webpack optimizations
+  webpack: (config, { dev, isServer }) => {
+    // Otimizações para bundle do Sanity Studio
+    if (!isServer) {
+      config.optimization = {
+        ...config.optimization,
+        moduleIds: 'deterministic',
+        runtimeChunk: 'single',
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            // Separar Sanity em chunk próprio
+            sanity: {
+              test: /[\\/]node_modules[\\/](@sanity|sanity)[\\/]/,
+              name: 'sanity',
+              priority: 20,
+              reuseExistingChunk: true,
+            },
+            // Separar outras dependências grandes
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              priority: 10,
+              reuseExistingChunk: true,
+            },
+          },
+        },
+      }
+    }
+    
+    // Ignorar warnings de source maps do Sanity
+    config.ignoreWarnings = [
+      ...(config.ignoreWarnings || []),
+      {
+        module: /node_modules[\\/](@sanity|sanity|next-sanity)[\\/]/,
+      },
+    ]
+    
+    return config
+  },
 };
 
 module.exports = nextConfig;

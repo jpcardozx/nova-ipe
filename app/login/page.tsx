@@ -1,85 +1,413 @@
+/**
+ * Login Page - Modern & Secure
+ * UI/UX S-Tier com autenticação server-side
+ */
+
 'use client'
 
-import { useState, useEffect, useCallback, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { supabase } from '@/lib/supabase'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { PillSelector } from '@/components/ui/pill-selector'
-import { ArrowRight, Building2, User, AlertTriangle, Eye, EyeOff, UserPlus, ArrowLeft, Sparkles, ExternalLink, Stethoscope, HelpCircle } from 'lucide-react'
-import { LegacyPortalAccess } from '@/components/ui/legacy-portal-access'
-import { SimpleAuthManager } from '@/lib/auth-simple'
-import { EnhancedAuthManager, type LoginMode } from '@/lib/auth/enhanced-auth-manager'
-import { usePortalDiagnostic } from '@/lib/services/portal-diagnostic'
-import { useSupabaseAuth } from '@/lib/hooks/useSupabaseAuth'
-import { LoginRateLimiter } from '@/lib/auth/login-rate-limiter'
+import { 
+  Eye, 
+  EyeOff, 
+  Loader2, 
+  ShieldCheck, 
+  Building2, 
+  LayoutDashboard,
+  Lock,
+  AlertCircle,
+  CheckCircle2
+} from 'lucide-react'
+import { useAuth, type LoginMode } from '@/lib/hooks/useAuth'
+import { authLogger } from '@/lib/utils/auth-logger'
+import { AuthLoadingOverlay, DEFAULT_AUTH_STEPS, type AuthStep } from '@/app/components/AuthLoadingOverlay'
+import { Shield, Database, UserCheck } from 'lucide-react'
+import { useToast } from '@/app/components/ui/Toast'
 
+// ============================================================================
+// CONSTANTES & ASSETS
+// ============================================================================
 
+// SVG patterns extraídos para evitar re-parsing (otimização de bundle)
+const NOISE_TEXTURE_SVG = "data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"
 
-// Schemas
+const PATTERN_SVG = "data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"
+
+// ============================================================================
+// SCHEMAS & TYPES
+// ============================================================================
+
 const loginSchema = z.object({
-  username: z.string().min(1, { message: 'Digite seu usuário.' }),
-  password: z.string().min(6, { message: 'Senha deve ter pelo menos 6 caracteres.' }),
-})
-
-const signupSchema = z.object({
-  full_name: z.string().min(2, { message: 'Nome muito curto' }),
-  email: z.string().email({ message: 'Email inválido' }),
-  phone: z.string().min(10, { message: 'Telefone inválido' }),
-  department: z.string().min(1, { message: 'Selecione um setor' }),
-  justification: z.string().min(10, { message: 'Conte-nos mais sobre você' }),
+  username: z.string()
+    .min(1, 'Digite seu usuário')
+    .email('Email inválido'),
+  password: z.string()
+    .min(6, 'Senha deve ter pelo menos 6 caracteres'),
 })
 
 type LoginFormValues = z.infer<typeof loginSchema>
-type SignupFormValues = z.infer<typeof signupSchema>
 
-type ViewMode = 'login' | 'signup' | 'success'
+// ============================================================================
+// COMPONENTES
+// ============================================================================
 
-const departments = [
-  { value: 'vendas', label: '💼 Vendas', desc: 'Vendas de imóveis' },
-  { value: 'locacao', label: '🏠 Locação', desc: 'Aluguel de imóveis' },
-  { value: 'marketing', label: '📱 Marketing', desc: 'Marketing e divulgação' },
-  { value: 'admin', label: '📊 Administrativo', desc: 'Gestão e administração' },
-]
+/**
+ * Componente de Loading com Steps Visual
+ */
+function LoadingOverlay({ 
+  message, 
+  currentStep = 0 
+}: { 
+  message?: string
+  currentStep?: number 
+}) {
+  const steps = [
+    { label: 'Verificando', icon: '🔐' },
+    { label: 'Autenticando', icon: '✓' },
+    { label: 'Estabelecendo Sessão', icon: '🔒' },
+    { label: 'Carregando', icon: '🚀' }
+  ]
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="bg-white/[0.09] backdrop-blur-2xl border border-white/20 rounded-2xl p-6 sm:p-8 shadow-2xl max-w-md w-full mx-4"
+      >
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative w-16 h-16 sm:w-20 sm:h-20">
+            <motion.div
+              className="absolute inset-0 rounded-full border-3 border-white/10"
+            />
+            <motion.div
+              className="absolute inset-0 rounded-full border-3 border-amber-400 border-t-transparent border-r-transparent"
+              animate={{ rotate: 360 }}
+              transition={{
+                duration: 1.2,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+            />
+            <motion.div
+              className="absolute inset-2 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg"
+              animate={{
+                scale: [1, 1.05, 1],
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            >
+              <ShieldCheck className="w-7 h-7 sm:w-9 sm:h-9 text-white" />
+            </motion.div>
+          </div>
+          
+          <div className="text-center space-y-3 w-full">
+            <p className="text-base sm:text-lg font-semibold text-white">
+              {message || 'Autenticando...'}
+            </p>
+            
+            {/* Steps Progress */}
+            <div className="space-y-2 pt-2">
+              {steps.map((step, index) => {
+                const isCompleted = index < currentStep
+                const isCurrent = index === currentStep
+                const isPending = index > currentStep
+                
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className={`
+                      flex items-center gap-3 px-3 py-2 rounded-lg transition-all
+                      ${isCurrent ? 'bg-amber-500/20 border border-amber-400/30' : ''}
+                      ${isCompleted ? 'opacity-70' : ''}
+                      ${isPending ? 'opacity-30' : ''}
+                    `}
+                  >
+                    <div className={`
+                      flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs
+                      transition-all duration-300
+                      ${isCompleted ? 'bg-green-500 text-white' : ''}
+                      ${isCurrent ? 'bg-amber-500 text-white animate-pulse' : ''}
+                      ${isPending ? 'bg-white/10 text-white/40' : ''}
+                    `}>
+                      {isCompleted ? '✓' : isCurrent ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (index + 1)}
+                    </div>
+                    
+                    <span className={`
+                      text-xs sm:text-sm font-medium
+                      ${isCurrent || isCompleted ? 'text-white' : 'text-white/40'}
+                    `}>
+                      {step.label}
+                    </span>
+                  </motion.div>
+                )
+              })}
+            </div>
+            
+            <p className="text-xs text-white/60 mt-3">
+              Aguarde enquanto processamos sua solicitação
+            </p>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+/**
+ * Componente de Alert Detalhado para Erros
+ */
+function DetailedErrorAlert({ 
+  error 
+}: { 
+  error: {
+    title: string
+    message: string
+    technical?: string
+  }
+}) {
+  const [showTechnical, setShowTechnical] = useState(false)
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -10, height: 0 }}
+      animate={{ opacity: 1, y: 0, height: 'auto' }}
+      exit={{ opacity: 0, y: -10, height: 0 }}
+      className="bg-red-500/15 border-2 border-red-400/40 backdrop-blur-xl rounded-xl p-4 shadow-lg"
+    >
+      <div className="flex items-start gap-3">
+        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+          <AlertCircle className="w-5 h-5 text-red-300" />
+        </div>
+        
+        <div className="flex-1 space-y-2">
+          <div>
+            <h3 className="text-sm font-bold text-red-200">
+              {error.title}
+            </h3>
+            <p className="text-sm text-red-100/90 mt-1">
+              {error.message}
+            </p>
+          </div>
+          
+          {error.technical && (
+            <div>
+              <button
+                onClick={() => setShowTechnical(!showTechnical)}
+                className="text-xs text-red-300/70 hover:text-red-300 transition-colors flex items-center gap-1"
+              >
+                {showTechnical ? '▼' : '▶'} Detalhes técnicos
+              </button>
+              
+              <AnimatePresence>
+                {showTechnical && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mt-2 p-2 bg-black/30 rounded border border-red-400/20"
+                  >
+                    <code className="text-xs text-red-200/80 font-mono break-all">
+                      {error.technical}
+                    </code>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+/**
+ * Componente de Alert Simples
+ */
+function Alert({ 
+  type, 
+  message 
+}: { 
+  type: 'error' | 'success' | 'info'
+  message: string 
+}) {
+  const config = {
+    error: {
+      bg: 'bg-red-500/15 border-red-400/40 backdrop-blur-xl',
+      text: 'text-red-200',
+      icon: <AlertCircle className="w-4 h-4 text-red-300" />
+    },
+    success: {
+      bg: 'bg-green-500/15 border-green-400/40 backdrop-blur-xl',
+      text: 'text-green-200',
+      icon: <CheckCircle2 className="w-4 h-4 text-green-300" />
+    },
+    info: {
+      bg: 'bg-blue-500/15 border-blue-400/40 backdrop-blur-xl',
+      text: 'text-blue-200',
+      icon: <AlertCircle className="w-4 h-4 text-blue-300" />
+    }
+  }[type]
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className={`${config.bg} border rounded-xl p-3 flex items-center gap-2.5 shadow-lg`}
+    >
+      <div className="flex-shrink-0">
+        {config.icon}
+      </div>
+      <p className={`${config.text} text-xs sm:text-sm font-medium flex-1`}>
+        {message}
+      </p>
+    </motion.div>
+  )
+}
+
+/**
+ * Seletor de Modo (Dashboard/Studio)
+ */
+function ModeSelector({ 
+  value, 
+  onChange 
+}: { 
+  value: LoginMode
+  onChange: (mode: LoginMode) => void 
+}) {
+  const modes = [
+    {
+      value: 'dashboard' as const,
+      label: 'Dashboard',
+      icon: <LayoutDashboard className="w-5 h-5" />,
+      description: 'Gestão completa'
+    },
+    {
+      value: 'studio' as const,
+      label: 'Studio',
+      icon: <Building2 className="w-5 h-5" />,
+      description: 'Editor de conteúdo'
+    }
+  ]
+
+  return (
+    <div className="grid grid-cols-2 gap-3 sm:gap-4">
+      {modes.map((mode) => (
+        <motion.button
+          key={mode.value}
+          type="button"
+          onClick={() => onChange(mode.value)}
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.99 }}
+          className={`
+            relative p-3 rounded-xl border-2 transition-all duration-200
+            ${value === mode.value 
+              ? 'border-amber-400/70 bg-gradient-to-br from-amber-500/25 to-orange-500/15 shadow-lg shadow-amber-500/30 backdrop-blur-xl' 
+              : 'border-white/20 bg-white/[0.06] hover:border-white/35 hover:bg-white/[0.10] backdrop-blur-xl'
+            }
+          `}
+        >
+          <div className="flex items-center gap-2.5 text-center">
+            <div className={`
+              p-2 rounded-lg transition-all duration-200 flex-shrink-0
+              ${value === mode.value 
+                ? 'bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg' 
+                : 'bg-white/10 text-white/50'
+              }
+            `}>
+              {mode.icon}
+            </div>
+            <div className="flex-1 text-left">
+              <p className={`
+                font-semibold text-sm
+                ${value === mode.value ? 'text-white' : 'text-white/70'}
+              `}>
+                {mode.label}
+              </p>
+              <p className={`text-xs mt-0.5 ${
+                value === mode.value ? 'text-white/80' : 'text-white/40'
+              }`}>
+                {mode.description}
+              </p>
+            </div>
+          </div>
+          
+          {value === mode.value && (
+            <motion.div
+              layoutId="mode-indicator"
+              className="absolute inset-0 rounded-xl border-2 border-amber-400/70"
+              transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
+            />
+          )}
+        </motion.button>
+      ))}
+    </div>
+  )
+}
+
+// ============================================================================
+// PÁGINA PRINCIPAL
+// ============================================================================
 
 function LoginPageContent() {
-  const [viewMode, setViewMode] = useState<ViewMode>('login')
   const [loginMode, setLoginMode] = useState<LoginMode>('dashboard')
-  const [isLoading, setIsLoading] = useState(false)
-  const [loadingPhase, setLoadingPhase] = useState<string>('')
   const [showPassword, setShowPassword] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
-  const [selectedDepartment, setSelectedDepartment] = useState('')
-  const [portfolioClicks, setPortfolioClicks] = useState(0)
-  const [selectedDomain, setSelectedDomain] = useState('@imobiliariaipe.com.br')
-  const [rateLimitCountdown, setRateLimitCountdown] = useState<number | null>(null)
-  const router = useRouter()
+  const [authSteps, setAuthSteps] = useState<AuthStep[]>([
+    {
+      id: 'credentials',
+      label: 'Autenticando credenciais',
+      status: 'pending',
+      icon: <Shield className="w-5 h-5" />,
+    },
+    {
+      id: 'redirect',
+      label: 'Redirecionando para sua área',
+      status: 'pending',
+      icon: <UserCheck className="w-5 h-5" />,
+    },
+  ])
+  const [currentStepIndex, setCurrentStepIndex] = useState(0)
+  const [showAuthOverlay, setShowAuthOverlay] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [detailedError, setDetailedError] = useState<{
+    title: string
+    message: string
+    technical?: string
+  } | null>(null)
   const searchParams = useSearchParams()
-  const authManager = new SimpleAuthManager()
-  const { isRunning: isDiagnosticRunning, result: diagnosticResult, runDiagnostic } = usePortalDiagnostic()
-  const { signIn: supabaseSignIn, loading: authLoading } = useSupabaseAuth()
+  const { login, loading, error } = useAuth()
 
-  // Countdown timer para rate limit
-  useEffect(() => {
-    if (rateLimitCountdown === null || rateLimitCountdown <= 0) return
-
-    const timer = setInterval(() => {
-      setRateLimitCountdown((prev) => {
-        if (prev === null || prev <= 1) {
-          setErrorMessage('')
-          return null
-        }
-        return prev - 1
-      })
-    }, 1000)
-
-    return () => clearInterval(timer)
-  }, [rateLimitCountdown])
+  // Form setup
+  const { 
+    register, 
+    handleSubmit, 
+    formState: { errors, isValid } 
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    mode: 'onChange'
+  })
 
   // Handle URL parameters
   useEffect(() => {
@@ -91,855 +419,421 @@ function LoginPageContent() {
     }
 
     if (error) {
-      setErrorMessage(getErrorMessageFromCode(error))
+      authLogger.error('Login', 'URL Error', { error })
     }
   }, [searchParams])
 
-  const getErrorMessageFromCode = (errorCode: string): string => {
-    switch (errorCode) {
-      case 'AUTH_REQUIRED':
-        return 'Autenticação necessária para acessar o Studio.'
-      case 'NO_AUTH_TOKEN':
-        return 'Sessão expirada. Faça login novamente.'
-      case 'INVALID_TOKEN':
-        return 'Token de autenticação inválido.'
-      case 'CONFIG_ERROR':
-        return 'Erro de configuração do sistema.'
-      case 'VERIFICATION_ERROR':
-        return 'Erro na verificação de autenticação.'
-      default:
-        return 'Erro de autenticação. Tente novamente.'
-    }
-  }
-
-  // Login form
-  const loginForm = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
-  })
-
-  // Signup form
-  const signupForm = useForm<SignupFormValues>({
-    resolver: zodResolver(signupSchema),
-    mode: 'onChange'
-  })
-
-  const onLoginSubmit = async (data: LoginFormValues) => {
-    const fullEmail = `${data.username}${selectedDomain}`
-
-    // ============================================================
-    // VERIFICAR RATE LIMIT (CLIENTE)
-    // ============================================================
-    const rateLimit = LoginRateLimiter.checkRateLimit(fullEmail)
-
-    if (!rateLimit.canAttempt) {
-      setErrorMessage(rateLimit.message)
-      setRateLimitCountdown(Math.ceil(rateLimit.waitTimeMs / 1000))
-      return
-    }
-
+  // Handle form submission (com feedback real em tempo real)
+  const onSubmit = async (data: LoginFormValues) => {
+    const startTime = performance.now()
+    setDetailedError(null)
+    setShowAuthOverlay(true)
     setIsLoading(true)
-    setErrorMessage('')
-    setLoadingPhase('Verificando credenciais...')
+    setCurrentStepIndex(0)
+
+    authLogger.loginAttempt(data.username, loginMode)
 
     try {
-      console.log('🔄 === INICIANDO LOGIN ===')
-      console.log('🔄 Modo:', loginMode)
-      console.log('📧 Email:', fullEmail)
-      console.log('🌐 URL:', window.location.href)
-      console.log('🔐 Rate Limit - Tentativas restantes:', rateLimit.attemptsLeft)
+      // ============================================================
+      // STEP 1: Autenticando credenciais
+      // ============================================================
+      console.log('🔐 [Login UI] Step 1: Autenticando credenciais...')
+      const step1Start = performance.now()
+      
+      setAuthSteps(steps => steps.map((step, idx) =>
+        idx === 0 ? { ...step, status: 'loading' } : step
+      ))
+
+      // Chamar Server Action (pode demorar - Supabase auth + redirect SSR)
+      const loginPromise = login(data.username, data.password, loginMode)
+
+      // Aguardar pelo menos 400ms para feedback visual
+      await Promise.race([
+        loginPromise,
+        new Promise(resolve => setTimeout(resolve, 400))
+      ])
+
+      const step1Duration = performance.now() - step1Start
+      console.log(`✅ [Login UI] Step 1: Credenciais verificadas (${step1Duration.toFixed(0)}ms)`)
+      
+      setAuthSteps(steps => steps.map((step, idx) =>
+        idx === 0 ? { ...step, status: 'success' } : step
+      ))
+      setCurrentStepIndex(1)
 
       // ============================================================
-      // AUTENTICAÇÃO UNIFICADA - Supabase Auth para ambos os modos
+      // STEP 2: Redirecionando (aguardando redirect SSR)
       // ============================================================
-      console.log(`🔐 Autenticando via Supabase para ${loginMode === 'studio' ? 'Studio' : 'Dashboard'}...`)
+      console.log('🔐 [Login UI] Step 2: Iniciando redirecionamento...')
+      const step2Start = performance.now()
+      
+      setAuthSteps(steps => steps.map((step, idx) =>
+        idx === 1 ? { ...step, status: 'loading' } : step
+      ))
 
-      // Tentar login (sem retry - rate limit já controlado)
-      setLoadingPhase('Autenticando no servidor...')
-      const { error: authError } = await supabaseSignIn(fullEmail, data.password)
+      // Aguardar loginPromise terminar (redirect SSR deve acontecer)
+      await loginPromise
 
-      if (authError) {
-        console.error('❌ Erro de autenticação Supabase:', authError.message)
+      const step2Duration = performance.now() - step2Start
+      const totalDuration = performance.now() - startTime
+      
+      // Se chegou aqui sem redirect, algo deu errado (anômalo)
+      console.warn(`⚠️ [Login UI] Redirect SSR não aconteceu! Step 2: ${step2Duration.toFixed(0)}ms | Total: ${totalDuration.toFixed(0)}ms`)
+      
+      setAuthSteps(steps => steps.map((step, idx) =>
+        idx === 1 ? { ...step, status: 'success' } : step
+      ))
 
-        // Registrar tentativa falhada
-        LoginRateLimiter.recordAttempt(fullEmail, false)
+      // Redirect deve acontecer automaticamente via Server Action
+      // Se não aconteceu, algo deu errado
 
-        setIsLoading(false)
+    } catch (err) {
+      console.error('❌ [Login UI] Erro no login:', err)
+      authLogger.error('Login', 'Exception', { error: err })
 
-        // Mensagens de erro amigáveis
-        if (authError.message.includes('quota has been exceeded')) {
-          setErrorMessage('⚠️ Limite de tentativas do servidor excedido. Aguarde 5 minutos antes de tentar novamente.')
-        } else if (authError.message.includes('Invalid login credentials')) {
-          const stats = LoginRateLimiter.getStats(fullEmail)
-          const attemptsLeft = Math.max(0, 5 - stats.failedAttempts)
-          setErrorMessage(`Email ou senha incorretos. ${attemptsLeft} tentativa(s) restante(s).`)
-        } else if (authError.message.includes('Email not confirmed')) {
-          setErrorMessage('Email não confirmado. Verifique sua caixa de entrada.')
-        } else if (authError.message.includes('User not found')) {
-          setErrorMessage('Usuário não encontrado. Solicite acesso ao administrador.')
-        } else {
-          setErrorMessage(`Erro na autenticação: ${authError.message}`)
-        }
+      // Extrair mensagem de erro
+      const urlParams = new URLSearchParams(window.location.search)
+      const errorFromUrl = urlParams.get('error')
+      const errorMessage = errorFromUrl || (err instanceof Error ? err.message : 'Erro desconhecido')
 
-        return
-      }
+      // Marcar step atual como erro
+      setAuthSteps(steps => steps.map((step, idx) =>
+        idx === currentStepIndex
+          ? {
+              ...step,
+              status: 'error',
+              errorMessage: errorMessage.includes('Invalid login credentials')
+                ? 'Email ou senha incorretos'
+                : errorMessage.includes('quota') || errorMessage.includes('rate limit')
+                ? 'Muitas tentativas. Aguarde alguns minutos'
+                : errorMessage
+            }
+          : step
+      ))
 
-      // ✅ SUCESSO - Registrar tentativa bem-sucedida
-      LoginRateLimiter.recordAttempt(fullEmail, true)
-      console.log(`✅ Login ${loginMode === 'studio' ? 'Studio' : 'Dashboard'} bem-sucedido!`)
-      console.log('🔐 Sessão Supabase criada automaticamente')
+      authLogger.loginFailure(data.username, errorMessage)
 
-      // Aguardar sessão ser estabelecida completamente
-      setLoadingPhase('Estabelecendo sessão segura...')
-      console.log('⏳ Aguardando sessão ser propagada...')
-      await new Promise(resolve => setTimeout(resolve, 300))
-
-      // Verificar se sessão foi realmente criada
-      setLoadingPhase('Verificando autenticação...')
-      const { data: { session: verifySession } } = await supabase.auth.getSession()
-      if (!verifySession) {
-        console.error('❌ Sessão não foi criada após login!')
-        setErrorMessage('Erro ao criar sessão. Tente novamente.')
-        setIsLoading(false)
-        setLoadingPhase('')
-        return
-      }
-      console.log('✅ Sessão verificada:', verifySession.user.email)
-
-      // Sincronizar perfil (async, não bloquear redirecionamento)
-      if (loginMode === 'dashboard') {
-        setLoadingPhase('Sincronizando perfil...')
-        import('@/lib/services/user-profile-service').then(({ UserProfileService }) => {
-          UserProfileService.syncUser({
-            email: fullEmail,
-            provider: 'supabase_auth' as const
-          }).catch(error => {
-            console.warn('⚠️ Sincronização de perfil falhou (não crítico):', error)
-          })
+      // Parse error para UX melhor
+      if (errorMessage.includes('Invalid login credentials')) {
+        setDetailedError({
+          title: 'Credenciais Inválidas',
+          message: 'Email ou senha incorretos. Verifique seus dados e tente novamente.',
+          technical: 'AUTH_INVALID_CREDENTIALS'
+        })
+      } else if (errorMessage.includes('quota') || errorMessage.includes('rate limit')) {
+        setDetailedError({
+          title: 'Limite Temporário Atingido',
+          message: 'Muitas tentativas de login. Aguarde alguns minutos antes de tentar novamente.',
+          technical: 'RATE_LIMIT_EXCEEDED'
+        })
+      } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+        setDetailedError({
+          title: 'Erro de Conexão',
+          message: 'Não foi possível conectar ao servidor. Verifique sua conexão com a internet.',
+          technical: 'NETWORK_ERROR'
+        })
+      } else {
+        setDetailedError({
+          title: 'Erro na Autenticação',
+          message: errorMessage,
+          technical: `AUTH_ERROR: ${errorMessage}`
         })
       }
 
-      // Redirecionar baseado no modo de login
-      const redirectPath = loginMode === 'studio' ? '/studio' : '/dashboard'
-      const redirectLabel = loginMode === 'studio' ? 'Studio' : 'Dashboard'
-      setLoadingPhase(`Carregando ${redirectLabel}...`)
-      console.log(`🚀 Redirecionando para ${redirectPath}...`)
-
-      // Usar router.replace + refresh para garantir que sessão seja carregada
-      router.replace(redirectPath)
-      router.refresh()
-
-    } catch (error) {
-      console.error('❌ Erro crítico:', error)
-      setErrorMessage('Erro inesperado na autenticação. Tente novamente.')
       setIsLoading(false)
+      setCurrentStepIndex(0)
     }
   }
-
-  const onSignupSubmit = async (data: SignupFormValues) => {
-    setIsLoading(true)
-    setErrorMessage('')
-
-    try {
-      // Check if email already exists in access requests
-      const { data: existingRequest } = await supabase
-        .from('access_requests')
-        .select('id, status')
-        .eq('email', data.email)
-        .single()
-
-      if (existingRequest) {
-        if (existingRequest.status === 'pending') {
-          setErrorMessage('Já existe uma solicitação pendente para este email.')
-        } else if (existingRequest.status === 'approved') {
-          setErrorMessage('Este email já foi aprovado. Tente fazer login.')
-        } else if (existingRequest.status === 'rejected') {
-          setErrorMessage('Sua solicitação anterior foi rejeitada. Entre em contato com o administrador.')
-        }
-        return
-      }
-
-      // Create access request
-      const { data: newRequest, error: requestError } = await supabase
-        .from('access_requests')
-        .insert([{
-          email: data.email,
-          full_name: data.full_name,
-          phone: data.phone,
-          department: data.department,
-          justification: data.justification,
-          status: 'pending'
-        }])
-        .select()
-        .single()
-
-      if (requestError) {
-        console.error('Error creating access request:', requestError)
-        setErrorMessage('Erro ao criar solicitação. Tente novamente.')
-        return
-      }
-
-      // Log activity
-      await supabase.rpc('log_activity', {
-        p_action: 'access_request_created',
-        p_entity_type: 'access_request',
-        p_entity_id: newRequest.id,
-        p_details: {
-          email: data.email,
-          department: data.department,
-          full_name: data.full_name
-        }
-      })
-
-      // Success
-      setViewMode('success')
-      signupForm.reset()
-      setSelectedDepartment('')
-    } catch (error) {
-      console.error('Erro:', error)
-      setErrorMessage('Erro interno. Tente novamente.')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleDepartmentSelect = (dept: string) => {
-    setSelectedDepartment(dept)
-    signupForm.setValue('department', dept, { shouldValidate: true })
-  }
-
-  // Handle hidden portfolio access - only when form is empty/invalid
-  const handlePortfolioAccess = useCallback((e: React.MouseEvent) => {
-    e.preventDefault()
-
-    // Only allow portfolio access if login form is not filled/valid
-    const isFormEmptyOrInvalid = !loginForm.formState.isValid ||
-            (!loginForm.getValues('username') && !loginForm.getValues('password'))
-
-    if (!isFormEmptyOrInvalid) {
-      return // Don't allow portfolio access when form is valid/filled
-    }
-
-    const newClickCount = portfolioClicks + 1
-    setPortfolioClicks(newClickCount)
-
-    if (newClickCount >= 5) {
-      router.push('/jpcardozx')
-      setPortfolioClicks(0)
-    } else {
-      // Reset click count after 3 seconds of inactivity
-      setTimeout(() => {
-        setPortfolioClicks(0)
-      }, 3000)
-    }
-  }, [portfolioClicks, router, loginForm])
-
-  const switchToSignup = () => {
-    setErrorMessage('')
-    setViewMode('signup')
-  }
-
-  const switchToLogin = () => {
-    setErrorMessage('')
-    setViewMode('login')
-  }
-
-  const watchedSignupFields = signupForm.watch()
 
   return (
     <div 
-      className="relative min-h-screen w-full font-lexend bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900"
+      className="relative min-h-screen bg-slate-950 flex items-center justify-center px-4 py-8 sm:px-6 lg:px-8"
       style={{
         backgroundImage: "url('/images/login.png')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
       }}
     >
-      {/* Overlay escuro */}
-      <div className="absolute inset-0 bg-black bg-opacity-60 bg-gradient-to-t from-black via-transparent to-black" />
+      {/* New Auth Loading Overlay com Step Progression */}
+      <AuthLoadingOverlay
+        visible={showAuthOverlay}
+        steps={authSteps}
+        currentStepIndex={currentStepIndex}
+        onClose={() => {
+          setShowAuthOverlay(false)
+          setIsLoading(false)
+          // Reset steps to pending
+          setAuthSteps(steps => steps.map(step => ({ ...step, status: 'pending', errorMessage: undefined })))
+          setCurrentStepIndex(0)
+          setDetailedError(null)
+        }}
+      />
 
-      {/* Container principal */}
-      <div className="relative z-10 flex min-h-screen items-center justify-center p-3 sm:p-4 md:p-6 lg:p-12">
-        <AnimatePresence mode="wait">
-          {/* LOGIN VIEW */}
-          {viewMode === 'login' && (
-            <motion.div
-              key="login"
-              layoutId="auth-card"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
-              className="w-full max-w-md space-y-6 sm:space-y-8 rounded-3xl bg-gradient-to-br from-white/25 via-white/20 to-white/15 p-8 sm:p-10 shadow-2xl backdrop-blur-3xl border border-white/20 ring-1 ring-white/10"
-            >
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.1 }}
-              >
-                <h2
-                  onClick={handlePortfolioAccess}
-                  className={`mt-6 bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-center text-3xl sm:text-4xl font-bold tracking-tight text-transparent font-serif transition-all duration-200 select-none ${
-                    // Only show as clickable when form is empty/invalid
-                    (!loginForm.formState.isValid || (!loginForm.watch('username') && !loginForm.watch('password')))
-                      ? `cursor-pointer ${portfolioClicks > 0 ? 'brightness-125 scale-105' : 'hover:brightness-110'}`
-                      : 'cursor-default'
-                    }`}
-                  title={
-                    (!loginForm.formState.isValid || (!loginForm.watch('username') && !loginForm.watch('password'))) && portfolioClicks > 0
-                      ? `${portfolioClicks}/5`
-                      : undefined
-                  }
-                >
-                  Acesse sua Conta
-                </h2>
-                <p className="mt-2 text-center text-sm text-gray-300">
-                  Bem-vindo de volta à Ipê Imóveis.
-                </p>
-              </motion.div>
+      {/* Multi-layer overlay sutil para profundidade */}
+      <div className="absolute inset-0 bg-black/60" />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950/70 via-blue-950/50 to-slate-950/70" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30" />
+      
+      {/* Animated gradient accent - muito sutil */}
+      <motion.div
+        className="absolute inset-0 opacity-8"
+        animate={{
+          background: [
+            'radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 60%)',
+            'radial-gradient(circle at 80% 70%, rgba(251, 191, 36, 0.08) 0%, transparent 60%)',
+            'radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 60%)',
+            'radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 60%)',
+          ],
+        }}
+        transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+      />
 
-              <motion.div
-                className="flex justify-center"
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                <PillSelector
-                  options={[
-                    { label: 'Dashboard', value: 'dashboard' },
-                    { label: 'Estúdio', value: 'studio' },
-                  ]}
-                  value={loginMode}
-                  onChange={(value) => setLoginMode(value as LoginMode)}
-                />
-              </motion.div>
-
-              <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-6">
-                <motion.div
-                  className="space-y-4"
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <div>
-                    <Label htmlFor="username" className="text-gray-200">Email</Label>
-                    <div className="mt-1 relative">
-                      <div className="flex items-center bg-white/10 rounded-lg border border-white/20 focus-within:border-amber-400 focus-within:ring-1 focus-within:ring-amber-400 overflow-hidden">
-                        <Input
-                          id="username"
-                          type="text"
-                          placeholder="usuario"
-                          {...loginForm.register('username')}
-                          className={`flex-1 bg-transparent border-0 text-white placeholder-white/50 focus:ring-0 focus:border-0 ${loginForm.formState.errors.username ? 'text-red-400' : ''
-                            }`}
-                        />
-                        <div className="flex items-center border-l border-white/20">
-                          <span className="px-3 py-2 text-sm text-white/80">
-                            {selectedDomain}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => setSelectedDomain(selectedDomain === '@imobiliariaipe.com.br' ? '@ipeimoveis.com' : '@imobiliariaipe.com.br')}
-                            className="px-2 py-2 text-white/60 hover:text-white/90 transition-colors"
-                            title="Alternar domínio"
-                          >
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-                      
-                      {/* Help Icon */}
-                      <div className="absolute -right-6 top-1/2 transform -translate-y-1/2 group">
-                        <button
-                          type="button"
-                          className="w-4 h-4 text-white/50 hover:text-white/80 transition-colors"
-                        >
-                          <HelpCircle className="w-4 h-4" />
-                        </button>
-                        
-                        {/* Simple Tooltip */}
-                        <div className="absolute bottom-full right-0 mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
-                          <div className="font-medium text-amber-300 mb-1">Recomendação</div>
-                          <div className="mb-2">Use <span className="text-amber-200">@imobiliariaipe.com.br</span> como padrão.</div>
-                          <div className="text-green-400 text-xs">✅ Supabase Auth</div>
-                          
-                          <div className="absolute top-full right-3 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-                        </div>
-                      </div>
-                    </div>
-                    {loginForm.formState.errors.username && (
-                      <p className="text-red-400 text-sm mt-1">{loginForm.formState.errors.username.message}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="password" className="text-gray-200">Senha</Label>
-                    <div className="relative">
-                      <Input
-                        id="password"
-                        type={showPassword ? 'text' : 'password'}
-                        placeholder="Sua senha"
-                        {...loginForm.register('password')}
-                        className={`mt-1 bg-white/10 text-white placeholder-white/50 border-white/20 focus:border-amber-400 focus:ring-amber-400 pr-10 ${loginForm.formState.errors.password ? 'border-red-500' : ''
-                          }`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors mt-0.5"
-                      >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </button>
-                    </div>
-                    {loginForm.formState.errors.password && (
-                      <p className="text-red-400 text-sm mt-1">{loginForm.formState.errors.password.message}</p>
-                    )}
-                  </div>
-                </motion.div>
-
-                {errorMessage && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-red-500/20 border border-red-500/30 rounded-lg p-3"
-                  >
-                    <div className="flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0" />
-                      <div className="flex-1">
-                        <span className="text-red-300 text-sm">{errorMessage}</span>
-                        {rateLimitCountdown !== null && rateLimitCountdown > 0 && (
-                          <div className="mt-2 flex items-center gap-2">
-                            <div className="flex-1 bg-red-900/50 rounded-full h-1.5">
-                              <motion.div
-                                className="bg-red-400 h-full rounded-full"
-                                initial={{ width: '100%' }}
-                                animate={{ width: '0%' }}
-                                transition={{ duration: rateLimitCountdown, ease: 'linear' }}
-                              />
-                            </div>
-                            <span className="text-red-200 text-xs font-mono">
-                              {Math.floor(rateLimitCountdown / 60)}:{String(rateLimitCountdown % 60).padStart(2, '0')}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                <div className="space-y-4 mt-6">
-                  <Button
-                    type="submit"
-                    className="w-full h-12 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-base shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl flex-col"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <div className="flex flex-col items-center justify-center gap-2 w-full">
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                        {loadingPhase && (
-                          <span className="text-xs text-white/90 font-normal animate-pulse">{loadingPhase}</span>
-                        )}
-                      </div>
-                    ) : (
-                      <>
-                        Acessar Plataforma
-                        <ArrowRight className="ml-2 h-5 w-5" />
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </form>
-
-              {/* Portal Access & Diagnostic */}
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="mt-6"
-              >
-                {/* Portal Link */}
-                <LegacyPortalAccess />
-
-                {/* Diagnostic Results */}
-                {diagnosticResult && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className="mx-auto w-full sm:w-3/4 mt-4"
-                  >
-                    <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-4 text-xs font-mono">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-amber-400 font-semibold">🔍 DIAGNÓSTICO</span>
-                        <span className="text-gray-400">
-                          {new Date(diagnosticResult.timestamp).toLocaleTimeString('pt-BR')}
-                        </span>
-                      </div>
-                      
-                      <div className="space-y-2 text-gray-300">
-                        <div className="flex items-center gap-2">
-                          <span className={diagnosticResult.dns.resolved ? 'text-green-400' : 'text-red-400'}>
-                            {diagnosticResult.dns.resolved ? '✅' : '❌'}
-                          </span>
-                          <span>DNS: {diagnosticResult.dns.resolved ? `${diagnosticResult.dns.ip}` : 'FALHOU'}</span>
-                        </div>
-                        
-                        <div className="flex items-center gap-2">
-                          <span className={diagnosticResult.http.accessible ? 'text-green-400' : 'text-red-400'}>
-                            {diagnosticResult.http.accessible ? '✅' : '❌'}
-                          </span>
-                          <span>
-                            HTTP: {diagnosticResult.http.accessible 
-                              ? `${diagnosticResult.http.status} (${diagnosticResult.http.responseTime}ms)` 
-                              : 'FALHOU'
-                            }
-                          </span>
-                        </div>
-                        
-                        <div className="flex items-center gap-2">
-                          <span className={diagnosticResult.ssl.valid ? 'text-green-400' : 'text-red-400'}>
-                            {diagnosticResult.ssl.valid ? '✅' : '❌'}
-                          </span>
-                          <span>SSL: {diagnosticResult.ssl.valid ? 'OK' : 'INVÁLIDO'}</span>
-                        </div>
-
-                        {diagnosticResult.http.status === 500 && (
-                          <div className="mt-3 p-2 bg-red-900/50 border border-red-700 rounded">
-                            <div className="text-red-400 font-semibold">🚨 ERRO 500 DETECTADO</div>
-                            <div className="text-red-300 text-xs mt-1">
-                              Provável problema suPHP (UID menor que min_uid)
-                            </div>
-                            <div className="text-yellow-300 text-xs mt-2">
-                              <strong>Solução:</strong> Verificar proprietário dos arquivos PHP no servidor
-                            </div>
-                          </div>
-                        )}
-
-                        {diagnosticResult.http.error && (
-                          <div className="mt-2 p-2 bg-red-900/30 border border-red-800 rounded">
-                            <div className="text-red-400 text-xs">
-                              Erro: {diagnosticResult.http.error}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </motion.div>
-
-              {/* Solicitar Acesso Button */}
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.6 }}
-                className="mt-6 text-center"
-              >
-                <button
-                  onClick={switchToSignup}
-                  className="text-amber-300 hover:text-amber-200 text-sm transition-colors duration-200 group"
-                >
-                  Não tem acesso? <span className="font-semibold underline group-hover:text-white">Solicite aqui</span>
-                </button>
-              </motion.div>
-            </motion.div>
-          )}
-
-          {/* SIGNUP VIEW */}
-          {viewMode === 'signup' && (
-            <motion.div
-              key="signup"
-              layoutId="auth-card"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
-              className="w-full max-w-2xl space-y-8 rounded-2xl bg-white/20 p-8 shadow-2xl backdrop-blur-2xl border border-white/30"
-            >
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.1 }}
-                className="text-center"
-              >
-                <div className="w-16 h-16 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <UserPlus className="h-8 w-8 text-white" />
-                </div>
-                <h2 className="bg-gradient-to-r from-amber-300 to-orange-500 bg-clip-text text-4xl font-bold text-transparent font-serif mb-2">
-                  Junte-se à Equipe
-                </h2>
-                <p className="text-gray-300">
-                  Preencha seus dados para solicitar acesso
-                </p>
-              </motion.div>
-
-              <form onSubmit={signupForm.handleSubmit(onSignupSubmit)} className="space-y-6">
-                <motion.div
-                  className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <div>
-                    <Label htmlFor="full_name" className="text-gray-200">Nome completo</Label>
-                    <Input
-                      id="full_name"
-                      {...signupForm.register('full_name')}
-                      placeholder="João Silva"
-                      className={`mt-1 bg-white/10 text-white placeholder-white/50 border-white/20 focus:border-amber-400 transition-all duration-200 ${signupForm.formState.errors.full_name
-                        ? 'border-red-500'
-                        : watchedSignupFields.full_name
-                          ? 'border-green-400'
-                          : 'border-white/20'
-                        }`}
-                    />
-                    {signupForm.formState.errors.full_name && (
-                      <p className="text-red-400 text-sm mt-1">{signupForm.formState.errors.full_name.message}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="email" className="text-gray-200">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      {...signupForm.register('email')}
-                      placeholder="joao@email.com"
-                      className={`mt-1 bg-white/10 text-white placeholder-white/50 border-white/20 focus:border-amber-400 transition-all duration-200 ${signupForm.formState.errors.email
-                        ? 'border-red-500'
-                        : watchedSignupFields.email
-                          ? 'border-green-400'
-                          : 'border-white/20'
-                        }`}
-                    />
-                    {signupForm.formState.errors.email && (
-                      <p className="text-red-400 text-sm mt-1">{signupForm.formState.errors.email.message}</p>
-                    )}
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <Label htmlFor="phone" className="text-gray-200">WhatsApp</Label>
-                  <Input
-                    id="phone"
-                    {...signupForm.register('phone')}
-                    placeholder="(11) 99999-9999"
-                    className={`mt-1 bg-white/10 text-white placeholder-white/50 border-white/20 focus:border-amber-400 transition-all duration-200 ${signupForm.formState.errors.phone
-                      ? 'border-red-500'
-                      : watchedSignupFields.phone
-                        ? 'border-green-400'
-                        : 'border-white/20'
-                      }`}
-                  />
-                  {signupForm.formState.errors.phone && (
-                    <p className="text-red-400 text-sm mt-1">{signupForm.formState.errors.phone.message}</p>
-                  )}
-                </motion.div>
-
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                  className="space-y-3"
-                >
-                  <Label className="text-gray-200">Em qual setor você vai trabalhar?</Label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {departments.map((dept, index) => (
-                      <motion.button
-                        key={dept.value}
-                        type="button"
-                        onClick={() => handleDepartmentSelect(dept.value)}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4 + index * 0.1 }}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className={`p-4 rounded-xl border-2 text-left transition-all duration-200 ${selectedDepartment === dept.value
-                          ? 'border-amber-400 bg-amber-500/20 shadow-lg'
-                          : 'border-white/20 hover:border-amber-300 hover:bg-white/10'
-                          }`}
-                      >
-                        <div className="font-medium text-white">{dept.label}</div>
-                        <div className="text-xs text-gray-300 mt-1">{dept.desc}</div>
-                      </motion.button>
-                    ))}
-                  </div>
-                  {signupForm.formState.errors.department && (
-                    <p className="text-red-400 text-sm">{signupForm.formState.errors.department.message}</p>
-                  )}
-                </motion.div>
-
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.6 }}
-                >
-                  <Label htmlFor="justification" className="text-gray-200">Conte um pouco sobre você</Label>
-                  <textarea
-                    id="justification"
-                    {...signupForm.register('justification')}
-                    placeholder="Ex: Sou corretor há 3 anos, especializado em imóveis residenciais..."
-                    rows={3}
-                    className={`mt-1 w-full p-3 rounded-lg bg-white/10 text-white placeholder-white/50 border-2 focus:outline-none transition-all duration-200 resize-none ${signupForm.formState.errors.justification
-                      ? 'border-red-500'
-                      : watchedSignupFields.justification
-                        ? 'border-green-400'
-                        : 'border-white/20 focus:border-amber-400'
-                      }`}
-                  />
-                  {signupForm.formState.errors.justification && (
-                    <p className="text-red-400 text-sm mt-1">{signupForm.formState.errors.justification.message}</p>
-                  )}
-                </motion.div>
-
-                {errorMessage && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-red-500/20 border border-red-500/30 rounded-lg p-3 flex items-center gap-2"
-                  >
-                    <AlertTriangle className="h-4 w-4 text-red-400" />
-                    <span className="text-red-300 text-sm">{errorMessage}</span>
-                  </motion.div>
-                )}
-
-                <div className="space-y-4">
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Enviando...' : 'Enviar Solicitação'}
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                  <Button variant="outline" className="w-full" onClick={() => setViewMode('login')}>
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Voltar para o Login
-                  </Button>
-                </div>
-              </form>
-            </motion.div>
-          )}
-
-          {/* SUCCESS VIEW */}
-          {viewMode === 'success' && (
-            <motion.div
-              key="success"
-              layoutId="auth-card"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
-              className="w-full max-w-md space-y-8 rounded-2xl bg-white/20 p-8 shadow-2xl backdrop-blur-2xl border border-white/30 text-center"
-            >
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                className="relative"
-              >
-                <div className="w-20 h-20 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.4 }}
-                  >
-                    <Sparkles className="h-10 w-10 text-white" />
-                  </motion.div>
-                </div>
+      {/* Subtle noise texture para profundidade */}
+      <div 
+        className="absolute inset-0 opacity-[0.015]"
+        style={{
+          backgroundImage: `url("${NOISE_TEXTURE_SVG}")`,
+        }}
+      />
+      
+      {/* Login Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="relative w-full max-w-md lg:max-w-4xl z-10 mt-8 sm:mt-12"
+      >
+        {/* Glow effect sutil atrás do card */}
+        <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/10 to-amber-500/10 rounded-[2rem] blur-3xl" />
+        
+        <div className="relative bg-white/[0.09] backdrop-blur-2xl rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] border border-white/[0.18] overflow-hidden">
+          {/* Header com brand - compacto e elegante */}
+          <div className="relative bg-gradient-to-r from-amber-500 to-orange-600 px-6 py-4 sm:px-8 sm:py-5 lg:px-10 lg:py-6">
+            {/* Subtle pattern overlay no header */}
+            <div 
+              className="absolute inset-0 opacity-10"
+              style={{
+                backgroundImage: `url("${PATTERN_SVG}")`,
+              }}
+            />
+            
+            <div className="relative flex items-center justify-between">
+              <div className="flex items-center gap-3 lg:gap-4">
                 <motion.div
                   initial={{ scale: 0, rotate: -180 }}
                   animate={{ scale: 1, rotate: 0 }}
-                  transition={{ delay: 0.6, type: "spring" }}
-                  className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center"
+                  transition={{ delay: 0.2, type: "spring", bounce: 0.4, duration: 0.8 }}
+                  className="relative w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center shadow-xl flex-shrink-0"
                 >
-                  <Sparkles className="h-4 w-4 text-yellow-800" />
+                  <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-white drop-shadow-lg" />
                 </motion.div>
-              </motion.div>
-
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.3 }}
-              >
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-emerald-300 to-teal-400 bg-clip-text text-transparent font-serif mb-3">
-                  Tudo Certo!
-                </h2>
-                <p className="text-gray-300 text-lg">
-                  Sua solicitação foi enviada com sucesso
-                </p>
-              </motion.div>
-
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-2xl p-6 text-left border border-emerald-400/30"
-              >
-                <h3 className="font-bold text-emerald-300 mb-3 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-emerald-400 rounded-full"></span>
-                  O que acontece agora?
-                </h3>
-                <div className="space-y-2 text-sm text-emerald-200">
-                  <motion.div
-                    className="flex items-center gap-2"
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                  >
-                    <span className="text-emerald-400">1.</span>
-                    <span>Nossa equipe analisa sua solicitação</span>
-                  </motion.div>
-                  <motion.div
-                    className="flex items-center gap-2"
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.6 }}
-                  >
-                    <span className="text-emerald-400">2.</span>
-                    <span>Você recebe um email em até 24h</span>
-                  </motion.div>
-                  <motion.div
-                    className="flex items-center gap-2"
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.7 }}
-                  >
-                    <span className="text-emerald-400">3.</span>
-                    <span>Se aprovado, suas credenciais chegam por WhatsApp</span>
-                  </motion.div>
+                
+                <div>
+                  <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-white drop-shadow-lg leading-tight">
+                    Portal de Acesso
+                  </h1>
+                  <p className="text-white/80 text-xs sm:text-sm font-medium mt-0.5">
+                    Sistema Ipê Imobiliária
+                  </p>
                 </div>
-              </motion.div>
+              </div>
+              
+              {/* Security badge compacto */}
+              <div className="hidden sm:flex items-center gap-1.5 text-xs text-white/70 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                <Lock className="w-3 h-3" />
+                <span className="hidden lg:inline">Criptografado</span>
+              </div>
+            </div>
+          </div>
 
-              <motion.button
-                onClick={switchToLogin}
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.8 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl h-12 flex items-center justify-center gap-2"
+          {/* Form */}
+          <form onSubmit={handleSubmit(onSubmit)} className="p-6 sm:p-8 lg:p-10 space-y-5 sm:space-y-6">
+            {/* Detailed Error Alert */}
+            <AnimatePresence mode="wait">
+              {detailedError && (
+                <DetailedErrorAlert error={detailedError} />
+              )}
+              {error && !detailedError && (
+                <Alert type="error" message={error} />
+              )}
+            </AnimatePresence>
+
+            {/* Mode Selector */}
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold text-white/90 block">
+                Modo de Acesso
+              </Label>
+              <ModeSelector value={loginMode} onChange={setLoginMode} />
+            </div>
+
+            {/* Credentials Grid - layout otimizado */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-6">
+              {/* Email Input */}
+              <div className="space-y-2.5 lg:col-span-2">
+                <Label htmlFor="username" className="text-sm font-semibold text-white/90 block">
+                  Email Corporativo
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="username"
+                    type="email"
+                    placeholder="seu.email@imobiliariaipe.com.br"
+                    className={`
+                      h-12 sm:h-13 lg:h-14 px-4 lg:px-5 text-sm sm:text-base
+                      bg-white/[0.12] backdrop-blur-xl
+                      border-2 rounded-xl
+                      text-white placeholder:text-white/40
+                      font-medium
+                      transition-all duration-300
+                      shadow-lg shadow-black/10
+                      ${errors.username 
+                        ? 'border-red-400/60 focus:border-red-400 focus:ring-4 focus:ring-red-400/20' 
+                        : 'border-white/30 focus:border-amber-400 focus:ring-4 focus:ring-amber-400/20 hover:border-white/40'
+                      }
+                    `}
+                    {...register('username')}
+                  />
+                </div>
+                <AnimatePresence mode="wait">
+                  {errors.username && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="text-sm text-red-300 font-medium flex items-center gap-1.5 bg-red-500/10 px-3 py-2 rounded-lg"
+                    >
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      {errors.username.message}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+
+            {/* Password Input */}
+            <div className="space-y-2.5 lg:col-span-2">
+              <Label htmlFor="password" className="text-sm font-semibold text-white/90 block">
+                Senha de Acesso
+              </Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Digite sua senha"
+                  className={`
+                    h-12 sm:h-13 lg:h-14 pl-4 lg:pl-5 pr-14 text-sm sm:text-base
+                    bg-white/[0.12] backdrop-blur-xl
+                    border-2 rounded-xl
+                    text-white placeholder:text-white/40
+                    font-medium
+                    transition-all duration-300
+                    shadow-lg shadow-black/10
+                    ${errors.password 
+                      ? 'border-red-400/60 focus:border-red-400 focus:ring-4 focus:ring-red-400/20' 
+                      : 'border-white/30 focus:border-amber-400 focus:ring-4 focus:ring-amber-400/20 hover:border-white/40'
+                    }
+                  `}
+                  {...register('password')}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-all duration-200 p-2 rounded-lg hover:bg-white/10"
+                  aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+              <AnimatePresence mode="wait">
+                {errors.password && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="text-sm text-red-300 font-medium flex items-center gap-1.5 bg-red-500/10 px-3 py-2 rounded-lg"
+                  >
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                    {errors.password.message}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="pt-2">
+              <Button
+                type="submit"
+                disabled={loading || !isValid}
+                className="w-full h-12 sm:h-13 lg:h-14 text-base sm:text-lg
+                  bg-gradient-to-r from-amber-500 via-amber-600 to-orange-600 
+                  hover:from-amber-600 hover:via-orange-600 hover:to-orange-700
+                  text-white font-bold rounded-xl
+                  shadow-[0_10px_40px_-10px_rgba(251,191,36,0.4)]
+                  hover:shadow-[0_15px_50px_-10px_rgba(251,191,36,0.6)]
+                  transition-all duration-300
+                  disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none
+                  border-2 border-white/20
+                  transform hover:scale-[1.01] active:scale-[0.99]
+                "
               >
-                <ArrowLeft className="h-4 w-4" />
-                Voltar ao Login
-              </motion.button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+                {isLoading ? (
+                  <span className="flex items-center justify-center gap-2.5">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span className="font-semibold">Autenticando...</span>
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center gap-2.5">
+                    <ShieldCheck className="w-5 h-5" />
+                    <span>Acessar Plataforma</span>
+                  </span>
+                )}
+              </Button>
+            </div>
+
+            {/* Security Badge - apenas mobile */}
+            <div className="pt-5 border-t border-white/10 sm:hidden">
+              <div className="flex items-center justify-center gap-2 text-xs text-white/60">
+                <Lock className="w-3.5 h-3.5" />
+                <span>Conexão protegida por criptografia de ponta a ponta</span>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        {/* Footer Info */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-6 sm:mt-8 text-center text-xs sm:text-sm text-white/50"
+        >
+          <p>
+            © {new Date().getFullYear()} Imobiliária IPE - Todos os direitos reservados
+          </p>
+          <p className="mt-2">
+            Problemas com acesso? Entre em contato com o setor responsável.
+          </p>
+        </motion.div>
+      </motion.div>
     </div>
   )
 }
 
+// ============================================================================
+// EXPORT COM SUSPENSE
+// ============================================================================
+
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-amber-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando página de login...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-amber-600" />
       </div>
     }>
       <LoginPageContent />

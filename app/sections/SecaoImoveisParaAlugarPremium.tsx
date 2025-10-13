@@ -150,7 +150,7 @@ export default function SecaoImoveisParaAlugarPremium({ properties }: SecaoImove
                     <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-indigo-100 border border-blue-200/50 text-blue-800 px-5 py-2.5 rounded-full text-sm font-semibold mb-6 shadow-sm">
                         <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
                         <Home className="w-4 h-4" />
-                        Oportunidades
+                        Disponíveis Agora
                     </div>
 
                     <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-6 leading-tight">
@@ -161,9 +161,9 @@ export default function SecaoImoveisParaAlugarPremium({ properties }: SecaoImove
                     </h2>
 
                     <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                        Encontre o lar ideal para sua família em Guararema com{' '}
-                        <span className="font-semibold text-blue-700">as melhores condições</span>{' '}
-                        de aluguel do mercado
+                        Encontre o imóvel ideal para locação em Guararema com{' '}
+                        <span className="font-semibold text-blue-700">condições transparentes</span>{' '}
+                        e suporte completo
                     </p>
                 </div>
 

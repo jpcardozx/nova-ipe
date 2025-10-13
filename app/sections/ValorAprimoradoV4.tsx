@@ -74,13 +74,13 @@ export default function ValorAprimoradoModerno() {
         },
         venda: {
             title: "Vender Imóvel",
-            description: "Estratégia personalizada para venda do seu imóvel",
+            description: "Estratégia de venda para seu imóvel",
             icon: <Calculator className="w-5 h-5" />,
             points: [
-                "Avaliação profissional baseada no mercado atual",
-                "Divulgação nos principais canais de venda",
+                "Avaliação baseada no mercado atual",
+                "Divulgação em canais estratégicos",
                 "Qualificação e acompanhamento de interessados",
-                "Assessoria completa até o fechamento"
+                "Suporte até conclusão da venda"
             ]
         },
         gestao: {
@@ -698,17 +698,17 @@ export default function ValorAprimoradoModerno() {
 
                             {/* Main Title */}
                             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-4 md:mb-6 leading-[1.1] tracking-tight px-4">
-                                Orientações
+                                Perguntas
                                 <span className="block mt-1 md:mt-2 text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700">
-                                    Especializadas
+                                    Frequentes
                                 </span>
                             </h2>
 
                             {/* Subtitle with Institutional Tone */}
                             <p className="text-base md:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed font-light px-4">
-                                Informações precisas e transparentes para suas decisões imobiliárias
+                                Respostas sobre processos de compra, venda e gestão de imóveis
                                 <span className="hidden md:block mt-2 md:mt-3 text-sm md:text-base">
-                                    Expertise consolidada de <strong className="font-semibold text-slate-800">15 anos</strong> em Guararema e região
+                                    Informações baseadas em <strong className="font-semibold text-slate-800">15 anos</strong> de atuação em Guararema
                                 </span>
                             </p>
                         </motion.div>

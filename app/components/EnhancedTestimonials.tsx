@@ -31,9 +31,9 @@ interface EnhancedTestimonialsProps {
 const DEFAULT_TESTIMONIALS: Testimonial[] = [
     {
         id: '2',
-        name: 'Dr. Carlos Eduardo Mendes',
-        role: 'Médico Cirurgião, Investidor Imobiliário',
-        content: 'Como investidor, já transacionei 17 imóveis. A Ipê se diferencia pela abordagem analítica: forneceram relatório completo com histórico de valorização, análise comparativa de ROI e projeções fundamentadas. Comprei 2 pontos comerciais baseado em suas recomendações - ambos com inquilinos em <30 dias e ROI de 11.2% a.a., exatamente conforme projetado. Não são apenas corretores, são consultores estratégicos.',
+        name: 'Carlos Eduardo M.',
+        role: 'Investidor Imobiliário',
+        content: 'Comprei dois pontos comerciais com base nas análises da Ipê. Ambos foram locados em menos de 30 dias com ROI de 11.2% ao ano, exatamente conforme projetado. O diferencial está na transparência dos dados apresentados.',
         rating: 5,
         avatarUrl: '/images/testimonials/mark-erixon.png',
         neighborhood: 'Centro Histórico',
@@ -43,9 +43,9 @@ const DEFAULT_TESTIMONIALS: Testimonial[] = [
     },
     {
         id: '3',
-        name: 'Ricardo e Mariana Oliveira',
-        role: 'Executivos de TI vindos de São Paulo',
-        content: 'Morávamos em Moema e buscávamos qualidade de vida sem perder conectividade com SP. A Ipê nos guiou por todo processo: análise de financiamento, indicação de escolas, infraestrutura local. O que mais impressionou foi a transparência sobre pontos positivos E limitações de cada opção. Resultado: casa dos sonhos a 70km de SP, pagando 40% do que pagaríamos em condomínio na capital.',
+        name: 'Ricardo e Mariana O.',
+        role: 'Família de São Paulo',
+        content: 'Mudamos de Moema para Guararema buscando qualidade de vida. O suporte em análise de financiamento e infraestrutura local foi essencial. Encontramos a casa ideal, pagando 40% menos do que em São Paulo.',
         rating: 5,
         avatarUrl: '/images/testimonials/jim-bradley.png',
         neighborhood: 'Itapema Residencial',
@@ -54,9 +54,9 @@ const DEFAULT_TESTIMONIALS: Testimonial[] = [
     },
     {
         id: '4',
-        name: 'Marcos Vinícius Albuquerque',
-        role: 'Empresário, 4 Imóveis Administrados',
-        content: 'Tenho 4 imóveis administrados pela Ipê há 3 anos. O diferencial: relatórios mensais detalhados, gestão proativa de manutenções (resolvem problemas antes de virarem emergências caras) e taxa de vacância zero. Sempre que um inquilino sai, já tem lista de interessados qualificados. Em 3 anos: zero inadimplência, zero dor de cabeça. Vale cada centavo.',
+        name: 'Marcos Vinícius A.',
+        role: 'Proprietário de Imóveis',
+        content: 'Administro 4 imóveis com a Ipê há 3 anos. Relatórios mensais detalhados, manutenções proativas e taxa de vacância zero. Em 3 anos, zero inadimplência e zero dor de cabeça.',
         rating: 5,
         avatarUrl: '/images/testimonials/jessica-saunders.png',
         neighborhood: 'Diversos',
@@ -65,9 +65,9 @@ const DEFAULT_TESTIMONIALS: Testimonial[] = [
     },
     {
         id: '5',
-        name: 'Ana Paula e Roberto Silva',
-        role: 'Família, Primeira Compra',
-        content: 'Primeira compra é sempre estressante. A paciência da equipe em explicar cada etapa - financiamento, documentação, custos reais, escritura - foi fundamental. Visitamos 8 imóveis em 3 fins de semana, sempre com feedback honesto sobre prós e contras. O que selou nossa confiança: eles próprios apontaram problemas estruturais em uma casa, nos poupando de péssima decisão. Após 2 anos, nossa casa valorizou 22%.',
+        name: 'Ana Paula e Roberto S.',
+        role: 'Primeira Compra',
+        content: 'A equipe teve paciência em explicar cada etapa do processo. Visitamos 8 imóveis e sempre recebemos feedback honesto. Apontaram problemas estruturais que nos pouparam de má decisão. Após 2 anos, nossa casa valorizou 22%.',
         rating: 5,
         avatarUrl: '/images/testimonials/becky-snider.png',
         neighborhood: 'Portal das Colinas',
@@ -78,8 +78,8 @@ const DEFAULT_TESTIMONIALS: Testimonial[] = [
 
 // Componente principal
 export default function EnhancedTestimonials({
-    title = "O que nossos clientes dizem",
-    subtitle = "Histórias reais de clientes que confiaram em nossa expertise para encontrar o imóvel ideal em Guararema",
+    title = "Experiências Reais",
+    subtitle = "Clientes que encontraram o imóvel ideal em Guararema",
     mode = 'default',
     theme = 'light',
     testimonials = DEFAULT_TESTIMONIALS

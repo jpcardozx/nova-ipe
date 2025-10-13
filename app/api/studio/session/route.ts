@@ -1,97 +1,109 @@
-// app/api/studio/session/route.ts
+/**
+ * 🎨 STUDIO SESSION API
+ * Verifica e gerencia sessão Studio via Supabase SSR
+ * Compatível com Next.js 15 + Supabase SSR
+ */
+
 import { NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createSupabaseServerClient } from '@/lib/auth/supabase-auth'
 
 /**
- * Check studio session status using Supabase Auth
+ * GET /api/studio/session
+ * Verifica se há sessão ativa com permissões Studio
  */
 export async function GET() {
-    try {
-        console.log('🔍 === VERIFICAÇÃO DE SESSÃO STUDIO (Supabase) ===')
-        console.log('🔍 Timestamp:', new Date().toISOString())
+  try {
+    console.log('🔍 === VERIFICAÇÃO DE SESSÃO STUDIO (Supabase SSR) ===')
+    console.log('🔍 Timestamp:', new Date().toISOString())
 
-        const cookieStore = await cookies()
-        const allCookies = cookieStore.getAll()
-        console.log('🍪 Cookies disponíveis:', allCookies.map((c: { name: string }) => c.name).join(', '))
+    // Obter sessão via Supabase SSR
+    const supabase = await createSupabaseServerClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
 
-        const supabase = createRouteHandlerClient({ cookies: () => Promise.resolve(cookieStore) })
-
-        // Verificar sessão do Supabase
-        const { data: { session }, error } = await supabase.auth.getSession()
-
-        if (error) {
-            console.error('❌ Erro ao verificar sessão:', error.message)
-            console.error('❌ Detalhes do erro:', error)
-            return NextResponse.json({
-                authenticated: false,
-                error: 'Erro ao verificar sessão'
-            })
-        }
-
-        if (!session || !session.user) {
-            console.log('❌ Nenhuma sessão Supabase encontrada')
-            console.log('❌ Session data:', session)
-            return NextResponse.json({
-                authenticated: false,
-                error: 'Nenhuma sessão encontrada'
-            })
-        }
-
-        console.log('✅ Sessão Supabase válida encontrada:', session.user.email)
-        console.log('✅ Session expires at:', new Date(session.expires_at! * 1000).toISOString())
-
-        return NextResponse.json({
-            authenticated: true,
-            user: {
-                email: session.user.email,
-                name: session.user.user_metadata?.name || session.user.email?.split('@')[0],
-                provider: 'supabase_auth'
-            }
-        })
-
-    } catch (error) {
-        console.error('❌ Erro ao verificar sessão do Studio:', error)
-        return NextResponse.json({
-            authenticated: false,
-            error: 'Erro ao verificar sessão'
-        })
+    if (error || !user) {
+      console.log('❌ Nenhuma sessão ativa:', error?.message)
+      return NextResponse.json({
+        authenticated: false,
+        error: 'Sessão não encontrada',
+      })
     }
+
+    // Verificar role (app_metadata tem prioridade sobre user_metadata)
+    const userRole = (user.app_metadata?.role || user.user_metadata?.role || 'user') as string
+    
+    // Verificar permissão Studio
+    const hasStudioAccess = ['user', 'admin', 'studio'].includes(userRole)
+
+    if (!hasStudioAccess) {
+      console.log('❌ Sem permissões Studio:', userRole)
+      return NextResponse.json({
+        authenticated: false,
+        error: 'Permissões insuficientes',
+        hint: 'Esta área requer acesso Studio',
+      })
+    }
+
+    console.log('✅ Sessão Studio ativa:', user.email)
+    console.log('✅ Role:', userRole)
+    console.log('✅ User ID:', user.id)
+
+    return NextResponse.json({
+      authenticated: true,
+      user: {
+        userId: user.id,
+        email: user.email,
+        role: userRole,
+        name: user.email?.split('@')[0] || 'User',
+      },
+    })
+  } catch (error) {
+    console.error('❌ [Studio Session] Error:', error)
+    return NextResponse.json(
+      {
+        authenticated: false,
+        error: 'Erro ao verificar sessão',
+      },
+      { status: 500 }
+    )
+  }
 }
 
 /**
- * Clear studio session (logout) - usa Supabase Auth
+ * DELETE /api/studio/session
+ * Logout (remove sessão Supabase)
  */
 export async function DELETE() {
-    try {
-        console.log('🚪 === LOGOUT STUDIO (Supabase) ===')
+  try {
+    console.log('🚪 === LOGOUT STUDIO (Supabase SSR) ===')
 
-        const cookieStore = await cookies()
-        const supabase = createRouteHandlerClient({ cookies: () => Promise.resolve(cookieStore) })
+    const supabase = await createSupabaseServerClient()
+    const { error } = await supabase.auth.signOut()
 
-        // Fazer logout no Supabase
-        const { error } = await supabase.auth.signOut()
-
-        if (error) {
-            console.error('❌ Erro ao fazer logout:', error.message)
-            return NextResponse.json({
-                success: false,
-                error: 'Erro ao fazer logout'
-            }, { status: 500 })
-        }
-
-        console.log('✅ Logout realizado com sucesso')
-
-        return NextResponse.json({
-            success: true,
-            message: 'Sessão do Studio removida'
-        })
-
-    } catch (error) {
-        console.error('❌ Erro ao remover sessão do Studio:', error)
-        return NextResponse.json({
-            success: false,
-            error: 'Erro interno do servidor'
-        }, { status: 500 })
+    if (error) {
+      console.error('❌ Erro ao fazer logout:', error.message)
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Erro ao remover sessão',
+        },
+        { status: 500 }
+      )
     }
+
+    console.log('✅ Logout realizado com sucesso')
+
+    return NextResponse.json({
+      success: true,
+      message: 'Sessão do Studio removida',
+    })
+  } catch (error) {
+    console.error('❌ [Studio Logout] Error:', error)
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Erro interno do servidor',
+      },
+      { status: 500 }
+    )
+  }
 }

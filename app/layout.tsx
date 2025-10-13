@@ -4,6 +4,7 @@ import { Providers } from './providers/QueryProvider';
 import ReactQueryProvider from './providers/ReactQueryProvider';
 import ConditionalLayout from './components/ConditionalLayout';
 import { NotificationProvider } from '@/app/providers/NotificationProvider';
+import { ToastProvider } from './components/ui/Toast';
 import './globals.css';
 
 // CSS variables para fontes usando fallbacks
@@ -142,11 +143,13 @@ export default function RootLayout({
         <style dangerouslySetInnerHTML={{ __html: `:root { ${fontVariables} }` }} />
         <Providers>
           <ReactQueryProvider>
-            <NotificationProvider>
-              <ConditionalLayout>
-                {children}
-              </ConditionalLayout>
-            </NotificationProvider>
+            <ToastProvider>
+              <NotificationProvider>
+                <ConditionalLayout>
+                  {children}
+                </ConditionalLayout>
+              </NotificationProvider>
+            </ToastProvider>
           </ReactQueryProvider>
         </Providers>
         <Analytics />

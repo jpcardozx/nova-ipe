@@ -228,24 +228,24 @@ export default function MarketAnalysisSection() {
                         <div className="w-2 h-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 animate-pulse" />
                         <Database className="w-5 h-5 text-slate-700 group-hover:text-amber-600 transition-colors" />
                         <span className="text-sm font-semibold text-slate-700 tracking-wider uppercase">
-                            Inteligência de Mercado
+                            Dados de Mercado
                         </span>
                         <div className="w-2 h-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 animate-pulse" />
                     </motion.div>
 
                     {/* Refined Title with Typography Hierarchy */}
                     <h2 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-slate-900 mb-8 leading-[1.1] tracking-tight">
-                        Análise Estratégica do
+                        Panorama do
                         <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700">
-                            Mercado Imobiliário Local
+                            Mercado Imobiliário
                         </span>
                     </h2>
 
                     {/* Consultative Subtitle with Two-Line Structure */}
                     <p className="text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed font-light">
-                        Dados consolidados e análises fundamentadas para decisões imobiliárias assertivas.
+                        Informações sobre preços e características dos imóveis em Guararema.
                         <span className="block mt-4 text-base">
-                            Metodologia baseada em <strong className="font-semibold text-slate-800">15 anos</strong> de experiência no mercado regional
+                            Dados baseados em <strong className="font-semibold text-slate-800">15 anos</strong> de atuação no mercado regional
                         </span>
                     </p>
 

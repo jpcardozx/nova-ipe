@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from 'next/navigation';
-import CenteredNavbar from './ui/CenteredNavbar-optimized';
+import Navbar from '../sections/NavBar';
 import FooterAprimorado from '../sections/FooterAprimorado';
 
 interface ConditionalLayoutProps {
@@ -23,7 +23,7 @@ const ConditionalLayout = ({ children }: ConditionalLayoutProps) => {
 
   return (
     <>
-      {showNavFooter && <CenteredNavbar />}
+      {showNavFooter && <Navbar />}
       <main role="main">
         {children}
       </main>

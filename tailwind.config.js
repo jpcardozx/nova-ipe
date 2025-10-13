@@ -34,6 +34,15 @@ module.exports = {
         serif: ['var(--font-playfair-display)', 'Georgia', 'serif'],
         lexend: ['var(--font-lexend)', 'system-ui', 'sans-serif'],
       },
+      animation: {
+        shimmer: 'shimmer 1.5s linear infinite',
+      },
+      keyframes: {
+        shimmer: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
+      },
     },
   },
   plugins: [

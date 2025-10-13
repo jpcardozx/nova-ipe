@@ -12,6 +12,7 @@ import {
 // Components
 import PropertyCardPremium from './PropertyCardPremium'
 import HeroStyleCarousel from './HeroStyleCarousel'
+import HeroCategoryNavigation from './HeroCategoryNavigation'
 import {
     transformToUnifiedPropertyList,
     toPropertyCardPremiumProps,
@@ -205,29 +206,29 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
         {
             icon: Clock,
             number: "15+",
-            text: "Anos no mercado",
-            subtitle: "Experiência consolidada",
+            text: "Anos de atuação",
+            subtitle: "Mercado local",
             color: "from-blue-500 to-blue-600"
         },
         {
             icon: Shield,
             number: "100%",
-            text: "Transações seguras",
-            subtitle: "Suporte jurídico completo",
+            text: "Transações legalizadas",
+            subtitle: "Documentação completa",
             color: "from-green-500 to-green-600"
         },
         {
             icon: Award,
             number: "500+",
-            text: "Negócios fechados",
-            subtitle: "Histórico de sucesso",
+            text: "Negócios realizados",
+            subtitle: "Compras e vendas",
             color: "from-amber-500 to-amber-600"
         },
         {
             icon: Users,
             number: "1000+",
-            text: "Famílias atendidas",
-            subtitle: "Confiança comprovada",
+            text: "Clientes atendidos",
+            subtitle: "Guararema e região",
             color: "from-purple-500 to-purple-600"
         }
     ], [])
@@ -326,11 +327,11 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
 
     const copyContent = useMemo(() => ({
         title: searchState.mode === 'venda'
-            ? 'Encontre sua casa ideal'
-            : 'Descubra o lar perfeito',
+            ? 'Encontre o imóvel ideal'
+            : 'Imóveis para locação',
         subtitle: searchState.mode === 'venda'
-            ? 'Realize o sonho da casa própria com nossa orientação especializada'
-            : 'Encontre conforto e praticidade nos melhores imóveis para locação'
+            ? 'Casas, apartamentos e terrenos em Guararema'
+            : 'Opções de aluguel com suporte completo'
     }), [searchState.mode])
 
     // Loading state
@@ -354,27 +355,54 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
             role="banner"
             aria-label="Página inicial da Ipê Imóveis"
         >
-            {/* Balanced Background System */}
+            {/* Premium Background System - Alta Qualidade */}
             <div className="absolute inset-0">
-                {/* Base Image Layer - More Visible */}
-                <div
-                    className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-[0.25]"
-                    style={{
-                        backgroundImage: `url('/images/hero-drone.jpg')`,
-                        backgroundPosition: 'center center',
-                        backgroundSize: 'cover',
-                        filter: 'contrast(1.1) brightness(0.9)'
-                    }}
-                />
+                {/* Base Image Layer - Alta resolução com srcset */}
+                <div className="absolute inset-0">
+                    <picture>
+                        <source
+                            media="(max-width: 640px)"
+                            srcSet="/images/hero-drone.jpg 1x, /images/hero-drone.jpg 2x"
+                        />
+                        <source
+                            media="(min-width: 641px)"
+                            srcSet="/images/hero-drone.jpg 1x, /images/hero-drone.jpg 2x"
+                        />
+                        <div
+                            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
+                            style={{
+                                backgroundImage: `url('/images/hero-drone.jpg')`,
+                                backgroundPosition: 'center 40%',
+                                backgroundSize: 'cover',
+                                filter: 'contrast(1.2) brightness(0.9) saturate(1.15)',
+                                imageRendering: '-webkit-optimize-contrast'
+                            }}
+                        />
+                    </picture>
+                </div>
 
-                {/* Single Smart Overlay - 10% mais sutil */}
-                <div className="absolute inset-0 bg-gradient-to-br from-slate-900/65 via-slate-800/55 to-slate-900/70" />
+                {/* Overlay Desktop - Sofisticado */}
+                <div className="hidden sm:block absolute inset-0 bg-gradient-to-br from-slate-950/75 via-slate-900/60 to-slate-800/70" />
 
-                {/* Subtle Brand Accent */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-amber-950/10 to-transparent" />
+                {/* Overlay Mobile - Mais escuro e elegante */}
+                <div className="sm:hidden absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-900/75 to-slate-900/80" />
+
+                {/* Accent radial desktop */}
+                <div className="hidden sm:block absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(251,191,36,0.15),transparent_60%),radial-gradient(ellipse_at_bottom_left,rgba(251,146,60,0.10),transparent_60%)]" />
+
+                {/* Accent radial mobile - mais sutil */}
+                <div className="sm:hidden absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.08),transparent_50%)]" />
+
+                {/* Noise texture premium */}
+                <div className="absolute inset-0 opacity-[0.02] mix-blend-soft-light" style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E")`
+                }} />
+
+                {/* Vignette elegante */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(15,23,42,0.4)_100%)]" />
 
                 {/* Top Brand Line */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 shadow-sm" />
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/60 to-transparent shadow-lg shadow-amber-500/30" />
             </div>            {/* Main content - Design Premium com Hierarquia Visual Otimizada */}
             <div className="relative z-10 flex-1 flex flex-col justify-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 max-w-7xl mx-auto w-full space-y-6 sm:space-y-8 lg:space-y-12">
 
@@ -997,142 +1025,8 @@ export default function MobileFirstHeroClean({ imoveisEmAlta = [] }: HeroProps) 
                     </div>
                 </div>
 
-                {/* Navegação por Categorias - Premium com Imagens Reais */}
-                <div className="mt-8 sm:mt-12 mb-6 sm:mb-8">
-                    <div className="max-w-5xl mx-auto">
-                        {/* Header da Navegação */}
-                        <div className="text-center mb-6 sm:mb-8">
-                            <h3 className="text-white text-xl sm:text-2xl font-bold mb-3">
-                                Explore por Categoria
-                            </h3>
-                            <p className="text-slate-300 text-sm sm:text-base max-w-md mx-auto">
-                                Encontre o imóvel para você entre nossas principais categorias
-                            </p>
-                        </div>
-
-                        {/* Cards de Navegação com Imagens Reais - Mobile First */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                            {/* Card Casas */}
-                            <Link
-                                href="/catalogo?tipo=casa"
-                                className="group relative overflow-hidden rounded-2xl bg-slate-900/60 backdrop-blur-xl border border-slate-600/30 hover:border-blue-400/50 transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900"
-                                aria-label="Ver casas disponíveis"
-                            >
-                                <div className="aspect-[4/3] relative overflow-hidden">
-                                    <img
-                                        src="/images/imagensHero/casasHero.webp"
-                                        alt="Casas Residenciais"
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-800/40 to-transparent"></div>
-
-                                    {/* Overlay de Hover */}
-                                    <div className="absolute inset-0 bg-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                </div>
-
-                                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <div className="p-2 bg-blue-500/20 rounded-lg backdrop-blur-sm">
-                                            <Home className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
-                                        </div>
-                                        <div>
-                                            <h4 className="text-white font-bold text-base sm:text-lg group-hover:text-blue-100 transition-colors">
-                                                Casas
-                                            </h4>
-                                            <p className="text-slate-300 text-sm group-hover:text-blue-200 transition-colors">
-                                                Residenciais completas
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Link>
-
-                            {/* Card Sítios */}
-                            <Link
-                                href="/catalogo?tipo=sitio"
-                                className="group relative overflow-hidden rounded-2xl bg-slate-900/60 backdrop-blur-xl border border-slate-600/30 hover:border-green-400/50 transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-slate-900"
-                                aria-label="Ver sítios e chácaras disponíveis"
-                            >
-                                <div className="aspect-[4/3] relative overflow-hidden">
-                                    <img
-                                        src="/images/imagensHero/sitiosHero.webp"
-                                        alt="Sítios e Chácaras"
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-800/40 to-transparent"></div>
-
-                                    {/* Overlay de Hover */}
-                                    <div className="absolute inset-0 bg-green-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                </div>
-
-                                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <div className="p-2 bg-green-500/20 rounded-lg backdrop-blur-sm">
-                                            <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-green-400" />
-                                        </div>
-                                        <div>
-                                            <h4 className="text-white font-bold text-base sm:text-lg group-hover:text-green-100 transition-colors">
-                                                Sítios
-                                            </h4>
-                                            <p className="text-slate-300 text-sm group-hover:text-green-200 transition-colors">
-                                                Propriedades rurais
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Link>
-
-                            {/* Card Terrenos */}
-                            <Link
-                                href="/catalogo?tipo=terreno"
-                                className="group relative overflow-hidden rounded-2xl bg-slate-900/60 backdrop-blur-xl border border-slate-600/30 hover:border-amber-400/50 transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-900"
-                                aria-label="Ver terrenos disponíveis"
-                            >
-                                <div className="aspect-[4/3] relative overflow-hidden">
-                                    <img
-                                        src="/images/imagensHero/terrenosHero.webp"
-                                        alt="Terrenos para Construção"
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-800/40 to-transparent"></div>
-
-                                    {/* Overlay de Hover */}
-                                    <div className="absolute inset-0 bg-amber-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                </div>
-
-                                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <div className="p-2 bg-amber-500/20 rounded-lg backdrop-blur-sm">
-                                            <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />
-                                        </div>
-                                        <div>
-                                            <h4 className="text-white font-bold text-base sm:text-lg group-hover:text-amber-100 transition-colors">
-                                                Terrenos
-                                            </h4>
-                                            <p className="text-slate-300 text-sm group-hover:text-amber-200 transition-colors">
-                                                Lotes para construir
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Link>
-                        </div>
-
-                        {/* Call to Action Premium */}
-                        <div className="text-center mt-6 sm:mt-8">
-                            <div className="inline-flex items-center gap-2 bg-slate-900/60 backdrop-blur-xl border border-amber-400/20 rounded-xl px-4 py-2">
-                                <span className="text-slate-300 text-sm">Não encontrou o que procura?</span>
-                                <Link
-                                    href="/catalogo"
-                                    className="text-amber-400 hover:text-amber-300 font-semibold transition-colors text-sm inline-flex items-center gap-1"
-                                >
-                                    Ver todos os imóveis
-                                    <ArrowRight className="w-4 h-4" />
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {/* Navegação por Categorias - S-Tier Optimized */}
+                <HeroCategoryNavigation />
             </div>
 
             {/* Enhanced Custom styles for S-tier UX */}

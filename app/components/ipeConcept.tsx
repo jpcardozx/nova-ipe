@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import {
     MapPin, Star, CheckCircle2, Users, Award, FileText, Building2, Home, Briefcase, ClipboardSignature, Megaphone, Handshake, Compass, Network, ShieldCheck, TrendingUp, Sparkles
 } from 'lucide-react';
@@ -35,23 +35,23 @@ const processos = [
 const diferenciais = [
     {
         icon: <Compass className="w-8 h-8 text-amber-600" />,
-        metrica: "Expertise Local",
-        descricao: "Mapeamento profundo de Guararema, com histórico de preços e tendências de valorização."
+        metrica: "Conhecimento Local",
+        descricao: "Atuação focada em Guararema com histórico de preços e análise de mercado regional."
     },
     {
         icon: <Network className="w-8 h-8 text-amber-600" />,
-        metrica: "Rede de Contatos",
-        descricao: "Base consolidada de compradores pré-aprovados e parceiros, agilizando transações."
+        metrica: "Rede Estabelecida",
+        descricao: "Base de compradores qualificados e parceiros locais para agilizar negociações."
     },
     {
         icon: <ShieldCheck className="w-8 h-8 text-amber-600" />,
-        metrica: "Suporte Técnico",
-        descricao: "Nossos corretores oferecem orientação técnica sobre o imóvel, documentação e o mercado."
+        metrica: "Orientação Técnica",
+        descricao: "Suporte em avaliação, documentação e aspectos legais das transações imobiliárias."
     },
     {
         icon: <TrendingUp className="w-8 h-8 text-amber-600" />,
-        metrica: "Inteligência de Mercado",
-        descricao: "Anos de experiência focados exclusivamente no mercado imobiliário de Guararema e região."
+        metrica: "Experiência Regional",
+        descricao: "15 anos de atuação no mercado imobiliário de Guararema e cidades próximas."
     }
 ];
 
@@ -66,18 +66,26 @@ const garantias = [
 // --- SUB-COMPONENTS (Elevated & Final) ---
 const ProcessStep = ({ step, isActive, onHover }: { step: any; isActive: any; onHover: any }) => {
     return (
-        <div 
+        <motion.div
             className={`flex items-start gap-6 transition-all duration-500 ease-in-out ${isActive ? 'filter-none' : 'filter saturate-50 opacity-70'}`}
             onMouseEnter={onHover}
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
-            <div className={`flex-shrink-0 w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-500 ${isActive ? 'bg-gradient-to-br from-amber-500 to-orange-500 transform scale-100' : 'bg-gray-100 transform scale-90'}`}>
+            <motion.div
+                className={`flex-shrink-0 w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-500 ${isActive ? 'bg-gradient-to-br from-amber-500 to-orange-500 transform scale-100' : 'bg-gray-100 transform scale-90'}`}
+                whileHover={{ scale: 1.05, rotate: 2 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            >
                 {step.icon}
-            </div>
+            </motion.div>
             <div>
                 <h4 className="text-xl font-bold text-slate-900 mb-2">{step.titulo}</h4>
                 <p className="text-slate-600 leading-relaxed">{step.descricao}</p>
             </div>
-        </div>
+        </motion.div>
     );
 };
 
@@ -116,6 +124,15 @@ const DifferentialCard = ({ item }: { item: any }) => {
 export default function UXOptimizedNovaIpeSection({ className }: { className?: string }) {
     const [activeStep, setActiveStep] = useState(0);
     const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
+    const imageRef = useRef<HTMLDivElement>(null);
+
+    // Parallax effect for image
+    const { scrollYProgress } = useScroll({
+        target: imageRef,
+        offset: ["start end", "end start"]
+    });
+    const y = useTransform(scrollYProgress, [0, 1], [80, -80]);
+    const ySmooth = useSpring(y, { stiffness: 100, damping: 30 });
 
     useEffect(() => {
         const observers: IntersectionObserver[] = [];
@@ -140,30 +157,42 @@ export default function UXOptimizedNovaIpeSection({ className }: { className?: s
 
             <div className="container mx-auto px-6 relative z-10">
                 <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-20">
-                        <div className="inline-flex items-center gap-3 px-5 py-2 bg-amber-100/60 border border-amber-200/80 rounded-full mb-6 shadow-sm">
+                    <motion.div
+                        className="text-center mb-20"
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                        <motion.div
+                            className="inline-flex items-center gap-3 px-5 py-2 bg-amber-100/60 border border-amber-200/80 rounded-full mb-6 shadow-sm"
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            whileInView={{ scale: 1, opacity: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5, delay: 0.2 }}
+                        >
                             <Award className="w-5 h-5 text-amber-700" />
-                            <span className="text-sm text-amber-800 font-semibold">Expertise e Confiança em Guararema</span>
-                        </div>
+                            <span className="text-sm text-amber-800 font-semibold">Como Trabalhamos</span>
+                        </motion.div>
                         <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-4 leading-tight tracking-tight">
-                            Nossa Forma de <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">Trabalhar</span>
+                            Processo de <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">Atendimento</span>
                         </h2>
                         <p className="text-lg text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                            Entenda a metodologia que garante segurança e eficiência em cada transação imobiliária.
+                            Etapas claras para segurança e transparência em cada transação imobiliária.
                         </p>
-                    </div>
+                    </motion.div>
 
-                    <div className="grid lg:grid-cols-12 gap-16 xl:gap-24">
-                        <div className="lg:col-span-7">
-                            <div className="relative pl-12 mb-24">
-                                <div className="absolute left-[48px] top-0 h-full w-1 bg-amber-100 rounded-full" />
-                                <motion.div 
-                                    className="absolute left-[48px] top-0 h-full w-1 bg-gradient-to-b from-amber-400 to-orange-500 rounded-full"
-                                    style={{ scaleY: 0, originY: 0 }} 
-                                    animate={{ scaleY: activeStep / (processos.length - 1) }} 
+                    <div className="grid lg:grid-cols-12 gap-8 lg:gap-16 xl:gap-24">
+                        <div className="lg:col-span-7 space-y-12 lg:space-y-16">
+                            <div className="relative pl-0 sm:pl-12 mb-12 lg:mb-24">
+                                <div className="hidden sm:block absolute left-[48px] top-0 h-full w-1 bg-amber-100 rounded-full" />
+                                <motion.div
+                                    className="hidden sm:block absolute left-[48px] top-0 h-full w-1 bg-gradient-to-b from-amber-400 to-orange-500 rounded-full"
+                                    style={{ scaleY: 0, originY: 0 }}
+                                    animate={{ scaleY: activeStep / (processos.length - 1) }}
                                     transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                                 />
-                                <div className="space-y-20">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:space-y-0 sm:gap-6 lg:block lg:space-y-20 lg:gap-0">
                                     {processos.map((step, index) => (
                                         <div key={index} ref={el => { if (stepRefs.current) stepRefs.current[index] = el; }} onMouseEnter={() => setActiveStep(index)}>
                                             <ProcessStep step={step} isActive={activeStep >= index} onHover={() => setActiveStep(index)} />
@@ -172,45 +201,73 @@ export default function UXOptimizedNovaIpeSection({ className }: { className?: s
                                 </div>
                             </div>
 
-                            <div className="mb-24">
-                                <h3 className="text-3xl font-bold text-slate-900 mb-8 text-center">Nossos Diferenciais</h3>
-                                <div className="grid grid-cols-2 gap-6">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, margin: "-80px" }}
+                                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                            >
+                                <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-6 sm:mb-8 text-center px-4 sm:px-0">Nossos Diferenciais</h3>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                     {diferenciais.map((item, index) => (
                                         <DifferentialCard key={index} item={item} />
                                     ))}
                                 </div>
-                            </div>
+                            </motion.div>
 
-                            <div className="bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-8 text-white shadow-2xl border-t-4 border-amber-500 mb-16">
+                            <motion.div
+                                className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 sm:p-8 text-white shadow-2xl border-t-4 border-amber-500"
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, margin: "-60px" }}
+                                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                            >
                                 <div className="flex items-center gap-4 mb-6">
                                     <Award className="w-8 h-8 text-amber-400" />
                                     <h3 className="text-2xl font-bold">Nossas Garantias</h3>
                                 </div>
                                 <ul className="space-y-4">
                                     {garantias.map((garantia, index) => (
-                                        <li key={index} className="flex items-start gap-3">
+                                        <motion.li
+                                            key={index}
+                                            className="flex items-start gap-3"
+                                            initial={{ opacity: 0, x: -10 }}
+                                            whileInView={{ opacity: 1, x: 0 }}
+                                            viewport={{ once: true }}
+                                            transition={{ duration: 0.4, delay: index * 0.1 }}
+                                        >
                                             <CheckCircle2 className="w-5 h-5 text-amber-400 mt-1 flex-shrink-0" />
                                             <span className="text-gray-300 leading-relaxed">{garantia}</span>
-                                        </li>
+                                        </motion.li>
                                     ))}
                                 </ul>
-                            </div>
+                            </motion.div>
 
-                            <div className="flex flex-col sm:flex-row gap-4">
-                                <Link href="/contato?assunto=avaliacao" className="group flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-3">
-                                    <Home className="w-5 h-5" />
+                            <motion.div
+                                className="flex flex-col sm:flex-row gap-3 sm:gap-4"
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, margin: "-40px" }}
+                                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                            >
+                                <Link href="/contato?assunto=avaliacao" className="group flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 sm:gap-3">
+                                    <Home className="w-5 h-5 flex-shrink-0" />
                                     <span>Solicitar Avaliação</span>
                                 </Link>
-                                <Link href="/contato?assunto=venda" className="group flex-1 bg-white hover:bg-amber-50 border-2 border-amber-200 hover:border-amber-400 text-amber-700 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-3">
-                                    <Briefcase className="w-5 h-5" />
+                                <Link href="/contato?assunto=venda" className="group flex-1 bg-white hover:bg-amber-50 border-2 border-amber-200 hover:border-amber-400 text-amber-700 px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 sm:gap-3">
+                                    <Briefcase className="w-5 h-5 flex-shrink-0" />
                                     <span>Vender Imóvel</span>
                                 </Link>
-                            </div>
+                            </motion.div>
                         </div>
 
                         <div className="lg:col-span-5">
                             <div className="sticky top-24 pb-12">
-                                <div className="relative group">
+                                <motion.div
+                                    ref={imageRef}
+                                    style={{ y: ySmooth }}
+                                    className="relative group"
+                                >
                                     <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 opacity-80 blur-md group-hover:opacity-100 transition-all duration-500" />
                                     <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-white p-1">
                                         <Image
@@ -223,9 +280,9 @@ export default function UXOptimizedNovaIpeSection({ className }: { className?: s
                                         />
                                     </div>
                                     <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-md text-white px-4 py-2 rounded-xl font-semibold text-sm shadow-lg border border-white/20">
-                                        CRECI 152.847-F
+                                        CRECI 32.933-J
                                     </div>
-                                </div>
+                                </motion.div>
                             </div>
                         </div>
                     </div>
