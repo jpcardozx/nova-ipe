@@ -6,7 +6,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { getSupabaseClient } from '@/lib/supabase/client-singleton'
 import { useCurrentUser } from '@/lib/hooks/useCurrentUser-simple'
 import { motion } from 'framer-motion'
 import { 
@@ -74,8 +74,6 @@ export default function UserStatsService({ onStatsUpdate }: UserStatsServiceProp
   const [stats, setStats] = useState<UserStats | null>(null)
   const [activities, setActivities] = useState<UserActivity[]>([])
   const [loading, setLoading] = useState(true)
-  
-  const supabase = createClientComponentClient()
 
   // Carregar estatísticas do usuário
   const loadUserStats = useCallback(async () => {
@@ -83,6 +81,9 @@ export default function UserStatsService({ onStatsUpdate }: UserStatsServiceProp
 
     try {
       setLoading(true)
+
+      // Usar singleton do Supabase client
+      const supabase = getSupabaseClient()
 
       const currentMonth = {
         start: startOfMonth(new Date()),
@@ -153,22 +154,22 @@ export default function UserStatsService({ onStatsUpdate }: UserStatsServiceProp
       ])
 
       // Processar dados dos imóveis
-      const properties = propertiesResult.data || []
+      const properties: any[] = propertiesResult.data || []
       const soldProperties = properties.filter(p => p.status === 'sold').length
       const rentedProperties = properties.filter(p => p.status === 'rented').length
-      const averagePrice = properties.length > 0 
-        ? properties.reduce((sum, p) => sum + (p.price || 0), 0) / properties.length 
+      const averagePrice = properties.length > 0
+        ? properties.reduce((sum, p) => sum + (p.price || 0), 0) / properties.length
         : 0
 
       // Processar reuniões
-      const meetings = meetingsResult.data || []
+      const meetings: any[] = meetingsResult.data || []
       const now = new Date()
-      const upcomingMeetings = meetings.filter(m => 
+      const upcomingMeetings = meetings.filter(m =>
         new Date(m.start_time) > now
       ).length
 
       // Processar tarefas
-      const tasks = tasksResult.data || []
+      const tasks: any[] = tasksResult.data || []
       const completedTasks = tasks.filter(t => t.status === 'completed').length
       const pendingTasks = tasks.filter(t => t.status === 'pending').length
 
@@ -223,7 +224,7 @@ export default function UserStatsService({ onStatsUpdate }: UserStatsServiceProp
     } finally {
       setLoading(false)
     }
-  }, [user?.id, supabase, onStatsUpdate])
+  }, [user?.id, onStatsUpdate])
 
   // Registrar atividade do usuário
   const trackActivity = async (
@@ -238,13 +239,17 @@ export default function UserStatsService({ onStatsUpdate }: UserStatsServiceProp
 
     try {
       console.log('📝 trackActivity: Registrando atividade para user:', user.id)
+
+      // Usar singleton do Supabase client
+      const supabase = getSupabaseClient()
       
       // Verificar sessão ativa
       const { data: { session } } = await supabase.auth.getSession()
       console.log('🔐 Sessão ativa:', session ? 'Sim' : 'Não')
-      
+
       const { error } = await supabase
         .from('user_activities')
+        // @ts-expect-error - Supabase schema type not available
         .insert({
           user_id: user.id,
           type,
@@ -295,12 +300,20 @@ export function useUserStats() {
   const { user } = useCurrentUser()
   const [stats, setStats] = useState<UserStats | null>(null)
   const [loading, setLoading] = useState(true)
-  const supabase = createClientComponentClient()
 
   const loadStats = useCallback(async () => {
+    if (!user?.id) {
+      setLoading(false)
+      return
+    }
+
+    // Usar singleton do Supabase client
+    const supabase = getSupabaseClient()
+    
     // Implementação similar ao UserStatsService
     // Retorna apenas os dados necessários
-  }, [user?.id, supabase])
+    setLoading(false)
+  }, [user?.id])
 
   useEffect(() => {
     loadStats()

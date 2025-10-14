@@ -115,19 +115,19 @@ export function AuthLoadingOverlay({
           aria-labelledby="auth-overlay-title"
           aria-describedby="auth-overlay-description"
         >
-          {/* Modal Container */}
+          {/* Modal Container - Melhorada responsividade */}
           <motion.div
             initial={{ scale: 0.9, y: 20 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.9, y: 20 }}
             transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            className="relative w-full max-w-md mx-4"
+            className="relative w-full max-w-md mx-auto px-4 sm:px-0"
             style={{
               background: 'linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.96) 100%)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
               boxShadow: '0 20px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.9)',
-              borderRadius: '24px',
+              borderRadius: '20px',
               border: '1px solid rgba(226,232,240,0.6)',
             }}
           >
@@ -168,31 +168,31 @@ export function AuthLoadingOverlay({
                 <div className="flex-1 min-w-0">
                   <h2
                     id="auth-overlay-title"
-                    className="text-lg sm:text-xl font-bold text-slate-900 truncate"
+                    className="text-base sm:text-lg md:text-xl font-bold text-slate-900 leading-tight"
                   >
                     {hasError
-                      ? 'Erro na Autenticação'
+                      ? 'Falha na Autenticação'
                       : allSuccess
-                      ? 'Autenticado com Sucesso!'
-                      : 'Autenticando...'}
+                      ? 'Acesso Autorizado'
+                      : 'Processando Autenticação'}
                   </h2>
                   <p
                     id="auth-overlay-description"
-                    className="text-xs sm:text-sm text-slate-600 mt-0.5 truncate"
+                    className="text-xs sm:text-sm text-slate-600 mt-1 leading-snug"
                   >
                     {hasError
-                      ? 'Verifique os detalhes abaixo'
+                      ? 'Revise as informações abaixo'
                       : allSuccess
-                      ? 'Redirecionando você agora'
+                      ? 'Estabelecendo conexão segura'
                       : `Etapa ${currentStepIndex + 1} de ${steps.length}`}
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Steps */}
+            {/* Steps - Melhorada responsividade e altura */}
             <div
-              className="px-6 sm:px-8 py-5 sm:py-6 space-y-3 sm:space-y-4 max-h-[60vh] sm:max-h-[400px] overflow-y-auto overscroll-contain"
+              className="px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6 space-y-2.5 sm:space-y-3 md:space-y-4 max-h-[50vh] sm:max-h-[60vh] md:max-h-[400px] overflow-y-auto overscroll-contain"
               style={{
                 scrollbarWidth: 'thin',
                 scrollbarColor: 'rgba(203,213,225,0.5) transparent',
@@ -226,9 +226,9 @@ export function AuthLoadingOverlay({
                       />
                     )}
 
-                    {/* Step Content */}
+                    {/* Step Content - Melhorado padding e espaçamento */}
                     <div
-                      className="flex items-start gap-4 p-4 rounded-xl transition-all duration-300"
+                      className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl transition-all duration-300"
                       style={{
                         background:
                           isCurrent || step.status === 'error'
@@ -270,10 +270,10 @@ export function AuthLoadingOverlay({
                         )}
                       </div>
 
-                      {/* Text */}
+                      {/* Text - Melhorado tamanho de fonte e legibilidade */}
                       <div className="flex-1 min-w-0">
                         <p
-                          className="text-sm font-semibold transition-colors duration-300"
+                          className="text-xs sm:text-sm font-semibold transition-colors duration-300 leading-snug"
                           style={{
                             color:
                               step.status === 'error'
@@ -288,12 +288,12 @@ export function AuthLoadingOverlay({
                           {step.label}
                         </p>
 
-                        {/* Error Message */}
+                        {/* Error Message - Melhorado padding e legibilidade */}
                         {step.status === 'error' && step.errorMessage && (
                           <motion.p
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
-                            className="text-xs text-red-700 mt-1 bg-red-50 px-3 py-2 rounded-lg border border-red-200"
+                            className="text-xs sm:text-sm text-red-800 mt-2 bg-red-50 px-2.5 sm:px-3 py-2 rounded-lg border border-red-200 leading-relaxed"
                           >
                             {step.errorMessage}
                           </motion.p>
@@ -331,19 +331,19 @@ export function AuthLoadingOverlay({
               })}
             </div>
 
-            {/* Footer */}
+            {/* Footer - Melhorado padding e botões */}
             {(hasError || allSuccess) && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="px-6 sm:px-8 py-5 sm:py-6 border-t border-slate-200/60"
+                className="px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6 border-t border-slate-200/60"
               >
                 {hasError && onClose && (
                   <motion.button
                     onClick={onClose}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full py-3 sm:py-3.5 px-4 rounded-xl text-sm sm:text-base font-semibold text-white transition-all duration-200 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-red-300/50"
+                    className="w-full py-2.5 sm:py-3 md:py-3.5 px-4 rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold text-white transition-all duration-200 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-red-300/50 active:scale-95"
                     style={{
                       background: 'linear-gradient(135deg, rgb(239,68,68) 0%, rgb(220,38,38) 100%)',
                       boxShadow: '0 4px 12px rgba(239,68,68,0.3)',
@@ -352,7 +352,7 @@ export function AuthLoadingOverlay({
                   >
                     <span className="flex items-center justify-center gap-2">
                       <span>Tentar Novamente</span>
-                      <span className="text-xs opacity-70">(ESC)</span>
+                      <span className="hidden sm:inline text-xs opacity-70">(ESC)</span>
                     </span>
                   </motion.button>
                 )}
@@ -364,7 +364,7 @@ export function AuthLoadingOverlay({
                     className="flex items-center justify-center gap-2 text-sm sm:text-base text-slate-600"
                   >
                     <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
-                    <span className="font-medium">Redirecionando...</span>
+                    <span className="font-medium">Estabelecendo conexão...</span>
                   </motion.div>
                 )}
               </motion.div>

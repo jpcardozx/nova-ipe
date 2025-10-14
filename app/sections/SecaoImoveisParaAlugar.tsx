@@ -207,7 +207,7 @@ export default function SecaoImoveisParaAlugar() {
                                     Explore nossa seleção completa de imóveis para locação em Guararema
                                 </p>
                                 <Link
-                                    href="/alugar"
+                                    href="/catalogo"
                                     className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-xl shadow-lg hover:from-emerald-700 hover:to-green-700 transition-all duration-300 font-semibold"
                                 >
                                     <Home className="w-5 h-5" />

@@ -9,8 +9,8 @@ import { Phone, MessageCircle, X, Menu } from "lucide-react";
 
 const links = [
     { label: "Início", href: "/" },
-    { label: "Comprar", href: "/comprar" },
-    { label: "Alugar", href: "/alugar" },
+    { label: "Comprar", href: "/catalogo" },
+    { label: "Alugar", href: "/catalogo" },
     { label: "Sobre Nós", href: "/sobre" },
     { label: "Contato", href: "#contato" },
 ];

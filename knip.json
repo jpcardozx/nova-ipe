@@ -1,0 +1,71 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "workspaces": {
+    ".": {
+      "entry": [
+        "app/**/*.{ts,tsx}",
+        "!app/**/*.test.{ts,tsx}",
+        "!app/**/*-old.tsx",
+        "!app/**/*-enhanced.tsx",
+        "!app/**/*-deprecated.tsx",
+        "!app/**/*-backup.tsx",
+        "lib/**/*.{ts,tsx}",
+        "components/**/*.{ts,tsx}",
+        "next.config.js",
+        "middleware.ts"
+      ],
+      "project": [
+        "**/*.{ts,tsx,js,jsx}",
+        "!**/*.test.{ts,tsx}",
+        "!**/*.spec.{ts,tsx}",
+        "!scripts/**",
+        "!tests/**"
+      ],
+      "ignore": [
+        "scripts/**",
+        "tests/**",
+        "**/*.test.{ts,tsx}",
+        "**/*.spec.{ts,tsx}",
+        "**/*-old.{ts,tsx}",
+        "**/*-enhanced.{ts,tsx}",
+        "**/*-deprecated.{ts,tsx}",
+        "**/*-backup.{ts,tsx}",
+        "**/page-old.tsx",
+        "**/page-enhanced.tsx",
+        "**/page-new.tsx",
+        "**/page-original-backup.tsx",
+        "studio/**",
+        ".sanity/**",
+        "public/**/*.js",
+        "temp/**",
+        "examples/**",
+        "documentation/**",
+        "polyfills.js",
+        "polyfills/**",
+        "**/dev-*.{ts,tsx}",
+        "**/test-*.{ts,tsx}",
+        "**/debug-*.{ts,tsx}"
+      ],
+      "ignoreDependencies": [
+        "@sanity/vision",
+        "sanity",
+        "@types/*"
+      ]
+    }
+  },
+  "ignore": [
+    "dist/**",
+    "build/**",
+    ".next/**",
+    "node_modules/**",
+    "coverage/**",
+    "*.config.{js,ts}",
+    "tailwind.config.ts",
+    "postcss.config.js"
+  ],
+  "ignoreBinaries": [
+    "pnpm",
+    "npm",
+    "supabase"
+  ]
+}

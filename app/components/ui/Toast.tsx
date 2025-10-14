@@ -52,6 +52,12 @@ export function useToast() {
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([])
+  const [mounted, setMounted] = useState(false)
+
+  // ✅ Garantir hydration antes de renderizar ToastContainer
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const showToast = useCallback((toast: Omit<Toast, 'id'>) => {
     const id = `toast-${Date.now()}-${Math.random()}`
@@ -78,7 +84,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ showToast, dismissToast }}>
       {children}
-      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+      {/* ✅ Apenas renderizar após hydration para evitar mismatch */}
+      {mounted && <ToastContainer toasts={toasts} onDismiss={dismissToast} />}
     </ToastContext.Provider>
   )
 }

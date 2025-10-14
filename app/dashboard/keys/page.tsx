@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
     Key,
     Home,
@@ -18,7 +18,14 @@ import {
     Phone,
     Mail,
     FileText,
-    TrendingUp
+    TrendingUp,
+    Plus,
+    X,
+    Edit,
+    Trash2,
+    MoreVertical,
+    ArrowRight,
+    Package
 } from 'lucide-react'
 
 interface KeyDelivery {
@@ -43,11 +50,15 @@ interface KeyDelivery {
     updated_at: string
 }
 
-export default function KeysPage() {
+export default function KeysPagePremium() {
     const [deliveries, setDeliveries] = useState<KeyDelivery[]>([])
     const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState('')
     const [statusFilter, setStatusFilter] = useState<'all' | KeyDelivery['delivery_status']>('all')
+    const [showCreateModal, setShowCreateModal] = useState(false)
+    const [selectedDelivery, setSelectedDelivery] = useState<KeyDelivery | null>(null)
+    const [showMenu, setShowMenu] = useState<string | null>(null)
+    
     const [stats, setStats] = useState({
         total: 0,
         scheduled: 0,
@@ -71,12 +82,10 @@ export default function KeysPage() {
                 setStats(data.stats)
             } else {
                 console.error('Error loading key deliveries:', data.error)
-                // Fallback para dados mock em caso de erro
                 loadMockData()
             }
         } catch (error) {
             console.error('Error loading key deliveries:', error)
-            // Fallback para dados mock em caso de erro
             loadMockData()
         } finally {
             setLoading(false)
@@ -84,7 +93,6 @@ export default function KeysPage() {
     }
 
     const loadMockData = () => {
-        // Mock data for development/fallback
         const mockDeliveries: KeyDelivery[] = [
             {
                 id: '1',
@@ -116,7 +124,7 @@ export default function KeysPage() {
                 property_title: 'Casa em Condomínio - Vila Madalena',
                 property_address: 'Rua Harmonia, 567 - Vila Madalena, SP',
                 delivery_status: 'scheduled',
-                scheduled_date: '2025-10-12T14:00:00Z',
+                scheduled_date: '2025-10-14T14:00:00Z',
                 broker_name: 'Carlos Corretor',
                 keys_count: 3,
                 notes: 'Cliente solicitou entrega após às 14h',
@@ -159,28 +167,33 @@ export default function KeysPage() {
         const configs = {
             scheduled: {
                 label: 'Agendado',
-                color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
-                icon: <Calendar className="h-3 w-3" />
+                color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20',
+                dotColor: 'bg-blue-500',
+                icon: <Calendar className="h-3.5 w-3.5" />
             },
             delivered: {
                 label: 'Entregue',
-                color: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
-                icon: <CheckCircle className="h-3 w-3" />
+                color: 'bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20',
+                dotColor: 'bg-green-500',
+                icon: <CheckCircle className="h-3.5 w-3.5" />
             },
             returned: {
                 label: 'Devolvido',
-                color: 'bg-gray-100 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700',
-                icon: <CheckCircle className="h-3 w-3" />
+                color: 'bg-gray-500/10 text-gray-600 dark:text-gray-400 border border-gray-500/20',
+                dotColor: 'bg-gray-500',
+                icon: <CheckCircle className="h-3.5 w-3.5" />
             },
             pending: {
                 label: 'Pendente',
-                color: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800',
-                icon: <AlertCircle className="h-3 w-3" />
+                color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
+                dotColor: 'bg-amber-500',
+                icon: <AlertCircle className="h-3.5 w-3.5" />
             },
             cancelled: {
                 label: 'Cancelado',
-                color: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800',
-                icon: <XCircle className="h-3 w-3" />
+                color: 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20',
+                dotColor: 'bg-red-500',
+                icon: <XCircle className="h-3.5 w-3.5" />
             }
         }
         return configs[status]
@@ -201,321 +214,499 @@ export default function KeysPage() {
         const date = new Date(dateString)
         return date.toLocaleDateString('pt-BR', {
             day: '2-digit',
-            month: '2-digit',
+            month: 'short',
             year: 'numeric',
             hour: '2-digit',
             minute: '2-digit'
         })
     }
 
+    const formatDateShort = (dateString: string) => {
+        const date = new Date(dateString)
+        return date.toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: 'short'
+        })
+    }
+
+    const handleUpdateStatus = async (delivery: KeyDelivery, newStatus: KeyDelivery['delivery_status']) => {
+        try {
+            const response = await fetch('/api/keys', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    lead_id: delivery.lead_id,
+                    status: newStatus,
+                    date: new Date().toISOString()
+                })
+            })
+
+            if (response.ok) {
+                loadKeyDeliveries()
+                setShowMenu(null)
+            }
+        } catch (error) {
+            console.error('Error updating status:', error)
+        }
+    }
+
     if (loading) {
         return (
             <div className="flex items-center justify-center h-screen bg-background">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                <div className="flex flex-col items-center gap-4">
+                    <div className="relative">
+                        <div className="w-16 h-16 border-4 border-blue-200 dark:border-blue-900 rounded-full"></div>
+                        <div className="w-16 h-16 border-4 border-blue-600 dark:border-blue-400 border-t-transparent rounded-full animate-spin absolute top-0"></div>
+                    </div>
+                    <p className="text-muted-foreground text-sm">Carregando entregas...</p>
+                </div>
             </div>
         )
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {/* Header */}
-            <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8"
-            >
-                <div>
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
-                        Gestão de Chaves
-                    </h1>
-                    <p className="text-muted-foreground mt-1 flex items-center gap-2">
-                        <Key className="h-4 w-4" />
-                        Controle de entregas e devoluções
-                    </p>
-                </div>
-
-                <div className="flex items-center gap-3">
-                    <button
-                        onClick={loadKeyDeliveries}
-                        className="px-4 py-2 bg-surface border border-border text-foreground rounded-lg 
-                                 hover:bg-surface-hover transition-colors flex items-center gap-2
-                                 shadow-sm hover:shadow-md"
-                    >
-                        <TrendingUp className="h-4 w-4" />
-                        Atualizar
-                    </button>
-                    <button className="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 
-                                     dark:from-blue-500 dark:to-cyan-500
-                                     text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 
-                                     dark:hover:from-blue-600 dark:hover:to-cyan-600
-                                     transition-all flex items-center gap-2 
-                                     shadow-lg shadow-blue-500/30 dark:shadow-blue-500/20">
-                        <Download className="h-4 w-4" />
-                        Exportar
-                    </button>
-                </div>
-            </motion.div>
-
-            {/* Stats Cards */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8"
-            >
-                <div className="bg-surface rounded-xl p-6 border border-border shadow-sm 
-                              hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-muted-foreground">Total</p>
-                            <p className="text-3xl font-bold text-foreground mt-1">{stats.total}</p>
-                        </div>
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 
-                                      dark:from-gray-800 dark:to-gray-700 flex items-center justify-center">
-                            <Key className="h-6 w-6 text-gray-600 dark:text-gray-400" />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-surface rounded-xl p-6 border border-blue-200 dark:border-blue-800 shadow-sm
-                              hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-blue-600 dark:text-blue-400">Agendados</p>
-                            <p className="text-3xl font-bold text-blue-700 dark:text-blue-300 mt-1">{stats.scheduled}</p>
-                        </div>
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 
-                                      dark:from-blue-900/50 dark:to-blue-800/50 flex items-center justify-center">
-                            <Calendar className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-surface rounded-xl p-6 border border-green-200 dark:border-green-800 shadow-sm
-                              hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-green-600 dark:text-green-400">Entregues</p>
-                            <p className="text-3xl font-bold text-green-700 dark:text-green-300 mt-1">{stats.delivered}</p>
-                        </div>
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-100 to-green-200 
-                                      dark:from-green-900/50 dark:to-green-800/50 flex items-center justify-center">
-                            <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-surface rounded-xl p-6 border border-yellow-200 dark:border-yellow-800 shadow-sm
-                              hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-yellow-600 dark:text-yellow-400">Pendentes</p>
-                            <p className="text-3xl font-bold text-yellow-700 dark:text-yellow-300 mt-1">{stats.pending}</p>
-                        </div>
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-100 to-yellow-200 
-                                      dark:from-yellow-900/50 dark:to-yellow-800/50 flex items-center justify-center">
-                            <AlertCircle className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-surface rounded-xl p-6 border border-border shadow-sm
-                              hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-muted-foreground">Devolvidos</p>
-                            <p className="text-3xl font-bold text-foreground mt-1">{stats.returned}</p>
-                        </div>
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 
-                                      dark:from-gray-800 dark:to-gray-700 flex items-center justify-center">
-                            <CheckCircle className="h-6 w-6 text-gray-600 dark:text-gray-400" />
-                        </div>
-                    </div>
-                </div>
-            </motion.div>
-
-            {/* Filters */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="bg-surface rounded-xl p-6 border border-border shadow-sm mb-6"
-            >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                        <input
-                            type="text"
-                            placeholder="Buscar por cliente, imóvel ou endereço..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg 
-                                     text-foreground placeholder:text-muted-foreground
-                                     focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 
-                                     focus:border-blue-500 dark:focus:border-blue-400
-                                     transition-colors"
-                        />
+        <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {/* Header */}
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8"
+                >
+                    <div>
+                        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-600 
+                                     dark:from-blue-400 dark:via-cyan-400 dark:to-blue-400 
+                                     bg-clip-text text-transparent mb-2">
+                            Gestão de Chaves
+                        </h1>
+                        <p className="text-muted-foreground flex items-center gap-2">
+                            <Package className="h-4 w-4" />
+                            Controle completo de entregas e devoluções
+                        </p>
                     </div>
 
-                    <div className="relative">
-                        <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                        <select
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value as any)}
-                            className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg 
-                                     text-foreground appearance-none cursor-pointer
-                                     focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 
-                                     focus:border-blue-500 dark:focus:border-blue-400
-                                     transition-colors"
+                    <div className="flex items-center gap-3">
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={loadKeyDeliveries}
+                            className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 
+                                     dark:border-gray-700 text-foreground rounded-xl hover:shadow-lg
+                                     transition-all flex items-center gap-2 font-medium"
                         >
-                            <option value="all">Todos os Status</option>
-                            <option value="scheduled">Agendados</option>
-                            <option value="delivered">Entregues</option>
-                            <option value="pending">Pendentes</option>
-                            <option value="returned">Devolvidos</option>
-                            <option value="cancelled">Cancelados</option>
-                        </select>
+                            <TrendingUp className="h-4 w-4" />
+                            Atualizar
+                        </motion.button>
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => setShowCreateModal(true)}
+                            className="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 
+                                     dark:from-blue-500 dark:to-cyan-500
+                                     text-white rounded-xl hover:shadow-lg hover:shadow-blue-500/30
+                                     transition-all flex items-center gap-2 font-medium"
+                        >
+                            <Plus className="h-4 w-4" />
+                            Nova Entrega
+                        </motion.button>
                     </div>
-                </div>
-            </motion.div>
+                </motion.div>
 
-            {/* Deliveries List */}
-            <div className="space-y-4">
-                {filteredDeliveries.length === 0 ? (
+                {/* Stats Cards */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8"
+                >
+                    {[
+                        { label: 'Total', value: stats.total, icon: Key, gradient: 'from-gray-500 to-gray-600', color: 'gray' },
+                        { label: 'Agendados', value: stats.scheduled, icon: Calendar, gradient: 'from-blue-500 to-blue-600', color: 'blue' },
+                        { label: 'Entregues', value: stats.delivered, icon: CheckCircle, gradient: 'from-green-500 to-green-600', color: 'green' },
+                        { label: 'Pendentes', value: stats.pending, icon: AlertCircle, gradient: 'from-amber-500 to-amber-600', color: 'amber' },
+                        { label: 'Devolvidos', value: stats.returned, icon: CheckCircle, gradient: 'from-gray-500 to-gray-600', color: 'gray' }
+                    ].map((stat, index) => (
+                        <motion.div
+                            key={stat.label}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: index * 0.1 }}
+                            className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-200 
+                                     dark:border-gray-700 hover:shadow-lg transition-all duration-200
+                                     group cursor-pointer"
+                        >
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="text-sm font-medium text-muted-foreground">{stat.label}</span>
+                                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.gradient} 
+                                              flex items-center justify-center shadow-lg transform 
+                                              group-hover:scale-110 transition-transform`}>
+                                    <stat.icon className="h-5 w-5 text-white" />
+                                </div>
+                            </div>
+                            <p className="text-3xl font-bold text-foreground">{stat.value}</p>
+                        </motion.div>
+                    ))}
+                </motion.div>
+
+                {/* Filters */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 
+                             dark:border-gray-700 shadow-sm mb-6"
+                >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="relative">
+                            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 
+                                            text-muted-foreground pointer-events-none" />
+                            <input
+                                type="text"
+                                placeholder="Buscar por cliente, imóvel ou endereço..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 
+                                         border border-gray-200 dark:border-gray-700 rounded-xl 
+                                         text-foreground placeholder:text-muted-foreground
+                                         focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 
+                                         focus:border-transparent transition-all"
+                            />
+                        </div>
+
+                        <div className="relative">
+                            <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 
+                                             text-muted-foreground pointer-events-none" />
+                            <select
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value as any)}
+                                className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 
+                                         border border-gray-200 dark:border-gray-700 rounded-xl 
+                                         text-foreground appearance-none cursor-pointer
+                                         focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 
+                                         focus:border-transparent transition-all"
+                            >
+                                <option value="all">Todos os Status</option>
+                                <option value="scheduled">Agendados</option>
+                                <option value="delivered">Entregues</option>
+                                <option value="pending">Pendentes</option>
+                                <option value="returned">Devolvidos</option>
+                                <option value="cancelled">Cancelados</option>
+                            </select>
+                        </div>
+                    </div>
+                </motion.div>
+
+                {/* Deliveries List */}
+                <div className="space-y-4">
+                    <AnimatePresence mode="popLayout">
+                        {filteredDeliveries.length === 0 ? (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                className="bg-white dark:bg-gray-800 rounded-2xl p-16 text-center 
+                                         border border-gray-200 dark:border-gray-700"
+                            >
+                                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br 
+                                              from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 
+                                              flex items-center justify-center">
+                                    <Key className="h-10 w-10 text-muted-foreground" />
+                                </div>
+                                <p className="text-muted-foreground text-lg font-medium mb-2">
+                                    Nenhuma entrega encontrada
+                                </p>
+                                <p className="text-sm text-muted-foreground/70">
+                                    Tente ajustar os filtros ou criar uma nova entrega
+                                </p>
+                            </motion.div>
+                        ) : (
+                            filteredDeliveries.map((delivery, index) => {
+                                const statusConfig = getStatusConfig(delivery.delivery_status)
+
+                                return (
+                                    <motion.div
+                                        key={delivery.id}
+                                        layout
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.9 }}
+                                        transition={{ delay: index * 0.05 }}
+                                        className="bg-white dark:bg-gray-800 rounded-2xl p-6 
+                                                 border border-gray-200 dark:border-gray-700
+                                                 hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-700
+                                                 transition-all duration-300 group relative overflow-hidden"
+                                    >
+                                        {/* Background Gradient on Hover */}
+                                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-cyan-500/5 
+                                                      opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        
+                                        <div className="relative">
+                                            <div className="flex flex-col lg:flex-row gap-6">
+                                                {/* Left Section */}
+                                                <div className="flex-1 space-y-4">
+                                                    {/* Property Info */}
+                                                    <div className="flex items-start gap-4">
+                                                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 
+                                                                      flex items-center justify-center flex-shrink-0 shadow-lg">
+                                                            <Home className="h-7 w-7 text-white" />
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="flex items-start justify-between gap-3 mb-2">
+                                                                <h3 className="text-lg font-semibold text-foreground 
+                                                                             group-hover:text-blue-600 dark:group-hover:text-blue-400 
+                                                                             transition-colors line-clamp-2">
+                                                                    {delivery.property_title}
+                                                                </h3>
+                                                                <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 
+                                                                                rounded-lg text-xs font-medium ${statusConfig.color} 
+                                                                                whitespace-nowrap flex-shrink-0`}>
+                                                                    <span className={`w-1.5 h-1.5 rounded-full ${statusConfig.dotColor} 
+                                                                                   animate-pulse`}></span>
+                                                                    {statusConfig.label}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                                                                <MapPin className="h-4 w-4 flex-shrink-0" />
+                                                                <span className="line-clamp-1">{delivery.property_address}</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-4 text-sm flex-wrap">
+                                                                <span className="flex items-center gap-1.5 text-muted-foreground">
+                                                                    <Key className="h-4 w-4" />
+                                                                    <span className="font-medium">{delivery.keys_count}</span>
+                                                                    {delivery.keys_count === 1 ? 'chave' : 'chaves'}
+                                                                </span>
+                                                                {delivery.contract_id && (
+                                                                    <span className="flex items-center gap-1.5 text-muted-foreground">
+                                                                        <FileText className="h-4 w-4" />
+                                                                        <span className="font-mono text-xs px-2 py-0.5 bg-gray-100 
+                                                                                       dark:bg-gray-700 rounded">
+                                                                            {delivery.contract_id}
+                                                                        </span>
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Client Info */}
+                                                    <div className="pl-[72px] space-y-2">
+                                                        <div className="flex items-center gap-2 text-sm">
+                                                            <User className="h-4 w-4 text-muted-foreground" />
+                                                            <span className="font-medium text-foreground">{delivery.client_name}</span>
+                                                        </div>
+                                                        <div className="flex flex-wrap gap-4 text-sm">
+                                                            <a href={`tel:${delivery.client_phone}`}
+                                                               className="flex items-center gap-1.5 text-muted-foreground 
+                                                                        hover:text-blue-600 dark:hover:text-blue-400 
+                                                                        transition-colors">
+                                                                <Phone className="h-4 w-4" />
+                                                                {delivery.client_phone}
+                                                            </a>
+                                                            <a href={`mailto:${delivery.client_email}`}
+                                                               className="flex items-center gap-1.5 text-muted-foreground 
+                                                                        hover:text-blue-600 dark:hover:text-blue-400 
+                                                                        transition-colors">
+                                                                <Mail className="h-4 w-4" />
+                                                                {delivery.client_email}
+                                                            </a>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Notes */}
+                                                    {delivery.notes && (
+                                                        <div className="pl-[72px]">
+                                                            <div className="p-3 bg-amber-50 dark:bg-amber-900/10 
+                                                                          border border-amber-200 dark:border-amber-800/30 
+                                                                          rounded-lg">
+                                                                <p className="text-sm text-amber-900 dark:text-amber-200">
+                                                                    💡 {delivery.notes}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Right Section - Timeline */}
+                                                <div className="lg:w-64 flex-shrink-0">
+                                                    <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-4 
+                                                                  border border-gray-200 dark:border-gray-700">
+                                                        <div className="space-y-3">
+                                                            {delivery.scheduled_date && (
+                                                                <div className="flex gap-3">
+                                                                    <div className="flex flex-col items-center">
+                                                                        <div className="w-8 h-8 rounded-full bg-blue-500 
+                                                                                      flex items-center justify-center">
+                                                                            <Calendar className="h-4 w-4 text-white" />
+                                                                        </div>
+                                                                        {(delivery.delivered_date || delivery.returned_date) && (
+                                                                            <div className="w-0.5 h-8 bg-gray-300 dark:bg-gray-600" />
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="flex-1">
+                                                                        <p className="text-xs text-muted-foreground font-medium mb-1">
+                                                                            Agendado
+                                                                        </p>
+                                                                        <p className="text-sm font-semibold text-foreground">
+                                                                            {formatDateShort(delivery.scheduled_date)}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                            {delivery.delivered_date && (
+                                                                <div className="flex gap-3">
+                                                                    <div className="flex flex-col items-center">
+                                                                        <div className="w-8 h-8 rounded-full bg-green-500 
+                                                                                      flex items-center justify-center">
+                                                                            <CheckCircle className="h-4 w-4 text-white" />
+                                                                        </div>
+                                                                        {delivery.returned_date && (
+                                                                            <div className="w-0.5 h-8 bg-gray-300 dark:bg-gray-600" />
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="flex-1">
+                                                                        <p className="text-xs text-muted-foreground font-medium mb-1">
+                                                                            Entregue
+                                                                        </p>
+                                                                        <p className="text-sm font-semibold text-green-600 dark:text-green-400">
+                                                                            {formatDateShort(delivery.delivered_date)}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                            {delivery.returned_date && (
+                                                                <div className="flex gap-3">
+                                                                    <div className="w-8 h-8 rounded-full bg-gray-500 
+                                                                                  flex items-center justify-center">
+                                                                        <CheckCircle className="h-4 w-4 text-white" />
+                                                                    </div>
+                                                                    <div className="flex-1">
+                                                                        <p className="text-xs text-muted-foreground font-medium mb-1">
+                                                                            Devolvido
+                                                                        </p>
+                                                                        <p className="text-sm font-semibold text-foreground">
+                                                                            {formatDateShort(delivery.returned_date)}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                            <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+                                                                <p className="text-xs text-muted-foreground mb-1">Corretor</p>
+                                                                <p className="text-sm font-medium text-foreground">{delivery.broker_name}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Actions */}
+                                                    <div className="mt-3 flex gap-2">
+                                                        <motion.button
+                                                            whileHover={{ scale: 1.05 }}
+                                                            whileTap={{ scale: 0.95 }}
+                                                            onClick={() => setSelectedDelivery(delivery)}
+                                                            className="flex-1 px-3 py-2 bg-blue-500 hover:bg-blue-600 
+                                                                     text-white rounded-lg text-sm font-medium 
+                                                                     transition-colors flex items-center justify-center gap-2"
+                                                        >
+                                                            <Edit className="h-4 w-4" />
+                                                            Editar
+                                                        </motion.button>
+                                                        <div className="relative">
+                                                            <motion.button
+                                                                whileHover={{ scale: 1.05 }}
+                                                                whileTap={{ scale: 0.95 }}
+                                                                onClick={() => setShowMenu(showMenu === delivery.id ? null : delivery.id)}
+                                                                className="px-3 py-2 bg-gray-100 dark:bg-gray-700 
+                                                                         hover:bg-gray-200 dark:hover:bg-gray-600
+                                                                         rounded-lg transition-colors"
+                                                            >
+                                                                <MoreVertical className="h-4 w-4" />
+                                                            </motion.button>
+                                                            <AnimatePresence>
+                                                                {showMenu === delivery.id && (
+                                                                    <motion.div
+                                                                        initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                                        exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                                                        className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 
+                                                                                 rounded-lg shadow-xl border border-gray-200 
+                                                                                 dark:border-gray-700 z-50 overflow-hidden"
+                                                                    >
+                                                                        {[
+                                                                            { status: 'delivered' as const, label: 'Marcar como Entregue', icon: CheckCircle },
+                                                                            { status: 'returned' as const, label: 'Marcar como Devolvido', icon: ArrowRight },
+                                                                            { status: 'cancelled' as const, label: 'Cancelar', icon: XCircle }
+                                                                        ].map((action) => (
+                                                                            <button
+                                                                                key={action.status}
+                                                                                onClick={() => handleUpdateStatus(delivery, action.status)}
+                                                                                className="w-full px-4 py-3 text-left text-sm text-foreground 
+                                                                                         hover:bg-gray-50 dark:hover:bg-gray-700 
+                                                                                         transition-colors flex items-center gap-3"
+                                                                            >
+                                                                                <action.icon className="h-4 w-4 text-muted-foreground" />
+                                                                                {action.label}
+                                                                            </button>
+                                                                        ))}
+                                                                    </motion.div>
+                                                                )}
+                                                            </AnimatePresence>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )
+                            })
+                        )}
+                    </AnimatePresence>
+                </div>
+            </div>
+
+            {/* Create/Edit Modal */}
+            <AnimatePresence>
+                {(showCreateModal || selectedDelivery) && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="bg-surface rounded-xl p-12 text-center border border-border"
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 
+                                 flex items-center justify-center p-4"
+                        onClick={() => {
+                            setShowCreateModal(false)
+                            setSelectedDelivery(null)
+                        }}
                     >
-                        <Key className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                        <p className="text-muted-foreground text-lg">Nenhuma entrega encontrada</p>
-                        <p className="text-sm text-muted-foreground/70 mt-2">
-                            Tente ajustar os filtros ou buscar por outro termo
-                        </p>
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl 
+                                     max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+                        >
+                            <div className="sticky top-0 bg-white dark:bg-gray-800 border-b 
+                                          border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between">
+                                <h2 className="text-2xl font-bold text-foreground">
+                                    {selectedDelivery ? 'Editar Entrega' : 'Nova Entrega de Chaves'}
+                                </h2>
+                                <button
+                                    onClick={() => {
+                                        setShowCreateModal(false)
+                                        setSelectedDelivery(null)
+                                    }}
+                                    className="w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 
+                                             flex items-center justify-center transition-colors"
+                                >
+                                    <X className="h-5 w-5" />
+                                </button>
+                            </div>
+                            <div className="p-6">
+                                <p className="text-center text-muted-foreground py-12">
+                                    Formulário de criação/edição será implementado aqui
+                                </p>
+                            </div>
+                        </motion.div>
                     </motion.div>
-                ) : (
-                    filteredDeliveries.map((delivery, index) => {
-                        const statusConfig = getStatusConfig(delivery.delivery_status)
-
-                        return (
-                            <motion.div
-                                key={delivery.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.05 }}
-                                className="bg-surface rounded-xl p-6 border border-border 
-                                         hover:shadow-lg hover:border-border-hover 
-                                         transition-all duration-200 group"
-                            >
-                                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                                    {/* Left Section */}
-                                    <div className="flex-1">
-                                        <div className="flex items-start gap-4 mb-4">
-                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-cyan-100 
-                                                          dark:from-blue-900/50 dark:to-cyan-900/50 
-                                                          flex items-center justify-center flex-shrink-0">
-                                                <Home className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                                            </div>
-                                            <div className="flex-1">
-                                                <div className="flex items-center gap-3 mb-2 flex-wrap">
-                                                    <h3 className="text-lg font-semibold text-foreground 
-                                                                 group-hover:text-blue-600 dark:group-hover:text-blue-400 
-                                                                 transition-colors">
-                                                        {delivery.property_title}
-                                                    </h3>
-                                                    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-medium border ${statusConfig.color}`}>
-                                                        {statusConfig.icon}
-                                                        {statusConfig.label}
-                                                    </span>
-                                                </div>
-                                                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                                                    <MapPin className="h-4 w-4 flex-shrink-0" />
-                                                    <span className="line-clamp-1">{delivery.property_address}</span>
-                                                </div>
-                                                <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
-                                                    <span className="flex items-center gap-1">
-                                                        <Key className="h-4 w-4" />
-                                                        {delivery.keys_count} {delivery.keys_count === 1 ? 'chave' : 'chaves'}
-                                                    </span>
-                                                    {delivery.contract_id && (
-                                                        <span className="flex items-center gap-1">
-                                                            <FileText className="h-4 w-4" />
-                                                            <span className="font-mono text-xs">{delivery.contract_id}</span>
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Client Info */}
-                                        <div className="ml-16 space-y-2">
-                                            <div className="flex items-center gap-2 text-sm">
-                                                <User className="h-4 w-4 text-muted-foreground" />
-                                                <span className="font-medium text-foreground">{delivery.client_name}</span>
-                                            </div>
-                                            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                                                <span className="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400 
-                                                               transition-colors cursor-pointer">
-                                                    <Phone className="h-4 w-4" />
-                                                    {delivery.client_phone}
-                                                </span>
-                                                <span className="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400 
-                                                               transition-colors cursor-pointer">
-                                                    <Mail className="h-4 w-4" />
-                                                    {delivery.client_email}
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        {/* Notes */}
-                                        {delivery.notes && (
-                                            <div className="ml-16 mt-3 p-3 bg-background/50 dark:bg-background/30 
-                                                          border border-border rounded-lg">
-                                                <p className="text-sm text-foreground/80">{delivery.notes}</p>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* Right Section - Dates */}
-                                    <div className="lg:text-right space-y-3 lg:min-w-[220px] 
-                                                  border-t lg:border-t-0 lg:border-l border-border pt-4 lg:pt-0 lg:pl-6">
-                                        {delivery.scheduled_date && (
-                                            <div className="text-sm">
-                                                <p className="text-muted-foreground mb-1 text-xs uppercase tracking-wider">Agendado para</p>
-                                                <p className="font-semibold text-foreground flex items-center gap-2 lg:justify-end">
-                                                    <Clock className="h-4 w-4 text-blue-500" />
-                                                    {formatDate(delivery.scheduled_date)}
-                                                </p>
-                                            </div>
-                                        )}
-                                        {delivery.delivered_date && (
-                                            <div className="text-sm">
-                                                <p className="text-muted-foreground mb-1 text-xs uppercase tracking-wider">Entregue em</p>
-                                                <p className="font-semibold text-green-600 dark:text-green-400 
-                                                            flex items-center gap-2 lg:justify-end">
-                                                    <CheckCircle className="h-4 w-4" />
-                                                    {formatDate(delivery.delivered_date)}
-                                                </p>
-                                            </div>
-                                        )}
-                                        {delivery.returned_date && (
-                                            <div className="text-sm">
-                                                <p className="text-muted-foreground mb-1 text-xs uppercase tracking-wider">Devolvido em</p>
-                                                <p className="font-semibold text-foreground flex items-center gap-2 lg:justify-end">
-                                                    <CheckCircle className="h-4 w-4" />
-                                                    {formatDate(delivery.returned_date)}
-                                                </p>
-                                            </div>
-                                        )}
-                                        <div className="text-sm pt-2 border-t border-border">
-                                            <p className="text-muted-foreground text-xs">Corretor</p>
-                                            <p className="font-medium text-foreground">{delivery.broker_name}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        )
-                    })
                 )}
-            </div>
+            </AnimatePresence>
         </div>
     )
 }

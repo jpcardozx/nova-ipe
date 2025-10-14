@@ -1,0 +1,21 @@
+# 🏢 Integração Jetimob
+
+Integração com API Jetimob para sincronização de imóveis.
+
+---
+
+## 📋 Arquivos Disponíveis
+
+1. [`JETIMOB_API_ENDPOINTS_COMPLETOS.md`](./JETIMOB_API_ENDPOINTS_COMPLETOS.md)
+2. [`JETIMOB_DIAGNOSTIC_REPORT.md`](./JETIMOB_DIAGNOSTIC_REPORT.md)
+3. [`JETIMOB_ENDPOINTS_CORRETOS_OFICIAL.md`](./JETIMOB_ENDPOINTS_CORRETOS_OFICIAL.md)
+4. [`JETIMOB_INTEGRATION_README.md`](./JETIMOB_INTEGRATION_README.md)
+5. [`JETIMOB_PROBLEM_MAP.md`](./JETIMOB_PROBLEM_MAP.md)
+6. [`JETIMOB_REFATORACAO_UI_UX.md`](./JETIMOB_REFATORACAO_UI_UX.md)
+7. [`TANSTACK_QUERY_JETIMOB_GUIDE.md`](./TANSTACK_QUERY_JETIMOB_GUIDE.md)
+
+---
+
+**Total:** 7 arquivo(s)
+
+[↩️ Voltar para documentação principal](../README.md)

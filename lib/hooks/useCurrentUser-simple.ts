@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
-import { User } from '@supabase/supabase-js'
+import { getSupabaseClient } from '@/lib/supabase/client-singleton'
 
 export interface UserProfile {
   id: string
@@ -28,20 +27,14 @@ export function useCurrentUser() {
   const [user, setUser] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
+  const supabase = getSupabaseClient()
 
   useEffect(() => {
     let mounted = true
 
     const getUser = async () => {
       try {
-        // � SEMPRE usar autenticação real do Supabase
-        console.log('� useCurrentUser: Verificando autenticação Supabase...')
-        
-        // Verificar autenticação Supabase
         const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
-        
-        console.log('👤 authUser:', authUser ? authUser.email : 'NULL')
-        console.log('❌ authError:', authError?.message || 'none')
 
         if (authError || !authUser) {
           if (mounted) {
@@ -51,7 +44,6 @@ export function useCurrentUser() {
           return
         }
 
-        // Create basic user profile
         const profile: UserProfile = {
           id: authUser.id,
           email: authUser.email || '',
@@ -90,10 +82,9 @@ export function useCurrentUser() {
 
     getUser()
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (!mounted) return
-      
+
       if (session?.user) {
         const profile: UserProfile = {
           id: session.user.id,
@@ -124,7 +115,7 @@ export function useCurrentUser() {
       mounted = false
       subscription.unsubscribe()
     }
-  }, [])
+  }, [supabase])
 
   const signOut = async () => {
     try {
@@ -142,4 +133,3 @@ export function useCurrentUser() {
     isAuthenticated: !!user
   }
 }
-

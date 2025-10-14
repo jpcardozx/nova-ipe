@@ -5,7 +5,7 @@
  */
 
 import { NextResponse, type NextRequest } from 'next/server'
-import { createServerClient } from '@supabase/ssr'
+import { updateSession } from '@/lib/supabase/middleware'
 
 // ============================================================================
 // CONFIGURAÇÃO DE ROTAS
@@ -31,7 +31,6 @@ const PROTECTED_ROUTES = [
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  let response = NextResponse.next()
 
   // Skip arquivos estáticos e assets
   if (
@@ -39,31 +38,13 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/api/public') ||
     pathname.match(/\.(svg|png|jpg|jpeg|gif|webp|ico|css|js)$/)
   ) {
-    return response
+    return NextResponse.next()
   }
 
   // Skip rotas públicas
   if (PUBLIC_ROUTES.some(route => pathname === route || pathname.startsWith(`${route}/`))) {
-    return response
+    return NextResponse.next()
   }
-
-  // Criar Supabase client para middleware (Edge Runtime)
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            response.cookies.set(name, value, options)
-          })
-        },
-      },
-    }
-  )
 
   // Verificar se é rota protegida
   const protectedRoute = PROTECTED_ROUTES.find(route =>
@@ -71,12 +52,11 @@ export async function middleware(request: NextRequest) {
   )
 
   if (!protectedRoute) {
-    return response // Não é rota protegida
+    return NextResponse.next() // Não é rota protegida
   }
 
-  // SECURITY: getUser() valida JWT com Supabase Auth server (seguro)
-  // NÃO usar getSession() - apenas lê cookies sem validação (inseguro)
-  const { data: { user }, error: sessionError } = await supabase.auth.getUser()
+  // ✅ Usar helper do @supabase/ssr para atualizar sessão
+  const { response, user, error: sessionError } = await updateSession(request)
 
   // Exigir autenticação
   if (sessionError || !user) {
@@ -118,11 +98,23 @@ export async function middleware(request: NextRequest) {
   }
 
   // Adicionar info do usuário nos headers (disponível em Server Components)
-  response.headers.set('x-user-id', user.id)
-  response.headers.set('x-user-email', user.email || '')
-  response.headers.set('x-user-role', userRole)
+  const updatedResponse = NextResponse.next({
+    request: {
+      headers: new Headers(response.headers),
+    },
+  })
 
-  return response
+  // Copiar cookies da response anterior
+  response.cookies.getAll().forEach((cookie) => {
+    updatedResponse.cookies.set(cookie.name, cookie.value)
+  })
+
+  // Adicionar headers personalizados
+  updatedResponse.headers.set('x-user-id', user.id)
+  updatedResponse.headers.set('x-user-email', user.email || '')
+  updatedResponse.headers.set('x-user-role', userRole)
+
+  return updatedResponse
 }
 
 // ============================================================================

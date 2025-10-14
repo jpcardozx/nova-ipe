@@ -147,6 +147,7 @@ export default function FooterAprimorado() {
                                     width={200}
                                     height={100}
                                     className="mb-6"
+                                    style={{ width: 'auto', height: 'auto' }}
                                 />                                <p className="text-gray-300 mb-6 leading-relaxed max-w-md text-body">
                                     Há mais de 15 anos realizando sonhos em Guararema. Oferecemos atendimento personalizado em compra, venda, locação e avaliação de imóveis, com conhecimento profundo do mercado local.
                                 </p>

@@ -57,6 +57,7 @@ export default function Footer() {
                         width={230}
                         height={120}
                         className="mx-auto md:mx-0 object-contain"
+                        style={{ width: 'auto', height: 'auto' }}
                     />                    <p className="text-body-small md:text-body text-[#F7D7A3] mt-4 thin-text leading-relaxed">
                         Consultoria estratégica em investimentos imobiliários com foco em ROI e valorização de ativos.
                     </p>

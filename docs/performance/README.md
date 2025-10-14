@@ -1,0 +1,22 @@
+# ⚡ Performance & Otimização
+
+Otimizações de performance, análises e melhorias de carregamento.
+
+---
+
+## 📋 Arquivos Disponíveis
+
+1. [`BUNDLE_OPTIMIZATION.md`](./BUNDLE_OPTIMIZATION.md)
+2. [`DIAGNOSTICO_STUDIO_PERFORMANCE.md`](./DIAGNOSTICO_STUDIO_PERFORMANCE.md)
+3. [`KNIP_ANALISE_COMPLETA.md`](./KNIP_ANALISE_COMPLETA.md)
+4. [`OTIMIZACAO_STUDIO_PERFORMANCE.md`](./OTIMIZACAO_STUDIO_PERFORMANCE.md)
+5. [`OTIMIZACOES_STUDIO_PERFORMANCE.md`](./OTIMIZACOES_STUDIO_PERFORMANCE.md)
+6. [`PERFORMANCE_LAZY_LOADING_UPGRADE.md`](./PERFORMANCE_LAZY_LOADING_UPGRADE.md)
+7. [`RELATORIO_LIMPEZA_MODULOS.md`](./RELATORIO_LIMPEZA_MODULOS.md)
+8. [`TESTE_PERFORMANCE_STUDIO.md`](./TESTE_PERFORMANCE_STUDIO.md)
+
+---
+
+**Total:** 8 arquivo(s)
+
+[↩️ Voltar para documentação principal](../README.md)

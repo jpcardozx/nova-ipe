@@ -2,12 +2,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useCurrentUser } from '@/lib/hooks/useCurrentUser-simple'
+import { useCurrentUser } from '@/lib/hooks/useSession' // ✅ Usando novo hook com SSR fix
 import { redirect } from 'next/navigation'
 import DashboardSidebar from '@/components/layout/DashboardSidebar'
 import ProfessionalDashboardHeader from './components/ProfessionalDashboardHeader'
 import QuickActions from './components/QuickActions'
-import UserStatsService from './components/UserStatsService'
+import { SessionDebugPanel } from '@/components/SessionDebugPanel'
 
 export default function DashboardLayout({
   children,
@@ -16,9 +16,18 @@ export default function DashboardLayout({
 }) {
   const { user, loading } = useCurrentUser()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true) // Iniciar colapsado por padrão
+  const [redirecting, setRedirecting] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  // ✅ Garantir hydration antes de renderizar conteúdo dinâmico
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Controlar sidebar baseado no tamanho da tela
   useEffect(() => {
+    if (!mounted) return
+
     const handleResize = () => {
       if (window.innerWidth >= 1024) { // lg breakpoint
         setSidebarCollapsed(false)
@@ -32,29 +41,40 @@ export default function DashboardLayout({
 
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [])
+  }, [mounted])
 
-  // 🔥 DEBUG: Forçar redirecionamento se não houver usuário após 3 segundos
+  // ✅ CORREÇÃO: Apenas redirecionar após loading terminar E se não houver user
+  // Não usar redirect() do Next.js - causa problemas em Client Components
   useEffect(() => {
-    if (!loading && !user) {
-      console.log('🔴 Sem usuário autenticado - redirecionando para /login')
-      redirect('/login')
-    }
-  }, [loading, user])
+    if (!mounted || loading || redirecting) return
 
-  if (loading) {
+    if (!user) {
+      console.log('🔴 [Dashboard Layout] Sem usuário autenticado - redirecionando para /login')
+      setRedirecting(true)
+      
+      // Usar window.location para redirect mais confiável em Client Component
+      const currentPath = window.location.pathname
+      window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`
+    }
+  }, [mounted, loading, user, redirecting])
+
+  // ✅ Aguardar hydration completa antes de renderizar
+  if (!mounted || loading || redirecting) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Carregando dashboard...</p>
+          <p className="mt-4 text-gray-600">
+            {redirecting ? 'Redirecionando...' : 'Carregando dashboard...'}
+          </p>
         </div>
       </div>
     )
   }
 
+  // ✅ Apenas renderizar se temos user confirmado
   if (!user) {
-    redirect('/login')
+    return null // Não renderizar nada, redirect já foi acionado no useEffect
   }
 
   return (
@@ -91,12 +111,14 @@ export default function DashboardLayout({
         />
         <main className="flex-1 overflow-y-auto p-3 md:p-5 lg:p-6 xl:p-8 bg-transparent">
           <div className="max-w-[1600px] mx-auto">
-            <UserStatsService />
             {children}
           </div>
         </main>
         <QuickActions />
       </div>
+
+      {/* Session Debug Panel (dev only) */}
+      <SessionDebugPanel />
     </div>
   )
 }

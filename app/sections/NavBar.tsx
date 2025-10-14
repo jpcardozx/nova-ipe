@@ -8,8 +8,8 @@ import { motion, AnimatePresence } from "framer-motion"
 
 const links = [
     { label: "Início", href: "/", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
-    { label: "Comprar", href: "/comprar", icon: "M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" },
-    { label: "Alugar", href: "/alugar", icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+    { label: "Comprar", href: "/catalogo", icon: "M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" },
+    { label: "Alugar", href: "/catalogo", icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
     { label: "Contato", href: "#contato", icon: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" },
 ]
 
@@ -109,12 +109,13 @@ export default function Navbar() {
                                     <Image
                                         src={scrolled ? "/images/logos/ipeWhiteWrittenLogo.png" : "/images/logos/ipeLogoWritten.png"}
                                         alt="Ipê Imóveis - Logo"
-                                        width={scrolled ? 130 : 150}
-                                        height={scrolled ? 41 : 47}
+                                        width={150}
+                                        height={47}
                                         className="hidden sm:block object-contain transition-all duration-500 ease-in-out"
                                         style={{
                                             width: 'auto',
-                                            height: scrolled ? '41px' : '47px',
+                                            height: 'auto',
+                                            maxHeight: scrolled ? '41px' : '47px',
                                             filter: scrolled
                                                 ? 'drop-shadow(0 2px 8px rgba(255,255,255,0.15))'
                                                 : 'drop-shadow(0 1px 3px rgba(0,0,0,0.08))',
@@ -126,12 +127,13 @@ export default function Navbar() {
                                     <Image
                                         src={scrolled ? "/images/logos/ipeWhiteWrittenLogo.png" : "/images/logos/ipeLogoWritten.png"}
                                         alt="Ipê Imóveis"
-                                        width={scrolled ? 100 : 120}
-                                        height={scrolled ? 32 : 38}
+                                        width={120}
+                                        height={38}
                                         className="sm:hidden object-contain transition-all duration-500 ease-in-out"
                                         style={{
                                             width: 'auto',
-                                            height: scrolled ? '32px' : '38px',
+                                            height: 'auto',
+                                            maxHeight: scrolled ? '32px' : '38px',
                                             filter: scrolled
                                                 ? 'drop-shadow(0 2px 6px rgba(255,255,255,0.15))'
                                                 : 'drop-shadow(0 1px 3px rgba(0,0,0,0.08))',

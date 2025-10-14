@@ -103,7 +103,7 @@ export const EnhancedSalesSection: React.FC<EnhancedSalesSectionProps> = ({
                 description={description}
                 variant={variant}
                 sectionType="sale"
-                viewAllLink="/comprar"
+                viewAllLink="/catalogo"
                 viewAllText="Ver todos os imóveis para venda"
                 className="bg-gradient-to-br from-emerald-50/30 via-green-50/20 to-white"
             />
@@ -173,7 +173,7 @@ export const EnhancedRentalsSection: React.FC<EnhancedRentalsSectionProps> = ({
                 description={description}
                 variant={variant}
                 sectionType="rent"
-                viewAllLink="/alugar"
+                viewAllLink="/catalogo"
                 viewAllText="Ver todos os imóveis para aluguel"
                 className="bg-gradient-to-br from-blue-50/30 via-indigo-50/20 to-white"
             />

@@ -79,7 +79,8 @@ export default function ProfessionalDashboardHeader({
   const [showNotifications, setShowNotifications] = useState(false)
   const [showReminders, setShowReminders] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const [currentTime, setCurrentTime] = useState(new Date())
+  const [currentTime, setCurrentTime] = useState<Date | null>(null) // ✅ Iniciar null para evitar hydration mismatch
+  const [mounted, setMounted] = useState(false)
   
   // Stats e dados em tempo real
   const [userStats, setUserStats] = useState<UserStats | null>(null)
@@ -92,11 +93,19 @@ export default function ProfessionalDashboardHeader({
   const notificationRef = useRef<HTMLDivElement>(null)
   const reminderRef = useRef<HTMLDivElement>(null)
 
+  // ✅ Garantir hydration antes de usar Date
+  useEffect(() => {
+    setMounted(true)
+    setCurrentTime(new Date())
+  }, [])
+
   // Atualizar horário a cada minuto
   useEffect(() => {
+    if (!mounted) return
+    
     const timer = setInterval(() => setCurrentTime(new Date()), 60000)
     return () => clearInterval(timer)
-  }, [])
+  }, [mounted])
 
   // Carregar dados do usuário
   useEffect(() => {
@@ -337,10 +346,12 @@ export default function ProfessionalDashboardHeader({
         {/* Right Section */}
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {/* Current Time */}
-          <div className="hidden md:flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mr-4">
-            <Clock className="h-4 w-4" />
-            {format(currentTime, 'HH:mm', { locale: ptBR })}
-          </div>
+          {mounted && currentTime && (
+            <div className="hidden md:flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mr-4">
+              <Clock className="h-4 w-4" />
+              {format(currentTime, 'HH:mm', { locale: ptBR })}
+            </div>
+          )}
 
           {/* Reminders */}
           <div className="relative" ref={reminderRef}>

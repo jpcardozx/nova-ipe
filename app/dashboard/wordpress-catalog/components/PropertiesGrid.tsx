@@ -30,7 +30,7 @@ export function PropertiesGrid({ properties, isLoading, onPropertyClick }: Prope
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className="h-96 bg-gradient-to-br from-slate-100 to-slate-200 animate-pulse rounded-2xl"
+            className="h-96 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-gray-800 dark:to-gray-900 animate-pulse rounded-2xl border-2 border-slate-200 dark:border-gray-700"
           />
         ))}
       </div>
@@ -45,11 +45,11 @@ export function PropertiesGrid({ properties, isLoading, onPropertyClick }: Prope
         animate={{ opacity: 1, scale: 1 }}
         className="text-center py-20"
       >
-        <div className="inline-block p-6 bg-gradient-to-br from-slate-100 to-slate-200 rounded-3xl mb-6">
-          <Search className="w-16 h-16 text-slate-400" />
+        <div className="inline-block p-6 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-gray-800 dark:to-gray-900 rounded-3xl mb-6 border-2 border-slate-200 dark:border-gray-700">
+          <Search className="w-16 h-16 text-slate-400 dark:text-gray-600" />
         </div>
-        <h3 className="text-xl font-semibold text-slate-700 mb-2">Nenhuma ficha encontrada</h3>
-        <p className="text-slate-600">Tente ajustar os filtros ou buscar por outro termo</p>
+        <h3 className="text-xl font-semibold text-slate-700 dark:text-gray-300 mb-2">Nenhuma ficha encontrada</h3>
+        <p className="text-slate-600 dark:text-gray-400">Tente ajustar os filtros ou buscar por outro termo</p>
       </motion.div>
     )
   }

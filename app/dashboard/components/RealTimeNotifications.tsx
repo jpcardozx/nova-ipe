@@ -6,7 +6,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { getSupabaseClient } from '@/lib/supabase/client-singleton'
 import { useCurrentUser } from '@/lib/hooks/useCurrentUser-simple'
 import { Bell, CheckCircle2, AlertCircle, Info, XCircle, Trash2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -31,16 +31,16 @@ interface RealTimeNotificationsProps {
   onUnreadCountChange?: (count: number) => void
 }
 
-export default function RealTimeNotifications({ 
-  onUnreadCountChange 
+export default function RealTimeNotifications({
+  onUnreadCountChange
 }: RealTimeNotificationsProps) {
   const { user } = useCurrentUser()
   const [notifications, setNotifications] = useState<RealTimeNotification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  
-  const supabase = createClientComponentClient()
+
+  const supabase = getSupabaseClient()
 
   // Carregar notificações do banco
   const loadNotifications = useCallback(async () => {
@@ -69,8 +69,8 @@ export default function RealTimeNotifications({
       }
 
       setNotifications(data || [])
-      
-      const unread = (data || []).filter(n => !n.read).length
+
+      const unread = (data as any[] || []).filter(n => !n.read).length
       setUnreadCount(unread)
       onUnreadCountChange?.(unread)
       
@@ -143,6 +143,7 @@ export default function RealTimeNotifications({
     try {
       const { error } = await supabase
         .from('notifications')
+        // @ts-expect-error - Supabase schema type not available
         .update({ is_read: true, updated_at: new Date().toISOString() })
         .eq('id', notificationId)
         .eq('user_id', user?.id)
@@ -166,10 +167,11 @@ export default function RealTimeNotifications({
   // Marcar todas como lidas
   const markAllAsRead = async () => {
     if (!user?.id) return
-    
+
     try {
       const { error } = await supabase
         .from('notifications')
+        // @ts-expect-error - Supabase schema type not available
         .update({ is_read: true, updated_at: new Date().toISOString() })
         .eq('user_id', user.id)
         .eq('is_read', false)
@@ -415,7 +417,7 @@ export function useRealTimeNotifications() {
   const { user } = useCurrentUser()
   const [unreadCount, setUnreadCount] = useState(0)
   const [notifications, setNotifications] = useState<RealTimeNotification[]>([])
-  const supabase = createClientComponentClient()
+  const supabase = getSupabaseClient()
 
   useEffect(() => {
     // ✅ PROTEÇÃO: Não fazer query sem user_id válido

@@ -22,6 +22,23 @@ const nextConfig = {
         protocol: 'https',
         hostname: '*.supabase.co',
       },
+      // ⚡ WordPress Legacy no Lightsail (HTTP)
+      {
+        protocol: 'http',
+        hostname: '13.223.237.99',
+        pathname: '/wp-content/uploads/WPL/**',
+      },
+      // ⚡ Cloudflare R2 Storage (WordPress Photos)
+      {
+        protocol: 'https',
+        hostname: 'c5aff409f2452f34ccab6276da473130.r2.cloudflarestorage.com',
+        pathname: '/wpl-realty/wordpress-photos/**',
+      },
+      // ⚡ Cloudflare R2 Storage (Generic Pattern)
+      {
+        protocol: 'https',
+        hostname: '*.r2.cloudflarestorage.com',
+      },
     ],
     // Configuração otimizada de qualidades para Next.js 15
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],

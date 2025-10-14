@@ -1,3 +1,15 @@
+/**
+ * 🔐 Supabase Client - MANTIDO para compatibilidade
+ *
+ * ⚠️ NOTA: Este client NÃO usa singleton por limitações de SSR
+ *
+ * Para hooks de autenticação, use:
+ * - import { getSupabaseClient } from '@/lib/supabase/client-singleton'
+ *
+ * Para outros serviços (que funcionam tanto SSR quanto CSR), use:
+ * - import { supabase } from '@/lib/supabase' (este arquivo)
+ */
+
 import { createClient } from '@supabase/supabase-js'
 import { getStorageAdapter } from './utils/supabase-storage-adapter'
 
@@ -22,7 +34,7 @@ const supabaseOptions = {
       // Adiciona timeout e tratamento de erro customizado
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s timeout
-      
+
       return fetch(url, {
         ...init,
         signal: controller.signal,

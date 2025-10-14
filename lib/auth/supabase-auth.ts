@@ -67,20 +67,21 @@ export async function createSupabaseServerClient() {
 // ============================================================================
 
 /**
- * 🔐 LOGIN - Server Action com redirect SSR
+ * 🔐 LOGIN - Server Action (apenas autentica, sem redirect)
  * @param email - Email do usuário
  * @param password - Senha do usuário
- * @param mode - Modo de acesso (dashboard/studio)
+ * @param mode - Modo de acesso (dashboard/studio) - usado para logs
+ * @returns Promise<void> - Sucesso ou lança erro
  */
 export async function login(
   email: string,
   password: string,
   mode: LoginMode = 'dashboard'
-): Promise<never> {
+): Promise<void> {
   const startTime = Date.now()
-  
+
   try {
-    console.log('🔐 [Auth Server] Iniciando login...')
+    console.log('🔐 [Auth Server] Iniciando login...', { mode })
     const clientStart = Date.now()
     const supabase = await createSupabaseServerClient()
     console.log(`⏱️ [Auth Server] Cliente criado em ${Date.now() - clientStart}ms`)
@@ -97,8 +98,8 @@ export async function login(
     if (error || !data.session) {
       console.error(`❌ [Auth] Login failed após ${Date.now() - startTime}ms:`, error?.message)
 
-      // Redirect com erro
-      redirect(`/login?error=${encodeURIComponent(error?.message || 'Login failed')}`)
+      // ✅ Lançar erro ao invés de redirect (client fará tratamento)
+      throw new Error(error?.message || 'Login failed')
     }
 
     // Extrair role (app_metadata tem prioridade - mais seguro)
@@ -113,24 +114,21 @@ export async function login(
       authTime: `${authDuration}ms`
     })
 
-    // Revalidar cache
+    // Revalidar cache para garantir que próxima navegação vê sessão atualizada
     const revalidateStart = Date.now()
     revalidatePath('/', 'layout')
     console.log(`⏱️ [Auth Server] Revalidation em ${Date.now() - revalidateStart}ms`)
 
-    // Redirect SSR (cookies já foram setados pelo Supabase)
-    const redirectPath = mode === 'studio' ? '/studio' : '/dashboard'
-    console.log(`🔀 [Auth Server] Redirecionando para ${redirectPath} (total: ${Date.now() - startTime}ms)`)
-    redirect(redirectPath)
+    console.log(`✅ [Auth Server] Login completo em ${Date.now() - startTime}ms - cookies setados`)
+
+    // ✅ Retorna sucesso (client fará redirect)
+    return
 
   } catch (error) {
-    // Se for NEXT_REDIRECT, deixa passar (é esperado)
-    if (error instanceof Error && error.message === 'NEXT_REDIRECT') {
-      throw error
-    }
-
     console.error('❌ [Auth] Login exception:', error)
-    redirect('/login?error=Internal+server+error')
+
+    // Re-throw para client tratar
+    throw error
   }
 }
 

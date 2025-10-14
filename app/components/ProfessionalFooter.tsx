@@ -66,12 +66,12 @@ export default function ProfessionalFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/comprar" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/catalogo" className="text-gray-300 hover:text-white transition-colors">
                   Comprar Imóvel
                 </Link>
               </li>
               <li>
-                <Link href="/alugar" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/catalogo" className="text-gray-300 hover:text-white transition-colors">
                   Alugar Imóvel
                 </Link>
               </li>

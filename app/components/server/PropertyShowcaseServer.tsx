@@ -87,7 +87,7 @@ export async function PropertiesSale() {
                     subtitle="Encontre o imóvel perfeito em Guararema com nossa seleção exclusiva de propriedades para venda"
                     properties={propertiesFormatted}
                     badge="Imóveis à Venda"
-                    viewAllLink="/comprar"
+                    viewAllLink="/catalogo"
                     viewAllText="Ver todos os imóveis à venda"
                     variant="premium"
                     accentColor="blue"
@@ -128,7 +128,7 @@ export async function PropertiesRental() {
                     subtitle="Descubra as melhores opções de aluguel em Guararema com localização privilegiada e estrutura completa"
                     properties={propertiesFormatted}
                     badge="Para Alugar"
-                    viewAllLink="/alugar"
+                    viewAllLink="/catalogo"
                     viewAllText="Ver todos os imóveis para aluguel"
                     variant="modern"
                     accentColor="emerald"
