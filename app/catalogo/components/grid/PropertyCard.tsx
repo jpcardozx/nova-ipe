@@ -105,16 +105,22 @@ export default function PropertyCard({
     };
 
     return (
-        <motion.div
+        <motion.article
             variants={cardVariants}
-            whileHover={{ y: -8, scale: 1.02 }}
+            initial="hidden"
+            animate="show"
+            whileHover={{ 
+                y: -12, 
+                scale: 1.01,
+                transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] }
+            }}
             className={cn(
-                "group relative bg-white rounded-2xl shadow-md hover:shadow-2xl border border-gray-100 hover:border-amber-400 transition-all duration-300 overflow-hidden cursor-pointer flex flex-col",
+                "group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl border border-gray-100 hover:border-primary/40 transition-all duration-500 overflow-hidden cursor-pointer flex flex-col",
                 heightConfig[viewMode]
             )}
             onClick={() => onPropertyClick?.(property)}
         >
-            {/* Imagem otimizada */}
+            {/* Imagem otimizada com overlay gradiente premium */}
             <div className={cn("relative overflow-hidden flex-shrink-0", imageHeight[viewMode])}>
                 <PropertyCardImage
                     src={primaryUrl}
@@ -124,93 +130,134 @@ export default function PropertyCard({
                     onError={() => handleImageError({ target: null } as any)}
                 />
                 
-                {/* Overlay com ações */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                {/* Overlay premium gradiente - Sempre visível com transição suave */}
+                <motion.div 
+                    className="absolute inset-0 bg-gradient-to-t from-primary-dark/90 via-secondary/40 to-transparent"
+                    initial={{ opacity: 0.3 }}
+                    whileHover={{ opacity: 0.8 }}
+                    transition={{ duration: 0.3 }}
+                >
                     <div className="absolute top-3 right-3 flex gap-2">
-                        <button
+                        <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={handleShare}
-                            className="p-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white hover:bg-white/30 transition-all"
+                            className="p-2.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white hover:bg-white/20 transition-all shadow-lg"
                             title="Compartilhar"
                         >
                             <Share2 className="w-4 h-4" />
-                        </button>
-                        <button
+                        </motion.button>
+                        <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onFavoriteToggle?.(property.id);
                             }}
                             className={cn(
-                                "p-2 backdrop-blur-sm border rounded-lg transition-all",
+                                "p-2.5 backdrop-blur-md border rounded-xl transition-all shadow-lg",
                                 isFavorite 
-                                    ? "bg-red-500 border-red-500 text-white" 
-                                    : "bg-white/20 border-white/30 text-white hover:bg-white/30"
+                                    ? "bg-red-500/90 border-red-500/50 text-white" 
+                                    : "bg-white/10 border-white/20 text-white hover:bg-white/20"
                             )}
                             title={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
                         >
-                            <Heart className={cn("w-4 h-4", isFavorite && "fill-current")} />
-                        </button>
+                            <motion.div
+                                animate={isFavorite ? { scale: [1, 1.2, 1] } : {}}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <Heart className={cn("w-4 h-4", isFavorite && "fill-current")} />
+                            </motion.div>
+                        </motion.button>
                     </div>
                     
-                    {/* Botões de contato - só aparecem em hover */}
-                    <div className="absolute bottom-3 left-3 right-3 flex gap-2">
-                        <button
+                    {/* Botões de contato - aparecem em hover com animação */}
+                    <motion.div 
+                        className="absolute bottom-3 left-3 right-3 flex gap-2"
+                        initial={{ opacity: 0, y: 10 }}
+                        whileHover={{ opacity: 1, y: 0 }}
+                    >
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onContactClick?.(property.id, 'whatsapp');
                             }}
-                            className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-3 rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                            className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-2.5 px-3 rounded-xl transition-all text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-green-500/30"
                         >
                             <MessageCircle className="w-4 h-4" />
                             <span className="hidden sm:inline">WhatsApp</span>
-                        </button>
-                        <button
+                        </motion.button>
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onContactClick?.(property.id, 'phone');
                             }}
-                            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                            className="flex-1 bg-gradient-to-r from-primary to-primary-dark hover:from-primary-light hover:to-primary text-white py-2.5 px-3 rounded-xl transition-all text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-primary/30"
                         >
                             <Phone className="w-4 h-4" />
                             <span className="hidden sm:inline">Ligar</span>
-                        </button>
-                    </div>
-                </div>
+                        </motion.button>
+                    </motion.div>
+                </motion.div>
 
-                {/* Badge de destaque */}
+                {/* Badge de destaque - Animado com brand colors */}
                 {property.destaque && (
-                    <div className="absolute top-3 left-3">
-                        <div className="flex items-center gap-1 px-3 py-1 bg-amber-500 text-white text-xs font-bold rounded-lg shadow-lg">
-                            <TrendingUp className="w-3 h-3" />
+                    <motion.div 
+                        className="absolute top-3 left-3"
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                    >
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-primary to-primary-dark text-white text-xs font-bold rounded-xl shadow-lg shadow-primary/40 border border-primary-light/30">
+                            <TrendingUp className="w-3.5 h-3.5" />
                             DESTAQUE
                         </div>
-                    </div>
+                    </motion.div>
                 )}
 
                 {/* Badge de tipo */}
                 {property.tipo && (
-                    <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="px-2 py-1 bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-semibold rounded-md">
+                    <motion.div 
+                        className="absolute bottom-3 left-3"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileHover={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <div className="px-3 py-1.5 bg-white/95 backdrop-blur-md text-gray-900 text-xs font-bold rounded-lg shadow-lg border border-white/50">
                             {property.tipo}
                         </div>
-                    </div>
+                    </motion.div>
                 )}
             </div>
 
-            {/* Conteúdo do card */}
-            <div className="p-5 md:p-6 flex-1 flex flex-col justify-between">
+            {/* Conteúdo do card - Com animações sutis */}
+            <motion.div 
+                className="p-5 md:p-6 flex-1 flex flex-col justify-between"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.1, duration: 0.3 }}
+            >
                 <div className="space-y-2.5 md:space-y-3">
-                    <h3 className="font-bold text-gray-900 line-clamp-2 group-hover:text-amber-600 transition-colors text-lg md:text-xl leading-tight">
+                    <h3 className="font-bold text-gray-900 line-clamp-2 group-hover:text-primary transition-colors duration-300 text-lg md:text-xl leading-tight">
                         {property.titulo}
                     </h3>
-                    <div className="flex items-center gap-2 text-gray-600">
-                        <MapPin className="w-4 h-4 flex-shrink-0 text-amber-500" />
+                    <div className="flex items-center gap-2 text-gray-600 group-hover:text-primary-dark transition-colors duration-300">
+                        <MapPin className="w-4 h-4 flex-shrink-0 text-primary" />
                         <span className="text-sm md:text-base truncate font-medium">{property.bairro}, {property.cidade || 'Guararema'}</span>
                     </div>
                 </div>
 
                 <div className="space-y-3 md:space-y-4 mt-auto">
-                    {/* Preço */}
-                    <div className="text-2xl md:text-3xl font-bold text-amber-600">
+                    {/* Preço com gradiente brand */}
+                    <motion.div 
+                        className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent"
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ duration: 0.2 }}
+                    >
                         {property.preco ? (
                             new Intl.NumberFormat('pt-BR', {
                                 style: 'currency',
@@ -221,31 +268,40 @@ export default function PropertyCard({
                         ) : (
                             <span className="text-lg text-gray-600">Sob consulta</span>
                         )}
-                    </div>
+                    </motion.div>
 
-                    {/* Características */}
+                    {/* Características com brand colors */}
                     <div className="flex items-center gap-4 md:gap-5 text-sm text-gray-700">
                         {property.quartos && (
-                            <div className="flex items-center gap-1.5">
-                                <Bed className="w-4 h-4 text-gray-500" />
+                            <motion.div 
+                                className="flex items-center gap-1.5"
+                                whileHover={{ scale: 1.1 }}
+                            >
+                                <Bed className="w-4 h-4 text-primary" />
                                 <span className="font-semibold">{property.quartos}</span>
-                            </div>
+                            </motion.div>
                         )}
                         {property.banheiros && (
-                            <div className="flex items-center gap-1.5">
-                                <Bath className="w-4 h-4 text-gray-500" />
+                            <motion.div 
+                                className="flex items-center gap-1.5"
+                                whileHover={{ scale: 1.1 }}
+                            >
+                                <Bath className="w-4 h-4 text-primary" />
                                 <span className="font-semibold">{property.banheiros}</span>
-                            </div>
+                            </motion.div>
                         )}
                         {property.area && (
-                            <div className="flex items-center gap-1.5">
-                                <Square className="w-4 h-4 text-gray-500" />
+                            <motion.div 
+                                className="flex items-center gap-1.5"
+                                whileHover={{ scale: 1.1 }}
+                            >
+                                <Square className="w-4 h-4 text-primary" />
                                 <span className="font-semibold">{property.area.toLocaleString('pt-BR')}m²</span>
-                            </div>
+                            </motion.div>
                         )}
                     </div>
                 </div>
-            </div>
-        </motion.div>
+            </motion.div>
+        </motion.article>
     );
 }

@@ -167,33 +167,33 @@ export default function KeysPagePremium() {
         const configs = {
             scheduled: {
                 label: 'Agendado',
-                color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20',
+                color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-2 border-blue-300 dark:border-blue-600',
                 dotColor: 'bg-blue-500',
-                icon: <Calendar className="h-3.5 w-3.5" />
+                icon: <Calendar className="h-4 w-4" />
             },
             delivered: {
                 label: 'Entregue',
-                color: 'bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20',
-                dotColor: 'bg-green-500',
-                icon: <CheckCircle className="h-3.5 w-3.5" />
+                color: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border-2 border-emerald-300 dark:border-emerald-600',
+                dotColor: 'bg-emerald-500',
+                icon: <CheckCircle className="h-4 w-4" />
             },
             returned: {
                 label: 'Devolvido',
-                color: 'bg-gray-500/10 text-gray-600 dark:text-gray-400 border border-gray-500/20',
+                color: 'bg-gray-100 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 border-2 border-gray-300 dark:border-gray-600',
                 dotColor: 'bg-gray-500',
-                icon: <CheckCircle className="h-3.5 w-3.5" />
+                icon: <CheckCircle className="h-4 w-4" />
             },
             pending: {
                 label: 'Pendente',
-                color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
-                dotColor: 'bg-amber-500',
-                icon: <AlertCircle className="h-3.5 w-3.5" />
+                color: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 border-2 border-orange-300 dark:border-orange-600',
+                dotColor: 'bg-orange-500',
+                icon: <AlertCircle className="h-4 w-4" />
             },
             cancelled: {
                 label: 'Cancelado',
-                color: 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20',
+                color: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-2 border-red-300 dark:border-red-600',
                 dotColor: 'bg-red-500',
-                icon: <XCircle className="h-3.5 w-3.5" />
+                icon: <XCircle className="h-4 w-4" />
             }
         }
         return configs[status]
@@ -274,13 +274,13 @@ export default function KeysPagePremium() {
                     className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8"
                 >
                     <div>
-                        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-600 
-                                     dark:from-blue-400 dark:via-cyan-400 dark:to-blue-400 
+                        <h1 className="text-4xl font-bold bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 
+                                     dark:from-amber-400 dark:via-amber-300 dark:to-amber-400 
                                      bg-clip-text text-transparent mb-2">
                             Gestão de Chaves
                         </h1>
-                        <p className="text-muted-foreground flex items-center gap-2">
-                            <Package className="h-4 w-4" />
+                        <p className="text-gray-700 dark:text-gray-300 flex items-center gap-2 font-medium">
+                            <Package className="h-5 w-5 text-amber-500" />
                             Controle completo de entregas e devoluções
                         </p>
                     </div>
@@ -290,23 +290,24 @@ export default function KeysPagePremium() {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={loadKeyDeliveries}
-                            className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 
-                                     dark:border-gray-700 text-foreground rounded-xl hover:shadow-lg
-                                     transition-all flex items-center gap-2 font-medium"
+                            className="px-4 py-2.5 bg-white dark:bg-gray-800 border-2 border-gray-200 
+                                     dark:border-gray-700 text-gray-900 dark:text-gray-100 rounded-xl 
+                                     hover:shadow-lg hover:border-amber-300 dark:hover:border-amber-600
+                                     transition-all flex items-center gap-2 font-semibold"
                         >
-                            <TrendingUp className="h-4 w-4" />
+                            <TrendingUp className="h-5 w-5" />
                             Atualizar
                         </motion.button>
                         <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => setShowCreateModal(true)}
-                            className="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 
-                                     dark:from-blue-500 dark:to-cyan-500
-                                     text-white rounded-xl hover:shadow-lg hover:shadow-blue-500/30
-                                     transition-all flex items-center gap-2 font-medium"
+                            className="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 
+                                     hover:from-amber-400 hover:to-amber-500
+                                     text-white rounded-xl hover:shadow-xl hover:shadow-amber-500/40
+                                     transition-all flex items-center gap-2 font-semibold"
                         >
-                            <Plus className="h-4 w-4" />
+                            <Plus className="h-5 w-5" />
                             Nova Entrega
                         </motion.button>
                     </div>
@@ -319,30 +320,29 @@ export default function KeysPagePremium() {
                     className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8"
                 >
                     {[
-                        { label: 'Total', value: stats.total, icon: Key, gradient: 'from-gray-500 to-gray-600', color: 'gray' },
-                        { label: 'Agendados', value: stats.scheduled, icon: Calendar, gradient: 'from-blue-500 to-blue-600', color: 'blue' },
-                        { label: 'Entregues', value: stats.delivered, icon: CheckCircle, gradient: 'from-green-500 to-green-600', color: 'green' },
-                        { label: 'Pendentes', value: stats.pending, icon: AlertCircle, gradient: 'from-amber-500 to-amber-600', color: 'amber' },
-                        { label: 'Devolvidos', value: stats.returned, icon: CheckCircle, gradient: 'from-gray-500 to-gray-600', color: 'gray' }
+                        { label: 'Total', value: stats.total, icon: Key, gradient: 'from-amber-500 to-amber-600', bgColor: 'bg-amber-50 dark:bg-amber-900/10', borderColor: 'border-amber-200 dark:border-amber-800/30' },
+                        { label: 'Agendados', value: stats.scheduled, icon: Calendar, gradient: 'from-blue-500 to-blue-600', bgColor: 'bg-blue-50 dark:bg-blue-900/10', borderColor: 'border-blue-200 dark:border-blue-800/30' },
+                        { label: 'Entregues', value: stats.delivered, icon: CheckCircle, gradient: 'from-emerald-500 to-emerald-600', bgColor: 'bg-emerald-50 dark:bg-emerald-900/10', borderColor: 'border-emerald-200 dark:border-emerald-800/30' },
+                        { label: 'Pendentes', value: stats.pending, icon: AlertCircle, gradient: 'from-orange-500 to-orange-600', bgColor: 'bg-orange-50 dark:bg-orange-900/10', borderColor: 'border-orange-200 dark:border-orange-800/30' },
+                        { label: 'Devolvidos', value: stats.returned, icon: CheckCircle, gradient: 'from-gray-500 to-gray-600', bgColor: 'bg-gray-50 dark:bg-gray-900/20', borderColor: 'border-gray-200 dark:border-gray-700/50' }
                     ].map((stat, index) => (
                         <motion.div
                             key={stat.label}
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: index * 0.1 }}
-                            className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-200 
-                                     dark:border-gray-700 hover:shadow-lg transition-all duration-200
-                                     group cursor-pointer"
+                            className={`${stat.bgColor} rounded-2xl p-5 border-2 ${stat.borderColor}
+                                     hover:shadow-xl transition-all duration-200 group cursor-pointer`}
                         >
                             <div className="flex items-center justify-between mb-3">
-                                <span className="text-sm font-medium text-muted-foreground">{stat.label}</span>
-                                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.gradient} 
+                                <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">{stat.label}</span>
+                                <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${stat.gradient} 
                                               flex items-center justify-center shadow-lg transform 
                                               group-hover:scale-110 transition-transform`}>
-                                    <stat.icon className="h-5 w-5 text-white" />
+                                    <stat.icon className="h-6 w-6 text-white" />
                                 </div>
                             </div>
-                            <p className="text-3xl font-bold text-foreground">{stat.value}</p>
+                            <p className="text-3xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
                         </motion.div>
                     ))}
                 </motion.div>
@@ -351,37 +351,37 @@ export default function KeysPagePremium() {
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 
-                             dark:border-gray-700 shadow-sm mb-6"
+                    className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900
+                             rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-700 shadow-lg mb-6"
                 >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="relative">
                             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 
-                                            text-muted-foreground pointer-events-none" />
+                                            text-amber-500 pointer-events-none" />
                             <input
                                 type="text"
                                 placeholder="Buscar por cliente, imóvel ou endereço..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 
-                                         border border-gray-200 dark:border-gray-700 rounded-xl 
-                                         text-foreground placeholder:text-muted-foreground
-                                         focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 
-                                         focus:border-transparent transition-all"
+                                className="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800
+                                         border-2 border-gray-300 dark:border-gray-600 rounded-xl 
+                                         text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 font-medium
+                                         focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 
+                                         focus:border-amber-500 dark:focus:border-amber-400 transition-all"
                             />
                         </div>
 
                         <div className="relative">
                             <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 
-                                             text-muted-foreground pointer-events-none" />
+                                             text-amber-500 pointer-events-none" />
                             <select
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value as any)}
-                                className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 
-                                         border border-gray-200 dark:border-gray-700 rounded-xl 
-                                         text-foreground appearance-none cursor-pointer
-                                         focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 
-                                         focus:border-transparent transition-all"
+                                className="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800
+                                         border-2 border-gray-300 dark:border-gray-600 rounded-xl 
+                                         text-gray-900 dark:text-white appearance-none cursor-pointer font-medium
+                                         focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 
+                                         focus:border-amber-500 dark:focus:border-amber-400 transition-all"
                             >
                                 <option value="all">Todos os Status</option>
                                 <option value="scheduled">Agendados</option>
@@ -402,18 +402,18 @@ export default function KeysPagePremium() {
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.9 }}
-                                className="bg-white dark:bg-gray-800 rounded-2xl p-16 text-center 
-                                         border border-gray-200 dark:border-gray-700"
+                                className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-gray-800 dark:to-gray-900 
+                                         rounded-2xl p-16 text-center border-2 border-amber-200 dark:border-gray-700"
                             >
                                 <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br 
-                                              from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 
+                                              from-amber-400 to-amber-600 shadow-lg shadow-amber-500/30
                                               flex items-center justify-center">
-                                    <Key className="h-10 w-10 text-muted-foreground" />
+                                    <Key className="h-10 w-10 text-white" />
                                 </div>
-                                <p className="text-muted-foreground text-lg font-medium mb-2">
+                                <p className="text-gray-900 dark:text-white text-lg font-bold mb-2">
                                     Nenhuma entrega encontrada
                                 </p>
-                                <p className="text-sm text-muted-foreground/70">
+                                <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
                                     Tente ajustar os filtros ou criar uma nova entrega
                                 </p>
                             </motion.div>
@@ -430,12 +430,12 @@ export default function KeysPagePremium() {
                                         exit={{ opacity: 0, scale: 0.9 }}
                                         transition={{ delay: index * 0.05 }}
                                         className="bg-white dark:bg-gray-800 rounded-2xl p-6 
-                                                 border border-gray-200 dark:border-gray-700
-                                                 hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-700
+                                                 border-2 border-gray-200 dark:border-gray-700
+                                                 hover:shadow-2xl hover:border-amber-400 dark:hover:border-amber-500
                                                  transition-all duration-300 group relative overflow-hidden"
                                     >
                                         {/* Background Gradient on Hover */}
-                                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-cyan-500/5 
+                                        <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-amber-400/3 to-transparent
                                                       opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                         
                                         <div className="relative">
@@ -444,40 +444,40 @@ export default function KeysPagePremium() {
                                                 <div className="flex-1 space-y-4">
                                                     {/* Property Info */}
                                                     <div className="flex items-start gap-4">
-                                                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 
-                                                                      flex items-center justify-center flex-shrink-0 shadow-lg">
+                                                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 
+                                                                      flex items-center justify-center flex-shrink-0 shadow-lg shadow-amber-500/30">
                                                             <Home className="h-7 w-7 text-white" />
                                                         </div>
                                                         <div className="flex-1 min-w-0">
                                                             <div className="flex items-start justify-between gap-3 mb-2">
-                                                                <h3 className="text-lg font-semibold text-foreground 
-                                                                             group-hover:text-blue-600 dark:group-hover:text-blue-400 
+                                                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white
+                                                                             group-hover:text-amber-600 dark:group-hover:text-amber-400 
                                                                              transition-colors line-clamp-2">
                                                                     {delivery.property_title}
                                                                 </h3>
                                                                 <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 
-                                                                                rounded-lg text-xs font-medium ${statusConfig.color} 
+                                                                                rounded-lg text-xs font-semibold ${statusConfig.color} 
                                                                                 whitespace-nowrap flex-shrink-0`}>
-                                                                    <span className={`w-1.5 h-1.5 rounded-full ${statusConfig.dotColor} 
+                                                                    <span className={`w-2 h-2 rounded-full ${statusConfig.dotColor} 
                                                                                    animate-pulse`}></span>
                                                                     {statusConfig.label}
                                                                 </span>
                                                             </div>
-                                                            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
-                                                                <MapPin className="h-4 w-4 flex-shrink-0" />
+                                                            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-3">
+                                                                <MapPin className="h-4 w-4 flex-shrink-0 text-amber-500" />
                                                                 <span className="line-clamp-1">{delivery.property_address}</span>
                                                             </div>
                                                             <div className="flex items-center gap-4 text-sm flex-wrap">
-                                                                <span className="flex items-center gap-1.5 text-muted-foreground">
-                                                                    <Key className="h-4 w-4" />
-                                                                    <span className="font-medium">{delivery.keys_count}</span>
+                                                                <span className="flex items-center gap-1.5 text-gray-700 dark:text-gray-300">
+                                                                    <Key className="h-4 w-4 text-amber-500" />
+                                                                    <span className="font-semibold">{delivery.keys_count}</span>
                                                                     {delivery.keys_count === 1 ? 'chave' : 'chaves'}
                                                                 </span>
                                                                 {delivery.contract_id && (
-                                                                    <span className="flex items-center gap-1.5 text-muted-foreground">
-                                                                        <FileText className="h-4 w-4" />
-                                                                        <span className="font-mono text-xs px-2 py-0.5 bg-gray-100 
-                                                                                       dark:bg-gray-700 rounded">
+                                                                    <span className="flex items-center gap-1.5 text-gray-700 dark:text-gray-300">
+                                                                        <FileText className="h-4 w-4 text-amber-500" />
+                                                                        <span className="font-mono text-xs px-2 py-1 bg-amber-50 dark:bg-amber-900/20
+                                                                                       border border-amber-200 dark:border-amber-800 rounded font-semibold">
                                                                             {delivery.contract_id}
                                                                         </span>
                                                                     </span>
@@ -489,21 +489,21 @@ export default function KeysPagePremium() {
                                                     {/* Client Info */}
                                                     <div className="pl-[72px] space-y-2">
                                                         <div className="flex items-center gap-2 text-sm">
-                                                            <User className="h-4 w-4 text-muted-foreground" />
-                                                            <span className="font-medium text-foreground">{delivery.client_name}</span>
+                                                            <User className="h-4 w-4 text-amber-500" />
+                                                            <span className="font-semibold text-gray-900 dark:text-white">{delivery.client_name}</span>
                                                         </div>
                                                         <div className="flex flex-wrap gap-4 text-sm">
                                                             <a href={`tel:${delivery.client_phone}`}
-                                                               className="flex items-center gap-1.5 text-muted-foreground 
-                                                                        hover:text-blue-600 dark:hover:text-blue-400 
-                                                                        transition-colors">
+                                                               className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400
+                                                                        hover:text-amber-600 dark:hover:text-amber-400 
+                                                                        transition-colors font-medium">
                                                                 <Phone className="h-4 w-4" />
                                                                 {delivery.client_phone}
                                                             </a>
                                                             <a href={`mailto:${delivery.client_email}`}
-                                                               className="flex items-center gap-1.5 text-muted-foreground 
-                                                                        hover:text-blue-600 dark:hover:text-blue-400 
-                                                                        transition-colors">
+                                                               className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400
+                                                                        hover:text-amber-600 dark:hover:text-amber-400 
+                                                                        transition-colors font-medium">
                                                                 <Mail className="h-4 w-4" />
                                                                 {delivery.client_email}
                                                             </a>
@@ -526,25 +526,26 @@ export default function KeysPagePremium() {
 
                                                 {/* Right Section - Timeline */}
                                                 <div className="lg:w-64 flex-shrink-0">
-                                                    <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-4 
-                                                                  border border-gray-200 dark:border-gray-700">
+                                                    <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/50 dark:to-gray-800/30 
+                                                                  rounded-xl p-4 border-2 border-gray-200 dark:border-gray-700">
                                                         <div className="space-y-3">
                                                             {delivery.scheduled_date && (
                                                                 <div className="flex gap-3">
                                                                     <div className="flex flex-col items-center">
-                                                                        <div className="w-8 h-8 rounded-full bg-blue-500 
-                                                                                      flex items-center justify-center">
+                                                                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600
+                                                                                      shadow-lg shadow-blue-500/30 flex items-center justify-center">
                                                                             <Calendar className="h-4 w-4 text-white" />
                                                                         </div>
                                                                         {(delivery.delivered_date || delivery.returned_date) && (
-                                                                            <div className="w-0.5 h-8 bg-gray-300 dark:bg-gray-600" />
+                                                                            <div className="w-0.5 h-8 bg-gradient-to-b from-blue-400 to-gray-300 
+                                                                                          dark:from-blue-500 dark:to-gray-600" />
                                                                         )}
                                                                     </div>
                                                                     <div className="flex-1">
-                                                                        <p className="text-xs text-muted-foreground font-medium mb-1">
+                                                                        <p className="text-xs text-gray-600 dark:text-gray-400 font-semibold mb-1">
                                                                             Agendado
                                                                         </p>
-                                                                        <p className="text-sm font-semibold text-foreground">
+                                                                        <p className="text-sm font-bold text-gray-900 dark:text-white">
                                                                             {formatDateShort(delivery.scheduled_date)}
                                                                         </p>
                                                                     </div>
@@ -553,19 +554,20 @@ export default function KeysPagePremium() {
                                                             {delivery.delivered_date && (
                                                                 <div className="flex gap-3">
                                                                     <div className="flex flex-col items-center">
-                                                                        <div className="w-8 h-8 rounded-full bg-green-500 
-                                                                                      flex items-center justify-center">
+                                                                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600
+                                                                                      shadow-lg shadow-emerald-500/30 flex items-center justify-center">
                                                                             <CheckCircle className="h-4 w-4 text-white" />
                                                                         </div>
                                                                         {delivery.returned_date && (
-                                                                            <div className="w-0.5 h-8 bg-gray-300 dark:bg-gray-600" />
+                                                                            <div className="w-0.5 h-8 bg-gradient-to-b from-emerald-400 to-gray-300
+                                                                                          dark:from-emerald-500 dark:to-gray-600" />
                                                                         )}
                                                                     </div>
                                                                     <div className="flex-1">
-                                                                        <p className="text-xs text-muted-foreground font-medium mb-1">
+                                                                        <p className="text-xs text-gray-600 dark:text-gray-400 font-semibold mb-1">
                                                                             Entregue
                                                                         </p>
-                                                                        <p className="text-sm font-semibold text-green-600 dark:text-green-400">
+                                                                        <p className="text-sm font-bold text-emerald-700 dark:text-emerald-400">
                                                                             {formatDateShort(delivery.delivered_date)}
                                                                         </p>
                                                                     </div>
@@ -573,23 +575,23 @@ export default function KeysPagePremium() {
                                                             )}
                                                             {delivery.returned_date && (
                                                                 <div className="flex gap-3">
-                                                                    <div className="w-8 h-8 rounded-full bg-gray-500 
-                                                                                  flex items-center justify-center">
+                                                                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gray-500 to-gray-600
+                                                                                  shadow-lg shadow-gray-500/30 flex items-center justify-center">
                                                                         <CheckCircle className="h-4 w-4 text-white" />
                                                                     </div>
                                                                     <div className="flex-1">
-                                                                        <p className="text-xs text-muted-foreground font-medium mb-1">
+                                                                        <p className="text-xs text-gray-600 dark:text-gray-400 font-semibold mb-1">
                                                                             Devolvido
                                                                         </p>
-                                                                        <p className="text-sm font-semibold text-foreground">
+                                                                        <p className="text-sm font-bold text-gray-900 dark:text-white">
                                                                             {formatDateShort(delivery.returned_date)}
                                                                         </p>
                                                                     </div>
                                                                 </div>
                                                             )}
-                                                            <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
-                                                                <p className="text-xs text-muted-foreground mb-1">Corretor</p>
-                                                                <p className="text-sm font-medium text-foreground">{delivery.broker_name}</p>
+                                                            <div className="pt-3 border-t-2 border-gray-300 dark:border-gray-600">
+                                                                <p className="text-xs text-gray-600 dark:text-gray-400 font-semibold mb-1">Corretor</p>
+                                                                <p className="text-sm font-bold text-gray-900 dark:text-white">{delivery.broker_name}</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -600,9 +602,10 @@ export default function KeysPagePremium() {
                                                             whileHover={{ scale: 1.05 }}
                                                             whileTap={{ scale: 0.95 }}
                                                             onClick={() => setSelectedDelivery(delivery)}
-                                                            className="flex-1 px-3 py-2 bg-blue-500 hover:bg-blue-600 
-                                                                     text-white rounded-lg text-sm font-medium 
-                                                                     transition-colors flex items-center justify-center gap-2"
+                                                            className="flex-1 px-3 py-2 bg-gradient-to-r from-amber-500 to-amber-600 
+                                                                     hover:from-amber-600 hover:to-amber-700 shadow-lg shadow-amber-500/30
+                                                                     text-white rounded-lg text-sm font-semibold 
+                                                                     transition-all flex items-center justify-center gap-2"
                                                         >
                                                             <Edit className="h-4 w-4" />
                                                             Editar
@@ -612,11 +615,11 @@ export default function KeysPagePremium() {
                                                                 whileHover={{ scale: 1.05 }}
                                                                 whileTap={{ scale: 0.95 }}
                                                                 onClick={() => setShowMenu(showMenu === delivery.id ? null : delivery.id)}
-                                                                className="px-3 py-2 bg-gray-100 dark:bg-gray-700 
-                                                                         hover:bg-gray-200 dark:hover:bg-gray-600
-                                                                         rounded-lg transition-colors"
+                                                                className="px-3 py-2 bg-gray-100 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600
+                                                                         hover:bg-gray-200 dark:hover:bg-gray-700 hover:border-amber-400
+                                                                         rounded-lg transition-all"
                                                             >
-                                                                <MoreVertical className="h-4 w-4" />
+                                                                <MoreVertical className="h-4 w-4 text-gray-700 dark:text-gray-300" />
                                                             </motion.button>
                                                             <AnimatePresence>
                                                                 {showMenu === delivery.id && (

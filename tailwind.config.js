@@ -14,19 +14,19 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Core brand colors for real estate business
+        // Core brand colors - AMBER palette (matching Footer design)
         primary: {
-          DEFAULT: '#1a6f5c',
-          light: '#3a8f7c',
-          dark: '#145a49',
+          DEFAULT: '#FFAD43', // Amber 500 - Main brand color
+          light: '#FFB85F',
+          dark: '#e89c36',
         },
         secondary: {
-          DEFAULT: '#0d1f2d',
+          DEFAULT: '#0D1F2D', // Dark navy background
           light: '#1e3042',
         },
         accent: {
-          DEFAULT: '#ffcc00',
-          dark: '#e6b800',
+          DEFAULT: '#F7D7A3', // Light cream text
+          dark: '#e6c58f',
         },
       },
       fontFamily: {

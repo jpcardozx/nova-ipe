@@ -54,24 +54,24 @@ const footerLinks = [
     }
 ];
 
-// Componente de link com animação
+// Componente de link com animação - Brand colors
 const FooterLink = ({ href, children }: { href: string, children: React.ReactNode }) => (
     <span
-        className="group flex items-center text-gray-300 hover:text-amber-400 transition-colors duration-300 cursor-pointer hover:underline underline-offset-2"
+        className="group flex items-center text-gray-300 hover:text-primary-light transition-colors duration-300 cursor-pointer hover:underline underline-offset-2"
     >
-        <ChevronRight className="w-3 h-3 mr-1.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
+        <ChevronRight className="w-3 h-3 mr-1.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-primary" />
         {children}
     </span>
 );
 
-// Componente de ícone social
+// Componente de ícone social - Brand colors
 const SocialIcon = ({ href, icon, label }: { href: string, icon: React.ReactNode, label: string }) => (
     <a
         href={href}
         target="_blank"
         rel="noopener noreferrer"
         aria-label={label}
-        className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-white hover:bg-amber-500 hover:scale-110 transition-all duration-300"
+        className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-primary hover:border-primary-light hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-primary/30"
     >
         {icon}
     </a>
@@ -114,23 +114,35 @@ export default function FooterAprimorado() {
     }
 
     return (
-        <footer className="relative w-full bg-gradient-to-b from-gray-900 to-gray-950 text-white overflow-hidden font-body">            {/* Fundo com textura e gradiente */}
+        <footer className="relative w-full bg-gradient-to-br from-secondary via-secondary-light to-gray-900 text-white overflow-hidden font-body">
+            {/* Premium Background com Multi-layer Overlay */}
             <div className="absolute inset-0">
+                {/* Textura de fundo */}
                 <div className="relative w-full h-full">
                     <Image
                         src="/images/wood-pattern.png"
                         alt="Textura de fundo do rodapé"
                         fill
-                        className="object-cover object-center opacity-10"
+                        className="object-cover object-center opacity-5"
                         priority
                     />
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 to-gray-950/90" />
+                
+                {/* Multi-layer gradientes elegantes */}
+                <div className="absolute inset-0 bg-gradient-to-br from-secondary/95 via-secondary-light/90 to-gray-900/95" />
+                <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/10 via-transparent to-transparent" />
+                
+                {/* Pattern sutil de grid */}
+                <div className="absolute inset-0 opacity-[0.02]" style={{
+                    backgroundImage: `linear-gradient(rgba(26, 111, 92, 0.15) 1px, transparent 1px),
+                                      linear-gradient(90deg, rgba(26, 111, 92, 0.15) 1px, transparent 1px)`,
+                    backgroundSize: '60px 60px'
+                }} />
             </div>
 
-            {/* Detalhe decorativo superior */}
+            {/* Detalhe decorativo superior - Brand Colors */}
             <div className="relative z-10">
-                <div className="h-1.5 bg-gradient-to-r from-amber-300 via-amber-500 to-amber-300" />
+                <div className="h-1.5 bg-gradient-to-r from-primary-dark via-primary to-primary-light shadow-lg shadow-primary/30" />
 
                 {/* Conteúdo principal do rodapé */}
                 <div className="max-w-7xl mx-auto px-6 py-16 lg:py-20">
@@ -206,7 +218,8 @@ export default function FooterAprimorado() {
                                     key={column.title}
                                     className="animate-fade-in-up"
                                     style={{ animationDelay: `${idx * 0.1}s` }}
-                                >                            <h4 className="text-amber-400 semibold-text mb-6 pb-2 border-b border-gray-700 text-heading-3">
+                                >
+                                    <h4 className="text-primary-light semibold-text mb-6 pb-2 border-b border-white/10 text-heading-3 tracking-wider">
                                         {column.title}
                                     </h4>
                                     <ul className="space-y-3">
