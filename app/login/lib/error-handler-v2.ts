@@ -425,7 +425,13 @@ export function handleLoginError(
 }
 
 // Re-export types
-export type { ErrorDetails, ErrorMetrics, ErrorStats, ErrorContext } from './error-types'
+export type { 
+  ErrorDetails, 
+  ErrorMetrics, 
+  ErrorStats, 
+  ErrorContext,
+  EnvironmentSnapshot,
+} from './error-types'
 export { ErrorCategory, ErrorSeverity } from './error-types'
 
 // Re-export builder (para casos específicos)
