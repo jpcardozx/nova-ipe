@@ -13,6 +13,28 @@ import { createServerClient } from '@supabase/ssr'
 import { type NextRequest, NextResponse } from 'next/server'
 import type { SupabaseClient, User } from '@supabase/supabase-js'
 
+/**
+ * Get cookie options based on environment
+ * In production, use proper domain and secure settings
+ */
+function getCookieOptions() {
+  const isProd = process.env.NODE_ENV === 'production'
+  const isVercel = process.env.VERCEL === '1'
+  
+  // Production domain configuration
+  // Use .imobiliariaipe.com.br for production, undefined for localhost
+  const domain = isProd && !isVercel 
+    ? '.imobiliariaipe.com.br' 
+    : undefined
+  
+  return {
+    domain,
+    secure: isProd, // Only secure in production
+    path: '/',
+    sameSite: 'lax' as const,
+  }
+}
+
 export interface UpdateSessionResult {
   response: NextResponse
   supabase: SupabaseClient
@@ -70,6 +92,8 @@ export async function updateSession(
   }
 
   // Criar Supabase client para middleware
+  const cookieOpts = getCookieOptions()
+  
   const supabase = createServerClient(
     supabaseUrl,
     supabaseAnonKey,
@@ -90,7 +114,11 @@ export async function updateSession(
           })
           
           cookiesToSet.forEach(({ name, value, options }) => {
-            response.cookies.set(name, value, options)
+            // Merge with our custom cookie options
+            response.cookies.set(name, value, {
+              ...options,
+              ...cookieOpts,
+            })
           })
         },
       },

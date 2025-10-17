@@ -34,11 +34,33 @@ export type LoginMode = 'dashboard' | 'studio'
 // ============================================================================
 
 /**
+ * Get cookie options based on environment
+ * In production, use proper domain and secure settings
+ */
+function getCookieOptions() {
+  const isProd = process.env.NODE_ENV === 'production'
+  const isVercel = process.env.VERCEL === '1'
+  
+  // Production domain configuration
+  const domain = isProd && !isVercel 
+    ? '.imobiliariaipe.com.br' 
+    : undefined
+  
+  return {
+    domain,
+    secure: isProd,
+    path: '/',
+    sameSite: 'lax' as const,
+  }
+}
+
+/**
  * Cria cliente Supabase Server-Side com cookies automáticos
  * Compatível com Server Components e Server Actions
  */
 export async function createSupabaseServerClient() {
   const cookieStore = await cookies()
+  const cookieOpts = getCookieOptions()
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -51,7 +73,10 @@ export async function createSupabaseServerClient() {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
+              cookieStore.set(name, value, {
+                ...options,
+                ...cookieOpts,
+              })
             )
           } catch {
             // Server Component: cookies().set() pode falhar (esperado)

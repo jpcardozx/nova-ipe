@@ -17,6 +17,27 @@ import { cookies } from 'next/headers'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 /**
+ * Get cookie options based on environment
+ * In production, use proper domain and secure settings
+ */
+function getCookieOptions() {
+  const isProd = process.env.NODE_ENV === 'production'
+  const isVercel = process.env.VERCEL === '1'
+  
+  // Production domain configuration
+  const domain = isProd && !isVercel 
+    ? '.imobiliariaipe.com.br' 
+    : undefined
+  
+  return {
+    domain,
+    secure: isProd,
+    path: '/',
+    sameSite: 'lax' as const,
+  }
+}
+
+/**
  * Cria Supabase Server Client
  * 
  * IMPORTANTE: Este client NÃO é singleton porque cada request
@@ -39,6 +60,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
  */
 export async function createClient(): Promise<SupabaseClient> {
   const cookieStore = await cookies()
+  const cookieOpts = getCookieOptions()
 
   // Validar variáveis de ambiente
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -61,7 +83,11 @@ export async function createClient(): Promise<SupabaseClient> {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) => {
-              cookieStore.set(name, value, options)
+              // Merge with our custom cookie options
+              cookieStore.set(name, value, {
+                ...options,
+                ...cookieOpts,
+              })
             })
           } catch (error) {
             // Em alguns contextos (como middleware), não é possível setar cookies
