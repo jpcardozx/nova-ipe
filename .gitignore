@@ -67,6 +67,10 @@ docs/INTERNAL_*.md
 scripts/*_credentials.sh
 ssh_config.txt
 
+# Large export files
+temp-export.ndjson
+*.ndjson
+
 # WordPress migration toolkit (sensitive data)
 .lightsail-access/
 .wordpress-backup/
