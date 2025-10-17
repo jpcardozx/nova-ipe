@@ -26,11 +26,19 @@ import { authLogger } from '@/lib/utils/auth-logger'
 import { toast } from '@/app/components/ui/Toast'
 
 // Componentes locais otimizados
-import { LoadingOverlay, DetailedErrorAlert, Alert, ModeSelector } from './components'
+import { LoadingOverlay, DetailedErrorAlert, Alert, ModeSelector, DebugPanel } from './components'
 
 // Schema e constantes
 import { loginSchema, type LoginFormValues } from './types/schema'
 import { NOISE_TEXTURE_SVG, PATTERN_SVG, ERROR_MESSAGES, ANIMATION_VARIANTS } from './lib/constants'
+
+// Error handling system v2 (arquitetura madura)
+import {
+  handleLoginError,
+  loginErrorHandler,
+  type ErrorDetails as ErrorDetailsType,
+  type ErrorContext,
+} from './lib/error-handler-v2'
 
 // AuthLoadingOverlay - mantém compatibilidade
 import { AuthLoadingOverlay, DEFAULT_AUTH_STEPS, type AuthStep } from '@/app/components/AuthLoadingOverlay'
@@ -65,6 +73,10 @@ function LoginPageContent() {
     message: string
     technical?: string
   } | null>(null)
+  
+  // Métricas para debugging
+  const [loginStartTime, setLoginStartTime] = useState<number>(0)
+  const [attemptNumber, setAttemptNumber] = useState<number>(0)
 
   // Hooks
   const searchParams = useSearchParams()
@@ -83,6 +95,12 @@ function LoginPageContent() {
   // Handlers
   const onSubmit = async (data: LoginFormValues) => {
     console.log('📝 [Login Page] Form submitted:', { username: data.username, mode: loginMode })
+
+    // Iniciar métricas
+    const startTime = Date.now()
+    setLoginStartTime(startTime)
+    setAttemptNumber(prev => prev + 1)
+    const currentAttempt = attemptNumber + 1
 
     setIsLoading(true)
     setShowAuthOverlay(true)
@@ -127,57 +145,47 @@ function LoginPageContent() {
 
     } catch (err: any) {
       console.error('❌ [Login Page] Erro capturado:', err)
+      
+      // Calcular duração
+      const duration = Date.now() - startTime
 
-      // ✅ Erro real (credenciais inválidas, rate limit, etc)
-      const errorMessage = err?.message || 'Erro desconhecido ao autenticar'
+      // ✅ NOVO SISTEMA DE ERROR HANDLING V2 (Arquitetura Madura)
+      const errorContext: ErrorContext = {
+        loginMode,
+        email: data.username,
+        attemptNumber: currentAttempt,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href,
+      }
 
-      console.error('❌ [Login Page] Erro de autenticação:', errorMessage)
+      // Processar erro completo (build + metrics + log)
+      const { details: errorDetails, metrics } = handleLoginError(
+        err,
+        currentAttempt,
+        duration,
+        errorContext
+      )
 
-      // Atualizar step com erro
+      // Atualizar step com erro detalhado
       setAuthSteps(steps => steps.map((step, idx) =>
         idx === currentStepIndex
           ? {
               ...step,
               status: 'error',
-              errorMessage: errorMessage.includes('Invalid login credentials')
-                ? 'Credenciais inválidas - verifique email e senha'
-                : errorMessage.includes('quota') || errorMessage.includes('rate limit')
-                ? 'Limite de tentativas atingido - aguarde 5 minutos'
-                : errorMessage.includes('network') || errorMessage.includes('fetch')
-                ? 'Falha na conexão - verifique sua internet'
-                : errorMessage
+              errorMessage: errorDetails.message
             }
           : step
       ))
 
-      authLogger.loginFailure(data.username, errorMessage)
+      authLogger.loginFailure(data.username, errorDetails.technicalMessage)
 
-      // ✅ Mensagens de erro profissionais
-      if (errorMessage.includes('Invalid login credentials')) {
-        setDetailedError({
-          title: 'Acesso Negado',
-          message: 'As credenciais fornecidas não correspondem aos nossos registros. Verifique seu email e senha e tente novamente.',
-          technical: 'AUTH_INVALID_CREDENTIALS'
-        })
-      } else if (errorMessage.includes('quota') || errorMessage.includes('rate limit')) {
-        setDetailedError({
-          title: 'Proteção de Segurança Ativada',
-          message: 'Por segurança, bloqueamos temporariamente tentativas de login desta conta. Aguarde 5 minutos e tente novamente.',
-          technical: 'RATE_LIMIT_EXCEEDED'
-        })
-      } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
-        setDetailedError({
-          title: 'Falha na Comunicação',
-          message: 'Não conseguimos estabelecer conexão com nossos servidores. Verifique sua internet e tente novamente.',
-          technical: 'NETWORK_ERROR'
-        })
-      } else {
-        setDetailedError({
-          title: 'Falha na Autenticação',
-          message: 'Ocorreu um erro inesperado ao processar seu login. Nossa equipe foi notificada. Tente novamente em alguns instantes.',
-          technical: `AUTH_ERROR: ${errorMessage}`
-        })
-      }
+      // ✅ Definir erro para exibição
+      setDetailedError({
+        title: errorDetails.title,
+        message: errorDetails.message,
+        technical: `[${metrics.errorId}] ${errorDetails.category} (${errorDetails.severity})${errorDetails.httpStatus ? ` HTTP ${errorDetails.httpStatus}` : ''}`
+      })
 
       // ✅ Modal persiste com erro - usuário pode tentar novamente
       setIsLoading(false)
@@ -571,6 +579,9 @@ function LoginPageContent() {
           </div>
         </div>
       </motion.div>
+
+      {/* Debug Panel (somente em dev mode) */}
+      <DebugPanel enabled={true} />
     </div>
   )
 }

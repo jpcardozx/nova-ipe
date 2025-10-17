@@ -163,7 +163,28 @@ export function useAuth(): UseAuthReturn {
 
       // Erros reais (credenciais inválidas, rate limit, network, etc)
       const errorMsg = err instanceof Error ? err.message : 'Erro ao fazer login'
-      console.error('❌ [useAuth] Login failed:', errorMsg)
+      
+      // 🔍 Enhanced error logging for debugging
+      console.group('❌ [useAuth] Login Error Details')
+      console.error('Error Message:', errorMsg)
+      console.error('Error Type:', err instanceof Error ? err.constructor.name : typeof err)
+      console.error('Error Object:', err)
+      
+      // Capturar stack trace se disponível
+      if (err instanceof Error && err.stack) {
+        console.error('Stack Trace:', err.stack)
+      }
+      
+      // Informações adicionais
+      console.log('Context:', {
+        email,
+        mode,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        online: navigator.onLine,
+      })
+      console.groupEnd()
+      
       setError(errorMsg)
       setLoading(false)
       throw err // Re-throw para o componente tratar
