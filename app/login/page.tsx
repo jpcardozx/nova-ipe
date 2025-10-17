@@ -307,7 +307,7 @@ function LoginPageContent() {
         }} />
       </div>
 
-      {/* Login Card - Premium Responsive Design */}
+      {/* Login Card - Premium Responsive Design REFINED */}
       <motion.div
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -316,23 +316,25 @@ function LoginPageContent() {
           ease: [0.16, 1, 0.3, 1],
           delay: 0.1
         }}
-        className="relative z-10 w-full max-w-md sm:max-w-lg mx-auto"
+        className="relative z-10 w-full px-4 sm:px-6 md:px-8"
       >
-        {/* Premium card with elegant glassmorphism - AMBER palette */}
-        <div className="relative bg-[#0D1F2D]/70 backdrop-blur-3xl border border-[#FFAD43]/25 rounded-3xl sm:rounded-[2rem] shadow-2xl shadow-[#FFAD43]/20 overflow-hidden">
-          {/* Top brand accent bar - AMBER gradient */}
-          <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-amber-300 via-amber-500 to-amber-400 shadow-lg shadow-amber-500/50" />
-          
-          {/* Subtle inner glow with amber accent */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#FFAD43]/[0.05] via-transparent to-[#0D1F2D]/30 pointer-events-none" />
-          
-          {/* Premium border glow effect */}
-          <div className="absolute inset-0 rounded-3xl sm:rounded-[2rem] bg-gradient-to-br from-amber-400/10 via-transparent to-transparent pointer-events-none" />
+        {/* Responsive Container with max-width constraints */}
+        <div className="max-w-[440px] sm:max-w-[480px] md:max-w-[520px] mx-auto">
+          {/* Premium card with elegant glassmorphism - AMBER palette */}
+          <div className="relative bg-[#0D1F2D]/80 backdrop-blur-3xl border border-[#FFAD43]/30 rounded-2xl sm:rounded-3xl md:rounded-[2rem] shadow-2xl shadow-[#FFAD43]/25 overflow-hidden">
+            {/* Top brand accent bar - AMBER gradient */}
+            <div className="absolute inset-x-0 top-0 h-1 sm:h-1.5 bg-gradient-to-r from-amber-300 via-amber-500 to-amber-400 shadow-lg shadow-amber-500/50" />
+            
+            {/* Subtle inner glow with amber accent */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#FFAD43]/[0.06] via-transparent to-[#0D1F2D]/40 pointer-events-none" />
+            
+            {/* Premium border glow effect */}
+            <div className="absolute inset-0 rounded-2xl sm:rounded-3xl md:rounded-[2rem] bg-gradient-to-br from-amber-400/12 via-transparent to-transparent pointer-events-none" />
 
-          {/* Card content - Premium responsive padding */}
-          <div className="relative p-8 sm:p-10 md:p-12 lg:p-14">
-            {/* Premium Brand Header - Enhanced Responsiveness */}
-            <div className="flex flex-col items-center justify-center mb-8 sm:mb-10 md:mb-12">
+            {/* Card content - REFINED responsive padding */}
+            <div className="relative px-5 py-8 sm:px-8 sm:py-10 md:px-10 md:py-12 lg:px-12 lg:py-14">
+            {/* Premium Brand Header - REFINED Mobile-First */}
+            <div className="flex flex-col items-center justify-center mb-6 sm:mb-8 md:mb-10">
               <motion.div
                 initial={{ scale: 0.92, opacity: 0, y: -20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -343,9 +345,9 @@ function LoginPageContent() {
                   damping: 20,
                   mass: 0.8
                 }}
-                className="flex flex-col items-center gap-5 sm:gap-6 md:gap-7"
+                className="flex flex-col items-center gap-4 sm:gap-5 md:gap-6"
               >
-                {/* Elegant Lock Icon with AMBER Accent Color */}
+                {/* Elegant Lock Icon with AMBER Accent - REFINED sizes */}
                 <motion.div 
                   className="relative"
                   whileHover={{ scale: 1.05, rotate: [0, -2, 2, 0] }}
@@ -353,56 +355,56 @@ function LoginPageContent() {
                   transition={{ duration: 0.6, ease: "easeInOut" }}
                 >
                   {/* Enhanced glow effect - AMBER */}
-                  <div className="absolute inset-0 bg-amber-500/35 rounded-3xl blur-3xl scale-125 animate-pulse" 
+                  <div className="absolute inset-0 bg-amber-500/35 rounded-2xl sm:rounded-3xl blur-2xl sm:blur-3xl scale-110 sm:scale-125 animate-pulse" 
                        style={{ animationDuration: '3s' }} />
                   
-                  {/* Lock container - Premium AMBER gradient */}
-                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 rounded-3xl sm:rounded-[1.5rem] flex items-center justify-center shadow-2xl shadow-amber-500/50 border-2 border-amber-400/40 backdrop-blur-sm">
+                  {/* Lock container - Premium AMBER gradient - REFINED */}
+                  <div className="relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 rounded-2xl sm:rounded-3xl md:rounded-[1.5rem] flex items-center justify-center shadow-2xl shadow-amber-500/50 border-2 border-amber-400/40 backdrop-blur-sm">
                     <motion.div
                       initial={{ opacity: 0, scale: 0.5, y: 8 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       transition={{ delay: 0.4, type: "spring", stiffness: 300, damping: 15 }}
                     >
-                      <Lock className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 text-[#0D1F2D] drop-shadow-lg" />
+                      <Lock className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-[#0D1F2D] drop-shadow-lg" />
                     </motion.div>
                   </div>
                 </motion.div>
 
-                {/* Sophisticated Brand Text - Premium Responsive Typography */}
+                {/* Sophisticated Brand Text - REFINED Typography */}
                 <motion.div 
-                  className="text-center space-y-3 sm:space-y-3.5 md:space-y-4"
+                  className="text-center space-y-2 sm:space-y-2.5 md:space-y-3"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.5 }}
                 >
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#F7D7A3] leading-tight tracking-wide drop-shadow-lg">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-[#F7D7A3] leading-tight tracking-wide drop-shadow-lg">
                     Ipê Imóveis
                   </h1>
                   
                   <motion.div 
-                    className="flex items-center gap-3 sm:gap-3.5 md:gap-4 justify-center"
+                    className="flex items-center gap-2 sm:gap-3 md:gap-4 justify-center"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.5, duration: 0.4 }}
                   >
-                    <div className="h-px w-10 sm:w-12 md:w-14 bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
-                    <p className="text-xs sm:text-sm md:text-base text-amber-400 uppercase tracking-[0.25em] font-semibold">
+                    <div className="h-px w-8 sm:w-10 md:w-12 bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
+                    <p className="text-[10px] sm:text-xs md:text-sm text-amber-400 uppercase tracking-[0.2em] sm:tracking-[0.25em] font-semibold whitespace-nowrap">
                       Área de Acesso
                     </p>
-                    <div className="h-px w-10 sm:w-12 md:w-14 bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
+                    <div className="h-px w-8 sm:w-10 md:w-12 bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
                   </motion.div>
                 </motion.div>
               </motion.div>
             </div>
 
-            {/* Welcome Message - Enhanced */}
+            {/* Welcome Message - REFINED */}
             <motion.div
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.4 }}
-              className="text-center mb-7 sm:mb-8 md:mb-10"
+              className="text-center mb-5 sm:mb-6 md:mb-8"
             >
-              <p className="text-[#F7D7A3]/75 text-sm sm:text-base md:text-lg font-light leading-relaxed">
+              <p className="text-[#F7D7A3]/75 text-xs sm:text-sm md:text-base font-light leading-relaxed px-2">
                 Faça login para acessar o sistema
               </p>
             </motion.div>
@@ -416,23 +418,23 @@ function LoginPageContent() {
             )}
           </AnimatePresence>
 
-          {/* Mode Selector - Enhanced Spacing */}
-          <div className="mb-7 sm:mb-8 md:mb-9">
-            <Label className="text-[#F7D7A3] text-xs sm:text-sm uppercase tracking-widest mb-3 sm:mb-4 block font-semibold">
+          {/* Mode Selector - REFINED Spacing */}
+          <div className="mb-5 sm:mb-6 md:mb-7">
+            <Label className="text-[#F7D7A3] text-[11px] sm:text-xs md:text-sm uppercase tracking-wider sm:tracking-widest mb-2 sm:mb-2.5 md:mb-3 block font-semibold">
               Modo de Acesso
             </Label>
             <ModeSelector value={loginMode} onChange={setLoginMode} />
           </div>
 
-          {/* Form - Premium Responsive Spacing */}
-          <form onSubmit={handleSubmit(onSubmit)} className="relative space-y-6 sm:space-y-7 md:space-y-8">
-            {/* Email - Enhanced Design */}
+          {/* Form - REFINED Mobile-First Spacing */}
+          <form onSubmit={handleSubmit(onSubmit)} className="relative space-y-4 sm:space-y-5 md:space-y-6">
+            {/* Email - REFINED Mobile Touch Targets */}
             <motion.div
               initial={{ opacity: 0, x: -15 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.7, duration: 0.4, ease: "easeOut" }}
             >
-              <Label htmlFor="username" className="text-[#F7D7A3] text-xs sm:text-sm uppercase tracking-widest mb-2.5 sm:mb-3 block font-semibold">
+              <Label htmlFor="username" className="text-[#F7D7A3] text-[11px] sm:text-xs md:text-sm uppercase tracking-wider sm:tracking-widest mb-2 sm:mb-2.5 block font-semibold">
                 Email
               </Label>
               <Input
@@ -441,13 +443,17 @@ function LoginPageContent() {
                 autoComplete="username"
                 placeholder="seuemail@exemplo.com"
                 {...register('username')}
-                className="w-full h-12 sm:h-13 md:h-14 px-4 sm:px-5 text-sm sm:text-base
+                className="w-full h-11 sm:h-12 md:h-13 lg:h-14 
+                           px-3.5 sm:px-4 md:px-5 
+                           text-sm sm:text-base
                            bg-[#0D1F2D]/50 border-2 border-amber-500/25 text-[#F7D7A3] 
-                           placeholder:text-gray-500 rounded-xl sm:rounded-2xl
+                           placeholder:text-gray-500 placeholder:text-xs sm:placeholder:text-sm
+                           rounded-lg sm:rounded-xl md:rounded-2xl
                            focus:bg-[#0D1F2D]/70 focus:border-amber-400 focus:ring-2 focus:ring-amber-500/30 focus:outline-none
                            transition-all duration-300
                            hover:border-amber-400/40 hover:bg-[#0D1F2D]/60
-                           backdrop-blur-sm shadow-lg shadow-black/20"
+                           backdrop-blur-sm shadow-lg shadow-black/20
+                           touch-manipulation"
                 disabled={isLoading}
               />
               <AnimatePresence>
@@ -456,7 +462,7 @@ function LoginPageContent() {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="mt-1.5 text-xs text-red-400"
+                    className="mt-1.5 text-[10px] sm:text-xs text-red-400"
                   >
                     {errors.username.message}
                   </motion.p>
@@ -464,13 +470,13 @@ function LoginPageContent() {
               </AnimatePresence>
             </motion.div>
 
-            {/* Password - Enhanced Design */}
+            {/* Password - REFINED Mobile Touch Targets */}
             <motion.div
               initial={{ opacity: 0, x: -15 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.8, duration: 0.4, ease: "easeOut" }}
             >
-              <Label htmlFor="password" className="text-[#F7D7A3] text-xs sm:text-sm uppercase tracking-widest mb-2.5 sm:mb-3 block font-semibold">
+              <Label htmlFor="password" className="text-[#F7D7A3] text-[11px] sm:text-xs md:text-sm uppercase tracking-wider sm:tracking-widest mb-2 sm:mb-2.5 block font-semibold">
                 Senha
               </Label>
               <div className="relative">
@@ -480,13 +486,18 @@ function LoginPageContent() {
                   autoComplete="current-password"
                   placeholder="••••••••"
                   {...register('password')}
-                  className="w-full h-12 sm:h-13 md:h-14 px-4 sm:px-5 pr-12 sm:pr-14 text-sm sm:text-base
+                  className="w-full h-11 sm:h-12 md:h-13 lg:h-14 
+                             px-3.5 sm:px-4 md:px-5 
+                             pr-11 sm:pr-12 md:pr-14
+                             text-sm sm:text-base
                              bg-[#0D1F2D]/50 border-2 border-amber-500/25 text-[#F7D7A3] 
-                             placeholder:text-gray-500 rounded-xl sm:rounded-2xl
+                             placeholder:text-gray-500 placeholder:text-xs sm:placeholder:text-sm
+                             rounded-lg sm:rounded-xl md:rounded-2xl
                              focus:bg-[#0D1F2D]/70 focus:border-amber-400 focus:ring-2 focus:ring-amber-500/30 focus:outline-none
                              transition-all duration-300
                              hover:border-amber-400/40 hover:bg-[#0D1F2D]/60
-                             backdrop-blur-sm shadow-lg shadow-black/20"
+                             backdrop-blur-sm shadow-lg shadow-black/20
+                             touch-manipulation"
                   disabled={isLoading}
                 />
                 <motion.button
@@ -494,14 +505,14 @@ function LoginPageContent() {
                   onClick={() => setShowPassword(!showPassword)}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
-                  className="absolute right-4 sm:right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-amber-400 transition-colors duration-200 p-1"
+                  className="absolute right-3 sm:right-4 md:right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-amber-400 transition-colors duration-200 p-1.5 sm:p-2 touch-manipulation"
                   disabled={isLoading}
                   aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                 >
                   {showPassword ? (
-                    <EyeOff className="w-5 h-5 sm:w-6 sm:h-6" />
+                    <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" />
                   ) : (
-                    <Eye className="w-5 h-5 sm:w-6 sm:h-6" />
+                    <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
                   )}
                 </motion.button>
               </div>
@@ -511,7 +522,7 @@ function LoginPageContent() {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="mt-1.5 text-xs text-red-400"
+                    className="mt-1.5 text-[10px] sm:text-xs text-red-400"
                   >
                     {errors.password.message}
                   </motion.p>
@@ -519,40 +530,45 @@ function LoginPageContent() {
               </AnimatePresence>
             </motion.div>
 
-            {/* Submit Button - Premium AMBER Design */}
+            {/* Submit Button - REFINED Mobile-First */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.9, duration: 0.4 }}
-              className="pt-3 sm:pt-4"
+              className="pt-2 sm:pt-3 md:pt-4"
             >
               <Button
                 type="submit"
                 disabled={isLoading || !isValid}
-                className="relative w-full h-13 sm:h-14 md:h-15 text-base sm:text-lg font-bold
+                className="relative w-full 
+                           h-11 sm:h-12 md:h-13 lg:h-14
+                           text-sm sm:text-base md:text-lg 
+                           font-bold
                            bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 
                            hover:from-amber-400 hover:via-amber-500 hover:to-amber-600
-                           text-[#0D1F2D] rounded-xl sm:rounded-2xl 
+                           text-[#0D1F2D] 
+                           rounded-lg sm:rounded-xl md:rounded-2xl 
                            shadow-xl shadow-amber-500/40
                            disabled:opacity-50 disabled:cursor-not-allowed disabled:from-amber-600 disabled:to-amber-700
                            transition-all duration-300 
                            hover:shadow-2xl hover:shadow-amber-500/60 hover:scale-[1.02] hover:-translate-y-0.5
                            active:scale-[0.98] active:translate-y-0
-                           border-2 border-amber-400/50"
+                           border-2 border-amber-400/50
+                           touch-manipulation"
               >
                 <motion.span 
-                  className="relative flex items-center justify-center gap-2.5 sm:gap-3"
+                  className="relative flex items-center justify-center gap-2 sm:gap-2.5 md:gap-3"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   {isLoading ? (
                     <>
-                      <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
+                      <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 animate-spin" />
                       <span>Autenticando...</span>
                     </>
                   ) : (
                     <>
-                      <Lock className="w-5 h-5 sm:w-6 sm:h-6" />
+                      <Lock className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
                       <span>Entrar no Sistema</span>
                     </>
                   )}
@@ -561,22 +577,23 @@ function LoginPageContent() {
             </motion.div>
           </form>
 
-          {/* Footer - Enhanced */}
+          {/* Footer - REFINED Mobile-First */}
           <motion.div 
-            className="mt-8 sm:mt-10 md:mt-12 pt-6 sm:pt-7 md:pt-8 border-t border-amber-500/15 text-center"
+            className="mt-5 sm:mt-6 md:mt-8 pt-4 sm:pt-5 md:pt-6 border-t border-amber-500/15 text-center px-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1, duration: 0.5 }}
           >
-            <p className="text-xs sm:text-sm md:text-base text-[#F7D7A3]/65 mb-3 sm:mb-4">
+            <p className="text-[10px] sm:text-xs md:text-sm text-[#F7D7A3]/65 mb-2.5 sm:mb-3 md:mb-4 leading-relaxed">
               Acesso exclusivo para profissionais autorizados
             </p>
-            <div className="flex items-center justify-center gap-2 sm:gap-2.5 text-xs sm:text-sm text-[#F7D7A3]/55">
-              <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
+            <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs md:text-sm text-[#F7D7A3]/55">
+              <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 flex-shrink-0" />
               <span>Conexão segura e criptografada</span>
             </div>
           </motion.div>
           </div>
+        </div>
         </div>
       </motion.div>
 
